@@ -1,0 +1,70 @@
+group 'com.jksoa'
+version '1.0-SNAPSHOT'
+
+//gradle脚本自身需要使用的资源
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/snapshots'
+        }
+        maven {
+            url "http://dl.bintray.com/kotlin/kotlin"
+        }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'maven'
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenLocal() // jkmvc安装在本地库
+    mavenCentral()
+    maven {
+        url 'http://maven.aliyun.com/nexus/content/repositories/snapshots'
+    }
+    maven {
+        url "http://dl.bintray.com/kotlin/kotlin"
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+	// jkmvc
+	compile 'com.jkmvc:jkmvc:1.0-SNAPSHOT'
+	// log
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'org.slf4j:slf4j-log4j12:1.7.12'
+    compile 'log4j:log4j:1.2.17'
+
+    // test
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testCompile 'junit:junit:4.11'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'src/main/kotlin']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java', 'src/test/kotlin']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
