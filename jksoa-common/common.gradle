@@ -1,0 +1,4 @@
+dependencies{
+    compile 'com.jkmvc:jkmvc-common:1.0-SNAPSHOT'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+}
