@@ -1,7 +1,13 @@
-include 'jksoa-common', 'jksoa-registry', 'jksoa-client', 'jksoa-server'
-
 rootProject.name = 'jksoa'
+
+include 'jksoa-common', 'jksoa-registry', 'jksoa-client', 'jksoa-server'
 
 rootProject.children.each {
     it.buildFileName = it.name + '.gradle' - 'jksoa-'
 }
+
+// 添加jkmvc子项目
+include 'jkmvc-common'
+
+project(':jkmvc-common').projectDir = new File('../jkmvc/jkmvc-common')
+project(':jkmvc-common').buildFileName = 'common.gradle'

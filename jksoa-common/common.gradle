@@ -1,4 +1,7 @@
 dependencies{
-    compile 'com.jkmvc:jkmvc-common:1.0-SNAPSHOT'
+    // other project
+    compile project(':jkmvc-common')
+
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile "org.jboss.netty:netty:$netty_version"
 }
