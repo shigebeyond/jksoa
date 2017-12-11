@@ -1,6 +1,8 @@
 package com.jksoa.common
 
 /**
+ * 服务配置
+ *
  * @ClassName: ServiceConfig
  * @Description: 
  * @author shijianhang<772910474@qq.com>

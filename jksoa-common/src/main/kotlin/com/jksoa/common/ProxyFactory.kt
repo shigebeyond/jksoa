@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Proxy
 
 /**
+ * 创建代理
+ *
  * @ClassName: ProxyFactory
  * @Description:
  * @author shijianhang<772910474@qq.com>

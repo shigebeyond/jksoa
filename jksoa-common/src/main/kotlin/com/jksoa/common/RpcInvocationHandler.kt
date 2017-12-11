@@ -45,6 +45,7 @@ class RpcInvocationHandler(): InvocationHandler {
 
         // 等待，并处理结果
 
+        return null
     }
 
 }

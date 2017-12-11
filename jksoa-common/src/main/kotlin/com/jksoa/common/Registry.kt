@@ -1,6 +1,9 @@
 package com.jksoa.common
 
+import com.jkmvc.cache.JedisFactory
+
 /**
+ * 注册中心
  *
  * @ClassName: Registry
  * @Description: 
@@ -9,8 +12,11 @@ package com.jksoa.common
  */
 class Registry {
 
-    fun register(config: ServiceConfig){
+    val jedis = JedisFactory.instance()
 
+    fun register(config: ServiceConfig){
+        jedis.lpush("c:${config.path}".toByteArray())
+        jedis.psubscribe
     }
 
     fun unregister(config: ServiceConfig){
