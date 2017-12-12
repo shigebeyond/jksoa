@@ -10,6 +10,8 @@ package com.jksoa.common
  */
 class Response(public val requestId: Long, /* 请求标识，全局唯一 */
                public val value: Any?, /* 结果值 */
-               public val exception: Exception? /* 异常 */
+               public val exception: Exception? = null /* 异常 */
 ) {
+
+    public constructor(requestId: Long, exception: Exception?):this(requestId, null, exception){}
 }

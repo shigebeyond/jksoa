@@ -4,10 +4,12 @@ package com.jksoa.common
  * 协议类型
  */
 public enum class ProtocolType {
-    JKSOA,
+    NETTY,
 }
 
 /**
+ * 通信协议
+ *
  * @ClassName: Protocol
  * @Description:
  * @author shijianhang<772910474@qq.com>

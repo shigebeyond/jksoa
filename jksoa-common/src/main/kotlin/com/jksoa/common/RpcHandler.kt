@@ -8,18 +8,32 @@ package com.jksoa.common
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-class RpcHandler {
+class RpcHandler : IRpcHandler {
 
-    public fun invoke(req: Request): Response{
-        // 获得provider
-        val provider = ServiceLoader.getService(req.serviceName)
-        if(provider == null)
-            throw RouteException("不存在服务：${req.serviceName}");
+    /**
+     * 处理请求
+     *
+     * @param req
+     * @return
+     */
+    override fun handle(req: Request): Response{
+        try{
+            // 获得provider
+            val provider = ServiceLoader.getService(req.serviceName)
+            if(provider == null)
+                throw RouteException("服务[${req.serviceName}]没有提供者");
 
-        // 获得方法
-        val method = provider.getMethod(req.methodSignature)
-        if(method == null)
-            throw RouteException("方法");
+            // 获得方法
+            val method = provider.getMethod(req.methodSignature)
+            if(method == null)
+                throw RouteException("服务方法[${req.serviceName}#${req.methodSignature}]不存在");
+
+            // 调用方法
+            val value = method.invoke(provider.ref, req.args)
+            return Response(req.id, value)
+        }catch (e:Exception){
+            return Response(req.id, e)
+        }
     }
 
 }

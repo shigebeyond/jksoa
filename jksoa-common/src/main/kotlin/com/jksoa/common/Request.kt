@@ -12,7 +12,7 @@ import com.jkmvc.common.SnowflakeIdWorker
  */
 class Request(public val serviceName: String, /* 服务名，即接口类全名 */
               public val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
-              public val parameters: Array<out Any>, /* 参数 */
+              public val args: Array<out Any>, /* 参数 */
               public val id: Long = SnowflakeIdWorker.instance().nextId() /* 请求标识，全局唯一 */
 ) {
 
