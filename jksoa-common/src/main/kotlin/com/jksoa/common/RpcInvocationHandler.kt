@@ -14,23 +14,6 @@ import java.lang.reflect.Proxy
  */
 class RpcInvocationHandler(): InvocationHandler {
 
-    companion object{
-
-        /**
-         * 创建代理的工厂方法
-         *
-         * @param interfaces 要代理的接口
-         * @return
-         */
-        public fun createProxy(vararg interfaces:Class<*>): Any? {
-            // 获得类加载器
-            val cld = Thread.currentThread().contextClassLoader
-
-            // 创建代理
-            return Proxy.newProxyInstance(cld, interfaces, RpcInvocationHandler());
-        }
-    }
-
     /**
      * 处理方法调用
      *
