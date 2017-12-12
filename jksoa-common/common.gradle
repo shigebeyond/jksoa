@@ -5,7 +5,8 @@ dependencies{
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
     // zookeeper
-    compile "org.apache.curator:curator-recipes:$curator_version"
+    compile "org.apache.zookeeper:zookeeper:$zk_version"
+    compile "com.101tec:zkclient:$zkclient_version"
 
     // netty
     compile "org.jboss.netty:netty:$netty_version"

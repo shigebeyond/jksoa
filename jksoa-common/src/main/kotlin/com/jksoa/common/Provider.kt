@@ -1,10 +1,10 @@
 package com.jksoa.common
 
 import com.jkmvc.common.Config
+import com.jkmvc.common.URL
 import com.jkmvc.common.getSignature
 import getIntranetHost
 import java.lang.reflect.Method
-import java.net.URL
 import java.util.HashMap
 import kotlin.collections.ArrayList
 import kotlin.collections.MutableList
@@ -70,8 +70,8 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
                 interfaces.add(intf)
 
                 // 注册服务
-                val host = config.getString("host", getIntranetHost())
-                val url = URL(config["protocol"], host, config["port"]!!, "", config["parameters"]);
+                val host = config.getString("host", getIntranetHost())!!
+                val url = URL(config["protocol"]!!, host, config["port"]!!, "", config["parameters"]);
                 registry.register(intf.name, url)
             }
         }

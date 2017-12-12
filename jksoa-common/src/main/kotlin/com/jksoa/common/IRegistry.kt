@@ -1,6 +1,7 @@
 package com.jksoa.common
 
-import java.net.URL
+import com.jkmvc.common.URL
+
 
 /**
  * 注册中心

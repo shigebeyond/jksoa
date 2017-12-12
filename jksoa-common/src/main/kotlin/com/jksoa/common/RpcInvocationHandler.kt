@@ -1,5 +1,7 @@
 package com.jkmvc.szpower.util
 
+import com.jkmvc.common.Config
+import com.jkmvc.serialize.ISerializer
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -13,6 +15,19 @@ import java.lang.reflect.Proxy
  * @date 2017-11-08 7:25 PM
  */
 class RpcInvocationHandler(): InvocationHandler {
+
+    companion object{
+
+        /**
+         * soa配置
+         */
+        public val config = Config.instance("soa", "yaml")
+
+        /**
+         * 序列化
+         */
+        public val serializer: ISerializer = ISerializer.instance(config["serializeType"]!!)
+    }
 
     /**
      * 处理方法调用
