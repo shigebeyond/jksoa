@@ -4,7 +4,7 @@ package com.jksoa.common
  * 协议类型
  */
 public enum class ProtocolType {
-    NETTY,
+    JKP,
 }
 
 /**

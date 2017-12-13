@@ -29,23 +29,17 @@ interface IRegistry {
     /**
      * 注册服务
      *
-     * @param serviceName
      * @param url
      * @return
      */
-    fun register(serviceName: String, url: Url)
+    fun register(url: Url)
 
     /**
      * 注销服务
      *
-     * @param serviceName
      * @param url
      * @return
      */
-    fun unregister(serviceName: String, url: Url)
-
-    fun addConnectedListener(listener:(Boolean) -> Unit)
-
-    fun addChildListener(listener:(Boolean) -> Unit)
+    fun unregister(url: Url)
 
 }

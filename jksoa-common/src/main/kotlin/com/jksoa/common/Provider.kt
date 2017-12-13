@@ -71,8 +71,8 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
 
                 // 注册服务
                 val host = config.getString("host", getIntranetHost())!!
-                val url = Url(config["protocol"]!!, host, config["port"]!!, "", config["parameters"]);
-                registry.register(intf.name, url)
+                val url = Url(config["protocol"]!!, host, config["port"]!!, intf.name, config["parameters"]);
+                registry.register(url)
             }
         }
     }

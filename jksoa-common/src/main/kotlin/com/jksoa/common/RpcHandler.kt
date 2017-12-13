@@ -8,7 +8,7 @@ package com.jksoa.common
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-class RpcHandler : IRpcHandler {
+object RpcHandler : IRpcHandler {
 
     /**
      * 处理请求
@@ -16,7 +16,7 @@ class RpcHandler : IRpcHandler {
      * @param req
      * @return
      */
-    override fun handle(req: Request): Response{
+    public override fun handle(req: Request): Response{
         try{
             // 获得provider
             val provider = ServiceLoader.getService(req.serviceName)
