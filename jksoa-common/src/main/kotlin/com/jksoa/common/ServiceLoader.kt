@@ -1,8 +1,10 @@
 package com.jksoa.common
 
 import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
 import com.jkmvc.common.travel
 import java.io.File
+import java.lang.reflect.Modifier
 import java.util.*
 
 /**
@@ -107,9 +109,10 @@ object ServiceLoader : IServiceLoader {
         val className = relativePath.substringBefore(".class").replace(File.separatorChar, '.')
         // 获得类
         val clazz = Class.forName(className) as Class<IService>
+        val modifiers = clazz.modifiers
         // 过滤service子类
         val base = IService::class.java
-        if(base != clazz && base.isAssignableFrom(clazz)){
+        if(base != clazz && base.isAssignableFrom(clazz) /* 继承IService */ && !Modifier.isAbstract(modifiers) /* 非抽象类 */ && !Modifier.isInterface(modifiers) /* 非接口 */){
             // 构建服务提供者
             val provider = Provider(clazz)
             // 缓存服务提供者，key是服务名，即接口类全名
