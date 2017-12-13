@@ -1,6 +1,6 @@
 package com.jksoa.common
 
-import com.jkmvc.common.URL
+import com.jkmvc.common.Url
 
 
 /**
@@ -14,11 +14,11 @@ import com.jkmvc.common.URL
 class LocalRegistry :IRegistry{
 
 
-    override fun register(name: String, url: URL) {
+    override fun register(name: String, url: Url) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun unregister(name: String, url: URL) {
+    override fun unregister(name: String, url: Url) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

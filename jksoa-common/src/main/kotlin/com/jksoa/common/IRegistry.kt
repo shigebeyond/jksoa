@@ -1,6 +1,6 @@
 package com.jksoa.common
 
-import com.jkmvc.common.URL
+import com.jkmvc.common.Url
 
 
 /**
@@ -33,7 +33,7 @@ interface IRegistry {
      * @param url
      * @return
      */
-    fun register(serviceName: String, url: URL)
+    fun register(serviceName: String, url: Url)
 
     /**
      * 注销服务
@@ -42,7 +42,7 @@ interface IRegistry {
      * @param url
      * @return
      */
-    fun unregister(serviceName: String, url: URL)
+    fun unregister(serviceName: String, url: Url)
 
     fun addConnectedListener(listener:(Boolean) -> Unit)
 
