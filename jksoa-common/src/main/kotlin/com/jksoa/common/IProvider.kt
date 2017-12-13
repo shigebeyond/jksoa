@@ -39,4 +39,9 @@ interface IProvider {
      * @return
      */
     fun getMethod(methodSignature: String): Method?
+
+    /**
+     * 注册服务
+     */
+    fun registerServices()
 }

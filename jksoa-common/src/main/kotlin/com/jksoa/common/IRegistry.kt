@@ -1,6 +1,6 @@
 package com.jksoa.common
 
-import com.jkmvc.common.Url
+import com.jksoa.common.Url
 
 
 /**
@@ -11,20 +11,7 @@ import com.jkmvc.common.Url
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 12:48 PM
  */
-interface IRegistry {
-
-    companion object{
-
-        /**
-         * 获得指定类型的注册中心
-         *
-         * @param type
-         * @return
-         */
-        public fun instance(type: String): IRegistry{
-
-        }
-    }
+interface IRegistry:IDiscovery {
 
     /**
      * 注册服务
@@ -41,5 +28,4 @@ interface IRegistry {
      * @return
      */
     fun unregister(url: Url)
-
 }

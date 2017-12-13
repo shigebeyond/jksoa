@@ -1,7 +1,6 @@
 package com.jksoa.common
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.Url
 import com.jkmvc.common.getSignature
 import getIntranetHost
 import java.lang.reflect.Method
@@ -54,6 +53,9 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
 
         // 解析接口
         parseInterfaces()
+
+        // 注册服务
+        registerServices()
     }
 
     /**
@@ -68,12 +70,18 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
             if (intf != base && base.isAssignableFrom(intf)) {
                 // 记录接口
                 interfaces.add(intf)
-
-                // 注册服务
-                val host = config.getString("host", getIntranetHost())!!
-                val url = Url(config["protocol"]!!, host, config["port"]!!, intf.name, config["parameters"]);
-                registry.register(url)
             }
+        }
+    }
+
+    /**
+     * 注册服务
+     */
+    public fun registerServices(){
+        for(intf in interfaces){
+            val host = config.getString("host", getIntranetHost())!!
+            val url = Url(config["protocol"]!!, host, config["port"]!!, intf.name, config["parameters"]);
+            registry.register(url)
         }
     }
 
