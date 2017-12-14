@@ -1,7 +1,9 @@
-package com.jksoa.registry.zk
+package com.jksoa.registry.zk.listener
 
 import com.jksoa.common.INotifyListener
 import com.jksoa.registry.registerLogger
+import com.jksoa.registry.zk.common.ZkClientFactory
+import com.jksoa.registry.zk.common.nodeChilds2Urls
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient
 
