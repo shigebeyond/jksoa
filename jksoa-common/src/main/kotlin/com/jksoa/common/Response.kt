@@ -13,5 +13,11 @@ class Response(public val requestId: Long, /* 请求标识，全局唯一 */
                public val exception: Exception? = null /* 异常 */
 ) {
 
+    /**
+     * 构造函数
+     *
+     * @param requestId 请求标识
+     * @param exception 异常
+     */
     public constructor(requestId: Long, exception: Exception?):this(requestId, null, exception){}
 }

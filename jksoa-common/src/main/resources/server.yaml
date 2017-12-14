@@ -7,6 +7,6 @@ ip: #192.168.0.17
 port: 8081
 # 4 参数
 parameters:
-# service类所在的包路径
+# 5 service类所在的包路径
 servicePackages:
     - com.jksoa.example.service

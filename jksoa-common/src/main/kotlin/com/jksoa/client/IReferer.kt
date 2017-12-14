@@ -1,7 +1,5 @@
 package com.jksoa.common
 
-import com.jksoa.common.IService
-
 /**
  * 服务代理的引用
  *
@@ -18,14 +16,14 @@ abstract class IReferer {
      * @param clazz
      * @return
      */
-    public abstract fun getRefer(clazz: Class<out IService>): IService
+    public abstract fun getProxy(clazz: Class<out IService>): IService
 
     /**
      * 获得服务代理
      *
      * @return
      */
-    public inline fun <reified T: IService> getRefer(): T {
-        return Referer.getRefer(T::class.java) as T
+    public inline fun <reified T: IService> getProxy(): T {
+        return getProxy(T::class.java) as T
     }
 }

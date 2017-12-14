@@ -5,21 +5,19 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 服务消费者
+ * 服务集群委托
  *
- * @ClassName: Consumer
+ * @ClassName: Broker
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-13 3:18 PM
  */
-class Cluster : INotifyListener {
+object Broker: INotifyListener {
 
-    companion object{
-        /**
-         * 服务地址： <服务名 to <ip端口 to 服务地址>>
-         */
-        private val serviceUrls: ConcurrentHashMap<String, HashMap<String, Url>> = ConcurrentHashMap()
-    }
+    /**
+     * 服务地址： <服务名 to <ip端口 to 服务地址>>
+     */
+    private val serviceUrls: ConcurrentHashMap<String, HashMap<String, Url>> = ConcurrentHashMap()
 
     /**
      * 更新服务地址
@@ -103,4 +101,8 @@ class Cluster : INotifyListener {
         //重整负载策略
     }
 
+
+    fun call(request: Request): Response{
+
+    }
 }

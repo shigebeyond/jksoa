@@ -27,7 +27,7 @@ object Referer: IReferer() {
      * @return
      */
     private fun createRefer(clazz: Class<out IService>): IService {
-        return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(clazz), RpcInvocationHandler) as IService
+        return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(clazz), RpcInvocationHandler(clazz)) as IService
     }
 
     /**
@@ -36,7 +36,7 @@ object Referer: IReferer() {
      * @param clazz
      * @return
      */
-    public override fun getRefer(clazz: Class<out IService>): IService {
+    public override fun getProxy(clazz: Class<out IService>): IService {
         return refers.getOrPut(clazz){
             createRefer(clazz)
         }
