@@ -1,14 +1,10 @@
 package com.jksoa.server
 
+import com.jkmvc.common.ClassScanner
 import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
-import com.jkmvc.common.travel
 import com.jksoa.common.IService
-import com.jksoa.server.Provider
-import com.jksoa.common.soaLogger
 import java.io.File
 import java.lang.reflect.Modifier
-import java.util.*
 
 /**
  * 加载服务提供者
@@ -18,7 +14,7 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM
  */
-object ServiceLoader: IServiceLoader() {
+object ProviderLoader: ClassScanner(), IProviderLoader {
 
     /**
      * soa配置
@@ -26,18 +22,11 @@ object ServiceLoader: IServiceLoader() {
     public val config = Config.instance("soa", "yaml")
 
     /**
-     * 自动扫描的包
-     */
-    private val packages:MutableList<String> = LinkedList<String>();
-
-    /**
      * 服务提供者缓存
      *   key为服务名，即接口类全名
      *   value为提供者
      */
-    private val providers:MutableMap<String, Provider> by lazy {
-        scan()
-    }
+    private val providers:MutableMap<String, Provider> = HashMap()
 
     init{
         // 加载配置的包路径
@@ -47,63 +36,11 @@ object ServiceLoader: IServiceLoader() {
     }
 
     /**
-     * 添加单个包
-     * @param pck 包名
-     * @return
-     */
-    override fun addPackage(pck:String): ServiceLoader {
-        soaLogger.info("添加service包: $pck")
-        packages.add(pck)
-        return this;
-    }
-
-    /**
-     * 添加多个包
-     * @param pcks 包名
-     * @return
-     */
-    override fun addPackages(pcks:Collection<String>): ServiceLoader {
-        soaLogger.info("添加service包: $pcks")
-        packages.addAll(pcks)
-        return this;
-    }
-
-    /**
-     * 扫描指定包下的服务提供者
-     * @return
-     */
-    override fun scan(): MutableMap<String, Provider> {
-        val result:MutableMap<String, Provider> = HashMap<String, Provider>()
-
-        // 获得类加载器
-        val cld = Thread.currentThread().contextClassLoader
-
-        // 遍历包来扫描
-        for (pck in packages){
-            // 获得该包的所有资源
-            val path = pck.replace('.', '/')
-            val urls = cld.getResources(path)
-            // 遍历资源
-            for(url in urls){
-                // 遍历某个资源下的文件
-                url.travel { relativePath, isDir ->
-                    // 收集服务提供者
-                    collectService(relativePath, result)
-                }
-            }
-        }
-        
-        return result;
-    }
-
-    /**
-     * 收集服务提供者
+     * 收集Service类
      *
-     * @param relativePath
-     * @param isDir
-     * @return
+     * @param relativePath 类文件相对路径
      */
-    private fun collectService(relativePath: String, result: MutableMap<String, Provider>){
+    public override fun collectClass(relativePath: String): Unit{
         // 过滤service的类文件
         if(!relativePath.endsWith("service.class"))
             return
@@ -120,7 +57,7 @@ object ServiceLoader: IServiceLoader() {
             val provider = Provider(clazz)
             // 缓存服务提供者，key是服务名，即接口类全名
             for(intf in provider.interfaces)
-                result.put(intf.name, provider)
+                providers[intf.name] = provider
         }
     }
 
