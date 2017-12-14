@@ -1,6 +1,7 @@
 package com.jksoa.common
 
 import org.I0Itec.zkclient.IZkChildListener
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -27,7 +28,7 @@ object Consumer: INotifyListener {
     public override fun updateServiceUrls(serviceName: String, urls: List<Url>){
         var addUrls:Set<String> = emptySet() // 新加的url
         var removeUrls:Set<String> = emptySet() // 新加的url
-        var updateUrls:List<Url> = emptyList() // 更新的url
+        var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
 
         // 构建新的服务地址
         val newUrls = HashMap<String, Url>()
@@ -48,7 +49,7 @@ object Consumer: INotifyListener {
             // 获得更新的地址
             for(key in newUrls.keys.intersect(oldUrls.keys)){
                 if(newUrls[key] != oldUrls[key])
-                    updateUrls
+                    updateUrls.add(newUrls[key]!!)
             }
         }else{
             addUrls = newUrls.keys
@@ -68,6 +69,9 @@ object Consumer: INotifyListener {
         for(url in updateUrls) {
             handleUpdateUrl(url)
         }
+
+        // 保存新的服务地址
+        serviceUrls[serviceName] = newUrls
     }
 
     /**

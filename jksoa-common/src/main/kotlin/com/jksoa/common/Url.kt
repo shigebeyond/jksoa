@@ -149,7 +149,7 @@ class Url(public var protocol: String /* 协议 */,
                 && this.host == obj.host
                 && this.port == obj.port
                 && this.path == obj.path
-                && this.parameters == obj.parameters
+                && this.parameters == obj.parameters // 2个对象的 parameters 使用同样的map类，实例与生成的字符串都应该是一样的
     }
 
 }

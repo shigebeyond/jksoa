@@ -29,7 +29,7 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
         /**
          * 注册中心
          */
-        public val registry: IRegistry = IRegistry.instance(config["registryType"]!!)
+        public val registry: IRegistry = ZkRegistry
     }
 
     /**
@@ -77,7 +77,7 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     /**
      * 注册服务
      */
-    public fun registerServices(){
+    public override fun registerServices(){
         for(intf in interfaces){
             val host = config.getString("host", getIntranetHost())!!
             val url = Url(config["protocol"]!!, host, config["port"]!!, intf.name, config["parameters"]);

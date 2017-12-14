@@ -19,7 +19,7 @@ object RpcHandler : IRpcHandler {
     public override fun handle(req: Request): Response{
         try{
             // 获得provider
-            val provider = ServiceLoader.getService(req.serviceName)
+            val provider = ServiceLoader.getProvider(req.serviceName)
             if(provider == null)
                 throw RouteException("服务[${req.serviceName}]没有提供者");
 

@@ -14,20 +14,17 @@ import java.lang.reflect.Proxy
  * @author shijianhang<772910474@qq.com>
  * @date 2017-11-08 7:25 PM
  */
-class RpcInvocationHandler(): InvocationHandler {
+object RpcInvocationHandler: InvocationHandler {
 
-    companion object{
+    /**
+     * soa配置
+     */
+    public val config = Config.instance("soa", "yaml")
 
-        /**
-         * soa配置
-         */
-        public val config = Config.instance("soa", "yaml")
-
-        /**
-         * 序列化
-         */
-        public val serializer: ISerializer = ISerializer.instance(config["serializeType"]!!)
-    }
+    /**
+     * 序列化
+     */
+    public val serializer: ISerializer = ISerializer.instance(config["serializeType"]!!)
 
     /**
      * 处理方法调用

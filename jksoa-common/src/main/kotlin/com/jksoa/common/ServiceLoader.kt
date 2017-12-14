@@ -15,7 +15,7 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM
  */
-object ServiceLoader : IServiceLoader {
+object ServiceLoader: IServiceLoader() {
 
     /**
      * soa配置
@@ -32,7 +32,7 @@ object ServiceLoader : IServiceLoader {
      *   key为服务名，即接口类全名
      *   value为提供者
      */
-    private val services:MutableMap<String, Provider> by lazy {
+    private val providers:MutableMap<String, Provider> by lazy {
         scan()
     }
 
@@ -122,22 +122,12 @@ object ServiceLoader : IServiceLoader {
     }
 
     /**
-     * 获得服务提供者
+     * 根据服务名来获得服务提供者
      *
      * @param name
      * @return
      */
-    public override fun getService(name: String): Provider?{
-        return services[name]
-    }
-
-    /**
-     * 获得服务提供者
-     *
-     * @return
-     */
-    public inline fun <reified T:IService> getService(): T?{
-        val intf = T::class.java
-        return getService(intf.name) as T
+    public override fun getProvider(name: String): Provider?{
+        return providers[name]
     }
 }
