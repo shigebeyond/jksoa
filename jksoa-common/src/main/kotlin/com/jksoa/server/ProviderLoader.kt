@@ -67,7 +67,15 @@ object ProviderLoader: ClassScanner(), IProviderLoader {
      * @param name
      * @return
      */
-    public override fun getProvider(name: String): Provider?{
+    public override fun getProvider(name: String): IProvider?{
         return providers[name]
+    }
+
+    /**
+     * 获得所有的服务提供者
+     * @return
+     */
+    public override fun getProviders(): Collection<IProvider> {
+        return providers.values
     }
 }

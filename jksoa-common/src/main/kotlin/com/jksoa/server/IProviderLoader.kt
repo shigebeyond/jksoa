@@ -19,5 +19,11 @@ interface IProviderLoader {
      * @param name
      * @return
      */
-    fun getProvider(name: String): Provider?
+    fun getProvider(name: String): IProvider?
+
+    /**
+     * 获得所有的服务提供者
+     * @return
+     */
+    fun getProviders(): Collection<IProvider>
 }

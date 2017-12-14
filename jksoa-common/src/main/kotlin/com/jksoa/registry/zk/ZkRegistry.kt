@@ -4,6 +4,7 @@ import com.jkmvc.common.Config
 import com.jksoa.common.*
 import com.jksoa.registry.IRegistry
 import com.jksoa.common.SoaException
+import com.jksoa.server.ProviderLoader
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.IZkDataListener
 import org.I0Itec.zkclient.IZkStateListener
@@ -35,7 +36,9 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
             override fun handleNewSession() {
                 soaLogger.info("zkRegistry get new session handleNotify.")
                 // 重新注册服务
+                for(provider in ProviderLoader.getProviders()){
 
+                }
             }
         }
         zkClient.subscribeStateChanges(zkStateListener)
