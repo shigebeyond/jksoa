@@ -1,26 +1,34 @@
 package com.jksoa.registry.zk
 
 import com.jksoa.common.INotifyListener
+import com.jksoa.common.SoaException
 import com.jksoa.common.Url
 import org.I0Itec.zkclient.ZkClient
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Created by shi on 12/14/17.
+ * 基于zookeeper的服务发现
+ *
+ * @ClassName: ZkDiscovery
+ * @Description:
+ * @author shijianhang<772910474@qq.com>
+ * @date 2017-12-12 11:22 AM
  */
 open class ZkDiscovery {
     /**
      * zk客户端
      */
     protected val zkClient: ZkClient = ZkClientFactory.instance()
+
     /**
      * zk子节点监听器: <服务名 to <服务监听器 to zk监听器>>
      */
-    private val childListeners = ConcurrentHashMap<String, ConcurrentHashMap<INotifyListener, ZkChildListener>>()
+    protected val childListeners = ConcurrentHashMap<String, ConcurrentHashMap<INotifyListener, ZkChildListener>>()
+
     /**
      * zk节点数据监听器: <服务名 to <服务监听器 to zk监听器>>
      */
-    private val dataListeners = ConcurrentHashMap<String, ConcurrentHashMap<INotifyListener, List<ZkDataListener>>>()
+    protected val dataListeners = ConcurrentHashMap<String, ConcurrentHashMap<INotifyListener, List<ZkDataListener>>>()
 
     /**
      * 监听服务变化
@@ -30,19 +38,22 @@ open class ZkDiscovery {
      */
     public fun subscribe(serviceName: String, listener: INotifyListener){
         try{
-            // 监听子节点
+            // 1 监听子节点
             val childListener = ZkChildListener(listener)
             childListeners.getOrPut(serviceName){ // 记录监听器，以便取消监听时使用
                 ConcurrentHashMap()
             }.put(listener, childListener)
             zkClient.subscribeChildChanges(serviceName, childListener)
 
-            // 发现服务：获得子节点
+            // 2 发现服务：获得子节点
             val urls = discover(serviceName)
             if(urls.isEmpty())
                 return;
 
-            // 监听子节点的数据变化
+            // 3 更新服务地址 -- 只处理单个listener，其他旧的listeners早就处理过
+            listener.updateServiceUrls(serviceName, urls)
+
+            // 4 监听子节点的数据变化
             val list = ArrayList<ZkDataListener>()
             for (url in urls){
                 val dataListener = ZkDataListener(url, listener)

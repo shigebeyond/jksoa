@@ -27,7 +27,7 @@ object RpcInvocationHandler: InvocationHandler {
     public val serializer: ISerializer = ISerializer.instance(config["serializeType"]!!)
 
     /**
-     * 处理方法调用
+     * 处理方法调用: 调用Cluster
      *
      * @param proxy 代理对象
      * @param method 方法

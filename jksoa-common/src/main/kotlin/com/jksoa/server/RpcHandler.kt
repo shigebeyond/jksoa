@@ -15,7 +15,7 @@ import com.jksoa.common.RouteException
 object RpcHandler : IRpcHandler {
 
     /**
-     * 处理请求
+     * 处理请求: 调用Provider来处理
      *
      * @param req
      * @return
@@ -23,7 +23,7 @@ object RpcHandler : IRpcHandler {
     public override fun handle(req: Request): Response {
         try{
             // 获得provider
-            val provider = ServiceLoader.getProvider(req.serviceName)
+            val provider = ProviderLoader.getProvider(req.serviceName)
             if(provider == null)
                 throw RouteException("服务[${req.serviceName}]没有提供者");
 

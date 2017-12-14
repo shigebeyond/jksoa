@@ -12,12 +12,14 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-13 3:18 PM
  */
-object Consumer: INotifyListener {
+class Cluster : INotifyListener {
 
-    /**
-     * 服务地址： <服务名 to <ip端口 to 服务地址>>
-     */
-    private val serviceUrls: ConcurrentHashMap<String, HashMap<String, Url>> = ConcurrentHashMap()
+    companion object{
+        /**
+         * 服务地址： <服务名 to <ip端口 to 服务地址>>
+         */
+        private val serviceUrls: ConcurrentHashMap<String, HashMap<String, Url>> = ConcurrentHashMap()
+    }
 
     /**
      * 更新服务地址

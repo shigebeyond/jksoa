@@ -1,5 +1,6 @@
-package com.jksoa.common
+package com.jksoa.tests
 
+import com.jksoa.common.Url
 import org.junit.Test
 
 /**

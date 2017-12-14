@@ -1,4 +1,4 @@
-package com.jksoa.tests
+package com.jksoa.common
 
 /**
  * rpc响应

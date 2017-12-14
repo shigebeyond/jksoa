@@ -1,4 +1,4 @@
-package com.jksoa.tests
+package com.jksoa.common
 
 /**
  * url与字符串互转的工具类
