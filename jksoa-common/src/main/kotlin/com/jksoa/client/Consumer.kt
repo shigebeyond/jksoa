@@ -98,7 +98,7 @@ object Consumer: INotifyListener {
      * @param url
      */
     public override fun handleUpdateUrl(url: Url): Unit{
-        //重整敷在策略
+        //重整负载策略
     }
 
 }
