@@ -1,4 +1,7 @@
-package com.jksoa.common
+package com.jksoa.server
+
+import com.jksoa.common.Request
+import com.jksoa.common.Response
 
 /**
  * Rpc请求处理者

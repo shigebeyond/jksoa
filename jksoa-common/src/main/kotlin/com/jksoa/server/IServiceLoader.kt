@@ -1,4 +1,7 @@
-package com.jksoa.common
+package com.jksoa.server
+
+import com.jksoa.common.IService
+import com.jksoa.server.Provider
 
 /**
  * 加载服务提供者
@@ -43,7 +46,7 @@ abstract class IServiceLoader {
      * @param name
      * @return
      */
-    public fun <T:IService> getService(name: String): T?{
+    public fun <T: IService> getService(name: String): T?{
         return getProvider(name)?.ref as T
     }
 
@@ -53,7 +56,7 @@ abstract class IServiceLoader {
      * @param name
      * @return
      */
-    public fun <T:IService> getService(intf: Class<T>): T?{
+    public fun <T: IService> getService(intf: Class<T>): T?{
         return getService(intf.name)
     }
 
@@ -62,7 +65,7 @@ abstract class IServiceLoader {
      *
      * @return
      */
-    public inline fun <reified T:IService> getService(): T?{
+    public inline fun <reified T: IService> getService(): T?{
         return getService(T::class.java)
     }
 }

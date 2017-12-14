@@ -1,5 +1,6 @@
-package com.jksoa.common
+package com.jksoa.registry
 
+import com.jksoa.registry.IDiscovery
 import com.jksoa.common.Url
 
 
@@ -11,7 +12,7 @@ import com.jksoa.common.Url
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 12:48 PM
  */
-interface IRegistry:IDiscovery {
+interface IRegistry: IDiscovery {
 
     /**
      * 注册服务

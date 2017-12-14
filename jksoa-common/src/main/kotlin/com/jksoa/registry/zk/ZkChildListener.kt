@@ -1,5 +1,8 @@
-package com.jksoa.common
+package com.jksoa.registry.zk
 
+import com.jksoa.common.INotifyListener
+import com.jksoa.registry.zk.nodeChilds2Urls
+import com.jksoa.common.soaLogger
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.IZkDataListener
 import org.I0Itec.zkclient.ZkClient

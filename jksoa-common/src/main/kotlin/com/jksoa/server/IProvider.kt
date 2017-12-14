@@ -1,5 +1,6 @@
-package com.jksoa.common
+package com.jksoa.server
 
+import com.jksoa.common.IService
 import java.lang.reflect.Method
 
 /**
@@ -30,7 +31,7 @@ interface IProvider {
     /**
      * 服务实例
      */
-    var ref:IService
+    var ref: IService
 
     /**
      * 根据方法签名来获得方法

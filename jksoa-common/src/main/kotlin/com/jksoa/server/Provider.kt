@@ -1,7 +1,11 @@
-package com.jksoa.common
+package com.jksoa.server
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.getSignature
+import com.jksoa.common.Url
+import com.jksoa.registry.IRegistry
+import com.jksoa.registry.zk.ZkRegistry
+import com.jksoa.common.IService
 import getIntranetHost
 import java.lang.reflect.Method
 import java.util.HashMap
@@ -35,7 +39,7 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     /**
      * 接口类
      */
-    public override val interfaces:MutableList<Class<*>> = ArrayList()
+    public override val interfaces: MutableList<Class<*>> = ArrayList()
 
     /**
      * 所有方法
@@ -45,7 +49,7 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     /**
      * 服务实例
      */
-    public lateinit override var ref:IService
+    public lateinit override var ref: IService
 
     init {
         // 创建service实例

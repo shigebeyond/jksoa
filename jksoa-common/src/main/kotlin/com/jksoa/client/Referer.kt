@@ -1,6 +1,7 @@
 package com.jksoa.common
 
 import com.jkmvc.szpower.util.RpcInvocationHandler
+import com.jksoa.common.IService
 import java.lang.reflect.Proxy
 import java.util.concurrent.ConcurrentHashMap
 

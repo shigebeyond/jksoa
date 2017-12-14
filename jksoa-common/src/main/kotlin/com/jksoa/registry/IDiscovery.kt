@@ -1,4 +1,7 @@
-package com.jksoa.common
+package com.jksoa.registry
+
+import com.jksoa.common.INotifyListener
+import com.jksoa.common.Url
 
 /**
  * 服务发现
