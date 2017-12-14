@@ -1,4 +1,4 @@
-package com.jksoa.common
+package com.jksoa.tests
 
 import org.slf4j.LoggerFactory
 

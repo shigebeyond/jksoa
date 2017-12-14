@@ -1,4 +1,4 @@
-package com.jksoa.common
+package com.jksoa.tests
 
 /**
  * 协议类型

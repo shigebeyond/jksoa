@@ -1,4 +1,4 @@
-package com.jksoa.common
+package com.jksoa.tests
 
 import com.jkmvc.common.SnowflakeIdWorker
 
