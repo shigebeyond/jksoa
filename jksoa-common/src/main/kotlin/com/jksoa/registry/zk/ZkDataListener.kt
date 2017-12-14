@@ -2,11 +2,11 @@ package com.jksoa.registry.zk
 
 import com.jksoa.common.INotifyListener
 import com.jksoa.common.Url
-import com.jksoa.common.soaLogger
+import com.jksoa.registry.registerLogger
 import org.I0Itec.zkclient.IZkDataListener
-import org.I0Itec.zkclient.ZkClient
 
 /**
+ * zk中节点数据变化监听器
  *
  * @author shijianhang
  * @create 2017-12-14 上午12:25
@@ -21,7 +21,7 @@ class ZkDataListener(public val url: Url, public val notifyListener: INotifyList
         // 处理更新地址
         url.parameters = Url.parseParams(data as String)
         notifyListener.handleUpdateUrl(url)
-        soaLogger.info("[ZookeeperRegistry] command data change: path=%s, command=%s", dataPath, data)
+        registerLogger.info("[ZookeeperRegistry] command data change: path=%s, command=%s", dataPath, data)
     }
 
     /**
@@ -32,6 +32,6 @@ class ZkDataListener(public val url: Url, public val notifyListener: INotifyList
         // 处理更新地址
         url.parameters = null
         notifyListener.handleUpdateUrl(url)
-        soaLogger.info("[ZookeeperRegistry] command deleted: path=%s", dataPath)
+        registerLogger.info("[ZookeeperRegistry] command deleted: path=%s", dataPath)
     }
 }

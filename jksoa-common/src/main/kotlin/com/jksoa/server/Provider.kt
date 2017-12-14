@@ -2,16 +2,14 @@ package com.jksoa.server
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.getSignature
+import com.jksoa.common.IService
 import com.jksoa.common.Url
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
-import com.jksoa.common.IService
 import getIntranetHost
 import java.lang.reflect.Method
 import java.util.HashMap
 import kotlin.collections.ArrayList
-import kotlin.collections.MutableList
-import kotlin.collections.MutableMap
 import kotlin.collections.set
 
 /**
@@ -28,7 +26,7 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
         /**
          * soa配置
          */
-        public val config = Config.instance("soa", "yaml")
+        public val config = Config.instance("server", "yaml")
 
         /**
          * 注册中心
@@ -49,17 +47,17 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     /**
      * 服务实例
      */
-    public lateinit override var ref: IService
+    public lateinit override var service: IService
 
     init {
         // 创建service实例
-        ref = clazz.newInstance()
+        service = clazz.newInstance()
 
         // 解析接口
         parseInterfaces()
 
         // 注册服务
-        registerServices()
+        registerService()
     }
 
     /**
@@ -79,17 +77,6 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     }
 
     /**
-     * 注册服务
-     */
-    public override fun registerServices(){
-        for(intf in interfaces){
-            val host = config.getString("host", getIntranetHost())!!
-            val url = Url(config["protocol"]!!, host, config["port"]!!, intf.name, config["parameters"]);
-            registry.register(url)
-        }
-    }
-
-    /**
      * 解析方法
      */
     private fun parseMethods() {
@@ -97,6 +84,17 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
             for (method in intf.getMethods()) {
                 methods[method.getSignature()] = method
             }
+        }
+    }
+
+    /**
+     * 注册服务
+     */
+    public override fun registerService(){
+        for(intf in interfaces){
+            val host = config.getString("host", getIntranetHost())!!
+            val url = Url(config["protocol"]!!, host, config["port"]!!, intf.name, config["parameters"]);
+            registry.register(url)
         }
     }
 

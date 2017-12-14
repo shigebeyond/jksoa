@@ -17,9 +17,9 @@ import java.lang.reflect.Proxy
 object RpcInvocationHandler: InvocationHandler {
 
     /**
-     * soa配置
+     * 客户端配置
      */
-    public val config = Config.instance("soa", "yaml")
+    public val config = Config.instance("client", "yaml")
 
     /**
      * 序列化

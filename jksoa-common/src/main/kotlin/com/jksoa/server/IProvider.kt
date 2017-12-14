@@ -31,7 +31,7 @@ interface IProvider {
     /**
      * 服务实例
      */
-    var ref: IService
+    var service: IService
 
     /**
      * 根据方法签名来获得方法
@@ -44,5 +44,5 @@ interface IProvider {
     /**
      * 注册服务
      */
-    fun registerServices()
+    fun registerService()
 }

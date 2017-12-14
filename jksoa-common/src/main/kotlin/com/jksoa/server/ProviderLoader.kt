@@ -19,7 +19,7 @@ object ProviderLoader: ClassScanner(), IProviderLoader {
     /**
      * soa配置
      */
-    public val config = Config.instance("soa", "yaml")
+    public val config = Config.instance("server", "yaml")
 
     /**
      * 服务提供者缓存

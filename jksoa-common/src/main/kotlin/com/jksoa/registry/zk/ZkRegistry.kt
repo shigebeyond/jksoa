@@ -1,17 +1,11 @@
 package com.jksoa.registry.zk
 
-import com.jkmvc.common.Config
 import com.jksoa.common.*
 import com.jksoa.registry.IRegistry
 import com.jksoa.common.SoaException
-import com.jksoa.server.ProviderLoader
-import org.I0Itec.zkclient.IZkChildListener
-import org.I0Itec.zkclient.IZkDataListener
+import com.jksoa.registry.registerLogger
 import org.I0Itec.zkclient.IZkStateListener
-import org.I0Itec.zkclient.ZkClient
 import org.apache.zookeeper.Watcher
-import java.util.ArrayList
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 基于zookeeper的注册中心
@@ -22,6 +16,11 @@ import java.util.concurrent.ConcurrentHashMap
  * @date 2017-12-12 11:22 AM
  */
 object ZkRegistry : IRegistry, ZkDiscovery() {
+
+    /**
+     * 注册过的服务地址
+     */
+    private val serviceUrls = HashSet<Url>()
 
     init {
         // 添加连接监听
@@ -34,10 +33,10 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
             }
 
             override fun handleNewSession() {
-                soaLogger.info("zkRegistry get new session handleNotify.")
+                registerLogger.info("zkRegistry get new session handleNotify.")
                 // 重新注册服务
-                for(provider in ProviderLoader.getProviders()){
-
+                for (url in serviceUrls){
+                    register(url)
                 }
             }
         }
@@ -56,6 +55,8 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
             removeNode(url)
             // 创建新节点
             createNode(url)
+            // 记录地址
+            serviceUrls.add(url)
         } catch (e: Throwable) {
             throw SoaException(String.format("Failed to discover service %s from zookeeper, cause: %s", url, e.message), e)
         }
@@ -71,6 +72,8 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
         try{
             // 删除节点
             removeNode(url)
+            // 删除地址
+            serviceUrls.remove(url)
         } catch (e: Throwable) {
             throw SoaException(String.format("Failed to discover service %s from zookeeper, cause: %s", url, e.message), e)
         }

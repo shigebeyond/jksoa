@@ -2,6 +2,7 @@ package com.jksoa.registry.zk
 
 import com.jkmvc.common.Config
 import org.I0Itec.zkclient.ZkClient
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * zk连接工厂
@@ -14,21 +15,32 @@ import org.I0Itec.zkclient.ZkClient
 object ZkClientFactory{
 
     /**
-     * zk配置
+     * 缓存zk客户端
      */
-    private val config = Config.instance("zk")
+    private val clients: ConcurrentHashMap<String, ZkClient> = ConcurrentHashMap()
 
     /**
-     * zk客户端
+     * 构建zk客户端
+     *
+     * @param name
+     * @return
      */
-    private val zkClient: ZkClient = ZkClient(config.getString("address")!!, config.getInt("sessionTimeout", 5000)!!, config.getInt("connectionTimeout", 5000)!!)
+    private fun buildClient(name: String): ZkClient {
+        // 获得zk配置
+        val config = Config.instance("zk.${name}", "yaml")
 
+        // 创建zk客户端
+        return ZkClient(config.getString("address")!!, config.getInt("sessionTimeout", 5000)!!, config.getInt("connectionTimeout", 5000)!!)
+    }
     /**
      * 获得zk连接
      *
+     * @param name
      * @return
      */
-    public fun instance(): ZkClient {
-        return zkClient
+    public fun instance(name: String = "default"): ZkClient {
+        return clients.getOrPut(name){
+            buildClient(name)
+        }
     }
 }
