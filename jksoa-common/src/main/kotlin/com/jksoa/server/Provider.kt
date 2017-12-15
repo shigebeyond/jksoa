@@ -9,8 +9,7 @@ import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
 import getIntranetHost
 import java.lang.reflect.Method
-import java.util.HashMap
-import kotlin.collections.ArrayList
+import java.util.*
 import kotlin.collections.set
 
 /**
@@ -39,57 +38,54 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     /**
      * 接口类
      */
-    public override val interfaces: MutableList<Class<out IService>> = ArrayList()
+    public override val `interface`: Class<out IService> = parseInterface()
+
+    /**
+     * 服务路径
+     */
+    public override val serviceUrl:Url = buildServiceUrl()
 
     /**
      * 所有方法
      */
-    public override val methods: MutableMap<String, Method> = HashMap<String, Method>();
+    public override val methods: MutableMap<String, Method> = parseMethods()
 
     /**
      * 服务实例
      */
-    public lateinit override var service: IService
-
-    init {
-        // 创建service实例
-        service = clazz.newInstance()
-
-        // 解析接口
-        parseInterfaces()
-
-        // 注册服务
-        registerService()
-
-        // 注册本地服务引用
-        registerLocalRefer()
-    }
+    public override var service: IService = clazz.newInstance()
 
     /**
      * 解析接口
-     *   遍历服务接口，并注册服务
+     * @return
      */
-    private fun parseInterfaces() {
-        // 遍历服务接口，并注册服务
+    private fun parseInterface(): Class<out IService> {
+        // 遍历接口
         val base = IService::class.java
-        for (intf in clazz.interfaces) {
-            // 过滤服务接口
-            if (intf != base && base.isAssignableFrom(intf)) {
-                // 记录接口
-                interfaces.add(intf as Class<out IService>)
-            }
-        }
+        return clazz.interfaces.first {
+            it != base && base.isAssignableFrom(it) // 过滤服务接口
+        } as Class<out IService>
+    }
+
+    /**
+     * 构建服务路径
+     * @return
+     */
+    private fun buildServiceUrl(): Url {
+        val host = config.getString("host", getIntranetHost())!!
+        return Url(config["protocol"]!!, host, config["port"]!!, `interface`.name, config["parameters"]);
     }
 
     /**
      * 解析方法
+     * @return
      */
-    private fun parseMethods() {
-        for(intf in interfaces){
-            for (method in intf.getMethods()) {
-                methods[method.getSignature()] = method
-            }
+    private fun parseMethods(): HashMap<String, Method> {
+        val methods = HashMap<String, Method>();
+        for (method in  `interface`.getMethods()) {
+            methods[method.getSignature()] = method
         }
+        return methods
     }
 
     /**
@@ -98,7 +94,7 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
      * @param methodSignature
      * @return
      */
-    public override fun  getMethod(methodSignature: String): Method? {
+    public override fun getMethod(methodSignature: String): Method? {
         return methods[methodSignature]
     }
 
@@ -106,21 +102,11 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
      * 注册服务
      */
     public override fun registerService(){
-        for(intf in interfaces){
-            val host = config.getString("host", getIntranetHost())!!
-            val url = Url(config["protocol"]!!, host, config["port"]!!, intf.name, config["parameters"]);
-            registry.register(url)
-        }
-    }
+        // 注册远端服务
+        registry.register(serviceUrl)
 
-    /**
-     * 注册本地服务引用
-     *   对要调用的服务，如果本地有提供，则直接调用本地的服务
-     */
-    public override fun registerLocalRefer(){
-        for(intf in interfaces){
-            Referer.addRefer(intf, service)
-        }
+        // 注册本地服务引用： 对要调用的服务，如果本地有提供，则直接调用本地的服务
+        Referer.addRefer(`interface`, service)
     }
 
     /**

@@ -91,7 +91,7 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
             zkClient.createPersistent(dir, true)
 
         // 创建节点
-        zkClient.createEphemeral(url.path, url.toString())
+        zkClient.createEphemeral(url.nodePath, url.toString())
     }
 
     /**

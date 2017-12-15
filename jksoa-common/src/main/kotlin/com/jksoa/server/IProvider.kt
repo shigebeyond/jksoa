@@ -1,6 +1,7 @@
 package com.jksoa.server
 
 import com.jksoa.common.IService
+import com.jksoa.common.Url
 import java.lang.reflect.Method
 
 /**
@@ -16,7 +17,12 @@ interface IProvider {
     /**
      * 接口类
      */
-    val interfaces: MutableList<Class<out IService>>
+    val `interface`: Class<out IService>
+
+    /**
+     * 服务路径
+     */
+    val serviceUrl: Url
 
     /**
      * 实现类
@@ -45,12 +51,6 @@ interface IProvider {
      * 注册服务
      */
     fun registerService()
-
-    /**
-     * 注册本地服务引用
-     *   对要调用的服务，如果本地有提供，则直接调用本地的服务
-     */
-    fun registerLocalRefer()
 
     /**
      * 代理服务来执行方法

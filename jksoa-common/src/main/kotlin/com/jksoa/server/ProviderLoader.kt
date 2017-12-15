@@ -56,8 +56,8 @@ object ProviderLoader: ClassScanner(), IProviderLoader {
             // 构建服务提供者
             val provider = Provider(clazz)
             // 缓存服务提供者，key是服务名，即接口类全名
-            for(intf in provider.interfaces)
-                providers[intf.name] = provider
+            val serviceName = provider.`interface`.name
+            providers[serviceName] = provider
         }
     }
 

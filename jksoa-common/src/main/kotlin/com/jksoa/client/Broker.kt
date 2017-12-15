@@ -1,5 +1,6 @@
 package com.jksoa.common
 
+import com.jkmvc.common.getRandom
 import com.jksoa.client.IBroker
 import com.jksoa.client.RpcException
 import java.util.*
@@ -128,6 +129,8 @@ object Broker: INotifyListener, IBroker {
         if(urls == null)
             throw RpcException("没有找到服务[$serviceName]")
 
-        urls.values.rand
+        // 随机找个服务提供者
+        val url = urls.values.getRandom()
+
     }
 }
