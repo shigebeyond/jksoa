@@ -2,35 +2,23 @@ package com.jksoa.protocol
 
 import com.jksoa.server.ProviderLoader
 
+
 /**
- * rpc协议
+ * rpc协议之服务器部分
  *
- * @ClassName: Protocol
+ * @ClassName: IProtocolServer
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
- */
-interface IProtocol {
-
-    companion object{
-
-        /**
-         * 根据协议类型来获得协议
-         *
-         * @param type
-         * @return
-         */
-        public fun instance(type: String): IProtocol {
-            return ProtocolType.valueOf(type).protocol
-        }
-    }
+ **/
+interface IProtocolServer: IProtocolClient {
 
     /**
-     * 服役
+     * 启动服务器
      */
-    fun serve(){
+    fun startServer(){
         // 启动服务器
-        startServer()
+        doStartServer()
         // 注册服务
         registerServices()
     }
@@ -48,5 +36,5 @@ interface IProtocol {
     /**
      * 启动服务器
      */
-    fun startServer(): Unit
+    fun doStartServer(): Unit
 }

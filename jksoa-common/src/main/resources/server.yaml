@@ -9,4 +9,4 @@ port: 8081
 parameters:
 # 5 service类所在的包路径
 servicePackages:
-    - com.jksoa.example.service
+    - com.jksoa.example.sayHello

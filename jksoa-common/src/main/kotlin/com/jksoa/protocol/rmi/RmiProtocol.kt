@@ -1,24 +1,25 @@
-package com.jksoa.protocol
+package com.jksoa.protocol.rmi
 
 import com.jkmvc.common.Config
 import com.jksoa.common.Request
 import com.jksoa.common.Response
 import com.jksoa.common.Url
+import com.jksoa.protocol.IConnection
+import com.jksoa.protocol.IProtocolServer
 import com.jksoa.server.ProviderLoader
 import com.jksoa.server.ServiceException
 import java.rmi.registry.LocateRegistry
 import javax.naming.InitialContext
 
-
 /**
- * rpc协议
+ * rmi协议
  *
  * @ClassName: Protocol
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-object RmiProtocol : IProtocol {
+object RmiProtocol : IProtocolServer {
 
     /**
      * 服务端配置
@@ -28,7 +29,7 @@ object RmiProtocol : IProtocol {
     /**
      * 启动服务器
      */
-    public override fun startServer(): Unit{
+    public override fun doStartServer(): Unit{
         try {
             // 监听端口
             LocateRegistry.createRegistry(config["port"]!!)
@@ -46,19 +47,16 @@ object RmiProtocol : IProtocol {
     }
 
     /**
-     * 发送客户端请求
+     * 客户端连接服务器
      *
      * @param url
-     * @param req
      * @return
      */
-    public fun sendClientRequest(url: Url, req: Request): Response {
+    public override fun connect(url: Url): IConnection {
         try {
-            // 初始化命名空间
-            val namingContext = InitialContext()
-            val serv = namingContext.lookup(url.toString(false))
+            return RmiConnection(url)
         } catch (e: Exception) {
-            throw ServiceException("客户端调用rmi服务失败: " + e.message)
+            throw ServiceException("客户端创建rmi连接失败: " + e.message)
         }
     }
 }

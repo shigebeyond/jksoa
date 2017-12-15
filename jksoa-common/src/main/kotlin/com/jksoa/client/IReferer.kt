@@ -21,15 +21,15 @@ abstract class IReferer {
     public abstract fun addRefer(clazz: Class<out IService>, refer: IService): Unit
 
     /**
-     * 获得服务引用
+     * 根据服务接口，来获得服务引用
      *
      * @param clazz
      * @return
      */
-    public abstract fun getRefer(clazz: Class<out IService>): IService
+    public abstract fun <T: IService> getRefer(clazz: Class<T>): T
 
     /**
-     * 获得服务引用
+     * 根据服务接口，来获得服务引用
      *
      * @return
      */

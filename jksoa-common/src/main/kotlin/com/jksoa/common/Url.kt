@@ -71,6 +71,12 @@ class Url(public var protocol: String /* 协议 */,
         get() = path
 
     /**
+     * 接口类名 = 路径 = 服务名
+     */
+    public val `interface`: Class<out IService>
+        get() = Class.forName(path) as Class<out IService>
+
+    /**
      * 节点路径
      *    格式为 路径/协议:ip:端口
      */

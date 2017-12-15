@@ -1,7 +1,9 @@
 package com.jksoa.server
 
 import com.jkmvc.common.Config
+import com.jkmvc.common.getMethodMaps
 import com.jkmvc.common.getSignature
+import com.jkmvc.common.isSuperClass
 import com.jksoa.common.IService
 import com.jksoa.common.Referer
 import com.jksoa.common.Url
@@ -44,12 +46,12 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     /**
      * 服务路径
      */
-    public override val serviceUrl:Url = buildServiceUrl()
+    public override val serviceUrl:Url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!, `interface`.name, config["parameters"]);
 
     /**
      * 所有方法
      */
-    public override val methods: MutableMap<String, Method> = parseMethods()
+    public override val methods: MutableMap<String, Method> = `interface`.getMethodMaps()
 
     /**
      * 服务实例
@@ -62,31 +64,9 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
      */
     private fun parseInterface(): Class<out IService> {
         // 遍历接口
-        val base = IService::class.java
         return clazz.interfaces.first {
-            it != base && base.isAssignableFrom(it) // 过滤服务接口
+            IService::class.java.isSuperClass(it) // 过滤服务接口
         } as Class<out IService>
-    }
-
-    /**
-     * 构建服务路径
-     * @return
-     */
-    private fun buildServiceUrl(): Url {
-        val host = config.getString("host", getIntranetHost())!!
-        return Url(config["protocol"]!!, host, config["port"]!!, `interface`.name, config["parameters"]);
-    }
-
-    /**
-     * 解析方法
-     * @return
-     */
-    private fun parseMethods(): HashMap<String, Method> {
-        val methods = HashMap<String, Method>();
-        for (method in  `interface`.getMethods()) {
-            methods[method.getSignature()] = method
-        }
-        return methods
     }
 
     /**

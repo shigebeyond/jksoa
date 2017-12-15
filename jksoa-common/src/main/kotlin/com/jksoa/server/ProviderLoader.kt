@@ -2,6 +2,7 @@ package com.jksoa.server
 
 import com.jkmvc.common.ClassScanner
 import com.jkmvc.common.Config
+import com.jkmvc.common.isSuperClass
 import com.jksoa.common.IService
 import com.jksoa.server.IProvider
 import java.io.File
@@ -52,8 +53,7 @@ object ProviderLoader: ClassScanner(), IProviderLoader {
         val clazz = Class.forName(className) as Class<IService>
         val modifiers = clazz.modifiers
         // 过滤service子类
-        val base = IService::class.java
-        if(base != clazz && base.isAssignableFrom(clazz) /* 继承IService */ && !Modifier.isAbstract(modifiers) /* 非抽象类 */ && !Modifier.isInterface(modifiers) /* 非接口 */){
+        if(IService::class.java.isSuperClass(clazz) /* 继承IService */ && !Modifier.isAbstract(modifiers) /* 非抽象类 */ && !Modifier.isInterface(modifiers) /* 非接口 */){
             // 构建服务提供者
             val provider = Provider(clazz)
             // 缓存服务提供者，key是服务名，即接口类全名

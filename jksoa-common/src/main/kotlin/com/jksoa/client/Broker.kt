@@ -4,6 +4,7 @@ import com.jkmvc.common.getRandom
 import com.jksoa.client.IBroker
 import com.jksoa.client.RpcException
 import com.jksoa.protocol.IProtocol
+import com.jksoa.protocol.IProtocolClient
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -120,10 +121,10 @@ object Broker: INotifyListener, IBroker {
         val url = pickServiceUrl(req.serviceName)
 
         // 获得协议
-        val pro = IProtocol.instance(url.protocol)
+        val client = IProtocolClient.instance(url.protocol)
 
         // 发送请求
-        return pro.send(url, req)
+        return client.sendRequest(url, req)
     }
 
     /**

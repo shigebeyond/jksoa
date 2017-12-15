@@ -43,15 +43,15 @@ object Referer: IReferer() {
     }
 
     /**
-     * 获得服务引用
+     * 根据服务接口，来获得服务引用
      *
      * @param clazz
      * @return
      */
-    public override fun getRefer(clazz: Class<out IService>): IService {
+    public override fun <T: IService> getRefer(clazz: Class<T>): T {
         return refers.getOrPut(clazz){
             createRefer(clazz)
-        }
+        } as T
     }
 
 }

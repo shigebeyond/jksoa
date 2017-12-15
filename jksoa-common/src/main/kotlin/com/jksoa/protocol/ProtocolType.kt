@@ -1,5 +1,7 @@
 package com.jksoa.protocol
 
+import com.jksoa.protocol.rmi.RmiProtocol
+
 /**
  * 协议类型
  *
@@ -10,11 +12,11 @@ package com.jksoa.protocol
  */
 public enum class ProtocolType {
     RMI{
-        override val protocol: IProtocol = RmiProtocol
+        override val protocol: IProtocolServer = RmiProtocol
     };
 
     /**
      * 获得对应的协议
      */
-    public abstract val protocol: IProtocol
+    public abstract val protocol: IProtocolServer
 }
