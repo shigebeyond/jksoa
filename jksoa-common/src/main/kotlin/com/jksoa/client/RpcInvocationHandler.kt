@@ -37,7 +37,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
      * @param method 方法
      * @param args 参数
      */
-    override fun invoke(proxy: Any, method: Method, args: Array<out Any>): Any? {
+    public override fun invoke(proxy: Any, method: Method, args: Array<Any>): Any? {
         // 封装请求
         val req = Request(`interface`, method, args)
 

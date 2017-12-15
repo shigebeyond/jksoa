@@ -1,17 +1,19 @@
 package com.jksoa.common
 
+import com.jksoa.client.IBroker
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 服务集群委托
+ * 远程服务中转器
+ *    在客户端调用中对服务集群进行均衡负载
  *
  * @ClassName: Broker
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-13 3:18 PM
  */
-object Broker: INotifyListener {
+object Broker: INotifyListener, IBroker {
 
     /**
      * 服务地址： <服务名 to <ip端口 to 服务地址>>
@@ -79,6 +81,7 @@ object Broker: INotifyListener {
      * @param url
      */
     public override fun handleAddUrl(url: Url): Unit{
+        // TODO
         //添加netty连接
     }
 
@@ -88,6 +91,7 @@ object Broker: INotifyListener {
      * @param url
      */
     public override fun handleRemoveUrl(url: Url): Unit{
+        // TODO
         //关掉netty连接
     }
 
@@ -97,16 +101,22 @@ object Broker: INotifyListener {
      * @param url
      */
     public override fun handleUpdateUrl(url: Url): Unit{
+        // TODO
         //重整负载策略
     }
 
-
-    fun call(request: Request): Response{
+    /**
+     * 调用远程方法
+     *
+     * @param req
+     * @return
+     */
+    public override fun call(req: Request): Response{
+        // TODO
         // 按负责策略来选择通道
 
         // 发送请求
 
         // 等待响应结果
-
     }
 }
