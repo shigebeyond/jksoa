@@ -2,6 +2,7 @@ package com.jkmvc.szpower.util
 
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer
+import com.jksoa.client.RpcException
 import com.jksoa.common.Broker
 import com.jksoa.common.IService
 import com.jksoa.common.Request
@@ -42,12 +43,10 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
 
         try {
             // 发送调用请求，并返回结果
-            val res = Broker.call(req)
+            return Broker.call(req)
         }catch (e: Exception){
-
+            throw RpcException("rpc调用错误：" + e.message, e)
         }
-
-        return null
     }
 
 }

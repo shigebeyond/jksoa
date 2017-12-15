@@ -1,6 +1,5 @@
 package com.jksoa.common
 
-import org.I0Itec.zkclient.IZkChildListener
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -103,6 +102,11 @@ object Broker: INotifyListener {
 
 
     fun call(request: Request): Response{
+        // 按负责策略来选择通道
+
+        // 发送请求
+
+        // 等待响应结果
 
     }
 }

@@ -6,7 +6,7 @@ import java.lang.reflect.Proxy
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 服务代理的引用
+ * 服务的引用（代理）
  *
  * @ClassName: Referer
  * @Description:
@@ -16,12 +16,12 @@ import java.util.concurrent.ConcurrentHashMap
 object Referer: IReferer() {
 
     /**
-     * 服务代理缓存
+     * 服务引用缓存
      */
     private val refers = ConcurrentHashMap<Class<*>, IService>()
 
     /**
-     * 创建服务代理
+     * 创建服务引用
      *
      * @param clazz
      * @return
@@ -31,12 +31,24 @@ object Referer: IReferer() {
     }
 
     /**
-     * 获得服务代理
+     * 添加服务引用
+     *   主要是本地服务提供者调用，添加本地服务
+     *
+     * @param clazz
+     * @param refer
+     * @return
+     */
+    public override fun addRefer(clazz: Class<out IService>, refer: IService): Unit{
+        refers[clazz] = refer
+    }
+
+    /**
+     * 获得服务引用
      *
      * @param clazz
      * @return
      */
-    public override fun getProxy(clazz: Class<out IService>): IService {
+    public override fun getRefer(clazz: Class<out IService>): IService {
         return refers.getOrPut(clazz){
             createRefer(clazz)
         }
