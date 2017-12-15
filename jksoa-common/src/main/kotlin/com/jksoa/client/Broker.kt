@@ -3,6 +3,7 @@ package com.jksoa.common
 import com.jkmvc.common.getRandom
 import com.jksoa.client.IBroker
 import com.jksoa.client.RpcException
+import com.jksoa.protocol.IProtocol
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -115,22 +116,28 @@ object Broker: INotifyListener, IBroker {
      */
     public override fun call(req: Request): Response{
         // TODO
-        // 按负责策略来选择通道
+        // 按负责策略来选择服务路径
+        val url = pickServiceUrl(req.serviceName)
 
+        // 获得协议
+        val pro = IProtocol.instance(url.protocol)
 
         // 发送请求
-
-        // 等待响应结果
-
+        return pro.send(url, req)
     }
 
+    /**
+     * 选择某个服务路径
+     *
+     * @param serviceName
+     * @return
+     */
     fun pickServiceUrl(serviceName: String): Url{
         val urls = serviceUrls[serviceName]
         if(urls == null)
             throw RpcException("没有找到服务[$serviceName]")
 
         // 随机找个服务提供者
-        val url = urls.values.getRandom()
-
+        return urls.values.getRandom()
     }
 }

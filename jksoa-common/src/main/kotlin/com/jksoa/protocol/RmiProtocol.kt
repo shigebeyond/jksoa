@@ -1,6 +1,11 @@
-package com.jksoa.server
+package com.jksoa.protocol
 
 import com.jkmvc.common.Config
+import com.jksoa.common.Request
+import com.jksoa.common.Response
+import com.jksoa.common.Url
+import com.jksoa.server.ProviderLoader
+import com.jksoa.server.ServiceException
 import java.rmi.registry.LocateRegistry
 import javax.naming.InitialContext
 
@@ -13,7 +18,7 @@ import javax.naming.InitialContext
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-object Protocol: IProtocol {
+object RmiProtocol : IProtocol {
 
     /**
      * 服务端配置
@@ -40,4 +45,20 @@ object Protocol: IProtocol {
         }
     }
 
+    /**
+     * 发送客户端请求
+     *
+     * @param url
+     * @param req
+     * @return
+     */
+    public fun sendClientRequest(url: Url, req: Request): Response {
+        try {
+            // 初始化命名空间
+            val namingContext = InitialContext()
+            val serv = namingContext.lookup(url.toString(false))
+        } catch (e: Exception) {
+            throw ServiceException("客户端调用rmi服务失败: " + e.message)
+        }
+    }
 }

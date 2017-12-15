@@ -3,6 +3,7 @@ package com.jksoa.server
 import com.jkmvc.common.ClassScanner
 import com.jkmvc.common.Config
 import com.jksoa.common.IService
+import com.jksoa.server.IProvider
 import java.io.File
 import java.lang.reflect.Modifier
 

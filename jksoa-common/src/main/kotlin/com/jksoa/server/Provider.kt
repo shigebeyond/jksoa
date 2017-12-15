@@ -5,6 +5,7 @@ import com.jkmvc.common.getSignature
 import com.jksoa.common.IService
 import com.jksoa.common.Referer
 import com.jksoa.common.Url
+import com.jksoa.server.IProvider
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
 import getIntranetHost

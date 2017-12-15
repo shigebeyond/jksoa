@@ -112,13 +112,24 @@ class Url(public var protocol: String /* 协议 */,
      * @return
      */
     public override fun toString(): String {
+        return toString(true)
+    }
+
+    /**
+     * 转为字符串
+     *    格式为 协议://ip:端口/路径?参数
+     *
+     * @param withQuery 是否带query string
+     * @return
+     */
+    public fun toString(withQuery: Boolean): String {
         // url
         val str = StringBuilder(protocol).append("://").append(host)
         if(port >= 0)
             str.append(':').append(port)
         str.append(path)
         // 参数
-        if(parameters != null){
+        if(withQuery && parameters != null){
             parameters!!.entries.joinTo(str, "&", "?"){
                 it.key + '=' + it.value
             }

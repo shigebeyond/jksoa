@@ -1,6 +1,7 @@
 package com.jksoa.server
 
 import com.jksoa.common.IService
+import com.jksoa.server.IProvider
 import com.jksoa.server.Provider
 
 /**

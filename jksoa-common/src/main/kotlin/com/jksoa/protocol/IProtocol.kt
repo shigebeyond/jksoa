@@ -1,12 +1,6 @@
-package com.jksoa.server
+package com.jksoa.protocol
 
-/**
- * 协议类型
- */
-public enum class ProtocolType {
-    JKP,
-    RMI
-}
+import com.jksoa.server.ProviderLoader
 
 /**
  * rpc协议
@@ -17,6 +11,20 @@ public enum class ProtocolType {
  * @date 2017-09-08 2:58 PM
  */
 interface IProtocol {
+
+    companion object{
+
+        /**
+         * 根据协议类型来获得协议
+         *
+         * @param type
+         * @return
+         */
+        public fun instance(type: String): IProtocol {
+            return ProtocolType.valueOf(type).protocol
+        }
+    }
+
     /**
      * 服役
      */
