@@ -3,6 +3,7 @@ package com.jksoa.server
 import com.jksoa.common.IServiceClass
 import com.jksoa.common.IService
 import com.jksoa.common.Url
+import java.io.Closeable
 import java.lang.reflect.Method
 
 /**
@@ -13,7 +14,7 @@ import java.lang.reflect.Method
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 3:48 PM
  */
-abstract class IProvider : IServiceClass() {
+abstract class IProvider : IServiceClass(), Closeable {
 
     /**
      * 服务路径

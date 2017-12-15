@@ -1,9 +1,7 @@
 package com.jksoa.registry.zk.listener
 
-import com.jksoa.common.INotifyListener
+import com.jksoa.client.INotifyListener
 import com.jksoa.common.Url
-import com.jksoa.registry.registerLogger
-import org.I0Itec.zkclient.IZkDataListener
 
 /**
  * zk中节点数据变化监听器
@@ -11,7 +9,7 @@ import org.I0Itec.zkclient.IZkDataListener
  * @author shijianhang
  * @create 2017-12-14 上午12:25
  **/
-class ZkDataListener(public val url: com.jksoa.common.Url, public val notifyListener: com.jksoa.common.INotifyListener): org.I0Itec.zkclient.IZkDataListener {
+class ZkDataListener(public val url: com.jksoa.common.Url, public val notifyListener: INotifyListener): org.I0Itec.zkclient.IZkDataListener {
 
     /**
      * 处理zk中节点数据变化事件

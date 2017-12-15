@@ -1,6 +1,8 @@
 package com.jksoa.client
 
 import com.jksoa.common.IService
+import com.jksoa.registry.IRegistry
+import com.jksoa.registry.zk.ZkRegistry
 import java.lang.reflect.Proxy
 
 /**
@@ -16,6 +18,12 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
 ): IReferer() {
 
     companion object{
+
+        /**
+         * 注册中心
+         * TODO: 支持多个配置中心, 可用组合模式
+         */
+        public val registry: IRegistry = ZkRegistry
 
         /**
          * 根据服务接口，来获得服务引用
@@ -38,6 +46,11 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
         public inline fun <reified T: IService> getRefer(): T {
             return getRefer(T::class.java)
         }
+    }
+
+    init {
+        // 监听服务变化
+        registry.subscribe(serviceName, Broker)
     }
 
 }
