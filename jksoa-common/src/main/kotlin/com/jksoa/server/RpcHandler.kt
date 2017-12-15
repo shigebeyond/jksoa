@@ -2,7 +2,7 @@ package com.jksoa.server
 
 import com.jksoa.common.Request
 import com.jksoa.common.Response
-import com.jksoa.common.RouteException
+import com.jksoa.server.ServiceException
 
 /**
  * Rpc请求处理者
@@ -25,15 +25,15 @@ object RpcHandler : IRpcHandler {
             // 获得provider
             val provider = ProviderLoader.getProvider(req.serviceName)
             if(provider == null)
-                throw RouteException("服务[${req.serviceName}]没有提供者");
+                throw ServiceException("服务[${req.serviceName}]没有提供者");
 
             // 获得方法
             val method = provider.getMethod(req.methodSignature)
             if(method == null)
-                throw RouteException("服务方法[${req.serviceName}#${req.methodSignature}]不存在");
+                throw ServiceException("服务方法[${req.serviceName}#${req.methodSignature}]不存在");
 
             // 调用方法
-            val value = method.invoke(provider.service, req.args)
+            val value = provider.call(method, req.args)
             return Response(req.id, value)
         }catch (e:Exception){
             return Response(req.id, e)

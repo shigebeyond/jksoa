@@ -16,7 +16,7 @@ interface IProvider {
     /**
      * 接口类
      */
-    val interfaces: MutableList<Class<*>>
+    val interfaces: MutableList<Class<out IService>>
 
     /**
      * 实现类
@@ -45,4 +45,19 @@ interface IProvider {
      * 注册服务
      */
     fun registerService()
+
+    /**
+     * 注册本地服务引用
+     *   对要调用的服务，如果本地有提供，则直接调用本地的服务
+     */
+    fun registerLocalRefer()
+
+    /**
+     * 代理服务来执行方法
+     *
+     * @param method
+     * @param args
+     * @return
+     */
+    fun call(method: Method, args: Array<Any>): Any?
 }

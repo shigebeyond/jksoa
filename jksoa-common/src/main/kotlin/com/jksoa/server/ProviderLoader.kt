@@ -17,9 +17,9 @@ import java.lang.reflect.Modifier
 object ProviderLoader: ClassScanner(), IProviderLoader {
 
     /**
-     * soa配置
+     * 服务端配置
      */
-    public val config = Config.instance("server", "yaml")
+    private val config = Config.instance("server", "yaml")
 
     /**
      * 服务提供者缓存
@@ -76,6 +76,6 @@ object ProviderLoader: ClassScanner(), IProviderLoader {
      * @return
      */
     public override fun getProviders(): Collection<IProvider> {
-        return providers.values
+        return providers.values.toSet()
     }
 }

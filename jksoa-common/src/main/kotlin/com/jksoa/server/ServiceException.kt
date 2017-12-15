@@ -1,9 +1,9 @@
-package com.jksoa.common
+package com.jksoa.server
 
 /**
- * 路由异常
+ * 服务异常
  */
-class RouteException : RuntimeException {
+class ServiceException : RuntimeException {
     constructor(message: String) : super(message) {
     }
 

@@ -3,6 +3,7 @@ package com.jksoa.server
 import com.jkmvc.common.Config
 import com.jkmvc.common.getSignature
 import com.jksoa.common.IService
+import com.jksoa.common.Referer
 import com.jksoa.common.Url
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
@@ -24,12 +25,13 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
 
     companion object{
         /**
-         * soa配置
+         * 服务端配置
          */
         public val config = Config.instance("server", "yaml")
 
         /**
          * 注册中心
+         * TODO: 支持多个配置中心, 可用组合模式
          */
         public val registry: IRegistry = ZkRegistry
     }
@@ -37,7 +39,7 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     /**
      * 接口类
      */
-    public override val interfaces: MutableList<Class<*>> = ArrayList()
+    public override val interfaces: MutableList<Class<out IService>> = ArrayList()
 
     /**
      * 所有方法
@@ -58,6 +60,9 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
 
         // 注册服务
         registerService()
+
+        // 注册本地服务引用
+        registerLocalRefer()
     }
 
     /**
@@ -71,7 +76,7 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
             // 过滤服务接口
             if (intf != base && base.isAssignableFrom(intf)) {
                 // 记录接口
-                interfaces.add(intf)
+                interfaces.add(intf as Class<out IService>)
             }
         }
     }
@@ -88,6 +93,16 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     }
 
     /**
+     * 根据方法签名来获得方法
+     *
+     * @param methodSignature
+     * @return
+     */
+    public override fun  getMethod(methodSignature: String): Method? {
+        return methods[methodSignature]
+    }
+
+    /**
      * 注册服务
      */
     public override fun registerService(){
@@ -99,13 +114,25 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     }
 
     /**
-     * 根据方法签名来获得方法
+     * 注册本地服务引用
+     *   对要调用的服务，如果本地有提供，则直接调用本地的服务
+     */
+    public override fun registerLocalRefer(){
+        for(intf in interfaces){
+            Referer.addRefer(intf, service)
+        }
+    }
+
+    /**
+     * 代理服务来执行方法
      *
-     * @param methodSignature
+     * @param method
+     * @param args
      * @return
      */
-    public override fun  getMethod(methodSignature: String): Method? {
-        return methods[methodSignature]
+    public override fun call(method: Method, args: Array<Any>): Any? {
+        // TODO: 调用filter
+        return method.invoke(service, args)
     }
 
 }
