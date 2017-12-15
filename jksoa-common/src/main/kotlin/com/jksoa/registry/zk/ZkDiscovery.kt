@@ -68,7 +68,7 @@ open class ZkDiscovery {
                 ConcurrentHashMap()
             }.put(listener, list)
         } catch (e: Throwable) {
-            throw RegistryException(String.format("Failed to discover service %s from zookeeper, cause: %s", serviceName, e.message), e)
+            throw RegistryException("发现服务[$serviceName]失败：${e.message}", e)
         }
     }
 
@@ -88,7 +88,7 @@ open class ZkDiscovery {
                 zkClient.unsubscribeDataChanges(path, dataListener)
             }
         } catch (e: Throwable) {
-            throw RegistryException(String.format("Failed to discover service %s from zookeeper, cause: %s", serviceName, e.message), e)
+            throw RegistryException("发现服务[$serviceName]失败：${e.message}", e)
         }
     }
 
@@ -107,7 +107,7 @@ open class ZkDiscovery {
 
             return zkClient.nodeChilds2Urls(serviceName, currentChilds)
         } catch (e: Throwable) {
-            throw RegistryException(String.format("Failed to discover service %s from zookeeper, cause: %s", serviceName, e.message), e)
+            throw RegistryException("发现服务[$serviceName]失败：${e.message}", e)
         }
 
     }
