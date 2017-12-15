@@ -4,9 +4,11 @@ import com.jkmvc.common.getRandom
 import com.jksoa.common.Request
 import com.jksoa.common.Response
 import com.jksoa.common.Url
-import com.jksoa.protocol.IProtocolClient
+import com.jksoa.protocol.IConnection
+import com.jksoa.protocol.connect
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.HashMap
 
 /**
  * 远程服务中转器
@@ -20,9 +22,9 @@ import java.util.concurrent.ConcurrentHashMap
 object Broker: INotifyListener, IBroker {
 
     /**
-     * 服务地址： <服务名 to <ip端口 to 服务地址>>
+     * 服务地址： <服务名 to <ip端口 to 连接>>
      */
-    private val serviceUrls: ConcurrentHashMap<String, HashMap<String, Url>> = ConcurrentHashMap()
+    private val serviceUrls: ConcurrentHashMap<String, HashMap<String, IConnection>> = ConcurrentHashMap()
 
     /**
      * 更新服务地址
@@ -31,8 +33,8 @@ object Broker: INotifyListener, IBroker {
      * @param urls 服务地址
      */
     public override fun updateServiceUrls(serviceName: String, urls: List<Url>){
-        var addUrls:Set<String> = emptySet() // 新加的url
-        var removeUrls:Set<String> = emptySet() // 新加的url
+        var addKeys:Set<String> = emptySet() // 新加的url
+        var removeKeys:Set<String> = emptySet() // 新加的url
         var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
 
         // 构建新的服务地址
@@ -43,60 +45,42 @@ object Broker: INotifyListener, IBroker {
         }
 
         // 获得旧的服务地址
-        val oldUrls = serviceUrls[serviceName]
+        var oldUrls:HashMap<String, IConnection> = serviceUrls.getOrPut(serviceName){
+            HashMap()
+        }
 
         // 比较新旧服务地址，分别获得增删改的地址
-        if(oldUrls != null){
+        if(oldUrls.isEmpty()) {
+            // 全是新加地址
+            addKeys = newUrls.keys
+        }else{
             // 获得新加的地址
-            addUrls = newUrls.keys.subtract(oldUrls.keys)
+            addKeys = newUrls.keys.subtract(oldUrls.keys)
+
             // 获得删除的地址
-            removeUrls = oldUrls.keys.subtract(newUrls.keys)
+            removeKeys = oldUrls.keys.subtract(newUrls.keys)
+
             // 获得更新的地址
             for(key in newUrls.keys.intersect(oldUrls.keys)){
-                if(newUrls[key] != oldUrls[key])
+                if(newUrls[key] != oldUrls[key]!!.url)
                     updateUrls.add(newUrls[key]!!)
             }
-        }else{
-            addUrls = newUrls.keys
         }
 
         // 新加的地址
-        for (key in addUrls){
-            handleAddUrl(newUrls[key]!!)
+        for (key in addKeys){
+            oldUrls[key] = newUrls[key]!!.connect() // 创建连接
         }
 
         // 删除的地址
-        for(key in removeUrls){
-            handleRemoveUrl(oldUrls!![key]!!)
+        for(key in removeKeys){
+            oldUrls[key]!!.close() // 关闭连接
         }
 
         // 更新的地址
         for(url in updateUrls) {
             handleUpdateUrl(url)
         }
-
-        // 保存新的服务地址
-        serviceUrls[serviceName] = newUrls
-    }
-
-    /**
-     * 处理新加地址
-     *
-     * @param url
-     */
-    public override fun handleAddUrl(url: Url): Unit{
-        // TODO
-        //添加netty连接
-    }
-
-    /**
-     * 处理删除地址
-     *
-     * @param url
-     */
-    public override fun handleRemoveUrl(url: Url): Unit{
-        // TODO
-        //关掉netty连接
     }
 
     /**
@@ -117,28 +101,25 @@ object Broker: INotifyListener, IBroker {
      */
     public override fun call(req: Request): Response {
         // TODO
-        // 按负责策略来选择服务路径
-        val url = pickServiceUrl(req.serviceName)
-
-        // 获得协议
-        val client = IProtocolClient.instance(url.protocol)
+        // 按负责策略来选择连接
+        val conn = select(req.serviceName)
 
         // 发送请求
-        return client.sendRequest(url, req)
+        return conn.send(req)
     }
 
     /**
-     * 选择某个服务路径
+     * 选择某个连接
      *
      * @param serviceName
      * @return
      */
-    fun pickServiceUrl(serviceName: String): Url{
+    fun select(serviceName: String): IConnection {
         val urls = serviceUrls[serviceName]
         if(urls == null)
             throw RpcException("没有找到服务[$serviceName]")
 
-        // 随机找个服务提供者
+        // 随机找个连接
         return urls.values.getRandom()
     }
 }

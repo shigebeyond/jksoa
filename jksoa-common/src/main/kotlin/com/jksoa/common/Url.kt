@@ -6,16 +6,16 @@ package com.jksoa.common
  * @author shijianhang
  * @create 2017-12-12 下午10:27
  **/
-class Url(public var protocol: String /* 协议 */,
+class Url(override var protocol: String /* 协议 */,
 
-          public var host: String /* ip */,
+          override var host: String /* ip */,
 
-          public var port: Int /* 端口 */,
+          override var port: Int /* 端口 */,
 
-          public var path: String /* 路径 = 服务名 = 接口类名 */ = "",
+          override var path: String /* 路径 = 服务名 = 接口类名 */ = "",
 
-          public var parameters: MutableMap<String, String>? = null /* 参数 */
-) {
+          override var parameters: MutableMap<String, String>? = null /* 参数 */
+) : IUrl {
 
     /**
      * 解析url字符串
@@ -63,27 +63,6 @@ class Url(public var protocol: String /* 协议 */,
             return params
         }
     }
-
-    /**
-     * 服务名 = 路径 = 接口类名
-     */
-    public val serviceName: String
-        get() = path
-
-    /**
-     * 接口类名 = 路径 = 服务名
-     */
-    public val `interface`: Class<out IService>
-        get() = Class.forName(path) as Class<out IService>
-
-    /**
-     * 节点路径
-     *    格式为 路径/协议:ip:端口
-     */
-    public val nodePath: String
-        get(){
-            return "$path/$protocol:$host:$port"
-        }
 
     /**
      * 解析url
