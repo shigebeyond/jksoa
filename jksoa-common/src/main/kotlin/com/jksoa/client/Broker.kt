@@ -1,6 +1,7 @@
 package com.jksoa.common
 
 import com.jksoa.client.IBroker
+import com.jksoa.client.RpcException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -115,8 +116,18 @@ object Broker: INotifyListener, IBroker {
         // TODO
         // 按负责策略来选择通道
 
+
         // 发送请求
 
         // 等待响应结果
+
+    }
+
+    fun pickServiceUrl(serviceName: String): Url{
+        val urls = serviceUrls[serviceName]
+        if(urls == null)
+            throw RpcException("没有找到服务[$serviceName]")
+
+        urls.values.rand
     }
 }

@@ -80,9 +80,9 @@ open class ZkDiscovery {
      */
     public fun unsubscribe(serviceName: String, listener: INotifyListener){
         try{
-            // 取消监听子节点
+            // 1 取消监听子节点
             zkClient.unsubscribeChildChanges(serviceName, childListeners[serviceName]!![listener]!!)
-            // 取消监听子节点的数据变化
+            // 2 取消监听子节点的数据变化
             for(dataListener in dataListeners[serviceName]!![listener]!!){
                 val path = dataListener.url.nodePath
                 zkClient.unsubscribeDataChanges(path, dataListener)
