@@ -1,19 +1,15 @@
 package com.jksoa.server
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.getMethodMaps
-import com.jkmvc.common.getSignature
 import com.jkmvc.common.isSuperClass
+import com.jksoa.client.Referer
+import com.jksoa.client.RefererLoader
 import com.jksoa.common.IService
-import com.jksoa.common.Referer
 import com.jksoa.common.Url
-import com.jksoa.server.IProvider
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
 import getIntranetHost
 import java.lang.reflect.Method
-import java.util.*
-import kotlin.collections.set
 
 /**
  * 服务提供者
@@ -23,7 +19,7 @@ import kotlin.collections.set
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 3:48 PM
  */
-class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvider {
+class Provider(public override val clazz:Class<out IService> /* 实现类 */) : IProvider() {
 
     companion object{
         /**
@@ -49,14 +45,9 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     public override val serviceUrl:Url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!, `interface`.name, config["parameters"]);
 
     /**
-     * 所有方法
-     */
-    public override val methods: MutableMap<String, Method> = `interface`.getMethodMaps()
-
-    /**
      * 服务实例
      */
-    public override var service: IService = clazz.newInstance()
+    public override val service: IService = clazz.newInstance()
 
     /**
      * 解析接口
@@ -70,16 +61,6 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
     }
 
     /**
-     * 根据方法签名来获得方法
-     *
-     * @param methodSignature
-     * @return
-     */
-    public override fun getMethod(methodSignature: String): Method? {
-        return methods[methodSignature]
-    }
-
-    /**
      * 注册服务
      */
     public override fun registerService(){
@@ -87,7 +68,9 @@ class Provider(override val clazz:Class<out IService> /* 实现类 */) : IProvid
         registry.register(serviceUrl)
 
         // 注册本地服务引用： 对要调用的服务，如果本地有提供，则直接调用本地的服务
-        Referer.addRefer(`interface`, service)
+        val serviceName = `interface`.name
+        val localReferer = Referer(`interface`, service /* 本地服务 */) // 本地服务的引用
+        RefererLoader.add(serviceName, localReferer)
     }
 
     /**

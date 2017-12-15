@@ -28,7 +28,7 @@ interface IProtocolServer: IProtocolClient {
      */
     fun registerServices(){
         // 对每个服务提供者，来注册服务
-        for(provider in ProviderLoader.getProviders()){
+        for(provider in ProviderLoader.getAll()){
             provider.registerService()
         }
     }

@@ -1,4 +1,6 @@
-package com.jksoa.common
+package com.jksoa.client
+
+import com.jksoa.common.Url
 
 /**
  * 通知服务地址变化

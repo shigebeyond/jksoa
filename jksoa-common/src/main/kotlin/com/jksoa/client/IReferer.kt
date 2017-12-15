@@ -1,4 +1,6 @@
-package com.jksoa.common
+package com.jksoa.client
+
+import com.jksoa.common.IServiceClass
 
 /**
  * 服务的引用（代理）
@@ -8,32 +10,5 @@ package com.jksoa.common
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 9:52 AM
  */
-abstract class IReferer {
-
-    /**
-     * 添加服务引用
-     *    主要是本地服务提供者调用，添加本地服务
-     *
-     * @param clazz
-     * @param refer
-     * @return
-     */
-    public abstract fun addRefer(clazz: Class<out IService>, refer: IService): Unit
-
-    /**
-     * 根据服务接口，来获得服务引用
-     *
-     * @param clazz
-     * @return
-     */
-    public abstract fun <T: IService> getRefer(clazz: Class<T>): T
-
-    /**
-     * 根据服务接口，来获得服务引用
-     *
-     * @return
-     */
-    public inline fun <reified T: IService> getRefer(): T {
-        return getRefer(T::class.java) as T
-    }
+abstract class IReferer: IServiceClass() {
 }

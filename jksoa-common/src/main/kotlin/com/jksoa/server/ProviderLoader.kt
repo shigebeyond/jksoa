@@ -1,34 +1,25 @@
 package com.jksoa.server
 
-import com.jkmvc.common.ClassScanner
 import com.jkmvc.common.Config
-import com.jkmvc.common.isSuperClass
 import com.jksoa.common.IService
-import com.jksoa.server.IProvider
-import java.io.File
+import com.jksoa.common.ServiceClassLoader
 import java.lang.reflect.Modifier
 
 /**
  * 加载服务提供者
  *
- * @ClassName:ServiceLoader
+ * @ClassName:ProviderLoader
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM
  */
-object ProviderLoader: ClassScanner(), IProviderLoader {
+object ProviderLoader: ServiceClassLoader<IProvider>() {
 
     /**
      * 服务端配置
      */
     private val config = Config.instance("server", "yaml")
 
-    /**
-     * 服务提供者缓存
-     *   key为服务名，即接口类全名
-     *   value为提供者
-     */
-    private val providers:MutableMap<String, Provider> = HashMap()
 
     init{
         // 加载配置的包路径
@@ -38,45 +29,18 @@ object ProviderLoader: ClassScanner(), IProviderLoader {
     }
 
     /**
-     * 收集Service类
+     * 收集service类
      *
-     * @param relativePath 类文件相对路径
+     * @param clazz
+     * @return
      */
-    public override fun collectClass(relativePath: String): Unit{
-        // 过滤service的类文件
-        if(!relativePath.endsWith("service.class"))
-            return
-
-        // 获得类名
-        val className = relativePath.substringBefore(".class").replace(File.separatorChar, '.')
-        // 获得类
-        val clazz = Class.forName(className) as Class<IService>
+    public override fun collectServiceClass(clazz: Class<IService>): Provider? {
         val modifiers = clazz.modifiers
-        // 过滤service子类
-        if(IService::class.java.isSuperClass(clazz) /* 继承IService */ && !Modifier.isAbstract(modifiers) /* 非抽象类 */ && !Modifier.isInterface(modifiers) /* 非接口 */){
-            // 构建服务提供者
-            val provider = Provider(clazz)
-            // 缓存服务提供者，key是服务名，即接口类全名
-            val serviceName = provider.`interface`.name
-            providers[serviceName] = provider
+        if(!Modifier.isAbstract(modifiers) /* 非抽象类 */ && !Modifier.isInterface(modifiers) /* 非接口 */) {
+            return Provider(clazz) // 服务提供者
         }
+
+        return null
     }
 
-    /**
-     * 根据服务名来获得服务提供者
-     *
-     * @param name
-     * @return
-     */
-    public override fun getProvider(name: String): IProvider?{
-        return providers[name]
-    }
-
-    /**
-     * 获得所有的服务提供者
-     * @return
-     */
-    public override fun getProviders(): Collection<IProvider> {
-        return providers.values.toSet()
-    }
 }

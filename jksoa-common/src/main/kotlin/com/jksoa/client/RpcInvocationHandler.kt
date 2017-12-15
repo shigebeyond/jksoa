@@ -1,14 +1,11 @@
-package com.jkmvc.szpower.util
+package com.jksoa.client
 
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer
-import com.jksoa.client.RpcException
-import com.jksoa.common.Broker
 import com.jksoa.common.IService
 import com.jksoa.common.Request
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
-import java.lang.reflect.Proxy
 
 /**
  * rpc调用的代理实现

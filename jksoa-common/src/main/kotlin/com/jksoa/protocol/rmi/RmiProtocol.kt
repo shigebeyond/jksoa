@@ -1,8 +1,6 @@
 package com.jksoa.protocol.rmi
 
 import com.jkmvc.common.Config
-import com.jksoa.common.Request
-import com.jksoa.common.Response
 import com.jksoa.common.Url
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.IProtocolServer
@@ -37,7 +35,7 @@ object RmiProtocol : IProtocolServer {
             // 初始化命名空间
             val namingContext = InitialContext()
             // 向命名空间注册远程服务实例
-            for (provider in ProviderLoader.getProviders()){
+            for (provider in ProviderLoader.getAll()){
                 // 注册url： rmi://localhost:1099/com.jksoa.test.HelloService
                 namingContext.rebind(provider.serviceUrl.toString(), provider.service)
             }

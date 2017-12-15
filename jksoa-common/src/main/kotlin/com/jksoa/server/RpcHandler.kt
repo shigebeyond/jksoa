@@ -2,7 +2,6 @@ package com.jksoa.server
 
 import com.jksoa.common.Request
 import com.jksoa.common.Response
-import com.jksoa.server.ServiceException
 
 /**
  * Rpc请求处理者
@@ -23,7 +22,7 @@ object RpcHandler : IRpcHandler {
     public override fun handle(req: Request): Response {
         try{
             // 获得provider
-            val provider = ProviderLoader.getProvider(req.serviceName)
+            val provider = ProviderLoader.get(req.serviceName)
             if(provider == null)
                 throw ServiceException("服务[${req.serviceName}]没有提供者");
 

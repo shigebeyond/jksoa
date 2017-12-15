@@ -1,15 +1,11 @@
 package com.jksoa.protocol.rmi
 
-import com.jkmvc.common.isSuperClass
-import com.jksoa.common.IService
+import com.jksoa.client.RefererLoader
+import com.jksoa.client.RpcException
 import com.jksoa.common.Request
 import com.jksoa.common.Response
 import com.jksoa.common.Url
 import com.jksoa.protocol.IConnection
-import com.jksoa.server.ServiceException
-import java.lang.reflect.Method
-import java.util.HashMap
-import java.util.concurrent.ConcurrentHashMap
 import javax.naming.InitialContext
 
 /**
@@ -21,13 +17,6 @@ import javax.naming.InitialContext
  * @date 2017-09-08 2:58 PM
  */
 class RmiConnection(url: Url): IConnection(url){
-
-    companion object{
-        /**
-         * 方法
-         */
-        private val methods: ConcurrentHashMap<String, HashMap<String, Method>> = ConcurrentHashMap()
-    }
 
     /**
      * 命名空间
@@ -46,6 +35,23 @@ class RmiConnection(url: Url): IConnection(url){
      * @return
      */
     public override fun send(req: Request): Response {
+        try{
+            // 获得referer
+            val referer = RefererLoader.get(req.serviceName)
+            if(referer == null)
+                throw RpcException("服务[${req.serviceName}]没有提供者");
+
+            // 获得方法
+            val method = referer.getMethod(req.methodSignature)
+            if(method == null)
+                throw RpcException("服务方法[${req.serviceName}#${req.methodSignature}]不存在");
+
+            // 调用远程对象的方法
+            val value = method.invoke(remoteObject, req.args)
+            return Response(req.id, value)
+        }catch (e:Exception){
+            return Response(req.id, e)
+        }
     }
 
     /**

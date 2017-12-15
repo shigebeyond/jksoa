@@ -1,7 +1,6 @@
 package com.jksoa.registry.zk
 
-import com.jksoa.common.INotifyListener
-import com.jksoa.registry.zk.RegistryException
+import com.jksoa.client.INotifyListener
 import com.jksoa.common.Url
 import com.jksoa.registry.zk.common.ZkClientFactory
 import com.jksoa.registry.zk.common.nodeChilds2Urls

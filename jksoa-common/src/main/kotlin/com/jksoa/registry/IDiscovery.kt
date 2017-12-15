@@ -1,6 +1,6 @@
 package com.jksoa.registry
 
-import com.jksoa.common.INotifyListener
+import com.jksoa.client.INotifyListener
 import com.jksoa.common.Url
 
 /**

@@ -1,6 +1,6 @@
 package com.jksoa.tests
 
-import com.jksoa.common.Referer
+import com.jksoa.client.Referer
 import com.jksoa.common.Url
 import com.jksoa.tests.rmi.IHelloService
 import org.junit.Test

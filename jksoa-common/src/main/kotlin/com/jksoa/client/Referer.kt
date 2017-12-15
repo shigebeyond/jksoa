@@ -1,9 +1,7 @@
-package com.jksoa.common
+package com.jksoa.client
 
-import com.jkmvc.szpower.util.RpcInvocationHandler
 import com.jksoa.common.IService
 import java.lang.reflect.Proxy
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 服务的引用（代理）
@@ -13,45 +11,33 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 9:52 AM
  */
-object Referer: IReferer() {
+class Referer(public override val `interface`:Class<out IService> /* 接口类 */,
+              public override val service: IService = Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(`interface`), RpcInvocationHandler(`interface`)) as IService /* 服务实例，默认是服务代理，但在服务端可指定本地服务实例 */
+): IReferer() {
 
-    /**
-     * 服务引用缓存
-     */
-    private val refers = ConcurrentHashMap<Class<*>, IService>()
+    companion object{
 
-    /**
-     * 创建服务引用
-     *
-     * @param clazz
-     * @return
-     */
-    private fun createRefer(clazz: Class<out IService>): IService {
-        return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(clazz), RpcInvocationHandler(clazz)) as IService
-    }
+        /**
+         * 根据服务接口，来获得服务引用
+         *
+         * @param clazz
+         * @return
+         */
+        public fun <T: IService> getRefer(clazz: Class<T>): T {
+            val referer = RefererLoader.get(clazz.name)
+            if(referer == null)
+                throw RpcException("未加载服务: " + clazz.name);
+            return referer.service as T
+        }
 
-    /**
-     * 添加服务引用
-     *   主要是本地服务提供者调用，添加本地服务
-     *
-     * @param clazz
-     * @param refer
-     * @return
-     */
-    public override fun addRefer(clazz: Class<out IService>, refer: IService): Unit{
-        refers[clazz] = refer
-    }
-
-    /**
-     * 根据服务接口，来获得服务引用
-     *
-     * @param clazz
-     * @return
-     */
-    public override fun <T: IService> getRefer(clazz: Class<T>): T {
-        return refers.getOrPut(clazz){
-            createRefer(clazz)
-        } as T
+        /**
+         * 根据服务接口，来获得服务引用
+         *
+         * @return
+         */
+        public inline fun <reified T: IService> getRefer(): T {
+            return getRefer(T::class.java)
+        }
     }
 
 }
