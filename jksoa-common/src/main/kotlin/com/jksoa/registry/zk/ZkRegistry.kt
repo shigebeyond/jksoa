@@ -1,8 +1,8 @@
 package com.jksoa.registry.zk
 
-import com.jksoa.common.*
+import com.jksoa.registry.zk.RegistryException
+import com.jksoa.common.Url
 import com.jksoa.registry.IRegistry
-import com.jksoa.common.SoaException
 import com.jksoa.registry.registerLogger
 import org.I0Itec.zkclient.IZkStateListener
 import org.apache.zookeeper.Watcher
@@ -34,7 +34,7 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
 
             override fun handleNewSession() {
                 registerLogger.info("zkRegistry get new session handleNotify.")
-                // 重新注册服务
+                // 重新注册服务（都是本地自己提供的服务）
                 for (url in serviceUrls){
                     register(url)
                 }
@@ -58,7 +58,7 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
             // 记录地址
             serviceUrls.add(url)
         } catch (e: Throwable) {
-            throw SoaException(String.format("Failed to discover service %s from zookeeper, cause: %s", url, e.message), e)
+            throw RegistryException(String.format("Failed to discover service %s from zookeeper, cause: %s", url, e.message), e)
         }
     }
 
@@ -75,7 +75,7 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
             // 删除地址
             serviceUrls.remove(url)
         } catch (e: Throwable) {
-            throw SoaException(String.format("Failed to discover service %s from zookeeper, cause: %s", url, e.message), e)
+            throw RegistryException(String.format("Failed to discover service %s from zookeeper, cause: %s", url, e.message), e)
         }
     }
 

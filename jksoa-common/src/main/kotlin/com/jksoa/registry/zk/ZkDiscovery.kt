@@ -1,7 +1,7 @@
 package com.jksoa.registry.zk
 
 import com.jksoa.common.INotifyListener
-import com.jksoa.common.SoaException
+import com.jksoa.registry.zk.RegistryException
 import com.jksoa.common.Url
 import com.jksoa.registry.zk.common.ZkClientFactory
 import com.jksoa.registry.zk.common.nodeChilds2Urls
@@ -68,7 +68,7 @@ open class ZkDiscovery {
                 ConcurrentHashMap()
             }.put(listener, list)
         } catch (e: Throwable) {
-            throw SoaException(String.format("Failed to discover service %s from zookeeper, cause: %s", serviceName, e.message), e)
+            throw RegistryException(String.format("Failed to discover service %s from zookeeper, cause: %s", serviceName, e.message), e)
         }
     }
 
@@ -88,7 +88,7 @@ open class ZkDiscovery {
                 zkClient.unsubscribeDataChanges(path, dataListener)
             }
         } catch (e: Throwable) {
-            throw SoaException(String.format("Failed to discover service %s from zookeeper, cause: %s", serviceName, e.message), e)
+            throw RegistryException(String.format("Failed to discover service %s from zookeeper, cause: %s", serviceName, e.message), e)
         }
     }
 
@@ -107,7 +107,7 @@ open class ZkDiscovery {
 
             return zkClient.nodeChilds2Urls(serviceName, currentChilds)
         } catch (e: Throwable) {
-            throw SoaException(String.format("Failed to discover service %s from zookeeper, cause: %s", serviceName, e.message), e)
+            throw RegistryException(String.format("Failed to discover service %s from zookeeper, cause: %s", serviceName, e.message), e)
         }
 
     }
