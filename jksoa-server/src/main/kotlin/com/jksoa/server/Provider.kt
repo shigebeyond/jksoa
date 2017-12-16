@@ -7,6 +7,7 @@ import com.jksoa.client.Referer
 import com.jksoa.client.RefererLoader
 import com.jksoa.common.IService
 import com.jksoa.common.Url
+import com.jksoa.common.serverLogger
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
 import getIntranetHost
@@ -66,10 +67,11 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
      *   不在 Provider 初始化时注册，递延在启动服务器后注册，因此不要暴露给方法
      */
     public override fun registerService(){
-        // 注册远端服务
+        serverLogger.info("Provider注册服务: " + serviceUrl)
+        // 1 注册注册中心的服务
         registry.register(serviceUrl)
 
-        // 注册本地服务引用： 对要调用的服务，如果本地有提供，则直接调用本地的服务
+        // 2 注册本地服务引用： 对要调用的服务，如果本地有提供，则直接调用本地的服务
         val serviceName = `interface`.name
         val localReferer = Referer(`interface`, service /* 本地服务 */) // 本地服务的引用
         RefererLoader.add(serviceName, localReferer)
@@ -79,7 +81,7 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
      * 注销服务
      */
     public override fun close() {
-        // 注销远端服务
+        serverLogger.info("Provider.close(): 注销服务")
         registry.unregister(serviceUrl)
     }
 

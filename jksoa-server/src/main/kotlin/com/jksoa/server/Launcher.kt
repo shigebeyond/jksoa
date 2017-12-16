@@ -1,6 +1,7 @@
 package com.jksoa.server
 
 import com.jkmvc.common.Config
+import com.jksoa.common.serverLogger
 import com.jksoa.protocol.IProtocolServer
 
 /**
@@ -18,9 +19,11 @@ object Launcher {
         // 获得服务端配置
         val config = Config.instance("server", "yaml")
         // 获得指定的协议的服务实例
-        val pro = IProtocolServer.instance(config["protocol"]!!)
+        val protocol: String = config["protocol"]!!
+        val server = IProtocolServer.instance(protocol)
         // 启动服务
-        pro.start()
+        server.start()
+        serverLogger.info("Launcher启动[$protocol]协议服务")
     }
 
 }
