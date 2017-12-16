@@ -37,8 +37,8 @@ object ZkClientFactory{
      * @return
      */
     public fun instance(name: String = "default"): org.I0Itec.zkclient.ZkClient {
-        return com.jksoa.registry.zk.common.ZkClientFactory.clients.getOrPut(name){
-            com.jksoa.registry.zk.common.ZkClientFactory.buildClient(name)
+        return clients.getOrPut(name){
+            buildClient(name)
         }
     }
 }
