@@ -1,8 +1,8 @@
 package com.jksoa.registry.zk
 
 import com.jksoa.common.Url
+import com.jksoa.common.registerLogger
 import com.jksoa.registry.IRegistry
-import com.jksoa.registry.registerLogger
 import org.I0Itec.zkclient.IZkStateListener
 import org.apache.zookeeper.Watcher
 

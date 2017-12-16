@@ -1,8 +1,8 @@
 package com.jksoa.registry.zk.listener
 
 import com.jksoa.common.Url
+import com.jksoa.common.registerLogger
 import com.jksoa.registry.IDiscoveryListener
-import com.jksoa.registry.registerLogger
 
 /**
  * zk中节点数据变化监听器

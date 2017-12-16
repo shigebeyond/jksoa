@@ -5,6 +5,7 @@ import com.jkmvc.common.getRandom
 import com.jksoa.common.Request
 import com.jksoa.common.Response
 import com.jksoa.common.Url
+import com.jksoa.common.clientLogger
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.connect
 import com.jksoa.registry.IDiscoveryListener
@@ -41,6 +42,7 @@ object Broker: IDiscoveryListener, IBroker {
      * @param urls 服务地址
      */
     public override fun handleServiceUrlsChange(serviceName: String, urls: List<Url>){
+        clientLogger.debug("Broker处理服务[$serviceName]地址变化: " + urls)
         var addKeys:Set<String> = emptySet() // 新加的url
         var removeKeys:Set<String> = emptySet() // 新加的url
         var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
@@ -76,16 +78,19 @@ object Broker: IDiscoveryListener, IBroker {
 
         // 5 新加的地址
         for (key in addKeys){
+            clientLogger.debug("Broker处理服务[$serviceName]新加地址: " + newUrls[key])
             oldUrls[key] = newUrls[key]!!.connect() // 创建连接
         }
 
         // 6 删除的地址
         for(key in removeKeys){
+            clientLogger.debug("Broker处理服务[$serviceName]删除地址: " + oldUrls[key])
             oldUrls[key]!!.close() // 关闭连接
         }
 
         // 7 更新的地址
         for(url in updateUrls) {
+            clientLogger.debug("Broker处理服务[$serviceName]更新地址: " + url)
             handleParametersChange(url)
         }
     }
@@ -110,6 +115,7 @@ object Broker: IDiscoveryListener, IBroker {
         // TODO
         // 按负责策略来选择连接
         val conn = select(req.serviceName)
+        clientLogger.debug("Broker选择远程服务[${req.serviceName}]的一个连接${conn}来发送rpc请求")
 
         // 发送请求
         return conn.send(req)
@@ -134,6 +140,7 @@ object Broker: IDiscoveryListener, IBroker {
      * 关闭客户端的所有连接
      */
     public override fun close() {
+        clientLogger.info("Broker.close(): 关闭客户端的所有连接")
         for((serviceName, conns) in connections){
             for((host, conn) in conns){
                 conn.close()
