@@ -48,8 +48,7 @@ object Broker: IDiscoveryListener, IBroker {
         // 1 构建新的服务地址
         val newUrls = HashMap<String, Url>()
         for (url in urls) {
-            val key = "${url.host}:${url.port}"
-            newUrls[key] = url
+            newUrls[url.childName] = url
         }
 
         // 2 获得旧的服务地址
