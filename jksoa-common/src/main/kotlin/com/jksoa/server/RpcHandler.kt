@@ -32,7 +32,8 @@ object RpcHandler : IRpcHandler {
                 throw ServiceException("服务方法[${req.serviceName}#${req.methodSignature}]不存在");
 
             // 调用方法
-            val value = provider.call(method, req.args)
+            val value = method.invoke(provider.service, *req.args)
+
             return Response(req.id, value)
         }catch (e:Exception){
             return Response(req.id, e)

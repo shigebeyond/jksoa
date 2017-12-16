@@ -1,6 +1,6 @@
 package com.jksoa.registry.zk
 
-import com.jksoa.client.INotifyListener
+import com.jksoa.registry.IDiscoveryListener
 import com.jksoa.common.Url
 import com.jksoa.registry.zk.common.ZkClientFactory
 import com.jksoa.registry.zk.common.nodeChilds2Urls
@@ -26,12 +26,12 @@ open class ZkDiscovery {
     /**
      * zk子节点监听器: <服务名 to <服务监听器 to zk监听器>>
      */
-    protected val childListeners = ConcurrentHashMap<String, ConcurrentHashMap<INotifyListener, ZkChildListener>>()
+    protected val childListeners = ConcurrentHashMap<String, ConcurrentHashMap<IDiscoveryListener, ZkChildListener>>()
 
     /**
      * zk节点数据监听器: <服务名 to <服务监听器 to zk监听器>>
      */
-    protected val dataListeners = ConcurrentHashMap<String, ConcurrentHashMap<INotifyListener, List<ZkDataListener>>>()
+    protected val dataListeners = ConcurrentHashMap<String, ConcurrentHashMap<IDiscoveryListener, List<ZkDataListener>>>()
 
     /**
      * 监听服务变化
@@ -39,7 +39,7 @@ open class ZkDiscovery {
      * @param serviceName 服务名
      * @param listener 监听器
      */
-    public fun subscribe(serviceName: String, listener: INotifyListener){
+    public fun subscribe(serviceName: String, listener: IDiscoveryListener){
         try{
             // 1 监听子节点
             val childListener = ZkChildListener(listener)
@@ -54,7 +54,7 @@ open class ZkDiscovery {
                 return;
 
             // 3 更新服务地址 -- 只处理单个listener，其他旧的listeners早就处理过
-            listener.updateServiceUrls(serviceName, urls)
+            listener.handleServiceUrlsChange(serviceName, urls)
 
             // 4 监听子节点的数据变化
             val list = ArrayList<ZkDataListener>()
@@ -77,7 +77,7 @@ open class ZkDiscovery {
      * @param serviceName 服务名
      * @param listener 监听器
      */
-    public fun unsubscribe(serviceName: String, listener: INotifyListener){
+    public fun unsubscribe(serviceName: String, listener: IDiscoveryListener){
         try{
             // 1 取消监听子节点
             zkClient.unsubscribeChildChanges(serviceName, childListeners[serviceName]!![listener]!!)

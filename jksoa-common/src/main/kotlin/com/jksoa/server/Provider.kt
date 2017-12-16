@@ -1,6 +1,7 @@
 package com.jksoa.server
 
 import com.jkmvc.common.Config
+import com.jkmvc.common.ShutdownHook
 import com.jkmvc.common.isSuperClass
 import com.jksoa.client.Referer
 import com.jksoa.client.RefererLoader
@@ -9,10 +10,11 @@ import com.jksoa.common.Url
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
 import getIntranetHost
-import java.lang.reflect.Method
 
 /**
  * 服务提供者
+ *   1 提供服务
+ *   2 向注册中心注册服务
  *
  * @ClassName: Provider
  * @Description:
@@ -49,6 +51,11 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
      */
     public override val service: IService = clazz.newInstance()
 
+    init {
+        // 要关闭
+        ShutdownHook.addClosing(this)
+    }
+
     /**
      * 解析接口
      * @return
@@ -62,6 +69,7 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
 
     /**
      * 注册服务
+     *   不在 Provider 初始化时注册，递延在启动服务器后注册，因此不要暴露给方法
      */
     public override fun registerService(){
         // 注册远端服务
@@ -74,15 +82,11 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
     }
 
     /**
-     * 代理服务来执行方法
-     *
-     * @param method
-     * @param args
-     * @return
+     * 注销服务
      */
-    public override fun call(method: Method, args: Array<Any>): Any? {
-        // TODO: 调用filter
-        return method.invoke(service, args)
+    public override fun close() {
+        // 注销远端服务
+        registry.unregister(serviceUrl)
     }
 
 }

@@ -1,13 +1,14 @@
 package com.jksoa.server
 
-import com.jksoa.common.IServiceClass
 import com.jksoa.common.IService
+import com.jksoa.common.IServiceClass
 import com.jksoa.common.Url
 import java.io.Closeable
-import java.lang.reflect.Method
 
 /**
  * 服务提供者
+ *   1 提供服务
+ *   2 向注册中心注册服务
  *
  * @ClassName: IProvider
  * @Description:
@@ -28,16 +29,8 @@ abstract class IProvider : IServiceClass(), Closeable {
 
     /**
      * 注册服务
+     *   不在 Provider 初始化时注册，递延在启动服务器后注册，因此不要暴露给方法
      */
     public abstract fun registerService()
-
-    /**
-     * 代理服务来执行方法
-     *
-     * @param method
-     * @param args
-     * @return
-     */
-    public abstract fun call(method: Method, args: Array<Any>): Any?
 
 }

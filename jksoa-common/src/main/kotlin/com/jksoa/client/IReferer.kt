@@ -5,6 +5,8 @@ import java.io.Closeable
 
 /**
  * 服务的引用（代理）
+ *   1 引用服务
+ *   2 向注册中心订阅服务
  *
  * @ClassName: Referer
  * @Description:

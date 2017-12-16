@@ -1,5 +1,6 @@
 package com.jksoa.client
 
+import com.jkmvc.common.ShutdownHook
 import com.jksoa.common.IService
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
@@ -7,6 +8,8 @@ import java.lang.reflect.Proxy
 
 /**
  * 服务的引用（代理）
+ *   1 引用服务
+ *   2 向注册中心订阅服务
  *
  * @ClassName: Referer
  * @Description:
@@ -51,6 +54,17 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
     init {
         // 监听服务变化
         registry.subscribe(serviceName, Broker)
+
+        // 要关闭
+        ShutdownHook.addClosing(this)
     }
+
+    /**
+     * 取消监听服务变化
+     */
+    public override fun close() {
+        registry.unsubscribe(serviceName, Broker)
+    }
+
 
 }

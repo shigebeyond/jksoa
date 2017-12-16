@@ -1,6 +1,5 @@
 package com.jksoa.registry
 
-import com.jksoa.client.INotifyListener
 import com.jksoa.common.Url
 
 /**
@@ -19,7 +18,7 @@ interface IDiscovery {
      * @param serviceName 服务名
      * @param listener 监听器
      */
-    fun subscribe(serviceName: String, listener: INotifyListener)
+    fun subscribe(serviceName: String, listener: IDiscoveryListener)
 
     /**
      * 取消监听服务变化
@@ -27,7 +26,7 @@ interface IDiscovery {
      * @param serviceName 服务名
      * @param listener 监听器
      */
-    fun unsubscribe(serviceName: String, listener: INotifyListener)
+    fun unsubscribe(serviceName: String, listener: IDiscoveryListener)
 
     /**
      * 发现服务

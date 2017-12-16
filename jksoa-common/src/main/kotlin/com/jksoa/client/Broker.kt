@@ -1,38 +1,46 @@
 package com.jksoa.client
 
+import com.jkmvc.common.ShutdownHook
 import com.jkmvc.common.getRandom
 import com.jksoa.common.Request
 import com.jksoa.common.Response
 import com.jksoa.common.Url
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.connect
+import com.jksoa.registry.IDiscoveryListener
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.HashMap
 
 /**
  * 远程服务中转器
- *    在客户端调用中对服务集群进行均衡负载
+ *    1 维系客户端对服务端的所有连接
+ *    2 在客户端调用中对服务集群进行均衡负载
  *
  * @ClassName: Broker
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-13 3:18 PM
  */
-object Broker: INotifyListener, IBroker {
+object Broker: IDiscoveryListener, IBroker {
 
     /**
      * 连接池： <服务名 to <ip端口 to 连接>>
      */
     private val connections: ConcurrentHashMap<String, HashMap<String, IConnection>> = ConcurrentHashMap()
 
+    init {
+        // 要关闭
+        ShutdownHook.addClosing(this)
+    }
+
     /**
-     * 更新服务地址
+     * 处理服务地址变化
      *
      * @param serviceName 服务名
      * @param urls 服务地址
      */
-    public override fun updateServiceUrls(serviceName: String, urls: List<Url>){
+    public override fun handleServiceUrlsChange(serviceName: String, urls: List<Url>){
         var addKeys:Set<String> = emptySet() // 新加的url
         var removeKeys:Set<String> = emptySet() // 新加的url
         var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
@@ -79,16 +87,16 @@ object Broker: INotifyListener, IBroker {
 
         // 7 更新的地址
         for(url in updateUrls) {
-            handleUpdateUrl(url)
+            handleParametersChange(url)
         }
     }
 
     /**
-     * 处理更新地址
+     * 处理服务配置参数（服务地址的参数）变化
      *
      * @param url
      */
-    public override fun handleUpdateUrl(url: Url): Unit{
+    public override fun handleParametersChange(url: Url): Unit{
         // TODO
         //重整负载策略
     }
@@ -114,12 +122,23 @@ object Broker: INotifyListener, IBroker {
      * @param serviceName
      * @return
      */
-    fun select(serviceName: String): IConnection {
+    private fun select(serviceName: String): IConnection {
         val urls = connections[serviceName]
-        if(urls == null)
+        if(urls == null || urls.isEmpty())
             throw RpcException("没有找到服务[$serviceName]")
 
         // 随机找个连接
         return urls.values.getRandom()
+    }
+
+    /**
+     * 关闭客户端的所有连接
+     */
+    public override fun close() {
+        for((serviceName, conns) in connections){
+            for((host, conn) in conns){
+                conn.close()
+            }
+        }
     }
 }
