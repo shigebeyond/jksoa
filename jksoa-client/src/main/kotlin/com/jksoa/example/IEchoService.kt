@@ -2,6 +2,7 @@ package com.jksoa.example
 
 import com.jksoa.common.IService
 import java.rmi.Remote
+import java.rmi.RemoteException
 
 /**
  * rmi协议服务接口
@@ -11,5 +12,6 @@ import java.rmi.Remote
  **/
 interface IEchoService : Remote, IService {
 
+    @Throws(RemoteException::class)
     fun echo(msg: String): String
 }
