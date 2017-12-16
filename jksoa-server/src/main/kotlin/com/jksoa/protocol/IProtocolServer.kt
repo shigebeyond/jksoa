@@ -13,22 +13,22 @@ import com.jksoa.server.ProviderLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  **/
-interface IProtocolServer: IProtocolClient {
+interface IProtocolServer {
 
     // 可配置的单例
-    companion object: ConfiguredSingleton<IProtocolServer>() {
+    companion object mxx: ConfiguredSingleton<IProtocolServer>() {
         /**
          * 配置，内容是哈希 <单例名 to 单例类>
          */
-        public override val config: IConfig = Config.instance("protocol.server")
+        public override val config: IConfig = Config.instance("protocol.server", "yaml")
     }
 
     /**
      * 启动服务器
      */
-    fun startServer(){
+    fun start(){
         // 启动服务器
-        doStartServer()
+        doStart()
         // 注册服务
         registerServices()
     }
@@ -46,5 +46,5 @@ interface IProtocolServer: IProtocolClient {
     /**
      * 启动服务器
      */
-    fun doStartServer(): Unit
+    fun doStart(): Unit
 }

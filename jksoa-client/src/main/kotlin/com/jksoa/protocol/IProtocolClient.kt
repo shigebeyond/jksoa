@@ -21,7 +21,7 @@ interface IProtocolClient {
         /**
          * 配置，内容是哈希 <单例名 to 单例类>
          */
-        public override val config: IConfig = Config.instance("protocol.client")
+        public override val config: IConfig = Config.instance("protocol.client", "yaml")
     }
 
     /**
