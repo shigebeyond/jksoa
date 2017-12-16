@@ -31,7 +31,11 @@ abstract class IServiceClass {
     /**
      * 所有方法
      */
-    public val methods: MutableMap<String, Method> = `interface`.getMethodMaps()
+    //public val methods: MutableMap<String, Method> = `interface`.getMethodMaps()
+    // 由于`interface`属性在子类初始化，递延引用
+    public val methods: MutableMap<String, Method> by lazy{
+        `interface`.getMethodMaps()
+    }
 
     /**
      * 根据方法签名来获得方法
