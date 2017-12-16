@@ -47,7 +47,7 @@ class RmiConnection(url: Url): IConnection(url){
                 throw RpcException("服务方法[${req.serviceName}#${req.methodSignature}]不存在");
 
             // 调用远程对象的方法
-            val value = method.invoke(remoteObject, req.args)
+            val value = method.invoke(remoteObject, *req.args)
             return Response(req.id, value)
         }catch (e:Exception){
             return Response(req.id, e)
