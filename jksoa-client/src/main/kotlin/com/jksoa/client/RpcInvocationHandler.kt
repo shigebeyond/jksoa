@@ -40,7 +40,9 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
 
         try {
             // 发送调用请求，并返回结果
-            return Broker.call(req)
+            // 1 同步调用
+            val res = Broker.call(req)
+            return res.value
         }catch (e: Exception){
             throw RpcException("rpc调用错误：" + e.message, e)
         }
