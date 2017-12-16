@@ -40,7 +40,7 @@ class Url(override var protocol: String /* 协议 */,
         /**
          * url的正则
          */
-        protected val RegexUrl: Regex = ("(\\w+)://([^:/]+)${RegexPort}([^?]*)${RegexParamStr}").toRegex()
+        protected val RegexUrl: Regex = ("(\\w+)://([^:/]+)${RegexPort}/?([^?]*)${RegexParamStr}").toRegex()
 
         /**
          * 函数参数的正则
@@ -132,7 +132,7 @@ class Url(override var protocol: String /* 协议 */,
         val str = StringBuilder(protocol).append("://").append(host)
         if(port >= 0)
             str.append(':').append(port)
-        str.append(path)
+        str.append("/").append(path)
         // 参数
         if(withQuery && parameters != null){
             parameters!!.entries.joinTo(str, "&", "?"){
