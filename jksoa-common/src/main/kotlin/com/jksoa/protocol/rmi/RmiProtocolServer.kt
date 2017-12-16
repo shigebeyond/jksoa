@@ -10,14 +10,14 @@ import java.rmi.registry.LocateRegistry
 import javax.naming.InitialContext
 
 /**
- * rmi协议
+ * rmi协议-服务器端
  *
  * @ClassName: Protocol
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-object RmiProtocol : IProtocolServer {
+class RmiProtocolServer : IProtocolServer, RmiProtocolClient() {
 
     /**
      * 服务端配置
@@ -44,17 +44,4 @@ object RmiProtocol : IProtocolServer {
         }
     }
 
-    /**
-     * 客户端连接服务器
-     *
-     * @param url
-     * @return
-     */
-    public override fun connect(url: Url): IConnection {
-        try {
-            return RmiConnection(url)
-        } catch (e: Exception) {
-            throw ServiceException("客户端创建rmi连接失败: " + e.message)
-        }
-    }
 }

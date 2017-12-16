@@ -3,7 +3,7 @@ package com.jksoa.protocol
 import com.jksoa.common.Url
 
 /**
- * rpc协议之客户端部分
+ * rpc协议-客户端
  *
  * @ClassName: IProtocolClient
  * @Description:

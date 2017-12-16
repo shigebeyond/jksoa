@@ -4,7 +4,7 @@ import com.jksoa.server.ProviderLoader
 
 
 /**
- * rpc协议之服务器部分
+ * rpc协议-服务器端
  *
  * @ClassName: IProtocolServer
  * @Description:
