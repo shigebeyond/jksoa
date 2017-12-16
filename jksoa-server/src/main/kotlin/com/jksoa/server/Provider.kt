@@ -39,7 +39,12 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
     /**
      * 接口类
      */
-    public override val `interface`: Class<out IService> = parseInterface()
+    public override val `interface`: Class<out IService> by lazy{
+        // 遍历接口
+        clazz.interfaces.first {
+            IService::class.java.isSuperClass(it) // 过滤服务接口
+        } as Class<out IService>
+    }
 
     /**
      * 服务路径
@@ -54,17 +59,6 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
     init {
         // 要关闭
         ShutdownHook.addClosing(this)
-    }
-
-    /**
-     * 解析接口
-     * @return
-     */
-    private fun parseInterface(): Class<out IService> {
-        // 遍历接口
-        return clazz.interfaces.first {
-            IService::class.java.isSuperClass(it) // 过滤服务接口
-        } as Class<out IService>
     }
 
     /**

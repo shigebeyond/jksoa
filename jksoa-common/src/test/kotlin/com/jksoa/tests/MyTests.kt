@@ -14,10 +14,10 @@ class MyTests {
     @Test
     fun testUrl(){
         val url = Url("mysql://127.0.0.1:3306/test?username=root&password=root")
-        //val url = URL("mysql://127.0.0.1:3306/?username=root&password=root")
-        //val url = URL("mysql://127.0.0.1:3306?username=root&password=root")
-        //val url = URL("mysql://127.0.0.1?username=root&password=root")
-        //val url = URL("mysql://127.0.0.1")
+        //val url = Url("mysql://127.0.0.1:3306/?username=root&password=root")
+        //val url = Url("mysql://127.0.0.1:3306?username=root&password=root")
+        //val url = Url("mysql://127.0.0.1?username=root&password=root")
+        //val url = Url("mysql://127.0.0.1")
         println(url)
     }
 }

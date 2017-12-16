@@ -17,7 +17,7 @@ import java.lang.reflect.Proxy
  * @date 2017-12-14 9:52 AM
  */
 class Referer(public override val `interface`:Class<out IService> /* 接口类 */,
-              public override val service: IService = Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(`interface`), RpcInvocationHandler(`interface`)) as IService /* 服务实例，默认是服务代理，但在服务端可指定本地服务实例 */
+              public override val service: IService = createProxy(`interface`) /* 服务实例，默认是服务代理，但在服务端可指定本地服务实例 */
 ): IReferer() {
 
     companion object{
@@ -27,6 +27,13 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
          * TODO: 支持多个配置中心, 可用组合模式
          */
         public val registry: IRegistry = ZkRegistry
+
+        /**
+         * 创建服务代理
+         */
+        public fun createProxy(intf: Class<out IService>): IService {
+            return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(intf), RpcInvocationHandler(intf)) as IService
+        }
 
         /**
          * 根据服务接口，来获得服务引用
@@ -65,6 +72,4 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
     public override fun close() {
         registry.unsubscribe(serviceName, Broker)
     }
-
-
 }

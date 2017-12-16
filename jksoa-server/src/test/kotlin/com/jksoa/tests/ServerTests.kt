@@ -1,5 +1,6 @@
 package com.jksoa.tests
 
+import com.jkmvc.common.Config
 import com.jksoa.protocol.rmi.RmiProtocolServer
 import org.junit.Test
 
@@ -13,7 +14,7 @@ class MyTests {
 
     @Test
     fun testServer(){
-        RmiProtocolServer().startServer()
+        RmiProtocolServer().start()
         println("启动服务")
     }
 
