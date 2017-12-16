@@ -1,6 +1,7 @@
 package com.jksoa.server
 
 import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
 import com.jksoa.common.IService
 import com.jksoa.common.ServiceClassLoader
 import java.lang.reflect.Modifier
@@ -18,7 +19,10 @@ object ProviderLoader: ServiceClassLoader<IProvider>() {
     /**
      * 服务端配置
      */
-    override val config = Config.instance("server", "yaml")
+    // 父类init()方法要引用config，但子类config尚未初始化，因此不用赋值，而用函数
+    //override val config: IConfig = Config.instance("server", "yaml")
+    override val config: IConfig
+        get() = Config.instance("server", "yaml")
 
     /**
      * 收集service类
