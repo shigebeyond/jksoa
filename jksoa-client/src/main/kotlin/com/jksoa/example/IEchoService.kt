@@ -1,4 +1,4 @@
-package com.jksoa.tests.rmi
+package com.jksoa.example
 
 import com.jksoa.common.IService
 import java.rmi.Remote
@@ -9,7 +9,7 @@ import java.rmi.Remote
  * @author shijianhang
  * @create 2017-12-15 下午7:37
  **/
-interface IHelloService : Remote, IService {
+interface IEchoService : Remote, IService {
 
-    fun sayHello(name: String): String
+    fun echo(msg: String): String
 }

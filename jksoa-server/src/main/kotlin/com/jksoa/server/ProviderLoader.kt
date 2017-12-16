@@ -18,15 +18,7 @@ object ProviderLoader: ServiceClassLoader<IProvider>() {
     /**
      * 服务端配置
      */
-    private val config = Config.instance("server", "yaml")
-
-
-    init{
-        // 加载配置的包路径
-        val pcks:List<String>? = config["servicePackages"]
-        if(pcks != null)
-            addPackages(pcks)
-    }
+    override val config = Config.instance("server", "yaml")
 
     /**
      * 收集service类

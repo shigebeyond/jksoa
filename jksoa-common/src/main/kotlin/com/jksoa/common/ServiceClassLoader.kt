@@ -1,6 +1,7 @@
 package com.jksoa.common
 
 import com.jkmvc.common.ClassScanner
+import com.jkmvc.common.IConfig
 import com.jkmvc.common.isSuperClass
 import java.io.File
 
@@ -20,6 +21,19 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      *   value为服务类元数据
      */
     protected val serviceClasses:MutableMap<String, T> = HashMap()
+
+    /**
+     * 配置
+     */
+    protected abstract val config: IConfig
+
+
+    init{
+        // 加载配置的包路径
+        val pcks:List<String>? = config["servicePackages"]
+        if(pcks != null)
+            addPackages(pcks)
+    }
 
     /**
      * 添加服务类元数据

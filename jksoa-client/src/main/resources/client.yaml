@@ -1,0 +1,4 @@
+# 客户端配置
+# service类所在的包路径
+servicePackages:
+    - com.jksoa.example.echo

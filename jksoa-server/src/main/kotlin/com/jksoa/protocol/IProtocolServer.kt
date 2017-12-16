@@ -1,7 +1,9 @@
 package com.jksoa.protocol
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.ConfiguredSingleton
+import com.jkmvc.common.IConfig
 import com.jksoa.server.ProviderLoader
-
 
 /**
  * rpc协议-服务器端
@@ -12,6 +14,14 @@ import com.jksoa.server.ProviderLoader
  * @date 2017-09-08 2:58 PM
  **/
 interface IProtocolServer: IProtocolClient {
+
+    // 可配置的单例
+    companion object: ConfiguredSingleton<IProtocolServer>() {
+        /**
+         * 配置，内容是哈希 <单例名 to 单例类>
+         */
+        public override val config: IConfig = Config.instance("protocol.server")
+    }
 
     /**
      * 启动服务器

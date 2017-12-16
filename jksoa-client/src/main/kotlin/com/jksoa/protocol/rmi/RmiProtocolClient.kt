@@ -1,10 +1,9 @@
 package com.jksoa.protocol.rmi
 
+import com.jksoa.client.RpcException
 import com.jksoa.common.Url
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.IProtocolClient
-import com.jksoa.protocol.IProtocolServer
-import com.jksoa.server.ServiceException
 
 /**
  * rmi协议-客户端
@@ -25,7 +24,7 @@ open class RmiProtocolClient: IProtocolClient {
         try {
             return RmiConnection(url)
         } catch (e: Exception) {
-            throw ServiceException("客户端创建rmi连接失败: " + e.message)
+            throw RpcException("客户端创建rmi连接失败: " + e.message)
         }
     }
 }

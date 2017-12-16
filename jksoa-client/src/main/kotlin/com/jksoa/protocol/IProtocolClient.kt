@@ -1,5 +1,9 @@
 package com.jksoa.protocol
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.ConfiguredSingleton
+import com.jkmvc.common.IConfig
+import com.jkmvc.serialize.ISerializer
 import com.jksoa.common.Url
 
 /**
@@ -12,17 +16,12 @@ import com.jksoa.common.Url
  */
 interface IProtocolClient {
 
-    companion object{
-
+    // 可配置的单例
+    companion object: ConfiguredSingleton<IProtocolClient>() {
         /**
-         * 根据协议类型来获得协议
-         *
-         * @param type
-         * @return
+         * 配置，内容是哈希 <单例名 to 单例类>
          */
-        public fun instance(type: String): IProtocolServer {
-            return ProtocolType.valueOf(type).protocol
-        }
+        public override val config: IConfig = Config.instance("protocol.client")
     }
 
     /**

@@ -1,9 +1,6 @@
 package com.jksoa.tests
 
-import com.jksoa.client.Referer
 import com.jksoa.common.Url
-import com.jksoa.protocol.rmi.RmiProtocol
-import com.jksoa.tests.rmi.IHelloService
 import org.junit.Test
 
 /**
@@ -22,18 +19,5 @@ class MyTests {
         //val url = URL("mysql://127.0.0.1?username=root&password=root")
         //val url = URL("mysql://127.0.0.1")
         println(url)
-    }
-
-    @Test
-    fun testServer(){
-        RmiProtocol.startServer()
-        println("启动服务")
-    }
-
-    @Test
-    fun testClient(){
-        val service = Referer.getRefer<IHelloService>()
-        val content = service.sayHello("shijianhang")
-        println("调用服务结果： $content")
     }
 }

@@ -1,6 +1,6 @@
-# 服务配置
+# 服务端配置
 # 1 服务协议
-protocol: JKP
+protocol: rmi
 # 2 服务ip： 1 可缺省，缺省值由服务自己获取 2 如果有多个ip，可在此处指定
 ip: #192.168.0.17
 # 3 服务端口
@@ -9,4 +9,4 @@ port: 8081
 parameters:
 # 5 service类所在的包路径
 servicePackages:
-    - com.jksoa.example.sayHello
+    - com.jksoa.example.echo
