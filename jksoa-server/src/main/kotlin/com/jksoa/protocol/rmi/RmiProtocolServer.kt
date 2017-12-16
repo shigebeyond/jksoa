@@ -1,8 +1,6 @@
 package com.jksoa.protocol.rmi
 
 import com.jkmvc.common.Config
-import com.jksoa.common.Url
-import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.IProtocolServer
 import com.jksoa.server.ProviderLoader
 import com.jksoa.server.ServiceException
@@ -17,7 +15,7 @@ import javax.naming.InitialContext
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-class RmiProtocolServer : IProtocolServer, RmiProtocolClient() {
+class RmiProtocolServer : IProtocolServer {
 
     /**
      * 服务端配置
@@ -27,16 +25,16 @@ class RmiProtocolServer : IProtocolServer, RmiProtocolClient() {
     /**
      * 启动服务器
      */
-    public override fun doStartServer(): Unit{
+    public override fun doStart(): Unit{
         try {
             // 监听端口
             LocateRegistry.createRegistry(config["port"]!!)
 
             // 初始化命名空间
             val namingContext = InitialContext()
-            // 向命名空间注册远程服务实例
+            // 向命名空间注册远程服务实例 => 不需要RpcHandler作为中间转发，直接由rmi自行处理
             for (provider in ProviderLoader.getAll()){
-                // 注册url： rmi://localhost:1099/com.jksoa.test.HelloService
+                // 注册url： rmi://192.168.0.106:8081/com.jksoa.example.IEchoService
                 namingContext.rebind(provider.serviceUrl.toString(), provider.service)
             }
         } catch (e: Exception) {
