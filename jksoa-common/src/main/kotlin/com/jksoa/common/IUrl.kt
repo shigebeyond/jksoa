@@ -46,11 +46,20 @@ interface IUrl {
         get() = Class.forName(path) as Class<out IService>
 
     /**
-     * 节点路径
-     *    格式为 路径/协议:ip:端口
+     * 根节点路径
+     *    格式为 /路径
      */
-    val nodePath: String
+    val rootPath: String
         get(){
-            return "$path/$protocol:$host:$port"
+            return "/$path"
+        }
+
+    /**
+     * 子节点路径
+     *    格式为 /路径/协议:ip:端口
+     */
+    val childPath: String
+        get(){
+            return "/$path/$protocol:$host:$port"
         }
 }

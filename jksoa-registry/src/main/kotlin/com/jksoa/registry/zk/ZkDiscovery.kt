@@ -1,7 +1,7 @@
 package com.jksoa.registry.zk
 
-import com.jksoa.registry.IDiscoveryListener
 import com.jksoa.common.Url
+import com.jksoa.registry.IDiscoveryListener
 import com.jksoa.registry.zk.common.ZkClientFactory
 import com.jksoa.registry.zk.common.nodeChilds2Urls
 import com.jksoa.registry.zk.listener.ZkChildListener
@@ -41,12 +41,13 @@ open class ZkDiscovery {
      */
     public fun subscribe(serviceName: String, listener: IDiscoveryListener){
         try{
+            val rootPath = Url.serviceName2rootPath(serviceName)
             // 1 监听子节点
             val childListener = ZkChildListener(listener)
             childListeners.getOrPut(serviceName){ // 记录监听器，以便取消监听时使用
                 ConcurrentHashMap()
             }.put(listener, childListener)
-            zkClient.subscribeChildChanges(serviceName, childListener)
+            zkClient.subscribeChildChanges(rootPath, childListener)
 
             // 2 发现服务：获得子节点
             val urls = discover(serviceName)
@@ -61,7 +62,7 @@ open class ZkDiscovery {
             for (url in urls){
                 val dataListener = ZkDataListener(url, listener)
                 list.add(dataListener)
-                zkClient.subscribeDataChanges(url.nodePath, dataListener);
+                zkClient.subscribeDataChanges(url.childPath, dataListener);
             }
             dataListeners.getOrPut(serviceName){ // 记录监听器，以便取消监听时使用
                 ConcurrentHashMap()
@@ -79,11 +80,13 @@ open class ZkDiscovery {
      */
     public fun unsubscribe(serviceName: String, listener: IDiscoveryListener){
         try{
+            val rootPath = Url.serviceName2rootPath(serviceName)
             // 1 取消监听子节点
-            zkClient.unsubscribeChildChanges(serviceName, childListeners[serviceName]!![listener]!!)
+            zkClient.unsubscribeChildChanges(rootPath, childListeners[serviceName]!![listener]!!)
+            
             // 2 取消监听子节点的数据变化
             for(dataListener in dataListeners[serviceName]!![listener]!!){
-                val path = dataListener.url.nodePath
+                val path = dataListener.url.childPath
                 zkClient.unsubscribeDataChanges(path, dataListener)
             }
         } catch (e: Throwable) {
@@ -99,12 +102,13 @@ open class ZkDiscovery {
      */
     public fun discover(serviceName: String): List<Url> {
         try {
+            val rootPath = Url.serviceName2rootPath(serviceName)
             // 获得子节点
             var currentChilds: List<String> = emptyList()
-            if (zkClient.exists(serviceName))
-                currentChilds = zkClient.getChildren(serviceName)
+            if (zkClient.exists(rootPath))
+                currentChilds = zkClient.getChildren(rootPath)
 
-            return zkClient.nodeChilds2Urls(serviceName, currentChilds)
+            return zkClient.nodeChilds2Urls(rootPath, currentChilds)
         } catch (e: Throwable) {
             throw RegistryException("发现服务[$serviceName]失败：${e.message}", e)
         }

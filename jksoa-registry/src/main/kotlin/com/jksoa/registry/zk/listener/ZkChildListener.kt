@@ -1,5 +1,6 @@
 package com.jksoa.registry.zk.listener
 
+import com.jksoa.common.Url
 import com.jksoa.registry.IDiscoveryListener
 import com.jksoa.registry.registerLogger
 import com.jksoa.registry.zk.common.ZkClientFactory
@@ -29,7 +30,8 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChil
     @Synchronized
     public override fun handleChildChange(parentPath: String, currentChilds: List<String>) {
         // 更新服务地址
-        discoveryListener.handleServiceUrlsChange(parentPath, zkClient.nodeChilds2Urls(parentPath, currentChilds))
+        val serviceName = Url.rootPath2serviceName(parentPath)
+        discoveryListener.handleServiceUrlsChange(serviceName, zkClient.nodeChilds2Urls(parentPath, currentChilds))
         registerLogger.info("[ZookeeperRegistry] service list change: path=%s, currentChilds=%s", parentPath, currentChilds.toString())
     }
 

@@ -1,6 +1,8 @@
 package com.jksoa.registry.zk.listener
 
+import com.jksoa.common.Url
 import com.jksoa.registry.IDiscoveryListener
+import com.jksoa.registry.registerLogger
 
 /**
  * zk中节点数据变化监听器
@@ -16,9 +18,9 @@ class ZkDataListener(public val url: com.jksoa.common.Url, public val discoveryL
     @Synchronized
     public override fun handleDataChange(dataPath: String, data: Any) {
         // 处理更新地址
-        url.parameters = com.jksoa.common.Url.Companion.parseParams(data as String)
+        url.parameters = Url.parseParams(data as String)
         discoveryListener.handleParametersChange(url)
-        com.jksoa.registry.registerLogger.info("[ZookeeperRegistry] command data change: path=%s, command=%s", dataPath, data)
+        registerLogger.info("[ZookeeperRegistry] command data change: path=%s, command=%s", dataPath, data)
     }
 
     /**
@@ -29,6 +31,6 @@ class ZkDataListener(public val url: com.jksoa.common.Url, public val discoveryL
         // 处理更新地址
         url.parameters = null
         discoveryListener.handleParametersChange(url)
-        com.jksoa.registry.registerLogger.info("[ZookeeperRegistry] command deleted: path=%s", dataPath)
+        registerLogger.info("[ZookeeperRegistry] command deleted: path=%s", dataPath)
     }
 }

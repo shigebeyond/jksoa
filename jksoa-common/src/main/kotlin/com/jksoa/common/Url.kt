@@ -30,22 +30,22 @@ class Url(override var protocol: String /* 协议 */,
         /**
          * 端口的正则
          */
-        val RegexPort: String = "(:(\\d+))?"
+        protected val RegexPort: String = "(:(\\d+))?"
 
         /**
          * 参数字符串的正则
          */
-        val RegexParamStr: String = "(\\?(.+))?"
+        protected val RegexParamStr: String = "(\\?(.+))?"
 
         /**
          * url的正则
          */
-        val RegexUrl: Regex = ("(\\w+)://([^:/]+)${RegexPort}([^?]*)${RegexParamStr}").toRegex()
+        protected val RegexUrl: Regex = ("(\\w+)://([^:/]+)${RegexPort}([^?]*)${RegexParamStr}").toRegex()
 
         /**
          * 函数参数的正则
          */
-        val RegexParam: Regex = "([^=]+)=([^&]+)".toRegex()
+        protected val RegexParam: Regex = "([^=]+)=([^&]+)".toRegex()
 
         /**
          * 解析参数
@@ -61,6 +61,26 @@ class Url(override var protocol: String /* 协议 */,
                 params[key] = value
             }
             return params
+        }
+
+        /**
+         * 服务名转根节点路径
+         *
+         * @param serviceName
+         * @return
+         */
+        public fun serviceName2rootPath(serviceName: String): String {
+            return "/$serviceName"
+        }
+
+        /**
+         * 服务名转根节点路径
+         *
+         * @param rootPath
+         * @return
+         */
+        public fun rootPath2serviceName(rootPath: String): String {
+            return rootPath.substring(1)
         }
     }
 

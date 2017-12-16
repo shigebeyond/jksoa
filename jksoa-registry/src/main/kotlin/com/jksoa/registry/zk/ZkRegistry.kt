@@ -84,13 +84,13 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
      * @param url
      */
     private fun createNode(url: Url) {
-        // 创建目录
-        val dir = url.serviceName
-        if (!zkClient.exists(dir))
-            zkClient.createPersistent(dir, true)
+        // 创建根节点
+        val root = url.rootPath
+        if (!zkClient.exists(root))
+            zkClient.createPersistent(root, true)
 
-        // 创建节点
-        zkClient.createEphemeral(url.nodePath, url.toString())
+        // 创建子节点
+        zkClient.createEphemeral(url.childPath, url.toString())
     }
 
     /**
@@ -100,7 +100,7 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
      */
     private fun removeNode(url: Url) {
         // 删除节点
-        val path = url.nodePath
+        val path = url.childPath
         if (zkClient.exists(path))
             zkClient.delete(path)
     }
