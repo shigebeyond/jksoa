@@ -4,6 +4,7 @@ import com.jksoa.common.IUrl
 import com.jksoa.common.Request
 import com.jksoa.common.Response
 import com.jksoa.common.Url
+import com.jksoa.loadbalance.INode
 import java.io.Closeable
 
 /**
@@ -12,7 +13,9 @@ import java.io.Closeable
  * @author shijianhang
  * @create 2017-12-15 下午9:25
  **/
-abstract class IConnection(public val url: Url /* 服务端地址 */): Closeable, IUrl by url {
+abstract class IConnection(public val url: Url /* 服务端地址 */,
+                           public override var weight: Int = 1 /* 权重 */
+) : Closeable, IUrl by url, INode {
 
     /**
      * 客户端发送请求

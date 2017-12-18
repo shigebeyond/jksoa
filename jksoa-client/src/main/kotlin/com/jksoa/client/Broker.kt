@@ -1,11 +1,12 @@
 package com.jksoa.client
 
+import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
-import com.jkmvc.common.getRandom
 import com.jksoa.common.Request
 import com.jksoa.common.Response
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
+import com.jksoa.loadbalance.ILoadBalance
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.connect
 import com.jksoa.registry.IDiscoveryListener
@@ -24,6 +25,15 @@ import kotlin.collections.HashMap
  * @date 2017-12-13 3:18 PM
  */
 object Broker: IDiscoveryListener, IBroker {
+    /**
+     * 客户端配置
+     */
+    public val config = Config.instance("client", "yaml")
+
+    /**
+     * 均衡负载算法
+     */
+    private val loadBalance: ILoadBalance = ILoadBalance.instance(config["loadbalanceType"]!!)
 
     /**
      * 连接池： <服务名 to <ip端口 to 连接>>
@@ -112,28 +122,20 @@ object Broker: IDiscoveryListener, IBroker {
      * @return
      */
     public override fun call(req: Request): Response {
-        // TODO
-        // 按负责策略来选择连接
-        val conn = select(req.serviceName)
+        // 1 获得可用连接
+        val urls = connections[req.serviceName]
+        if(urls == null || urls.isEmpty())
+            throw RpcException("没有找到服务[${req.serviceName}]")
+
+        // 2 按均衡负载策略，来选择连接
+        val conn = loadBalance.select(urls.values, req) as IConnection?
+        if(conn == null)
+            throw RpcException("服务[${req.serviceName}]无可用的连接")
+
         clientLogger.debug("Broker选择远程服务[${req.serviceName}]的一个连接${conn}来发送rpc请求")
 
-        // 发送请求
+        // 3 发送请求
         return conn.send(req)
-    }
-
-    /**
-     * 选择某个连接
-     *
-     * @param serviceName
-     * @return
-     */
-    private fun select(serviceName: String): IConnection {
-        val urls = connections[serviceName]
-        if(urls == null || urls.isEmpty())
-            throw RpcException("没有找到服务[$serviceName]")
-
-        // 随机找个连接
-        return urls.values.getRandom()
     }
 
     /**
