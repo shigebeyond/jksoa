@@ -10,6 +10,6 @@ interface INode {
     /**
      * 权重
      */
-    var weight: Int
+    val weight: Int
 
 }
