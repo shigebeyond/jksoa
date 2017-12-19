@@ -72,9 +72,9 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
         registry.register(serviceUrl)
 
         // 2 注册本地服务引用： 对要调用的服务，如果本地有提供，则直接调用本地的服务
-        val serviceName = `interface`.name
+        val serviceId = `interface`.name
         val localReferer = Referer(`interface`, service /* 本地服务 */) // 本地服务的引用
-        RefererLoader.add(serviceName, localReferer)
+        RefererLoader.add(serviceId, localReferer)
     }
 
     /**

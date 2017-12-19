@@ -17,7 +17,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
 
     /**
      * 服务类缓存
-     *   key为服务名，即接口类全名
+     *   key为服务标识，即接口类全名
      *   value为服务类元数据
      */
     protected val serviceClasses:MutableMap<String, T> = HashMap()
@@ -47,7 +47,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
     }
 
     /**
-     * 根据服务名来获得服务类元数据
+     * 根据服务标识来获得服务类元数据
      *
      * @param name
      * @return
@@ -82,9 +82,9 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
         if(IService::class.java.isSuperClass(clazz) /* 继承IService */){
             // 创建服务类元数据
             val serviceClass = collectServiceClass(clazz)
-            // 缓存服务提供者，key是服务名，即接口类全名
+            // 缓存服务提供者，key是服务标识，即接口类全名
             if(serviceClass != null)
-                serviceClasses[serviceClass.serviceName] = serviceClass
+                serviceClasses[serviceClass.serviceId] = serviceClass
         }
     }
 

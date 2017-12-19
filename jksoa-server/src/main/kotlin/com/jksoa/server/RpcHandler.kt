@@ -22,14 +22,14 @@ object RpcHandler : IRpcHandler {
     public override fun handle(req: Request): Response {
         try{
             // 获得provider
-            val provider = ProviderLoader.get(req.serviceName)
+            val provider = ProviderLoader.get(req.serviceId)
             if(provider == null)
-                throw ServiceException("服务[${req.serviceName}]没有提供者");
+                throw ServiceException("服务[${req.serviceId}]没有提供者");
 
             // 获得方法
             val method = provider.getMethod(req.methodSignature)
             if(method == null)
-                throw ServiceException("服务方法[${req.serviceName}#${req.methodSignature}]不存在");
+                throw ServiceException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
             // 调用方法
             val value = method.invoke(provider.service, *req.args)

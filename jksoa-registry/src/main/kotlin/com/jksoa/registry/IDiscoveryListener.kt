@@ -13,10 +13,10 @@ interface IDiscoveryListener {
     /**
      * 处理服务地址变化
      *
-     * @param serviceName 服务名
+     * @param serviceId 服务标识
      * @param urls 服务地址
      */
-    fun handleServiceUrlsChange(serviceName: String, urls: List<Url>)
+    fun handleServiceUrlsChange(serviceId: String, urls: List<Url>)
 
     /**
      * 处理服务配置参数（服务地址的参数）变化

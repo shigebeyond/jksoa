@@ -12,7 +12,7 @@ class Url(override var protocol: String /* 协议 */,
 
           override var port: Int /* 端口 */,
 
-          override var path: String /* 路径 = 服务名 = 接口类名 */ = "",
+          override var path: String /* 路径 = 服务标识 = 接口类名 */ = "",
 
           override var parameters: MutableMap<String, String>? = null /* 参数 */
 ) : IUrl {
@@ -64,22 +64,22 @@ class Url(override var protocol: String /* 协议 */,
         }
 
         /**
-         * 服务名转根节点路径
+         * 服务标识转根节点路径
          *
-         * @param serviceName
+         * @param serviceId
          * @return
          */
-        public fun serviceName2rootPath(serviceName: String): String {
-            return "/$serviceName"
+        public fun serviceId2rootPath(serviceId: String): String {
+            return "/$serviceId"
         }
 
         /**
-         * 服务名转根节点路径
+         * 服务标识转根节点路径
          *
          * @param rootPath
          * @return
          */
-        public fun rootPath2serviceName(rootPath: String): String {
+        public fun rootPath2serviceId(rootPath: String): String {
             return rootPath.substring(1)
         }
     }

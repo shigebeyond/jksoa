@@ -15,15 +15,15 @@ class RegisterTests {
 
     val registry = ZkRegistry
 
-    val serviceName = "com.jksoa.example.IEchoService"
+    val serviceId = "com.jksoa.example.IEchoService"
 
-    val url = Url("rmi://localhost:8081/$serviceName?weight=1")
+    val url = Url("rmi://localhost:8081/$serviceId?weight=1")
 
     // 服务发现监听器
     private val discoveryListener = object : IDiscoveryListener {
         // 处理服务地址变化
-        override fun handleServiceUrlsChange(serviceName: String, urls: List<Url>) {
-            println("服务[$serviceName]地址变化：" + urls)
+        override fun handleServiceUrlsChange(serviceId: String, urls: List<Url>) {
+            println("服务[$serviceId]地址变化：" + urls)
         }
 
         // 处理服务参数变化
@@ -46,14 +46,14 @@ class RegisterTests {
 
     @Test
     fun testSubscribe(){
-        println("订阅服务：$serviceName")
-        registry.subscribe(serviceName, discoveryListener)
+        println("订阅服务：$serviceId")
+        registry.subscribe(serviceId, discoveryListener)
     }
 
     @Test
     fun testUnsubscribe(){
-        println("退订服务：$serviceName")
-        registry.unsubscribe(serviceName, discoveryListener)
+        println("退订服务：$serviceId")
+        registry.unsubscribe(serviceId, discoveryListener)
     }
 
 

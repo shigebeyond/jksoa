@@ -37,14 +37,14 @@ class RmiConnection(url: Url): IConnection(url){
     public override fun send(req: Request): Response {
         try{
             // 获得referer
-            val referer = RefererLoader.get(req.serviceName)
+            val referer = RefererLoader.get(req.serviceId)
             if(referer == null)
-                throw RpcException("服务[${req.serviceName}]没有提供者");
+                throw RpcException("服务[${req.serviceId}]没有提供者");
 
             // 获得方法
             val method = referer.getMethod(req.methodSignature)
             if(method == null)
-                throw RpcException("服务方法[${req.serviceName}#${req.methodSignature}]不存在");
+                throw RpcException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
             // 调用远程对象的方法
             val value = method.invoke(remoteObject, *req.args)

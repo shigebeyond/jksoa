@@ -24,7 +24,7 @@ interface IUrl {
     var port: Int
 
     /**
-     * 路径 = 服务名 = 接口类名
+     * 路径 = 服务标识 = 接口类名
      */
     var path: String
 
@@ -34,13 +34,13 @@ interface IUrl {
     var parameters: MutableMap<String, String>?
 
     /**
-     * 服务名 = 路径 = 接口类名
+     * 服务标识 = 路径 = 接口类名
      */
-    val serviceName: String
+    val serviceId: String
         get() = path
 
     /**
-     * 接口类名 = 路径 = 服务名
+     * 接口类名 = 路径 = 服务标识
      */
     val `interface`: Class<out IService>
         get() = Class.forName(path) as Class<out IService>

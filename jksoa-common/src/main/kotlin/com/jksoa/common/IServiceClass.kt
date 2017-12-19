@@ -18,9 +18,9 @@ abstract class IServiceClass {
     public abstract val `interface`: Class<out IService>
 
     /**
-     * 服务名
+     * 服务标识
      */
-    public val serviceName: String
+    public val serviceId: String
         get() = `interface`.name
 
     /**

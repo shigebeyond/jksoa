@@ -36,7 +36,7 @@ object Broker: IDiscoveryListener, IBroker {
     private val loadBalance: ILoadBalance = ILoadBalance.instance(config["loadbalanceType"]!!)
 
     /**
-     * 连接池： <服务名 to <ip端口 to 连接>>
+     * 连接池： <服务标识 to <ip端口 to 连接>>
      */
     private val connections: ConcurrentHashMap<String, HashMap<String, IConnection>> = ConcurrentHashMap()
 
@@ -48,11 +48,11 @@ object Broker: IDiscoveryListener, IBroker {
     /**
      * 处理服务地址变化
      *
-     * @param serviceName 服务名
+     * @param serviceId 服务标识
      * @param urls 服务地址
      */
-    public override fun handleServiceUrlsChange(serviceName: String, urls: List<Url>){
-        clientLogger.debug("Broker处理服务[$serviceName]地址变化: " + urls)
+    public override fun handleServiceUrlsChange(serviceId: String, urls: List<Url>){
+        clientLogger.debug("Broker处理服务[$serviceId]地址变化: " + urls)
         var addKeys:Set<String> = emptySet() // 新加的url
         var removeKeys:Set<String> = emptySet() // 新加的url
         var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
@@ -64,7 +64,7 @@ object Broker: IDiscoveryListener, IBroker {
         }
 
         // 2 获得旧的服务地址
-        var oldUrls:HashMap<String, IConnection> = connections.getOrPut(serviceName){
+        var oldUrls:HashMap<String, IConnection> = connections.getOrPut(serviceId){
             HashMap()
         }
 
@@ -88,19 +88,19 @@ object Broker: IDiscoveryListener, IBroker {
 
         // 5 新加的地址
         for (key in addKeys){
-            clientLogger.debug("Broker处理服务[$serviceName]新加地址: " + newUrls[key])
+            clientLogger.debug("Broker处理服务[$serviceId]新加地址: " + newUrls[key])
             oldUrls[key] = newUrls[key]!!.connect() // 创建连接
         }
 
         // 6 删除的地址
         for(key in removeKeys){
-            clientLogger.debug("Broker处理服务[$serviceName]删除地址: " + oldUrls[key])
+            clientLogger.debug("Broker处理服务[$serviceId]删除地址: " + oldUrls[key])
             oldUrls[key]!!.close() // 关闭连接
         }
 
         // 7 更新的地址
         for(url in updateUrls) {
-            clientLogger.debug("Broker处理服务[$serviceName]更新地址: " + url)
+            clientLogger.debug("Broker处理服务[$serviceId]更新地址: " + url)
             handleParametersChange(url)
         }
     }
@@ -123,16 +123,16 @@ object Broker: IDiscoveryListener, IBroker {
      */
     public override fun call(req: Request): Response {
         // 1 获得可用连接
-        val urls = connections[req.serviceName]
+        val urls = connections[req.serviceId]
         if(urls == null || urls.isEmpty())
-            throw RpcException("没有找到服务[${req.serviceName}]")
+            throw RpcException("没有找到服务[${req.serviceId}]")
 
         // 2 按均衡负载策略，来选择连接
         val conn = loadBalance.select(urls.values, req) as IConnection?
         if(conn == null)
-            throw RpcException("服务[${req.serviceName}]无可用的连接")
+            throw RpcException("服务[${req.serviceId}]无可用的连接")
 
-        clientLogger.debug("Broker选择远程服务[${req.serviceName}]的一个连接${conn}来发送rpc请求")
+        clientLogger.debug("Broker选择远程服务[${req.serviceId}]的一个连接${conn}来发送rpc请求")
 
         // 3 发送请求
         return conn.send(req)
@@ -143,7 +143,7 @@ object Broker: IDiscoveryListener, IBroker {
      */
     public override fun close() {
         clientLogger.info("Broker.close(): 关闭客户端的所有连接")
-        for((serviceName, conns) in connections){
+        for((serviceId, conns) in connections){
             for((host, conn) in conns){
                 conn.close()
             }

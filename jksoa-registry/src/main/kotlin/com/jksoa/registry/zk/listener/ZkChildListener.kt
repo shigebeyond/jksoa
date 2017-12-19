@@ -30,8 +30,8 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChil
     @Synchronized
     public override fun handleChildChange(parentPath: String, currentChilds: List<String>) {
         // 更新服务地址
-        val serviceName = Url.rootPath2serviceName(parentPath)
-        discoveryListener.handleServiceUrlsChange(serviceName, zkClient.nodeChilds2Urls(parentPath, currentChilds))
+        val serviceId = Url.rootPath2serviceId(parentPath)
+        discoveryListener.handleServiceUrlsChange(serviceId, zkClient.nodeChilds2Urls(parentPath, currentChilds))
         registerLogger.info("[ZookeeperRegistry] service list change: path=%s, currentChilds=%s", parentPath, currentChilds.toString())
     }
 
