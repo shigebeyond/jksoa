@@ -1,7 +1,7 @@
 package com.jksoa.protocol
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.ConfiguredSingleton
+import com.jkmvc.common.NamedSingleton
 import com.jkmvc.common.IConfig
 import com.jkmvc.serialize.ISerializer
 import com.jksoa.common.Url
@@ -17,7 +17,7 @@ import com.jksoa.common.Url
 interface IProtocolClient {
 
     // 可配置的单例
-    companion object: ConfiguredSingleton<IProtocolClient>() {
+    companion object: NamedSingleton<IProtocolClient>() {
         /**
          * 配置，内容是哈希 <单例名 to 单例类>
          */

@@ -1,7 +1,7 @@
 package com.jksoa.loadbalance
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.ConfiguredSingleton
+import com.jkmvc.common.NamedSingleton
 import com.jkmvc.common.IConfig
 import com.jksoa.common.Request
 
@@ -14,7 +14,7 @@ import com.jksoa.common.Request
 interface ILoadBalance {
 
     // 可配置的单例
-    companion object: ConfiguredSingleton<ILoadBalance>() {
+    companion object: NamedSingleton<ILoadBalance>() {
         /**
          * 配置，内容是哈希 <单例名 to 单例类>
          */
