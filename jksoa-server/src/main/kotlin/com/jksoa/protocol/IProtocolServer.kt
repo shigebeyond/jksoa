@@ -27,8 +27,12 @@ interface IProtocolServer {
      * 启动服务器
      */
     fun start(){
+        // 服务端配置
+        val config = Config.instance("server", "yaml")
+        // 获得端口
+        val port: Int = config["port"]!!
         // 启动服务器
-        doStart()
+        doStart(port)
         // 注册服务
         registerServices()
     }
@@ -45,6 +49,8 @@ interface IProtocolServer {
 
     /**
      * 启动服务器
+     *
+     * @param port 端口
      */
-    fun doStart(): Unit
+    fun doStart(port: Int): Unit
 }

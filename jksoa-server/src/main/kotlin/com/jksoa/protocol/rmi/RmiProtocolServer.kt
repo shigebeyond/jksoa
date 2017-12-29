@@ -1,6 +1,5 @@
 package com.jksoa.protocol.rmi
 
-import com.jkmvc.common.Config
 import com.jksoa.protocol.IProtocolServer
 import com.jksoa.server.ProviderLoader
 import com.jksoa.server.ServiceException
@@ -18,17 +17,14 @@ import javax.naming.InitialContext
 class RmiProtocolServer : IProtocolServer {
 
     /**
-     * 服务端配置
-     */
-    private val config = Config.instance("server", "yaml")
-
-    /**
      * 启动服务器
+     *
+     * @param port 端口
      */
-    public override fun doStart(): Unit{
+    public override fun doStart(port: Int): Unit{
         try {
             // 监听端口
-            LocateRegistry.createRegistry(config["port"]!!)
+            LocateRegistry.createRegistry(port)
 
             // 初始化命名空间
             val namingContext = InitialContext()
