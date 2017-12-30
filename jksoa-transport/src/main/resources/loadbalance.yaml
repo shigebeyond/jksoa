@@ -1,2 +1,0 @@
-# 均衡负载类型
-random: com.jksoa.loadbalance.RandomLoadBalance # 随机选择

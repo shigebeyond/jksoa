@@ -39,6 +39,11 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
     public val serializer: ISerializer = ISerializer.instance(config["serializeType"]!!)
 
     /**
+     * 远程服务中转器
+     */
+    public val broker: IBroker = Broker
+
+    /**
      * 处理方法调用: 调用 Broker
      *
      * @param proxy 代理对象
@@ -52,9 +57,14 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
 
         try {
             // 发送调用请求，并返回结果
-            // 1 同步调用
-            val res = Broker.call(req)
-            return res.value
+            // 1 获得延后的响应
+            val resFuture = broker.call(req)
+            // 2 异步 TODO: 处理asyn
+            val asyn = false
+            if(asyn)
+                return resFuture
+            // 3 同步
+            return resFuture.get().value
         }catch (e: Exception){
             throw RpcException("rpc调用错误：" + e.message, e)
         }

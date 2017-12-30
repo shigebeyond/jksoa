@@ -9,7 +9,7 @@ package com.jksoa.common
  * @date 2017-09-08 2:05 PM
  */
 class Response(override val requestId: Long, /* 请求标识，全局唯一 */
-               override val value: Any?, /* 结果值 */
+               override val value: Any? = null, /* 结果值 */
                override val exception: Exception? = null /* 异常 */
 ) : IResponse {
 

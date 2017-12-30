@@ -1,6 +1,5 @@
 package com.jksoa.transport
 
-import com.jksoa.common.Request
 import com.jksoa.common.Url
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.IProtocolClient
@@ -12,7 +11,6 @@ import io.netty.channel.EventLoopGroup
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioSocketChannel
-import io.netty.util.concurrent.DefaultEventExecutor
 
 /**
  * netty客户端

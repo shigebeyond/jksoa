@@ -3,3 +3,4 @@ serializeType: fst # 序列化类型
 loadbalanceType: random # 均衡负载类型
 servicePackages: # service类所在的包路径
     - com.jksoa.example
+requestTimeout: 1000 # 请求超时，单位：微秒

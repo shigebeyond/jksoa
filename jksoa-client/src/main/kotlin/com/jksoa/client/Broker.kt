@@ -2,10 +2,7 @@ package com.jksoa.client
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
-import com.jksoa.common.Request
-import com.jksoa.common.Response
-import com.jksoa.common.Url
-import com.jksoa.common.clientLogger
+import com.jksoa.common.*
 import com.jksoa.loadbalance.ILoadBalance
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.connect
@@ -121,7 +118,7 @@ object Broker: IDiscoveryListener, IBroker {
      * @param req
      * @return
      */
-    public override fun call(req: Request): Response {
+    public override fun call(req: Request): IResponseFuture {
         // 1 获得可用连接
         val urls = connections[req.serviceId]
         if(urls == null || urls.isEmpty())

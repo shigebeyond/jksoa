@@ -1,27 +1,22 @@
 package com.jksoa.transport
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
+import com.jksoa.common.IResponseFuture
 import com.jksoa.common.Request
-import com.jksoa.common.Response
 import com.jksoa.common.Url
 import com.jksoa.protocol.IConnection
 import io.netty.channel.Channel
 import io.netty.util.concurrent.Future
 import io.netty.util.concurrent.GenericFutureListener
-import java.util.concurrent.TimeUnit
 
+/**
+ * netty连接
+ *
+ * @ClasssName: NettyClient
+ * @Description:
+ * @author shijianhang<772910474@qq.com>
+ * @date 2017-12-30 12:48 PM
+ */
 class NettyConnection(protected val channel: Channel, url: Url) : IConnection(url) {
-
-    /**
-     * 客户端配置
-     */
-    public val config: IConfig = Config.instance("client", "yaml")
-
-    /**
-     * io超时
-     */
-    public val timeout = config.getLong("requestTimeout", 100)!!
 
     /**
      * 客户端发送请求
@@ -29,38 +24,27 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
      * @param req
      * @return
      */
-    public override fun send(req: Request): Response {
-        var response = Response()
-
+    public override fun send(req: Request): IResponseFuture {
         // 发送请求
         val writeFuture = channel.write(req)
-        val listener: GenericFutureListener<out Future<in Void>> = GenericFutureListener(){ future ->
-            if (future.isSuccess() || future.isDone()) { // 成功
 
+        // 添加请求完成的监听器
+        val listener = object : GenericFutureListener<Future<Void>> {
+            override fun operationComplete(future: Future<Void>) {
+                writeFuture.removeListener(this) // 删除监听器
+                if (future.isSuccess() || future.isDone()) { // 成功
+
+                }
             }
-            writeFuture.removeListener(this@GenericFutureListener)
         }
-
         writeFuture.addListener(listener)
 
-        // 阻塞等待响应，有超时
-        val result = writeFuture.awaitUninterruptibly(timeout, TimeUnit.MILLISECONDS)
-
-        if (result && writeFuture.isSuccess()) { // 成功
-            return response
-        }
-
-        writeFuture.cancel()
-
-        if (writeFuture.cause() != null) { // io异常
-
-        } else { // 超时
-
-        }
+        // 返回延后的响应
+        return NettyResponseFuture(writeFuture)
     }
 
     /**
-     * C关闭连接
+     * 关闭连接
      */
     public override fun close() {
 

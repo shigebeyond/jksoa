@@ -1,6 +1,5 @@
 package com.jksoa.transport
 
-
 import com.jkmvc.common.Config
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelFuture
@@ -56,7 +55,7 @@ class NettyServer {
                            channel.pipeline()
                                    .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                    .addLast(NettyMessageEncoder()) // 编码
-                                   .addLast(businessGroup, RpcHandler) // 业务处理
+                                   .addLast(businessGroup, NettyServerHandler()) // 业务处理
                        }
                    })
            // Bind and start to accept incoming connections.
