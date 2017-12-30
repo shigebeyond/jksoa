@@ -1,5 +1,9 @@
 package com.jksoa.transport
 
+import com.jksoa.common.Request
+import com.jksoa.common.Url
+import com.jksoa.protocol.IConnection
+import com.jksoa.protocol.IProtocolClient
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelInitializer
@@ -13,12 +17,12 @@ import io.netty.util.concurrent.DefaultEventExecutor
 /**
  * netty客户端
  *
- * @ClasssName: Registry
+ * @ClasssName: NettyClient
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyClient {
+class NettyClient: IProtocolClient {
 
     /**
      * 工作线程池：处理io
@@ -26,13 +30,14 @@ class NettyClient {
     private val workerGroup: EventLoopGroup = NioEventLoopGroup()
 
     /**
-     * 业务线程池：处理业务
+     * 客户端连接服务器
+     *
+     * @param url
+     * @return
      */
-    private val businessGroup = DefaultEventExecutor()
-
-    fun connect(host: String, port: Int) {
-
+    public override fun connect(url: Url): IConnection {
         try {
+            // Create Bootstrap
             val b = Bootstrap()
                     .group(workerGroup)
                     .channel(NioSocketChannel::class.java)
@@ -43,16 +48,16 @@ class NettyClient {
                             channel.pipeline()
                                     .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                     .addLast(NettyMessageEncoder()) // 编码
-                                    .addLast(businessGroup, RpcInvocationHandler) // 业务处理
-
                         }
                     })
 
             // Start the client.
-            val f: ChannelFuture = b.connect(host, port).sync();
+            val f: ChannelFuture = b.connect(url.host, url.port).sync();
 
             // Wait until the connection is closed.
-            f.channel().closeFuture().sync();
+            //f.channel().closeFuture().sync();
+
+            return NettyConnection(f.channel(), url)
         } finally {
             workerGroup.shutdownGracefully();
         }

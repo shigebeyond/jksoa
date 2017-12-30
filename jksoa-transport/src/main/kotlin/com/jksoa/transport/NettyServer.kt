@@ -15,7 +15,7 @@ import io.netty.util.concurrent.DefaultEventExecutor
 /**
  * netty服务端
  *
- * @ClasssName: Registry
+ * @ClasssName: NettyServer
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
