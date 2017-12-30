@@ -118,7 +118,7 @@ object Broker: IDiscoveryListener, IBroker {
      * @param req
      * @return
      */
-    public override fun call(req: Request): IResponseFuture {
+    public override fun call(req: IRequest): IResponseFuture {
         // 1 获得可用连接
         val urls = connections[req.serviceId]
         if(urls == null || urls.isEmpty())

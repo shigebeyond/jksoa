@@ -1,6 +1,6 @@
 package com.jksoa.transport
 
-import com.jksoa.common.Request
+import com.jksoa.common.IRequest
 import com.jksoa.server.IRpcHandler
 import com.jksoa.server.RpcHandler
 import io.netty.channel.ChannelHandlerContext
@@ -14,7 +14,7 @@ import io.netty.channel.SimpleChannelInboundHandler
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyServerHandler : SimpleChannelInboundHandler<Request>() {
+class NettyServerHandler : SimpleChannelInboundHandler<IRequest>() {
 
     /**
      * rpc请求处理器
@@ -27,7 +27,7 @@ class NettyServerHandler : SimpleChannelInboundHandler<Request>() {
      * @param ctx
      * @param req
      */
-    public override fun channelRead0(ctx: ChannelHandlerContext, req: Request) {
+    public override fun channelRead0(ctx: ChannelHandlerContext, req: IRequest) {
         // 处理请求
         val res = rpcHandler.handle(req)
 

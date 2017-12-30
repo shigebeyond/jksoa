@@ -1,8 +1,7 @@
 package com.jksoa.client
 
 import com.jksoa.common.IResponseFuture
-import com.jksoa.common.Request
-import com.jksoa.common.Response
+import com.jksoa.common.IRequest
 import java.io.Closeable
 
 /**
@@ -23,5 +22,5 @@ interface IBroker: Closeable {
      * @param req
      * @return
      */
-    fun call(req: Request): IResponseFuture
+    fun call(req: IRequest): IResponseFuture
 }

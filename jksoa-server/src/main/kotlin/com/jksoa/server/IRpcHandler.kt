@@ -1,6 +1,6 @@
 package com.jksoa.server
 
-import com.jksoa.common.Request
+import com.jksoa.common.IRequest
 import com.jksoa.common.Response
 
 /**
@@ -18,5 +18,5 @@ interface IRpcHandler {
      * @param req
      * @return
      */
-    fun handle(req: Request): Response
+    fun handle(req: IRequest): Response
 }

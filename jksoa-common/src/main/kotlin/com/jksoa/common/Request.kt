@@ -12,11 +12,11 @@ import java.lang.reflect.Method
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-class Request(public val serviceId: String, /* 服务标识，即接口类全名 */
-              public val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
-              public val args: Array<Any>, /* 实参 */
-              public val id: Long = SnowflakeIdWorker.instance().nextId() /* 请求标识，全局唯一 */
-) {
+class Request(public override val serviceId: String, /* 服务标识，即接口类全名 */
+              public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
+              public override val args: Array<Any>, /* 实参 */
+              public override val id: Long = SnowflakeIdWorker.instance().nextId() /* 请求标识，全局唯一 */
+): IRequest {
 
     /**
      * 构造函数

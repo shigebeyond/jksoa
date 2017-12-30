@@ -1,6 +1,6 @@
 package com.jksoa.server
 
-import com.jksoa.common.Request
+import com.jksoa.common.IRequest
 import com.jksoa.common.Response
 
 /**
@@ -19,7 +19,7 @@ object RpcHandler : IRpcHandler {
      * @param req
      * @return
      */
-    public override fun handle(req: Request): Response {
+    public override fun handle(req: IRequest): Response {
         try{
             // 获得provider
             val provider = ProviderLoader.get(req.serviceId)

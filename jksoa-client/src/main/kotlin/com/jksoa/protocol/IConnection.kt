@@ -20,5 +20,5 @@ abstract class IConnection(public val url: Url /* 服务端地址 */,
      * @param req
      * @return
      */
-    public abstract fun send(req: Request): IResponseFuture
+    public abstract fun send(req: IRequest): IResponseFuture
 }

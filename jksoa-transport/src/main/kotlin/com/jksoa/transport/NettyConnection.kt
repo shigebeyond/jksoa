@@ -1,7 +1,7 @@
 package com.jksoa.transport
 
 import com.jksoa.common.IResponseFuture
-import com.jksoa.common.Request
+import com.jksoa.common.IRequest
 import com.jksoa.common.Url
 import com.jksoa.protocol.IConnection
 import io.netty.channel.Channel
@@ -24,7 +24,7 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
      * @param req
      * @return
      */
-    public override fun send(req: Request): IResponseFuture {
+    public override fun send(req: IRequest): IResponseFuture {
         // 发送请求
         val writeFuture = channel.write(req)
 
