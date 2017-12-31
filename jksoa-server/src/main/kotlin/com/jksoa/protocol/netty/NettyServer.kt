@@ -1,6 +1,7 @@
 package com.jksoa.protocol.netty
 
 import com.jkmvc.common.Config
+import com.jksoa.common.serverLogger
 import com.jksoa.protocol.IProtocolServer
 import com.jksoa.protocol.netty.NettyMessageDecoder
 import com.jksoa.protocol.netty.NettyMessageEncoder
@@ -59,6 +60,7 @@ class NettyServer : IProtocolServer {
                    .childOption(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
                    .childHandler(object : ChannelInitializer<SocketChannel>() {
                        public override fun initChannel(channel: SocketChannel) {
+                           serverLogger.info("NettyServer接收客户端连接: " + channel)
                            // 为channel添加io处理器
                            channel.pipeline()
                                    .addLast(NettyMessageDecoder(1024 * 1024)) // 解码

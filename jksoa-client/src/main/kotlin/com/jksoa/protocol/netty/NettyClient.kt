@@ -24,15 +24,6 @@ import java.io.Closeable
  * @date 2017-12-30 12:48 PM
  */
 class NettyClient: IProtocolClient {
-    companion object{
-        @JvmStatic
-        fun main(args: Array<String>) {
-            val client = NettyClient()
-            val conn = client.connect(Url("netty", "localhost", 8081))
-            println(conn)
-        }
-    }
-
     /**
      * 工作线程池：处理io
      */
@@ -61,6 +52,7 @@ class NettyClient: IProtocolClient {
                 .option(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
                 .handler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
+                        clientLogger.info("NettyClient连接服务器: " + channel)
                         // 为channel添加io处理器
                         channel.pipeline()
                                 .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
@@ -72,7 +64,7 @@ class NettyClient: IProtocolClient {
         val f: ChannelFuture = b.connect(url.host, url.port).sync();
 
         // Wait until the connection is closed.
-        f.channel().closeFuture().sync();
+        //f.channel().closeFuture().sync();
 
         return NettyConnection(f.channel(), url)
     }
