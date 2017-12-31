@@ -20,7 +20,7 @@ class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(ma
     /**
      * 服务端配置
      */
-    public val config = Config.instance("server", "yaml")
+    public val config = Config.instance("client", "yaml")
 
     /**
      * 序列化
