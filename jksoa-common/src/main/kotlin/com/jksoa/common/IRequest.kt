@@ -1,6 +1,6 @@
 package com.jksoa.common
 
-import com.jkmvc.common.SnowflakeIdWorker
+import java.io.Serializable
 
 /**
  * rpc请求
@@ -10,7 +10,7 @@ import com.jkmvc.common.SnowflakeIdWorker
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IRequest{
+interface IRequest: Serializable {
 
     /**
      * 服务标识，即接口类全名

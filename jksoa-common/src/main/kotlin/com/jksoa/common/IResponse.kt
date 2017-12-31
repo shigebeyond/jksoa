@@ -1,5 +1,7 @@
 package com.jksoa.common
 
+import java.io.Serializable
+
 /**
  * rpc响应
  *
@@ -8,7 +10,7 @@ package com.jksoa.common
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IResponse {
+interface IResponse: Serializable {
 
     /**
      * 请求标识
