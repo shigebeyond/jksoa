@@ -29,4 +29,24 @@ class Request(public override val serviceId: String, /* 服务标识，即接口
     public constructor(intf: Class<out IService>, method: Method, args: Array<Any>, id: Long = SnowflakeIdWorker.instance().nextId()): this(intf.name, method.getSignature(), args, id){
     }
 
+    /**
+     * 构造函数
+     *
+     * @param intf 接口类
+     * @param methodSignature 方法签名
+     * @param args 实参
+     * @param id 请求标识
+     */
+    public constructor(intf: Class<out IService>, methodSignature: String, args: Array<Any>, id: Long = SnowflakeIdWorker.instance().nextId()): this(intf.name, methodSignature, args, id){
+    }
+
+    /**
+     * 转为字符串
+     *
+     * @return
+     */
+    public override fun toString(): String {
+        return "id=$id, service=$serviceId.$methodSignature, args=$args";
+    }
+
 }

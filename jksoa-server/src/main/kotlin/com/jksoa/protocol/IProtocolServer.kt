@@ -1,8 +1,10 @@
 package com.jksoa.protocol
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.NamedSingleton
 import com.jkmvc.common.IConfig
+import com.jkmvc.common.NamedSingleton
+import com.jksoa.common.serverLogger
+import com.jksoa.common.exception.RpcServerException
 import com.jksoa.server.ProviderLoader
 
 /**
@@ -31,10 +33,16 @@ interface IProtocolServer {
         val config = Config.instance("server", "yaml")
         // 获得端口
         val port: Int = config["port"]!!
-        // 启动服务器
-        doStart(port)
         // 注册服务
         registerServices()
+        // 启动服务器
+        try{
+            serverLogger.info("启动服务[localhost:$port]")
+            doStart(port) // 可能阻塞，只能在最后一句执行
+        }catch(e: Exception){
+            serverLogger.error("启动服务[localhost:$port]失败: ${e.message}")
+            throw RpcServerException(e)
+        }
     }
 
     /**

@@ -10,9 +10,18 @@ package com.jksoa.common
  */
 interface IResponse {
 
+    /**
+     * 请求标识
+     */
     val requestId: Long
 
+    /**
+     * 返回值
+     */
     val value: Any?
 
-    val exception: Exception?
+    /**
+     * 异常，包含 Exception + Error
+     */
+    val cause: Throwable?
 }

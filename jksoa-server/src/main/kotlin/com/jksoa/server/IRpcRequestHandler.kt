@@ -11,7 +11,7 @@ import com.jksoa.common.Response
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-interface IRpcHandler {
+interface IRpcRequestHandler {
     /**
      * 处理请求
      *

@@ -1,5 +1,6 @@
-package com.jksoa.common
+package com.jksoa.common.future
 
+import com.jksoa.common.IResponse
 import java.util.concurrent.Future
 
 /**

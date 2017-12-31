@@ -1,9 +1,9 @@
-package com.jksoa.server
+package com.jksoa.common.exception
 
 /**
- * 服务异常
+ * rpc服务端异常
  */
-class ServiceException : RuntimeException {
+class RpcServerException : RuntimeException {
     constructor(message: String) : super(message) {
     }
 

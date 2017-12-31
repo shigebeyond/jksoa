@@ -45,7 +45,7 @@ class NettyServer {
        try {
            // Create ServerBootstrap
            val b = ServerBootstrap()
-                    .group(bossGroup, workerGroup)
+                   .group(bossGroup, workerGroup)
                    .channel(NioServerSocketChannel::class.java)
                    .option(ChannelOption.SO_BACKLOG, 128 * 8) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
                    .childOption(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
@@ -59,7 +59,7 @@ class NettyServer {
                        }
                    })
            // Bind and start to accept incoming connections.
-           val f:ChannelFuture = b.bind(port).sync()
+           val f: ChannelFuture = b.bind(port).sync()
 
            // Wait until the server socket is closed.
            // In this example, this does not happen, but you can do that to gracefully

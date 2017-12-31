@@ -1,8 +1,11 @@
 package com.jksoa.protocol.rmi
 
 import com.jksoa.client.RefererLoader
-import com.jksoa.client.RpcException
 import com.jksoa.common.*
+import com.jksoa.common.exception.RpcClientException
+import com.jksoa.common.future.CompletedResponseFuture
+import com.jksoa.common.future.IResponseFuture
+import com.jksoa.common.Response
 import com.jksoa.protocol.IConnection
 import javax.naming.InitialContext
 
@@ -37,12 +40,12 @@ class RmiConnection(url: Url): IConnection(url){
             // 获得referer
             val referer = RefererLoader.get(req.serviceId)
             if(referer == null)
-                throw RpcException("服务[${req.serviceId}]没有提供者");
+                throw RpcClientException("远程服务[${req.serviceId}]没有引用者");
 
             // 获得方法
             val method = referer.getMethod(req.methodSignature)
             if(method == null)
-                throw RpcException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
+                throw RpcClientException("远程服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
             // 调用远程对象的方法
             val value = method.invoke(remoteObject, *req.args)

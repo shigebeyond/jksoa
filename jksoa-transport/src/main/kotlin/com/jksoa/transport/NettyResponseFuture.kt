@@ -2,9 +2,10 @@ package com.jksoa.transport
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jksoa.client.RpcException
+import com.jksoa.common.IRequest
 import com.jksoa.common.IResponse
-import com.jksoa.common.ResponseFuture
+import com.jksoa.common.future.ResponseFuture
+import com.jksoa.common.exception.RpcClientException
 import io.netty.channel.ChannelFuture
 import java.util.concurrent.*
 
@@ -14,7 +15,7 @@ import java.util.concurrent.*
  * @author shijianhang
  * @create 2017-12-30 下午11:58
  **/
-class NettyResponseFuture(future: ChannelFuture) : ResponseFuture(future as Future<IResponse>) {
+class NettyResponseFuture(future: ChannelFuture, protected val req: IRequest) : ResponseFuture(future as Future<IResponse>) {
 
     companion object{
         /**
@@ -30,7 +31,7 @@ class NettyResponseFuture(future: ChannelFuture) : ResponseFuture(future as Futu
      * @return the computed result
      * @throws CancellationException if the computation was cancelled
      * @throws ExecutionException if the computation threw an
-     * exception
+     * cause
      * @throws InterruptedException if the current thread was interrupted
      * while waiting
      */
@@ -47,27 +48,30 @@ class NettyResponseFuture(future: ChannelFuture) : ResponseFuture(future as Futu
      * @return the computed result
      * @throws CancellationException if the computation was cancelled
      * @throws ExecutionException if the computation threw an
-     * exception
+     * cause
      * @throws InterruptedException if the current thread was interrupted
      * while waiting
      * @throws TimeoutException if the wait timed out
      */
     public override fun get(timeout: Long, unit: TimeUnit): IResponse {
         val f = future as ChannelFuture
-        // 阻塞等待响应，有超时
-        val result = f.awaitUninterruptibly(timeout, unit)
 
+        // 1 阻塞等待响应，有超时
+        val result = f.isDone() /* 已执行过 */ || f.awaitUninterruptibly(timeout, unit)
+
+        // 2 返回响应
         if (result && f.isSuccess()) // 成功
             return f.get() as IResponse
 
-        // 超时取消
+        // 3 超时取消
         f.cancel(false)
 
-        if (f.cause() != null) { // io异常
-            throw RpcException("io异常", f.cause())
-        } else { // 超时
-            throw RpcException("请求超时")
-        }
+        // 4 处理异常
+        if (f.cause() != null)  // io异常
+            throw RpcClientException("远程调用发生io异常: $req", f.cause())
+
+        // 超时
+        throw RpcClientException("远程调用超时: $req")
     }
 
 }

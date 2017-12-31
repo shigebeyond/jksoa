@@ -3,6 +3,7 @@ package com.jksoa.client
 import com.jkmvc.common.ShutdownHook
 import com.jksoa.common.IService
 import com.jksoa.common.clientLogger
+import com.jksoa.common.exception.RpcClientException
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
 
@@ -37,7 +38,7 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
         public fun <T: IService> getRefer(clazz: Class<T>): T {
             val referer = RefererLoader.get(clazz.name)
             if(referer == null)
-                throw RpcException("未加载服务: " + clazz.name);
+                throw RpcClientException("未加载远程服务: " + clazz.name);
             return referer.service as T
         }
 

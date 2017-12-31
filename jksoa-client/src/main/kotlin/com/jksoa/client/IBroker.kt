@@ -1,6 +1,6 @@
 package com.jksoa.client
 
-import com.jksoa.common.IResponseFuture
+import com.jksoa.common.future.IResponseFuture
 import com.jksoa.common.IRequest
 import java.io.Closeable
 

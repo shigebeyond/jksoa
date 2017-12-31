@@ -3,6 +3,8 @@ package com.jksoa.client
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
 import com.jksoa.common.*
+import com.jksoa.common.exception.RpcClientException
+import com.jksoa.common.future.IResponseFuture
 import com.jksoa.loadbalance.ILoadBalance
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.connect
@@ -122,12 +124,12 @@ object Broker: IDiscoveryListener, IBroker {
         // 1 获得可用连接
         val urls = connections[req.serviceId]
         if(urls == null || urls.isEmpty())
-            throw RpcException("没有找到服务[${req.serviceId}]")
+            throw RpcClientException("没有找到远程服务[${req.serviceId}]")
 
         // 2 按均衡负载策略，来选择连接
         val conn = loadBalance.select(urls.values, req) as IConnection?
         if(conn == null)
-            throw RpcException("服务[${req.serviceId}]无可用的连接")
+            throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
 
         clientLogger.debug("Broker选择远程服务[${req.serviceId}]的一个连接${conn}来发送rpc请求")
 

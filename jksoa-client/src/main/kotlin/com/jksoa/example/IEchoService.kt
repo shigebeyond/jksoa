@@ -14,4 +14,8 @@ interface IEchoService : Remote, IService {
 
     @Throws(RemoteException::class)
     fun echo(msg: String): String
+
+    fun echoAsync(msg: String): String{
+        throw Exception()
+    }
 }

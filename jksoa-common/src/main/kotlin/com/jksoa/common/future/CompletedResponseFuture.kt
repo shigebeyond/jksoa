@@ -1,5 +1,7 @@
-package com.jksoa.common
+package com.jksoa.common.future
 
+import com.jksoa.common.IResponse
+import com.jksoa.common.Response
 import java.util.concurrent.TimeUnit
 
 /**
@@ -10,11 +12,11 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-open class CompletedResponseFuture(val res: Response): IResponseFuture, IResponse by res{
+open class CompletedResponseFuture(protected val res: Response): IResponseFuture, IResponse by res{
     /**
      * Returns `true` if this task completed.
 
-     * Completion may be due to normal termination, an exception, or
+     * Completion may be due to normal termination, an cause, or
      * cancellation -- in all of these cases, this method will return
      * `true`.
 
@@ -74,7 +76,7 @@ open class CompletedResponseFuture(val res: Response): IResponseFuture, IRespons
      * @throws CancellationException if the computation was cancelled
      * *
      * @throws ExecutionException if the computation threw an
-     * * exception
+     * * cause
      * *
      * @throws InterruptedException if the current thread was interrupted
      * * while waiting
@@ -94,7 +96,7 @@ open class CompletedResponseFuture(val res: Response): IResponseFuture, IRespons
      * @throws CancellationException if the computation was cancelled
      * *
      * @throws ExecutionException if the computation threw an
-     * * exception
+     * * cause
      * *
      * @throws InterruptedException if the current thread was interrupted
      * * while waiting

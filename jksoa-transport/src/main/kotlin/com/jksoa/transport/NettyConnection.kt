@@ -1,6 +1,6 @@
 package com.jksoa.transport
 
-import com.jksoa.common.IResponseFuture
+import com.jksoa.common.future.IResponseFuture
 import com.jksoa.common.IRequest
 import com.jksoa.common.Url
 import com.jksoa.protocol.IConnection
@@ -40,7 +40,7 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
         writeFuture.addListener(listener)
 
         // 返回延后的响应
-        return NettyResponseFuture(writeFuture)
+        return NettyResponseFuture(writeFuture, req)
     }
 
     /**

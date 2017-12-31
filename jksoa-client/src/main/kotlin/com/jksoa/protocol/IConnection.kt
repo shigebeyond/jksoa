@@ -1,6 +1,7 @@
 package com.jksoa.protocol
 
 import com.jksoa.common.*
+import com.jksoa.common.future.IResponseFuture
 import com.jksoa.loadbalance.INode
 import java.io.Closeable
 
