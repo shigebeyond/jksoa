@@ -24,38 +24,12 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
     protected val serviceClasses:MutableMap<String, T> = HashMap()
 
     /**
-     * 配置
-     */
-    protected abstract val config: IConfig
-
-    /**
-     * 初始化包
-     */
-    protected fun initPackages(){
-        // 加载配置的包路径
-        val pcks:List<String>? = config["servicePackages"]
-        if(pcks != null)
-            addPackages(pcks)
-    }
-
-    /**
-     * 添加服务类元数据
-     *
-     * @param name
-     * @param value
-     * @return
-     */
-    public fun add(name: String, value: T): Unit{
-        serviceClasses[name] = value
-    }
-
-    /**
      * 根据服务标识来获得服务类元数据
      *
      * @param name
      * @return
      */
-    public fun get(name: String): T?{
+    public open fun get(name: String): T?{
         return serviceClasses[name]
     }
 
@@ -63,7 +37,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      * 获得所有的服务类元数据
      * @return
      */
-    public fun getAll(): Collection<T> {
+    public open fun getAll(): Collection<T> {
         return serviceClasses.values.toSet()
     }
 

@@ -3,7 +3,6 @@ package com.jksoa.server
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
 import com.jkmvc.common.isSuperClass
-import com.jksoa.client.Referer
 import com.jksoa.client.RefererLoader
 import com.jksoa.common.IService
 import com.jksoa.common.Url
@@ -72,9 +71,7 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
         registry.register(serviceUrl)
 
         // 2 注册本地服务引用： 对要调用的服务，如果本地有提供，则直接调用本地的服务
-        val serviceId = `interface`.name
-        val localReferer = Referer(`interface`, service /* 本地服务 */, true) // 本地服务的引用
-        RefererLoader.add(serviceId, localReferer)
+        RefererLoader.addLocal(`interface`, service)
     }
 
     /**
