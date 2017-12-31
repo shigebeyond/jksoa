@@ -101,7 +101,6 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
                             method.name.removeSuffix(ASYNC_METHOD_SUFFIX)
                         else
                             method.name
-
         return method.parameterTypes.joinTo(StringBuilder(methodName), ",", "(", ")"){
             it.name
         }.toString().replace("java.lang.", "")

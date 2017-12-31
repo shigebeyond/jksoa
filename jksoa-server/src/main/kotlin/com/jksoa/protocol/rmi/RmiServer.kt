@@ -13,10 +13,11 @@ import javax.naming.InitialContext
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-class RmiProtocolServer : IProtocolServer {
+class RmiServer : IProtocolServer {
 
     /**
      * 启动服务器
+     *   必须在启动后，主动调用 registerServices() 来注册服务
      *
      * @param port 端口
      */
@@ -31,6 +32,9 @@ class RmiProtocolServer : IProtocolServer {
             // 注册url： rmi://192.168.0.106:8081/com.jksoa.example.IEchoService
             namingContext.rebind(provider.serviceUrl.toString(), provider.service)
         }
+
+        // 注册服务
+        registerServices()
     }
 
 }

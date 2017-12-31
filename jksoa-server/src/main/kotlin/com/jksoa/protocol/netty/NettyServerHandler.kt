@@ -1,4 +1,4 @@
-package com.jksoa.transport
+package com.jksoa.protocol.netty
 
 import com.jksoa.common.IRequest
 import com.jksoa.server.IRpcRequestHandler

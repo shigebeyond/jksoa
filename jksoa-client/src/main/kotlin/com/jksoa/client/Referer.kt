@@ -18,7 +18,8 @@ import com.jksoa.registry.zk.ZkRegistry
  * @date 2017-12-14 9:52 AM
  */
 class Referer(public override val `interface`:Class<out IService> /* 接口类 */,
-              public override val service: IService = RpcInvocationHandler.createProxy(`interface`) /* 服务实例，默认是服务代理，但在服务端可指定本地服务实例 */
+              public override val service: IService = RpcInvocationHandler.createProxy(`interface`), /* 服务实例，默认是服务代理，但在服务端可指定本地服务实例 */
+              public val local: Boolean = false /* 是否本地服务 */
 ): IReferer() {
 
     companion object{
@@ -53,12 +54,14 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
     }
 
     init {
-        // 监听服务变化
-        clientLogger.debug("Referer监听服务[$serviceId]变化")
-        registry.subscribe(serviceId, Broker)
+        if(!local) {
+            // 监听服务变化
+            clientLogger.debug("Referer监听服务[$serviceId]变化")
+            registry.subscribe(serviceId, Broker)
 
-        // 要关闭
-        ShutdownHook.addClosing(this)
+            // 要关闭
+            ShutdownHook.addClosing(this)
+        }
     }
 
     /**

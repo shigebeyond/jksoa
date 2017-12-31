@@ -5,14 +5,14 @@ import com.jksoa.common.serverLogger
 import com.jksoa.protocol.IProtocolServer
 
 /**
- * 启动器
+ * 服务器启动
  *
  * @ClassName: Server
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-16.
  */
-object Launcher {
+object ServerLauncher {
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -23,7 +23,6 @@ object Launcher {
         val server = IProtocolServer.instance(protocol)
         // 启动服务
         server.start()
-        serverLogger.info("Launcher启动[$protocol]协议服务")
     }
 
 }

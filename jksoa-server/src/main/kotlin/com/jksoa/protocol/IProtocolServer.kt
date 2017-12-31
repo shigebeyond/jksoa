@@ -26,6 +26,16 @@ interface IProtocolServer {
     }
 
     /**
+     * 服务器名
+     */
+    val name: String
+        get(){
+            val clazz = this.javaClass.name
+            val i = clazz.lastIndexOf('.')
+            return clazz.substring(i + 1)
+        }
+
+    /**
      * 启动服务器
      */
     fun start(){
@@ -33,14 +43,12 @@ interface IProtocolServer {
         val config = Config.instance("server", "yaml")
         // 获得端口
         val port: Int = config["port"]!!
-        // 注册服务
-        registerServices()
         // 启动服务器
         try{
-            serverLogger.info("启动服务[localhost:$port]")
+            serverLogger.info("${name}在端口${port}上启动")
             doStart(port) // 可能阻塞，只能在最后一句执行
         }catch(e: Exception){
-            serverLogger.error("启动服务[localhost:$port]失败: ${e.message}")
+            serverLogger.error("${name}在端口${port}上启动失败: ${e.message}")
             throw RpcServerException(e)
         }
     }
@@ -57,8 +65,9 @@ interface IProtocolServer {
 
     /**
      * 启动服务器
+     *   必须在启动后，主动调用 registerServices() 来注册服务
      *
      * @param port 端口
      */
-    fun doStart(port: Int): Unit
+    fun doStart(port: Int)
 }

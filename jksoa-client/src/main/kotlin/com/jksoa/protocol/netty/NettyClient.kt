@@ -1,4 +1,4 @@
-package com.jksoa.transport
+package com.jksoa.protocol.netty
 
 import com.jksoa.common.Url
 import com.jksoa.protocol.IConnection

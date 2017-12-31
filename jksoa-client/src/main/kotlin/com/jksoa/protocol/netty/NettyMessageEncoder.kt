@@ -1,4 +1,4 @@
-package com.jksoa.transport
+package com.jksoa.protocol.netty
 
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer

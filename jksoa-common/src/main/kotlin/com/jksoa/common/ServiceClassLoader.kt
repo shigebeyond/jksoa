@@ -4,6 +4,7 @@ import com.jkmvc.common.ClassScanner
 import com.jkmvc.common.IConfig
 import com.jkmvc.common.isSuperClass
 import java.io.File
+import java.lang.reflect.Modifier
 
 /**
  * 加载服务类
@@ -27,8 +28,10 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      */
     protected abstract val config: IConfig
 
-
-    init{
+    /**
+     * 初始化包
+     */
+    protected fun initPackages(){
         // 加载配置的包路径
         val pcks:List<String>? = config["servicePackages"]
         if(pcks != null)

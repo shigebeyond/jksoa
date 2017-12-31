@@ -16,9 +16,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-open class ResultFuture(
-        protected val resFuture: IResponseFuture
-): Future<Any?> {
+class ResultFuture(protected val resFuture: IResponseFuture): Future<Any?> {
 
     companion object{
         /**

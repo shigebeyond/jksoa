@@ -1,4 +1,4 @@
-package com.jksoa.transport
+package com.jksoa.protocol.netty
 
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer
@@ -41,7 +41,7 @@ class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(ma
             return null
 
         // 2 解析数据
-        var ins:ByteBufInputStream? = null
+        var ins: ByteBufInputStream? = null
         try{
             // 反序列化
             ins = ByteBufInputStream(frame)

@@ -4,6 +4,7 @@ import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jksoa.common.IService
 import com.jksoa.common.ServiceClassLoader
+import java.lang.reflect.Modifier
 
 /**
  * 加载服务引用者
@@ -29,6 +30,9 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
      * @param clazz
      */
     public override fun collectServiceClass(clazz: Class<IService>): Referer? {
-        return Referer(clazz) // 服务引用者
+        if(Modifier.isInterface(clazz.modifiers)) // 接口
+            return Referer(clazz) // 服务引用者
+
+        return null
     }
 }

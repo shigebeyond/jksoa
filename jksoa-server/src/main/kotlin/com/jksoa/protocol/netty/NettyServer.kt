@@ -1,6 +1,9 @@
-package com.jksoa.transport
+package com.jksoa.protocol.netty
 
 import com.jkmvc.common.Config
+import com.jksoa.protocol.IProtocolServer
+import com.jksoa.protocol.netty.NettyMessageDecoder
+import com.jksoa.protocol.netty.NettyMessageEncoder
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelInitializer
@@ -19,7 +22,7 @@ import io.netty.util.concurrent.DefaultEventExecutor
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyServer {
+class NettyServer : IProtocolServer {
 
     /**
      * 服务端配置
@@ -41,7 +44,12 @@ class NettyServer {
      */
     val businessGroup = DefaultEventExecutor()
 
-   fun start(port: Int): Unit {
+    /**
+     * 启动服务器
+     *
+     * @param port 端口
+     */
+    public override fun doStart(port: Int): Unit{
        try {
            // Create ServerBootstrap
            val b = ServerBootstrap()
@@ -60,6 +68,9 @@ class NettyServer {
                    })
            // Bind and start to accept incoming connections.
            val f: ChannelFuture = b.bind(port).sync()
+
+           // 注册服务
+           registerServices()
 
            // Wait until the server socket is closed.
            // In this example, this does not happen, but you can do that to gracefully

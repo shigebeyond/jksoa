@@ -1,8 +1,8 @@
-package com.jksoa.transport
+package com.jksoa.protocol.netty
 
-import com.jksoa.common.future.IResponseFuture
 import com.jksoa.common.IRequest
 import com.jksoa.common.Url
+import com.jksoa.common.future.IResponseFuture
 import com.jksoa.protocol.IConnection
 import io.netty.channel.Channel
 import io.netty.util.concurrent.Future
@@ -47,7 +47,7 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
      * 关闭连接
      */
     public override fun close() {
-
+        channel.close().sync()
     }
 
 }

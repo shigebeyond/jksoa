@@ -13,7 +13,7 @@ import com.jksoa.protocol.IProtocolClient
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-open class RmiProtocolClient: IProtocolClient {
+open class RmiClient : IProtocolClient {
     /**
      * 客户端连接服务器
      *

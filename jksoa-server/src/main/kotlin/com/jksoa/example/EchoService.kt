@@ -9,7 +9,7 @@ import java.rmi.server.UnicastRemoteObject
  * @author shijianhang
  * @create 2017-12-15 下午7:39
  **/
-class EchoService : UnicastRemoteObject(), IEchoService {
+class EchoService : IEchoService /*, UnicastRemoteObject() // rmi*/{
 
     @Throws(RemoteException::class)
     override fun echo(msg: String): String {
