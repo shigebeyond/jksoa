@@ -1,4 +1,4 @@
-package com.jksoa.registry.zk
+package com.jksoa.registry
 
 /**
  * 注册异常
