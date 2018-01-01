@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
 
 /**
  * rpc调用的代理实现
@@ -74,7 +75,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
             return resFuture
 
         // 同步结果
-        return resFuture.get()
+        return resFuture.get(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
     }
 
     /**
