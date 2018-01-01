@@ -20,4 +20,13 @@ class Response(override val requestId: Long, /* 请求标识 */
      * @param cause 异常
      */
     public constructor(requestId: Long, cause: Throwable?):this(requestId, null, cause){}
+
+    /**
+     * 转为字符串
+     *
+     * @return
+     */
+    public override fun toString(): String {
+        return "requestId=$requestId, value=$value, cause=${cause?.message}";
+    }
 }
