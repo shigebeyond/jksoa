@@ -2,6 +2,7 @@ package com.jksoa.protocol.netty
 
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer
+import com.jksoa.common.clientLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
 import io.netty.channel.ChannelHandlerContext
@@ -15,7 +16,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(maxFrameLength, 0, 4) {
+class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(maxFrameLength, 0/*长度属性的起始位*/, 4/*长度属性的长度*/, 0/*长度调节值*/, 4/*跳过的字节数=长度属性的长度*/) {
 
     /**
      * 服务端配置
@@ -42,10 +43,15 @@ class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(ma
 
         // 2 解析数据
         var ins: ByteBufInputStream? = null
-        try{
+        try {
             // 反序列化
             ins = ByteBufInputStream(frame)
-            return serializer.unserizlize(ins)
+            val result = serializer.unserizlize(ins)
+            clientLogger.debug("解码接收到的消息: $result")
+            return result
+        }catch (e: Exception){
+            clientLogger.error("解码接收到的消息失败", e)
+            throw e
         }finally {
             ins?.close()
         }
