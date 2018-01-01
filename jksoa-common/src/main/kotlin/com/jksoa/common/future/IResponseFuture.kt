@@ -6,7 +6,7 @@ import java.util.concurrent.Future
 /**
  * 异步响应
  *
- * @ClassName: ResponseFuture
+ * @ClassName: IResponseFuture
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
