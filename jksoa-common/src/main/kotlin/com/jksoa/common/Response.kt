@@ -8,9 +8,9 @@ package com.jksoa.common
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-class Response(override val requestId: Long, /* 请求标识 */
-               override val value: Any? = null, /* 结果值 */
-               override val cause: Throwable? = null /* 异常，包含 Exception + Error */
+class Response(public override val requestId: Long, /* 请求标识 */
+               public override val result: Any? = null, /* 结果值 */
+               public override val exception: Exception? = null /* 异常 */
 ) : IResponse {
 
     /**
@@ -19,7 +19,7 @@ class Response(override val requestId: Long, /* 请求标识 */
      * @param requestId 请求标识
      * @param cause 异常
      */
-    public constructor(requestId: Long, cause: Throwable?):this(requestId, null, cause){}
+    public constructor(requestId: Long, exception: Exception?):this(requestId, null, exception){}
 
     /**
      * 转为字符串
@@ -27,6 +27,6 @@ class Response(override val requestId: Long, /* 请求标识 */
      * @return
      */
     public override fun toString(): String {
-        return "requestId=$requestId, value=$value, cause=${cause?.message}";
+        return "requestId=$requestId, result=$result, exception=${exception?.message}";
     }
 }

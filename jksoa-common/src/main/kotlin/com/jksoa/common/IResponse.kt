@@ -18,12 +18,12 @@ interface IResponse: Serializable {
     val requestId: Long
 
     /**
-     * 返回值
+     * 结果
      */
-    val value: Any?
+    val result: Any?
 
     /**
-     * 异常，包含 Exception + Error
+     * 异常
      */
-    val cause: Throwable?
+    val exception: Exception?
 }
