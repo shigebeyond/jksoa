@@ -1,11 +1,17 @@
 package com.jksoa.protocol.netty
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
+import com.jkmvc.common.ShutdownHook
 import com.jksoa.common.Response
 import com.jksoa.common.clientLogger
 import com.jksoa.common.future.ResponseFuture
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
+import java.io.Closeable
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * netty客户端的响应处理器
@@ -15,12 +21,26 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang
  * @create 2018-01-01 上午12:32
  **/
-object NettyResponseHandler : SimpleChannelInboundHandler<Response>() {
+object NettyResponseHandler : SimpleChannelInboundHandler<Response>(), Runnable, Closeable {
+
+    /**
+     * 客户端配置
+     */
+    public val config: IConfig = Config.instance("client", "yaml")
 
     /**
      * 异步响应缓存
      */
     private val futures: ConcurrentHashMap<Long, ResponseFuture> = ConcurrentHashMap()
+
+    /**
+     * 清除过期异步响应的定时器
+     */
+    private val expireFutureTimer = Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(this, 1000, config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+
+    init {
+        ShutdownHook.addClosing(this)
+    }
 
     /**
      * 添加异步响应
@@ -63,5 +83,32 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>() {
             future.completed(res.value)
         else
             future.failed(res.exception!!)
+    }
+
+    /**
+     * 定时清除过期异步响应
+     */
+    public override fun run() {
+        clearExpiredFuture()
+    }
+
+    /**
+     * 清除过期异步响应
+     */
+    private fun clearExpiredFuture() {
+        val now = System.currentTimeMillis()
+        for ((reqId, future) in futures) {
+            if (future.expireTime < now) { // 过期的异步响应
+                future.cancel() // 取消
+                futures.remove(reqId) // 删除
+            }
+        }
+    }
+
+    /**
+     * 关闭定时器
+     */
+    public override fun close() {
+        expireFutureTimer.cancel(true)
     }
 }
