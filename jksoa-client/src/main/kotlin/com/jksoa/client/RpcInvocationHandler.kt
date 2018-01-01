@@ -72,7 +72,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
 
         // 4 返回结果
         if(async) // 异步结果
-            return ResultFuture(resFuture)
+            return resFuture
 
         // 同步结果
         return resFuture.get().value

@@ -11,10 +11,5 @@ import java.util.concurrent.Future
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-interface IResponseFuture : Future<IResponse>, IResponse {
-
-   /* fun onSuccess(response: IResponse)
-
-    fun onFailure(response: IResponse)*/
-
+interface IResponseFuture : Future<Any?>, IResponse {
 }

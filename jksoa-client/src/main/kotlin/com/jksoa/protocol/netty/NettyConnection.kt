@@ -1,13 +1,19 @@
 package com.jksoa.protocol.netty
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
 import com.jksoa.common.IRequest
+import com.jksoa.common.IResponse
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
+import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.future.IResponseFuture
 import com.jksoa.protocol.IConnection
 import io.netty.channel.Channel
+import io.netty.channel.ChannelFuture
 import io.netty.util.concurrent.Future
 import io.netty.util.concurrent.GenericFutureListener
+import java.util.concurrent.TimeUnit
 
 /**
  * netty连接
@@ -19,6 +25,13 @@ import io.netty.util.concurrent.GenericFutureListener
  */
 class NettyConnection(protected val channel: Channel, url: Url) : IConnection(url) {
 
+    companion object{
+        /**
+         * 客户端配置
+         */
+        public val config: IConfig = Config.instance("client", "yaml")
+    }
+
     /**
      * 客户端发送请求
      *
@@ -27,11 +40,12 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
      */
     public override fun send(req: IRequest): IResponseFuture {
         clientLogger.debug("NettyConnection发送请求: " + req)
-        // 发送请求
+        // 1 发送请求
         val writeFuture = channel.writeAndFlush(req)
 
-        // 添加请求完成的监听器
-        val listener = object : GenericFutureListener<Future<Void>> {
+        // wrong： 关注响应回来事件，而不是发送完成事件
+        // 添加发送完成事件
+        /*val listener = object : GenericFutureListener<Future<Void>> {
             override fun operationComplete(future: Future<Void>) {
                 writeFuture.removeListener(this) // 删除监听器
                 if (future.isSuccess() || future.isDone()) { // 成功
@@ -39,10 +53,24 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
                 }
             }
         }
-        writeFuture.addListener(listener)
+        writeFuture.addListener(listener)*/
 
-        // 返回延后的响应
-        return NettyResponseFuture(writeFuture, req)
+
+        // 2 阻塞等待发送完成，有超时
+        val result = writeFuture.awaitUninterruptibly(NettyResponseFuture.config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+
+        // 2.1 发送成功
+        if (result && writeFuture.isSuccess())
+            return NettyResponseFuture(writeFuture, req) // 返回延后的响应
+
+        // 2.2 超时
+        if (writeFuture.cause() == null){
+            writeFuture.cancel(false)
+            throw RpcClientException("远程调用超时: $req")
+        }
+
+        // 2.3 io异常
+        throw RpcClientException("远程调用发生io异常: $req", writeFuture.cause())
     }
 
     /**

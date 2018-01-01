@@ -8,14 +8,14 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 
 /**
- * netty服务端处理器
+ * netty服务端请求处理器
  *
  * @ClasssName: NettyServer
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyServerHandler : SimpleChannelInboundHandler<IRequest>() {
+class NettyRequestHandler : SimpleChannelInboundHandler<IRequest>() {
 
     /**
      * rpc请求处理器
@@ -23,7 +23,7 @@ class NettyServerHandler : SimpleChannelInboundHandler<IRequest>() {
     protected val rpcRequestHandler: IRpcRequestHandler = RpcRequestHandler
 
     /**
-     * 处理消息
+     * 处理请求
      *
      * @param ctx
      * @param req

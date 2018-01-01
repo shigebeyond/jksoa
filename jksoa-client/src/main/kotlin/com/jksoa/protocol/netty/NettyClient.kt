@@ -59,7 +59,7 @@ class NettyClient: IProtocolClient {
                         channel.pipeline()
                                 .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                 .addLast(NettyMessageEncoder()) // 编码
-                                .addLast(NettyResponseFutureHandler) // 获得响应
+                                .addLast(NettyResponseHandler) // 获得响应
                     }
                 })
 
