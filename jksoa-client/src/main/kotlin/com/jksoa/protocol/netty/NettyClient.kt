@@ -5,6 +5,8 @@ import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.IProtocolClient
+import com.jksoa.protocol.netty.codec.NettyMessageDecoder
+import com.jksoa.protocol.netty.codec.NettyMessageEncoder
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelInitializer
@@ -57,6 +59,7 @@ class NettyClient: IProtocolClient {
                         channel.pipeline()
                                 .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                 .addLast(NettyMessageEncoder()) // 编码
+                                .addLast(NettyResponseFutureHandler) // 获得响应
                     }
                 })
 
