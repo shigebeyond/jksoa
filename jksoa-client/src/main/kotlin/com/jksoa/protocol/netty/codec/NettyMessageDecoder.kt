@@ -1,4 +1,4 @@
-package com.jksoa.protocol.netty
+package com.jksoa.protocol.netty.codec
 
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer
