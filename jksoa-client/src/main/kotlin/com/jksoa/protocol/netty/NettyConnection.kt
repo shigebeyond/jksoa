@@ -59,7 +59,7 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
         // 2.1 发送成功
         if (result && writeFuture.isSuccess()) {
             val resFuture = ResponseFuture(req) // 返回异步响应
-            NettyResponseHandler.putResponseFuture(req.id, resFuture)
+            NettyResponseHandler.putResponseFuture(req.id, resFuture) // 记录异步响应，以便响应到来时设置结果
             return resFuture
         }
 

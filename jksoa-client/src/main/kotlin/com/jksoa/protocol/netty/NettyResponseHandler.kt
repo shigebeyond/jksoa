@@ -25,21 +25,21 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>() {
     /**
      * 添加异步响应
      *
-     * @param reqId
+     * @param requestId
      * @param future
      */
-    public fun putResponseFuture(reqId: Long, future: ResponseFuture){
-        futures[reqId] = future
+    public fun putResponseFuture(requestId: Long, future: ResponseFuture){
+        futures[requestId] = future
     }
 
     /**
      * 删除异步响应
      *
-     * @param reqId
+     * @param requestId
      * @return
      */
-    public fun removeResponseFuture(reqId: Long): ResponseFuture? {
-        return futures.remove(reqId)
+    public fun removeResponseFuture(requestId: Long): ResponseFuture? {
+        return futures.remove(requestId)
     }
 
     /**
@@ -52,9 +52,9 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>() {
         clientLogger.debug("NettyClient获得响应: $res")
 
         // 获得异步响应
-        val future = removeResponseFuture(res.reqId)
+        val future = removeResponseFuture(res.requestId)
         if(future == null){
-            clientLogger.warn("NettyClient has response from server, but resonseFuture not exist,  reqId={}",  res.reqId);
+            clientLogger.warn("NettyClient has response from server, but resonseFuture not exist,  requestId={}",  res.requestId);
             return
         }
 
