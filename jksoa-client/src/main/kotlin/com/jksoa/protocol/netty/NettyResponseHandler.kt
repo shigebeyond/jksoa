@@ -30,9 +30,18 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>() {
      */
     public override fun channelRead0(ctx: ChannelHandlerContext, res: Response) {
         clientLogger.debug("NettyClient获得响应: $res")
+
+        // 获得异步响应
         val future = futures[res.requestId]
-        if(future != null){
-            future.completed(res)
+        if(future == null){
+            clientLogger.warn("NettyClient has response from server, but resonseFuture not exist,  requestId={}",  res.requestId);
+            return
         }
+
+        // 完成异步响应，并设置结果
+        if(res.exception == null)
+            future.completed(res.value)
+        else
+            future.failed(res.exception!!)
     }
 }

@@ -5,7 +5,6 @@ import com.jkmvc.serialize.ISerializer
 import com.jksoa.common.IService
 import com.jksoa.common.Request
 import com.jksoa.common.clientLogger
-import com.jksoa.common.future.ResultFuture
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -75,7 +74,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
             return resFuture
 
         // 同步结果
-        return resFuture.get().value
+        return resFuture.get()
     }
 
     /**

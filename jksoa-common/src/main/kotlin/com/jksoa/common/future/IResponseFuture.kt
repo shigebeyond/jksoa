@@ -4,7 +4,7 @@ import com.jksoa.common.IResponse
 import java.util.concurrent.Future
 
 /**
- * 延后的响应
+ * 异步响应
  *
  * @ClassName: ResponseFuture
  * @Description:

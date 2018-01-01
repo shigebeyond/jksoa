@@ -20,7 +20,7 @@ interface IResponse: Serializable {
     /**
      * 结果
      */
-    val result: Any?
+    val value: Any?
 
     /**
      * 异常

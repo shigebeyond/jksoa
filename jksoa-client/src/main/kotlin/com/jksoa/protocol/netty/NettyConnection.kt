@@ -3,16 +3,13 @@ package com.jksoa.protocol.netty
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jksoa.common.IRequest
-import com.jksoa.common.IResponse
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.future.IResponseFuture
+import com.jksoa.common.future.ResponseFuture
 import com.jksoa.protocol.IConnection
 import io.netty.channel.Channel
-import io.netty.channel.ChannelFuture
-import io.netty.util.concurrent.Future
-import io.netty.util.concurrent.GenericFutureListener
 import java.util.concurrent.TimeUnit
 
 /**
@@ -57,11 +54,11 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
 
 
         // 2 阻塞等待发送完成，有超时
-        val result = writeFuture.awaitUninterruptibly(NettyResponseFuture.config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+        val result = writeFuture.awaitUninterruptibly(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
 
         // 2.1 发送成功
         if (result && writeFuture.isSuccess())
-            return NettyResponseFuture(writeFuture, req) // 返回延后的响应
+            return ResponseFuture(req) // 返回异步响应
 
         // 2.2 超时
         if (writeFuture.cause() == null){
