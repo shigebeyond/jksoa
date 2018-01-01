@@ -3,8 +3,8 @@ package com.jksoa.protocol.netty
 import com.jkmvc.common.Config
 import com.jksoa.common.serverLogger
 import com.jksoa.protocol.IProtocolServer
-import com.jksoa.protocol.netty.NettyMessageDecoder
-import com.jksoa.protocol.netty.NettyMessageEncoder
+import com.jksoa.protocol.netty.codec.NettyMessageDecoder
+import com.jksoa.protocol.netty.codec.NettyMessageEncoder
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelInitializer
@@ -65,7 +65,7 @@ class NettyServer : IProtocolServer {
                            channel.pipeline()
                                    .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                    .addLast(NettyMessageEncoder()) // 编码
-                                   .addLast(businessGroup, NettyServerHandler()) // 业务处理
+                                   .addLast(businessGroup, NettyRequestHandler()) // 业务处理
                        }
                    })
            // Bind and start to accept incoming connections.
