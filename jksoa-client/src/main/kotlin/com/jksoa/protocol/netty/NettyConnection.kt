@@ -28,14 +28,14 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
     public override fun send(req: IRequest): IResponseFuture {
         clientLogger.debug("NettyConnection发送请求: " + req)
         // 发送请求
-        val writeFuture = channel.write(req)
+        val writeFuture = channel.writeAndFlush(req)
 
         // 添加请求完成的监听器
         val listener = object : GenericFutureListener<Future<Void>> {
             override fun operationComplete(future: Future<Void>) {
                 writeFuture.removeListener(this) // 删除监听器
                 if (future.isSuccess() || future.isDone()) { // 成功
-
+                    println(future.now)
                 }
             }
         }
