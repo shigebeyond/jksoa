@@ -5,7 +5,7 @@ import com.jksoa.common.IRequest
 import org.apache.http.concurrent.FutureCallback
 
 /**
- * 延后的响应
+ * 异步响应
  *   可以通过以下方法来表示完成状态: cancel() / failed() / completed()
  *
  * @ClassName: ResponseFuture

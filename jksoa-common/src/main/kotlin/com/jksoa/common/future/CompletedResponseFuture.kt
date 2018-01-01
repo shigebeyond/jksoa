@@ -4,7 +4,7 @@ import com.jkmvc.future.CompletedFuture
 import com.jksoa.common.IResponse
 
 /**
- * 已完成的异步响应，没有延后
+ * 已完成的异步响应，没有延迟
  *
  * @ClassName: ResponseFuture
  * @Description:

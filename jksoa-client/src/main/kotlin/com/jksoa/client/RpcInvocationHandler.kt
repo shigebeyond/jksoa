@@ -67,7 +67,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
         // 2 封装请求
         val req = Request(`interface`, getMethodSignature(method, async), args)
 
-        // 3 发送请求，并获得延后的响应
+        // 3 发送请求，并获得异步响应
         val resFuture = broker.call(req)
 
         // 4 返回结果
