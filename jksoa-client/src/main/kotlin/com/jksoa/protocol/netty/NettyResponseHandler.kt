@@ -18,9 +18,29 @@ import java.util.concurrent.ConcurrentHashMap
 object NettyResponseHandler : SimpleChannelInboundHandler<Response>() {
 
     /**
-     * netty结果
+     * 异步响应缓存
      */
     private val futures: ConcurrentHashMap<Long, ResponseFuture> = ConcurrentHashMap()
+
+    /**
+     * 添加异步响应
+     *
+     * @param reqId
+     * @param future
+     */
+    public fun putResponseFuture(reqId: Long, future: ResponseFuture){
+        futures[reqId] = future
+    }
+
+    /**
+     * 删除异步响应
+     *
+     * @param reqId
+     * @return
+     */
+    public fun removeResponseFuture(reqId: Long): ResponseFuture? {
+        return futures.remove(reqId)
+    }
 
     /**
      * 处理响应
@@ -32,9 +52,9 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>() {
         clientLogger.debug("NettyClient获得响应: $res")
 
         // 获得异步响应
-        val future = futures[res.requestId]
+        val future = removeResponseFuture(res.reqId)
         if(future == null){
-            clientLogger.warn("NettyClient has response from server, but resonseFuture not exist,  requestId={}",  res.requestId);
+            clientLogger.warn("NettyClient has response from server, but resonseFuture not exist,  reqId={}",  res.reqId);
             return
         }
 
