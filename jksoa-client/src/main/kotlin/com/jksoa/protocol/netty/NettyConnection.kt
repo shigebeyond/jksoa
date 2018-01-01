@@ -54,11 +54,13 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
 
 
         // 2 阻塞等待发送完成，有超时
-        val result = writeFuture.awaitUninterruptibly(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+        val timeout: Long = config["requestTimeout"]!!
+        val result = writeFuture.awaitUninterruptibly(timeout, TimeUnit.MILLISECONDS)
 
         // 2.1 发送成功
         if (result && writeFuture.isSuccess()) {
-            val resFuture = ResponseFuture(req) // 返回异步响应
+            val expireTime = System.currentTimeMillis() + timeout // 过期时间
+            val resFuture = ResponseFuture(req, expireTime) // 返回异步响应
             NettyResponseHandler.putResponseFuture(req.id, resFuture) // 记录异步响应，以便响应到来时设置结果
             return resFuture
         }

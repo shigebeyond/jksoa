@@ -13,7 +13,18 @@ import org.apache.http.concurrent.FutureCallback
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-class ResponseFuture(protected val request: IRequest, callback: FutureCallback<Any?>? = null): IResponseFuture, BasicFuture<Any>(callback) {
+class ResponseFuture(public val request: IRequest, /* 请求 */
+                     public val expireTime: Long, /* 过期时间 */
+                     callback: FutureCallback<Any?>? = null /* 回调 */
+): IResponseFuture, BasicFuture<Any>(callback) {
+
+    /**
+     * 构造函数
+     *
+     * @param request
+     * @param callback
+     */
+    public constructor(request: IRequest, callback: FutureCallback<Any?>? = null): this(request, 0, callback){}
 
     /**
      * 请求标识
@@ -24,11 +35,12 @@ class ResponseFuture(protected val request: IRequest, callback: FutureCallback<A
     /**
      * 结果
      */
-    override val value: Any?
+    public override val value: Any?
         get() = result
+
     /**
      * 异常
      */
-    override val exception: Exception?
+    public override val exception: Exception?
         get() = ex
 }
