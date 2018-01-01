@@ -14,7 +14,7 @@ import org.apache.http.concurrent.FutureCallback
  * @date 2017-12-30 6:43 PM
  */
 class ResponseFuture(public val request: IRequest, /* 请求 */
-                     public val expireTime: Long, /* 过期时间 */
+                     public val expireTime: Long, /* 过期时间，单位毫秒 */
                      callback: FutureCallback<Any?>? = null /* 回调 */
 ): IResponseFuture, BasicFuture<Any>(callback) {
 
@@ -24,7 +24,7 @@ class ResponseFuture(public val request: IRequest, /* 请求 */
      * @param request
      * @param callback
      */
-    public constructor(request: IRequest, callback: FutureCallback<Any?>? = null): this(request, 0, callback){}
+    public constructor(request: IRequest, callback: FutureCallback<Any?>? = null): this(request, System.currentTimeMillis() + 100000 /* 10s后超时 */, callback){}
 
     /**
      * 请求标识
