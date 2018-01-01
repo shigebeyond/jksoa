@@ -46,7 +46,7 @@ class Request(public override val serviceId: String, /* 服务标识，即接口
      * @return
      */
     public override fun toString(): String {
-        return "id=$id, service=$serviceId.$methodSignature, args=$args";
+        return "id=$id, service=$serviceId.$methodSignature, args=" + args.joinToString(", ", "[", "]");
     }
 
 }
