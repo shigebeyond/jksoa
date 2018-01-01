@@ -71,12 +71,12 @@ class ResponseFuture(public val request: IRequest, /* 请求 */
     public override fun get(timeout: Long, unit: TimeUnit): Any? {
         try{
             return super.get(timeout, unit)
-        }catch (e: ExecutionException){
-            // 业务异常
+        }catch (e: ExecutionException){ // 处理服务端传过来的异常
+            // 1 业务异常：直接抛出
             if(e.cause is RpcBusinessException)
                 throw e.cause!!
 
-            // 服务端异常
+            // 2 其他异常
             throw RpcClientException(e.cause!!)
         }
     }
