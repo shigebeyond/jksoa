@@ -33,10 +33,15 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
             }
 
             override fun handleNewSession() {
-                registerLogger.info("zkRegistry get new session handleNotify.")
-                // 重新注册服务（都是本地自己提供的服务）
-                for (url in serviceUrls){
-                    register(url)
+                try {
+                    registerLogger.info("zkRegistry get new session handleNotify.")
+                    // 重新注册服务（都是本地自己提供的服务）
+                    for (url in serviceUrls) {
+                        register(url)
+                    }
+                }catch(e: Exception){
+                    registerLogger.error("处理zk会话建立事件失败", e)
+                    throw e
                 }
             }
         }

@@ -4,6 +4,7 @@ import com.jksoa.common.IRequest
 import com.jksoa.common.Response
 import com.jksoa.common.exception.RpcBusinessException
 import com.jksoa.common.exception.RpcServerException
+import com.jksoa.common.serverLogger
 
 /**
  * Rpc请求处理者
@@ -36,6 +37,7 @@ object RpcRequestHandler : IRpcRequestHandler {
             // 调用方法
             try {
                 val value = method.invoke(provider.service, *req.args)
+                serverLogger.debug("Server处理请求：$req，结果: $value")
                 return Response(req.id, value)
             }catch (t: Throwable){
                 throw RpcBusinessException(t) // 业务异常

@@ -17,10 +17,15 @@ class ZkDataListener(public val url: com.jksoa.common.Url, public val discoveryL
      */
     @Synchronized
     public override fun handleDataChange(dataPath: String, data: Any) {
-        // 处理更新地址
-        url.parameters = Url.parseParams(data as String)
-        discoveryListener.handleParametersChange(url)
-        registerLogger.info("[ZookeeperRegistry] command data change: path=%s, command=%s", dataPath, data)
+        try {
+            // 处理更新地址
+            url.parameters = Url.parseParams(data as String)
+            discoveryListener.handleParametersChange(url)
+            registerLogger.info("[ZookeeperRegistry] command data change: path=%s, command=%s", dataPath, data)
+        }catch(e: Exception){
+            registerLogger.error("处理zk节点数据变化事件失败", e)
+            throw e
+        }
     }
 
     /**
@@ -28,9 +33,14 @@ class ZkDataListener(public val url: com.jksoa.common.Url, public val discoveryL
      */
     @Synchronized
     public override fun handleDataDeleted(dataPath: String) {
-        // 处理更新地址
-        url.parameters = null
-        discoveryListener.handleParametersChange(url)
-        registerLogger.info("[ZookeeperRegistry] command deleted: path=%s", dataPath)
+        try {
+            // 处理更新地址
+            url.parameters = null
+            discoveryListener.handleParametersChange(url)
+            registerLogger.info("[ZookeeperRegistry] command deleted: path=%s", dataPath)
+        }catch(e: Exception){
+            registerLogger.error("处理zk节点数据删除事件失败", e)
+            throw e
+        }
     }
 }
