@@ -34,7 +34,7 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
 
             override fun handleNewSession() {
                 try {
-                    registerLogger.info("zkRegistry get new session handleNotify.")
+                    registerLogger.info("处理zk会话建立事件")
                     // 重新注册服务（都是本地自己提供的服务）
                     for (url in serviceUrls) {
                         register(url)

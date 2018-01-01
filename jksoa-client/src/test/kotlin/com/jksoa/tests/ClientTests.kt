@@ -15,7 +15,9 @@ class ClientTests {
     @Test
     fun testClient(){
         val service = Referer.getRefer<IEchoService>()
-        val content = service.echo("shijianhang")
-        println("调用服务结果： $content")
+        for (i in 0..10) {
+            val content = service.echo("shijianhang")
+            println("调用服务结果： $content")
+        }
     }
 }

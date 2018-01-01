@@ -54,7 +54,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>() {
         // 获得异步响应
         val future = removeResponseFuture(res.requestId)
         if(future == null){
-            clientLogger.warn("NettyClient has response from server, but resonseFuture not exist,  requestId={}",  res.requestId);
+            clientLogger.warn("NettyClient无法处理响应，没有找到requestId=${res.requestId}}的异步响应");
             return
         }
 

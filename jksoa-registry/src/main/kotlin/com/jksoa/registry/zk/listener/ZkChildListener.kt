@@ -33,9 +33,9 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChil
             // 更新服务地址
             val serviceId = Url.rootPath2serviceId(parentPath)
             discoveryListener.handleServiceUrlsChange(serviceId, zkClient.nodeChilds2Urls(parentPath, currentChilds))
-            registerLogger.info("[ZookeeperRegistry] service list change: path=%s, currentChilds=%s", parentPath, currentChilds.toString())
+            registerLogger.info("处理zk[$parentPath]子节点变化事件, 子节点为: $currentChilds")
         }catch(e: Exception){
-            registerLogger.error("处理zk子节点变化事件失败", e)
+            registerLogger.error("处理zk[$parentPath]子节点变化事件失败", e)
             throw e
         }
     }
