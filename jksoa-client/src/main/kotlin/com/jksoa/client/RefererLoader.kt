@@ -4,8 +4,6 @@ import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jksoa.common.IService
 import com.jksoa.common.ServiceClassLoader
-import java.lang.reflect.Modifier
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * 加载服务引用者
@@ -65,7 +63,7 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
             return null
 
         // 添加远端服务引用
-        if(Modifier.isInterface(clazz.modifiers)) // 接口
+        if(clazz.isInterface) // 接口
             return Referer(clazz) // 服务引用者
 
         return null
