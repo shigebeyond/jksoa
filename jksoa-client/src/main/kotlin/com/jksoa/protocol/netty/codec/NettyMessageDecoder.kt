@@ -42,18 +42,16 @@ class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(ma
             return null
 
         // 2 解析数据
-        var ins: ByteBufInputStream? = null
         try {
             // 反序列化
-            ins = ByteBufInputStream(frame)
-            val result = serializer.unserizlize(ins)
-            clientLogger.debug("解码接收到的消息: $result")
-            return result
+            ByteBufInputStream(frame).use {
+                val result = serializer.unserizlize(it)
+                clientLogger.debug("解码接收到的消息: $result")
+                return result
+            }
         }catch (e: Exception){
             clientLogger.error("解码接收到的消息失败", e)
             throw e
-        }finally {
-            ins?.close()
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.jksoa.registry.zk
 
 import com.jksoa.common.Url
+import com.jksoa.registry.IDiscovery
 import com.jksoa.registry.IDiscoveryListener
 import com.jksoa.registry.RegistryException
 import com.jksoa.registry.zk.common.ZkClientFactory
@@ -18,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 11:22 AM
  */
-open class ZkDiscovery {
+open class ZkDiscovery: IDiscovery {
     /**
      * zk客户端
      */
@@ -40,7 +41,7 @@ open class ZkDiscovery {
      * @param serviceId 服务标识
      * @param listener 监听器
      */
-    public fun subscribe(serviceId: String, listener: IDiscoveryListener){
+    public override fun subscribe(serviceId: String, listener: IDiscoveryListener){
         try{
             val rootPath = Url.serviceId2rootPath(serviceId)
             // 1 监听子节点
@@ -79,7 +80,7 @@ open class ZkDiscovery {
      * @param serviceId 服务标识
      * @param listener 监听器
      */
-    public fun unsubscribe(serviceId: String, listener: IDiscoveryListener){
+    public override fun unsubscribe(serviceId: String, listener: IDiscoveryListener){
         try{
             val rootPath = Url.serviceId2rootPath(serviceId)
             // 1 取消监听子节点
@@ -101,7 +102,7 @@ open class ZkDiscovery {
      * @param serviceId 服务标识
      * @return 服务地址
      */
-    public fun discover(serviceId: String): List<Url> {
+    public override fun discover(serviceId: String): List<Url> {
         try {
             val rootPath = Url.serviceId2rootPath(serviceId)
             // 获得子节点
