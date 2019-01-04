@@ -7,7 +7,7 @@ import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.future.IResponseFuture
 import com.jksoa.loadbalance.ILoadBalance
 import com.jksoa.protocol.IConnection
-import com.jksoa.protocol.connect
+import com.jksoa.protocol.IProtocolClient
 import com.jksoa.registry.IDiscoveryListener
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -88,7 +88,7 @@ object Broker: IDiscoveryListener, IBroker {
         // 5 新加的地址
         for (key in addKeys){
             clientLogger.debug("Broker处理服务[$serviceId]新加地址: " + newUrls[key])
-            oldUrls[key] = newUrls[key]!!.connect() // 创建连接
+            oldUrls[key] = buildConnection(newUrls[key]!!) // 创建连接
         }
 
         // 6 删除的地址
@@ -102,6 +102,19 @@ object Broker: IDiscoveryListener, IBroker {
             clientLogger.debug("Broker处理服务[$serviceId]更新地址: " + url)
             handleParametersChange(url)
         }
+    }
+
+    /**
+     * 根据url建立连接
+     *
+     * @param url
+     * @return
+     */
+    public fun buildConnection(url: Url): IConnection {
+        // 根据rpc协议获得对应的client
+        val client = IProtocolClient.instance(url.protocol)
+        // 连接server
+        return client.connect(url)
     }
 
     /**

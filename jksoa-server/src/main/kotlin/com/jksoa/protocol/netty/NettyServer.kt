@@ -38,7 +38,7 @@ class NettyServer : IProtocolServer {
     /**
      * 工作线程池：处理io
      */
-    private val workerGroup: EventLoopGroup = NioEventLoopGroup(0)
+    private val workerGroup: EventLoopGroup = NioEventLoopGroup(0) // 使用默认的线程数
 
     /**
      * 业务线程池：处理业务
