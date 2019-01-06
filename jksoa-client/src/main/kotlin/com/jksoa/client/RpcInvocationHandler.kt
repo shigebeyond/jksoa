@@ -19,7 +19,9 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-11-08 7:25 PM
  */
-class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口类 */): InvocationHandler {
+class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口类 */,
+                           public val connHub: IConnectionHub /* rpc连接集中器 */
+): InvocationHandler {
 
     companion object{
 
@@ -30,9 +32,13 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
 
         /**
          * 创建服务代理
+         *
+         * @param intf
+         * @param connHub rpc连接集中器
+         * @return
          */
-        public fun createProxy(intf: Class<out IService>): IService {
-            return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(intf), RpcInvocationHandler(intf)) as IService
+        public fun createProxy(intf: Class<out IService>, connHub: IConnectionHub = ConnectionHub): IService {
+            return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(intf), RpcInvocationHandler(intf, connHub)) as IService
         }
     }
 
@@ -45,11 +51,6 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
      * 序列化
      */
     public val serializer: ISerializer = ISerializer.instance(config["serializeType"]!!)
-
-    /**
-     * 远程服务集中器
-     */
-    public val connHub: IConnectionHub = ConnectionHub
 
     /**
      * 处理方法调用: 调用 ConnectionHub

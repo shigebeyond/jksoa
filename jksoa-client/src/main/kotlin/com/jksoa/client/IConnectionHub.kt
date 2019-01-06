@@ -6,7 +6,7 @@ import com.jksoa.registry.IDiscoveryListener
 import java.io.Closeable
 
 /**
- * 远程服务集中器
+ * rpc连接集中器
  *    1 维系客户端对服务端的所有连接
  *    2 在客户端调用中对服务集群进行均衡负载
  *
