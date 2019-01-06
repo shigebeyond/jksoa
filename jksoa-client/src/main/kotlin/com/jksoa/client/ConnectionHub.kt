@@ -2,28 +2,27 @@ package com.jksoa.client
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
-import com.jksoa.common.*
+import com.jksoa.common.IRequest
+import com.jksoa.common.Url
+import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
-import com.jksoa.common.future.IResponseFuture
 import com.jksoa.loadbalance.ILoadBalance
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.IProtocolClient
-import com.jksoa.registry.IDiscoveryListener
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.HashMap
 
 /**
- * 远程服务中转器
+ * 远程服务集中器
  *    1 维系客户端对服务端的所有连接
  *    2 在客户端调用中对服务集群进行均衡负载
  *
- * @ClassName: Broker
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-13 3:18 PM
  */
-object Broker: IDiscoveryListener, IBroker {
+object ConnectionHub: IConnectionHub {
     /**
      * 客户端配置
      */
@@ -51,7 +50,7 @@ object Broker: IDiscoveryListener, IBroker {
      * @param urls 服务地址
      */
     public override fun handleServiceUrlsChange(serviceId: String, urls: List<Url>){
-        clientLogger.debug("Broker处理服务[$serviceId]地址变化: " + urls)
+        clientLogger.debug("ConnectionHub处理服务[$serviceId]地址变化: " + urls)
         var addKeys:Set<String> = emptySet() // 新加的url
         var removeKeys:Set<String> = emptySet() // 新加的url
         var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
@@ -87,19 +86,19 @@ object Broker: IDiscoveryListener, IBroker {
 
         // 5 新加的地址
         for (key in addKeys){
-            clientLogger.debug("Broker处理服务[$serviceId]新加地址: " + newUrls[key])
+            clientLogger.debug("ConnectionHub处理服务[$serviceId]新加地址: " + newUrls[key])
             oldUrls[key] = buildConnection(newUrls[key]!!) // 创建连接
         }
 
         // 6 删除的地址
         for(key in removeKeys){
-            clientLogger.debug("Broker处理服务[$serviceId]删除地址: " + oldUrls[key])
+            clientLogger.debug("ConnectionHub处理服务[$serviceId]删除地址: " + oldUrls[key])
             oldUrls[key]!!.close() // 关闭连接
         }
 
         // 7 更新的地址
         for(url in updateUrls) {
-            clientLogger.debug("Broker处理服务[$serviceId]更新地址: " + url)
+            clientLogger.debug("ConnectionHub处理服务[$serviceId]更新地址: " + url)
             handleParametersChange(url)
         }
     }
@@ -128,33 +127,32 @@ object Broker: IDiscoveryListener, IBroker {
     }
 
     /**
-     * 调用远程方法
+     * 选择一个连接
      *
      * @param req
      * @return
      */
-    public override fun call(req: IRequest): IResponseFuture {
+    public override fun select(req: IRequest): IConnection {
         // 1 获得可用连接
-        val urls = connections[req.serviceId]
-        if(urls == null || urls.isEmpty())
+        val conns = connections[req.serviceId]
+        if(conns == null || conns.isEmpty())
             throw RpcClientException("没有找到远程服务[${req.serviceId}]")
 
         // 2 按均衡负载策略，来选择连接
-        val conn = loadBalance.select(urls.values, req) as IConnection?
+        val conn = loadBalance.select(conns.values, req) as IConnection?
         if(conn == null)
             throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
 
-        clientLogger.debug("Broker选择远程服务[${req.serviceId}]的一个连接${conn}来发送rpc请求")
+        clientLogger.debug("ConnectionHub选择远程服务[${req.serviceId}]的一个连接${conn}来发送rpc请求")
 
-        // 3 发送请求
-        return conn.send(req)
+        return conn
     }
 
     /**
      * 关闭客户端的所有连接
      */
     public override fun close() {
-        clientLogger.info("Broker.close(): 关闭客户端的所有连接")
+        clientLogger.info("ConnectionHub.close(): 关闭客户端的所有连接")
         for((serviceId, conns) in connections){
             for((host, conn) in conns){
                 conn.close()

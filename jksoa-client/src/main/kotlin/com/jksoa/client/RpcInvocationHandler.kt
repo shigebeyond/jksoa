@@ -47,12 +47,12 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
     public val serializer: ISerializer = ISerializer.instance(config["serializeType"]!!)
 
     /**
-     * 远程服务中转器
+     * 远程服务集中器
      */
-    public val broker: IBroker = Broker
+    public val connHub: IConnectionHub = ConnectionHub
 
     /**
-     * 处理方法调用: 调用 Broker
+     * 处理方法调用: 调用 ConnectionHub
      *
      * @param proxy 代理对象
      * @param method 方法
@@ -67,10 +67,13 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
         // 2 封装请求
         val req = Request(`interface`, getMethodSignature(method, async), args)
 
-        // 3 发送请求，并获得异步响应
-        val resFuture = broker.call(req)
+        // 3 选择连接
+        val conn = connHub.select(req)
 
-        // 4 返回结果
+        // 4 发送请求，并获得异步响应
+        val resFuture = conn.send(req)
+
+        // 5 返回结果
         if(async) // 异步结果
             return resFuture
 

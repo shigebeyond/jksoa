@@ -57,7 +57,7 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
         if(!local) {
             // 监听服务变化
             clientLogger.debug("Referer监听服务[$serviceId]变化")
-            registry.subscribe(serviceId, Broker)
+            registry.subscribe(serviceId, ConnectionHub)
 
             // 要关闭
             ShutdownHook.addClosing(this)
@@ -69,6 +69,6 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
      */
     public override fun close() {
         clientLogger.info("Referer.close(): 取消监听服务变化")
-        registry.unsubscribe(serviceId, Broker)
+        registry.unsubscribe(serviceId, ConnectionHub)
     }
 }
