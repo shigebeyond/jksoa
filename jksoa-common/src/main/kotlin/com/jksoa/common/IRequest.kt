@@ -25,7 +25,7 @@ interface IRequest: Serializable {
     /**
      * 实参
      */
-    val args: Array<Any>
+    val args: Array<Any?>
 
     /**
      * 请求标识，全局唯一

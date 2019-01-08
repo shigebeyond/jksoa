@@ -2,6 +2,7 @@ package com.jksoa.client
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
+import com.jkmvc.common.get
 import com.jksoa.common.IRequest
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
@@ -134,18 +135,30 @@ object ConnectionHub: IConnectionHub {
      */
     public override fun select(req: IRequest): IConnection {
         // 1 获得可用连接
-        val conns = connections[req.serviceId]
-        if(conns == null || conns.isEmpty())
-            throw RpcClientException("没有找到远程服务[${req.serviceId}]")
+        val conns = selectAll(req.serviceId)
 
         // 2 按均衡负载策略，来选择连接
-        val conn = loadBalance.select(conns.values, req) as IConnection?
+        val conn = loadBalance.select(conns, req) as IConnection?
         if(conn == null)
             throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
 
         clientLogger.debug("ConnectionHub选择远程服务[${req.serviceId}]的一个连接${conn}来发送rpc请求")
 
         return conn
+    }
+
+    /**
+     * 获得全部连接
+     *
+     * @param serviceId 服务标识，即接口类全名
+     * @return
+     */
+    public override fun selectAll(serviceId: String): Collection<IConnection> {
+        val conns = connections[serviceId]
+        if(conns == null || conns.isEmpty())
+            throw RpcClientException("没有找到远程服务[${serviceId}]")
+
+        return conns.values
     }
 
     /**

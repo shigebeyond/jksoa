@@ -23,4 +23,12 @@ interface IConnectionHub: IDiscoveryListener, Closeable {
      * @return
      */
     fun select(req: IRequest): IConnection
+
+    /**
+     * 选择全部连接
+     *
+     * @param serviceId 服务标识，即接口类全名
+     * @return
+     */
+    fun selectAll(serviceId: String): Collection<IConnection>
 }
