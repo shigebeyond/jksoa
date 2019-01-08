@@ -34,4 +34,8 @@ class Job(override val serviceId: String, /* 要调用的服务标识，即接�
         // 2 封装请求
         return Request(serviceId, methodSignature, params)
     }
+
+    public override fun toString(): String {
+        return "service=$serviceId.$methodSignature, shardingNum=$shardingNum";
+    }
 }
