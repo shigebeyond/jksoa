@@ -59,7 +59,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
      * @param method 方法
      * @param args 参数
      */
-    public override fun invoke(proxy: Any, method: Method, args: Array<Any>): Any? {
+    public override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
         clientLogger.debug("RpcInvocationHandler调用远端方法: " + `interface`.name + '.' + method.name + '(' + args.joinToString() + ')')
 
         // 1 检查是否异步方法

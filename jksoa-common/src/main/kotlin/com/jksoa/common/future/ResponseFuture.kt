@@ -30,7 +30,6 @@ class ResponseFuture(public val request: IRequest, /* 请求 */
      */
     public constructor(request: IRequest, callback: FutureCallback<Any?>? = null): this(request, 100000 /* 默认超时5s */, callback){}
 
-
     /**
      * 创建时间
      */
