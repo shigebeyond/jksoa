@@ -10,7 +10,7 @@ class JobTests{
     @Test
     fun testJob(){
         val job = Job(IEchoService::echo, 3){ i ->
-            arrayOf("第${i}个参数")
+            arrayOf("第${i}个分片的参数") // IEchoService::echo 的实参
         }
         val distributor = JobDistributor()
         distributor.distribute(job)
