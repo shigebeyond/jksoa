@@ -12,8 +12,8 @@ class JobTests{
         val job = Job(IEchoService::echo, 3){ i ->
             arrayOf("第${i}个参数")
         }
-
-        val service = Referer.getRefer<IEchoService>()
+        val distributor = JobDistributor()
+        distributor.distribute(job)
     }
 
 }

@@ -15,11 +15,11 @@ import java.util.*
 import java.util.concurrent.CountDownLatch
 
 /**
- * 作业指挥者, 负责分配作业
+ * 作业分发者, 负责作业分片与分配分片
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
-class JobLeader {
+class JobDistributor : IJobDistributor {
 
     companion object {
 
@@ -45,7 +45,7 @@ class JobLeader {
      *
      * @param job
      */
-    public fun distribute(job: Job){
+    override fun distribute(job: Job){
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(job.serviceId)
