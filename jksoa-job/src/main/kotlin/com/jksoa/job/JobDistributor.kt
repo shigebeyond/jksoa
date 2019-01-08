@@ -45,14 +45,19 @@ class JobDistributor : IJobDistributor {
      *
      * @param job
      */
-    override fun distribute(job: Job){
+    public override fun distribute(job: Job){
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(job.serviceId)
+        val connSize = conns.size
         // 作业分片, 每片对应连接(节点)序号
-        val shd2Conns = shardingStrategy.sharding(job.shardingNum, conns.size)
+        val shd2Conns = shardingStrategy.sharding(job.shardingNum, connSize)
         // 记录分片结果
-        logShardingResult(shd2Conns, conns, job)
+        val conn2Shds = connection2Shardings(shd2Conns, conns)
+        val msg = conn2Shds.entries.joinToString(", ", "Sharding result from Job [$job] to $connSize Node: ")  {
+            "${it.key} => ${it.value}"
+        }
+        jobLogger.info(msg)
 
         // 2 逐个分片构建并发送rpc请求
         val resFutures = shd2Conns.mapIndexed { iSharding, iConn ->
@@ -89,31 +94,19 @@ class JobDistributor : IJobDistributor {
         } catch (ex: InterruptedException) {
             Thread.currentThread().interrupt()
         }
-
     }
 
-    /**
-     * 记录分片结果
-     *
-     * @param shd2Conns 分片结果, 每片对应连接(节点)序号
-     * @param conns
-     * @param job
-     */
-    protected fun logShardingResult(shd2Conns: IntArray, conns: Collection<IConnection>, job: Job) {
-        val connSize = conns.size
-        val conn2shds = arrayOfNulls<MutableList<Int>>(connSize)
+
+    protected fun connection2Shardings(shd2Conns: IntArray, conns: Collection<IConnection>): HashMap<IConnection, MutableList<Int>> {
+        val conn2Shds = HashMap<IConnection, MutableList<Int>>(conns.size)
         shd2Conns.forEachIndexed { iSharding, iConn ->
-            val shardings = conn2shds.getOrPut(iConn) {
+            val conn = conns[iConn]
+            val shardings = conn2Shds.getOrPut(conn) {
                 LinkedList()
             }!!
             shardings.add(iSharding)
         }
-        var i = 0
-        val msg = conn2shds.joinToString(", ", "Sharding result from Job [$job] to $connSize Node: ")  {
-            val conn = conns[i++]
-            "$conn => $it"
-        }
-        jobLogger.info(msg)
+        return conn2Shds
     }
 
 
