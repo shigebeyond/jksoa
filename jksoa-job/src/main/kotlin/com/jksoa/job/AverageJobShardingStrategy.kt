@@ -1,6 +1,7 @@
 package com.jksoa.job
 
 import com.jkmvc.common.randomBoolean
+import com.jkmvc.common.randomInt
 
 /**
  * 作业分片策略: 平均分
@@ -17,20 +18,49 @@ class AverageJobShardingStrategy : IJobShardingStrategy {
      */
     public override fun sharding(shardingNum: Int, nodeNum: Int): IntArray {
         val shd2Node = IntArray(shardingNum)
+        var i = 0
+        //collectNodeIndexWithRandomReversed(nodeNum){
+        collectNodeIndexWithRandomOffset(nodeNum){
+            shd2Node[i++] = it
+            i == shardingNum
+        }
+        return shd2Node
+    }
+
+    /**
+     * 随机倒序 来收集节点序号
+     * @param nodeNum
+     * @param collector 收集的回调, 返回true表示收集完成
+     */
+    public fun collectNodeIndexWithRandomReversed(nodeNum: Int, collector: (index: Int) -> Boolean): Unit {
         // 随机倒序, 让分片更均衡
         val reversed = randomBoolean()
         // 升序: 从0到nodeNum
         // 倒序: 从nodeNum到0
         var iNode = if(reversed) nodeNum else 0
-        shd2Node.mapIndexed { i, v ->
-            shd2Node[i] = iNode
+        // 收集当前节点序号
+        while(collector(iNode)){
+            // 切换下一个节点序号
             iNode = if(reversed)
                         (iNode - 1 + nodeNum) % nodeNum
                     else
                         (iNode + 1) % nodeNum
         }
-        return shd2Node
     }
 
+    /**
+     * 随机偏移 来收集节点序号
+     * @param nodeNum
+     * @param collector 收集的回调, 返回true表示收集完成
+     */
+    public fun collectNodeIndexWithRandomOffset(nodeNum: Int, collector: (index: Int) -> Boolean): Unit {
+        // 节点序号的随机偏移
+        var iNode = randomInt(nodeNum)
+        // 收集当前节点序号
+        while(collector(iNode)){
+            // 切换下一个节点序号
+            iNode = (iNode + 1) % nodeNum
+        }
+    }
 
 }
