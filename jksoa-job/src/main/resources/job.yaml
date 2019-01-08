@@ -1,0 +1,4 @@
+# 作业分片策略
+shardingStrategy: average
+
+# 失败重试
