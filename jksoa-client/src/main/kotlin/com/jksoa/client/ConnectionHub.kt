@@ -2,8 +2,7 @@ package com.jksoa.client
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
-import com.jkmvc.common.get
-import com.jksoa.common.IRequest
+import com.jksoa.common.IRpcRequest
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
@@ -133,7 +132,7 @@ object ConnectionHub: IConnectionHub {
      * @param req
      * @return
      */
-    public override fun select(req: IRequest): IConnection {
+    public override fun select(req: IRpcRequest): IConnection {
         // 1 获得可用连接
         val conns = selectAll(req.serviceId)
 

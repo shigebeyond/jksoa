@@ -1,6 +1,6 @@
 package com.jksoa.common.future
 
-import com.jksoa.common.IResponse
+import com.jksoa.common.IRpcResponse
 import java.util.concurrent.Future
 
 /**
@@ -11,5 +11,5 @@ import java.util.concurrent.Future
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-interface IResponseFuture : Future<Any?>, IResponse {
+interface IRpcResponseFuture : Future<Any?>, IRpcResponse {
 }

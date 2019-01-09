@@ -8,10 +8,10 @@ package com.jksoa.common
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-class Response(public override val requestId: Long, /* 请求标识 */
+class RpcResponse(public override val requestId: Long, /* 请求标识 */
                public override val value: Any? = null, /* 结果值 */
                public override val exception: Exception? = null /* 异常 */
-) : IResponse {
+) : IRpcResponse {
 
     /**
      * 构造函数

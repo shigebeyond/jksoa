@@ -1,7 +1,7 @@
 package com.jksoa.loadbalance
 
 import com.jkmvc.common.getRandom
-import com.jksoa.common.IRequest
+import com.jksoa.common.IRpcRequest
 
 /**
  * 随机的均衡负载算法
@@ -17,7 +17,7 @@ class RandomLoadBalance : ILoadBalance {
      * @param req
      * @return
      */
-    public override fun select(nodes: Collection<INode>, req: IRequest): INode? {
+    public override fun select(nodes: Collection<INode>, req: IRpcRequest): INode? {
         if(nodes.isEmpty())
             return null
 

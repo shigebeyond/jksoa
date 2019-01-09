@@ -2,12 +2,12 @@ package com.jksoa.protocol.netty
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jksoa.common.IRequest
+import com.jksoa.common.IRpcRequest
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
-import com.jksoa.common.future.IResponseFuture
-import com.jksoa.common.future.ResponseFuture
+import com.jksoa.common.future.IRpcResponseFuture
+import com.jksoa.common.future.RpcResponseFuture
 import com.jksoa.protocol.IConnection
 import io.netty.channel.Channel
 import java.util.concurrent.TimeUnit
@@ -35,7 +35,7 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
      * @param req
      * @return
      */
-    public override fun send(req: IRequest): IResponseFuture {
+    public override fun send(req: IRpcRequest): IRpcResponseFuture {
         clientLogger.debug("NettyConnection发送请求: " + req)
         // 1 发送请求
         val writeFuture = channel.writeAndFlush(req)
@@ -59,7 +59,7 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
 
         // 2.1 发送成功
         if (result && writeFuture.isSuccess()) {
-            val resFuture = ResponseFuture(req, timeout) // 返回异步响应
+            val resFuture = RpcResponseFuture(req, timeout) // 返回异步响应
             NettyResponseHandler.putResponseFuture(req.id, resFuture) // 记录异步响应，以便响应到来时设置结果
             return resFuture
         }

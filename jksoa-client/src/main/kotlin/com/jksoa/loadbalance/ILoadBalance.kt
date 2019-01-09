@@ -3,7 +3,7 @@ package com.jksoa.loadbalance
 import com.jkmvc.common.Config
 import com.jkmvc.common.NamedSingleton
 import com.jkmvc.common.IConfig
-import com.jksoa.common.IRequest
+import com.jksoa.common.IRpcRequest
 
 /**
  * 选择节点的均衡负载算法
@@ -28,5 +28,5 @@ interface ILoadBalance {
      * @param req
      * @return
      */
-    fun select(nodes: Collection<INode>, req: IRequest): INode?
+    fun select(nodes: Collection<INode>, req: IRpcRequest): INode?
 }

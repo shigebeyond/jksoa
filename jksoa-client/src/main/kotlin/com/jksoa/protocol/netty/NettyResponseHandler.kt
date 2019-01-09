@@ -3,9 +3,9 @@ package com.jksoa.protocol.netty
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jkmvc.common.ShutdownHook
-import com.jksoa.common.Response
+import com.jksoa.common.RpcResponse
 import com.jksoa.common.clientLogger
-import com.jksoa.common.future.ResponseFuture
+import com.jksoa.common.future.RpcResponseFuture
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import java.io.Closeable
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang
  * @create 2018-01-01 上午12:32
  **/
-object NettyResponseHandler : SimpleChannelInboundHandler<Response>(), Runnable, Closeable {
+object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>(), Runnable, Closeable {
 
     /**
      * 客户端配置
@@ -31,7 +31,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>(), Runnable,
     /**
      * 异步响应缓存
      */
-    private val futures: ConcurrentHashMap<Long, ResponseFuture> = ConcurrentHashMap()
+    private val futures: ConcurrentHashMap<Long, RpcResponseFuture> = ConcurrentHashMap()
 
     /**
      * 清除过期异步响应的定时器
@@ -48,7 +48,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>(), Runnable,
      * @param requestId
      * @param future
      */
-    public fun putResponseFuture(requestId: Long, future: ResponseFuture){
+    public fun putResponseFuture(requestId: Long, future: RpcResponseFuture){
         futures[requestId] = future
     }
 
@@ -58,7 +58,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>(), Runnable,
      * @param requestId
      * @return
      */
-    public fun removeResponseFuture(requestId: Long): ResponseFuture? {
+    public fun removeResponseFuture(requestId: Long): RpcResponseFuture? {
         return futures.remove(requestId)
     }
 
@@ -68,7 +68,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<Response>(), Runnable,
      * @param ctx
      * @param res
      */
-    public override fun channelRead0(ctx: ChannelHandlerContext, res: Response) {
+    public override fun channelRead0(ctx: ChannelHandlerContext, res: RpcResponse) {
         clientLogger.debug("NettyClient获得响应: $res")
 
         // 获得异步响应

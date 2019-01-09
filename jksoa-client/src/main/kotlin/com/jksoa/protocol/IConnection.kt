@@ -1,7 +1,7 @@
 package com.jksoa.protocol
 
 import com.jksoa.common.*
-import com.jksoa.common.future.IResponseFuture
+import com.jksoa.common.future.IRpcResponseFuture
 import com.jksoa.loadbalance.INode
 import java.io.Closeable
 
@@ -21,5 +21,5 @@ abstract class IConnection(public val url: Url /* 服务端地址 */,
      * @param req
      * @return
      */
-    public abstract fun send(req: IRequest): IResponseFuture
+    public abstract fun send(req: IRpcRequest): IRpcResponseFuture
 }

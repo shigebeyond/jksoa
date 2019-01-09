@@ -3,9 +3,9 @@ package com.jksoa.protocol.rmi
 import com.jksoa.client.RefererLoader
 import com.jksoa.common.*
 import com.jksoa.common.exception.RpcClientException
-import com.jksoa.common.future.CompletedResponseFuture
-import com.jksoa.common.future.IResponseFuture
-import com.jksoa.common.Response
+import com.jksoa.common.future.CompletedRpcResponseFuture
+import com.jksoa.common.future.IRpcResponseFuture
+import com.jksoa.common.RpcResponse
 import com.jksoa.protocol.IConnection
 import javax.naming.InitialContext
 
@@ -35,7 +35,7 @@ class RmiConnection(url: Url): IConnection(url){
      * @param req
      * @return
      */
-    public override fun send(req: IRequest): IResponseFuture {
+    public override fun send(req: IRpcRequest): IRpcResponseFuture {
         try{
             // 获得referer
             val referer = RefererLoader.get(req.serviceId)
@@ -49,11 +49,11 @@ class RmiConnection(url: Url): IConnection(url){
 
             // 调用远程对象的方法
             val value = method.invoke(remoteObject, *req.args)
-            val res = Response(req.id, value)
-            return CompletedResponseFuture(res)
+            val res = RpcResponse(req.id, value)
+            return CompletedRpcResponseFuture(res)
         }catch (e:Exception){
-            val res = Response(req.id, e)
-            return CompletedResponseFuture(res)
+            val res = RpcResponse(req.id, e)
+            return CompletedRpcResponseFuture(res)
         }
     }
 

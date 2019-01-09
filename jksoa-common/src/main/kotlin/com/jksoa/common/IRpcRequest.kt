@@ -10,7 +10,7 @@ import java.io.Serializable
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IRequest: Serializable {
+interface IRpcRequest: Serializable {
 
     /**
      * 服务标识，即接口类全名

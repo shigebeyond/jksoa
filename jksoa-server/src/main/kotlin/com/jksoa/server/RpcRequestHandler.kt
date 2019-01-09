@@ -1,7 +1,7 @@
 package com.jksoa.server
 
-import com.jksoa.common.IRequest
-import com.jksoa.common.Response
+import com.jksoa.common.IRpcRequest
+import com.jksoa.common.RpcResponse
 import com.jksoa.common.exception.RpcBusinessException
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.common.serverLogger
@@ -22,7 +22,7 @@ object RpcRequestHandler : IRpcRequestHandler {
      * @param req
      * @return
      */
-    public override fun handle(req: IRequest): Response {
+    public override fun handle(req: IRpcRequest): RpcResponse {
         try{
             // 获得provider
             val provider = ProviderLoader.get(req.serviceId)
@@ -38,12 +38,12 @@ object RpcRequestHandler : IRpcRequestHandler {
             try {
                 val value = method.invoke(provider.service, *req.args)
                 serverLogger.debug("Server处理请求：$req，结果: $value")
-                return Response(req.id, value)
+                return RpcResponse(req.id, value)
             }catch (t: Throwable){
                 throw RpcBusinessException(t) // 业务异常
             }
         }catch (t: Throwable){
-            return Response(req.id, t)
+            return RpcResponse(req.id, t)
         }
     }
 

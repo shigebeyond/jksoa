@@ -1,7 +1,7 @@
 package com.jksoa.server
 
-import com.jksoa.common.IRequest
-import com.jksoa.common.Response
+import com.jksoa.common.IRpcRequest
+import com.jksoa.common.RpcResponse
 
 /**
  * Rpc请求处理者
@@ -18,5 +18,5 @@ interface IRpcRequestHandler {
      * @param req
      * @return
      */
-    fun handle(req: IRequest): Response
+    fun handle(req: IRpcRequest): RpcResponse
 }

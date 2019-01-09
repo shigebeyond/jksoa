@@ -3,7 +3,7 @@ package com.jksoa.client
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer
 import com.jksoa.common.IService
-import com.jksoa.common.Request
+import com.jksoa.common.RpcRequest
 import com.jksoa.common.clientLogger
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
@@ -66,7 +66,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
         var async = isAsyncMethod(method)
 
         // 2 封装请求
-        val req = Request(`interface`, getMethodSignature(method, async), args)
+        val req = RpcRequest(`interface`, getMethodSignature(method, async), args)
 
         // 3 选择连接
         val conn = connHub.select(req)

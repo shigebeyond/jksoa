@@ -1,6 +1,6 @@
 package com.jksoa.client
 
-import com.jksoa.common.IRequest
+import com.jksoa.common.IRpcRequest
 import com.jksoa.protocol.IConnection
 import com.jksoa.registry.IDiscoveryListener
 import java.io.Closeable
@@ -22,7 +22,7 @@ interface IConnectionHub: IDiscoveryListener, Closeable {
      * @param req
      * @return
      */
-    fun select(req: IRequest): IConnection
+    fun select(req: IRpcRequest): IConnection
 
     /**
      * 选择全部连接

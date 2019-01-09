@@ -1,7 +1,7 @@
 package com.jksoa.common.future
 
 import com.jkmvc.future.BasicFuture
-import com.jksoa.common.IRequest
+import com.jksoa.common.IRpcRequest
 import com.jksoa.common.exception.RpcBusinessException
 import com.jksoa.common.exception.RpcClientException
 import org.apache.http.concurrent.FutureCallback
@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-class ResponseFuture(public val request: IRequest, /* 请求 */
+class RpcResponseFuture(public val request: IRpcRequest, /* 请求 */
                      public val timeout: Long, /* 超时，单位毫秒 */
                      callback: FutureCallback<Any?>? = null /* 回调 */
-): IResponseFuture, BasicFuture<Any>(callback) {
+): IRpcResponseFuture, BasicFuture<Any>(callback) {
 
     /**
      * 构造函数
@@ -28,7 +28,7 @@ class ResponseFuture(public val request: IRequest, /* 请求 */
      * @param request
      * @param callback
      */
-    public constructor(request: IRequest, callback: FutureCallback<Any?>? = null): this(request, 100000 /* 默认超时5s */, callback){}
+    public constructor(request: IRpcRequest, callback: FutureCallback<Any?>? = null): this(request, 100000 /* 默认超时5s */, callback){}
 
     /**
      * 创建时间
