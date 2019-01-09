@@ -1,6 +1,6 @@
 package com.jksoa.job
 
-import com.jksoa.common.Request
+import com.jksoa.common.RpcRequest
 
 /**
  * 作业信息
@@ -35,5 +35,5 @@ interface IJob {
      * @param iSharding
      * @return
      */
-    fun buildShardingRequest(iSharding: Int): Request
+    fun buildShardingRpcRequest(iSharding: Int): RpcRequest
 }

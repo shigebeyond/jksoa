@@ -1,8 +1,7 @@
 package com.jksoa.job
 
 import com.jkmvc.common.getSignature
-import com.jksoa.common.Request
-import com.jksoa.example.IEchoService
+import com.jksoa.common.RpcRequest
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -27,13 +26,18 @@ class Job(override val serviceId: String, /* 要调用的服务标识，即接�
      * @param iSharding
      * @return
      */
-    override fun buildShardingRequest(iSharding: Int): Request {
+    public override fun buildShardingRpcRequest(iSharding: Int): RpcRequest {
         // 1 构建参数
         val params = shardingParamsFactory.invoke(iSharding)
 
         // 2 封装请求
-        return Request(serviceId, methodSignature, params)
+        return RpcRequest(serviceId, methodSignature, params)
     }
+
+    public fun <T> reduceShardingRpcResult(results: Array<T?>){
+
+    }
+
 
     public override fun toString(): String {
         return "service=$serviceId.$methodSignature, shardingNum=$shardingNum";

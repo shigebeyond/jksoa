@@ -3,10 +3,9 @@ package com.jksoa.job
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jkmvc.common.get
-import com.jkmvc.common.getOrPut
 import com.jksoa.client.ConnectionHub
 import com.jksoa.client.IConnectionHub
-import com.jksoa.common.future.ResponseFuture
+import com.jksoa.common.future.RpcResponseFuture
 import com.jksoa.common.jobLogger
 import com.jksoa.protocol.IConnection
 import org.apache.http.concurrent.FutureCallback
@@ -65,10 +64,10 @@ class JobDistributor : IJobDistributor {
             val conn = conns[iConn]
 
             // 构建请求
-            val req = job.buildShardingRequest(iSharding)
+            val req = job.buildShardingRpcRequest(iSharding)
 
             // 发送请求，并获得异步响应
-            conn.send(req)
+            conn.send(req) as RpcResponseFuture
         }
 
         // 3 等待所有分片调用完毕
@@ -87,15 +86,23 @@ class JobDistributor : IJobDistributor {
             }
         }
         for (resFuture in resFutures)
-            (resFuture as ResponseFuture).callback = callback
+            resFuture.callback = callback
 
         try {
             latch.await()
         } catch (ex: InterruptedException) {
             Thread.currentThread().interrupt()
         }
-    }
 
+        // 收集结果
+        val results = arrayOfNulls<Any?>(resFutures.size)
+        results.forEachIndexed { i, _ ->
+            results[i] = resFutures[i].get()
+        }
+
+        job.reduceShardingRpcResult(results)
+
+    }
 
     protected fun connection2Shardings(shd2Conns: IntArray, conns: Collection<IConnection>): HashMap<IConnection, MutableList<Int>> {
         val conn2Shds = HashMap<IConnection, MutableList<Int>>(conns.size)
