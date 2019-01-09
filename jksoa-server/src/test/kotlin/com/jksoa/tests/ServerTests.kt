@@ -1,6 +1,7 @@
 package com.jksoa.tests
 
 import com.jkmvc.common.Config
+import com.jksoa.protocol.netty.NettyServer
 import com.jksoa.protocol.rmi.RmiServer
 import org.junit.Test
 
@@ -10,11 +11,17 @@ import org.junit.Test
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM
  */
-class MyTests {
+class ServerTests {
 
     @Test
-    fun testServer(){
+    fun testRmiServer(){
         RmiServer().start()
+        println("启动服务")
+    }
+
+    @Test
+    fun testNettyServer(){
+        NettyServer().start()
         println("启动服务")
     }
 

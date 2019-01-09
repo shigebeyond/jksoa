@@ -9,7 +9,7 @@ import com.jksoa.common.IRpcRequest
  * @author shijianhang
  * @create 2017-12-18 下午9:21
  **/
-class RandomLoadBalance : ILoadBalance {
+class RandomLoadBalanceStrategy : ILoadBalanceStrategy {
     /**
      * 选择节点
      *

@@ -11,14 +11,14 @@ import com.jksoa.common.IRpcRequest
  * @author shijianhang
  * @create 2017-12-18 下午9:04
  **/
-interface ILoadBalance {
+interface ILoadBalanceStrategy {
 
     // 可配置的单例
-    companion object: NamedSingleton<ILoadBalance>() {
+    companion object: NamedSingleton<ILoadBalanceStrategy>() {
         /**
          * 配置，内容是哈希 <单例名 to 单例类>
          */
-        public override val config: IConfig = Config.instance("loadbalance", "yaml")
+        public override val config: IConfig = Config.instance("load-balance-strategy", "yaml")
     }
 
     /**

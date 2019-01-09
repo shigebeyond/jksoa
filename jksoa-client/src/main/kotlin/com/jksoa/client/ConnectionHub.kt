@@ -6,7 +6,7 @@ import com.jksoa.common.IRpcRequest
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
-import com.jksoa.loadbalance.ILoadBalance
+import com.jksoa.loadbalance.ILoadBalanceStrategy
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.IProtocolClient
 import java.util.*
@@ -31,7 +31,7 @@ object ConnectionHub: IConnectionHub {
     /**
      * 均衡负载算法
      */
-    private val loadBalance: ILoadBalance = ILoadBalance.instance(config["loadbalanceType"]!!)
+    private val loadBalanceStrategy: ILoadBalanceStrategy = ILoadBalanceStrategy.instance(config["loadbalanceStrategy"]!!)
 
     /**
      * 连接池： <服务标识 to <ip端口 to 连接>>
@@ -137,7 +137,7 @@ object ConnectionHub: IConnectionHub {
         val conns = selectAll(req.serviceId)
 
         // 2 按均衡负载策略，来选择连接
-        val conn = loadBalance.select(conns, req) as IConnection?
+        val conn = loadBalanceStrategy.select(conns, req) as IConnection?
         if(conn == null)
             throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
 
