@@ -1,7 +1,7 @@
 package com.jksoa.tests
 
 import com.jksoa.client.Referer
-import com.jksoa.example.IEchoService
+import com.jksoa.example.IExampleService
 import org.junit.Test
 
 /**
@@ -14,9 +14,9 @@ class ClientTests {
 
     @Test
     fun testClient(){
-        val service = Referer.getRefer<IEchoService>()
+        val service = Referer.getRefer<IExampleService>()
         for (i in 0..10) {
-            val content = service.echo("shijianhang")
+            val content = service.sayHi("shijianhang")
             println("调用服务结果： $content")
         }
     }
