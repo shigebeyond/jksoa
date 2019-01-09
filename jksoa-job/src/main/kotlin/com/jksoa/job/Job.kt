@@ -34,11 +34,6 @@ class Job(override val serviceId: String, /* 要调用的服务标识，即接�
         return RpcRequest(serviceId, methodSignature, params)
     }
 
-    public fun <T> reduceShardingRpcResult(results: Array<T?>){
-
-    }
-
-
     public override fun toString(): String {
         return "service=$serviceId.$methodSignature, shardingNum=$shardingNum";
     }

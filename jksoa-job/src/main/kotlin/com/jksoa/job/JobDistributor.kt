@@ -40,11 +40,11 @@ class JobDistributor : IJobDistributor {
 
     /**
      * 分发作业
-     *   作业分片, 逐片交给对应的节点来处理
+     *   作业分片, 逐片分配给对应的节点来处理
      *
      * @param job
      */
-    public override fun distribute(job: Job){
+    public override fun distribute(job: Job): Array<Any?> {
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(job.serviceId)
@@ -100,8 +100,7 @@ class JobDistributor : IJobDistributor {
             results[i] = resFutures[i].get()
         }
 
-        job.reduceShardingRpcResult(results)
-
+        return results
     }
 
     protected fun connection2Shardings(shd2Conns: IntArray, conns: Collection<IConnection>): HashMap<IConnection, MutableList<Int>> {

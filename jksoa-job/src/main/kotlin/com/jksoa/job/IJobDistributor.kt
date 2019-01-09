@@ -9,9 +9,9 @@ interface IJobDistributor {
 
     /**
      * 分发作业
-     *   作业分片, 逐片交给对应的节点来处理
+     *   作业分片, 逐片分配给对应的节点来处理
      *
      * @param job
      */
-    fun distribute(job: Job)
+    fun distribute(job: Job): Array<Any?>
 }
