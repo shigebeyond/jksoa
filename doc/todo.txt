@@ -1,0 +1,18 @@
+
+给一个统一的方法来做事件
+interface event{
+	fun pushEvent(name: String, data: Any?)
+}
+
+在soa中抽取一个调度的接口
+distributeToOne()
+distributeToAll()
+
+distributeShardings()
+
+// 还不如直接用List<IRpcRequest>
+interface BatchRpcRequest{
+	fun foreach(action:(IRpcRequest))
+}
+
+foreachUtil(action:()->Boolean)
