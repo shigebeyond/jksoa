@@ -69,6 +69,9 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>(), Runnab
      * @param res
      */
     public override fun channelRead0(ctx: ChannelHandlerContext, res: RpcResponse) {
+        if(res !is RpcResponse)
+            return
+
         clientLogger.debug("NettyClient获得响应: $res")
 
         // 获得异步响应

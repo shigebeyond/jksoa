@@ -3,14 +3,10 @@ package com.jksoa.protocol
 import com.jksoa.client.Referer
 import com.jksoa.client.RefererLoader
 import com.jksoa.common.*
-import com.jksoa.common.exception.RpcBusinessException
 import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.common.future.CompletedRpcResponseFuture
 import com.jksoa.common.future.IRpcResponseFuture
-import com.jksoa.loadbalance.INode
-import com.jksoa.service.event.IEventService
-import java.io.Closeable
 
 /**
  * 本地的rpc连接

@@ -2,9 +2,8 @@ package com.jksoa.tests
 
 import com.jksoa.client.Referer
 import com.jksoa.example.IExampleService
-import com.jksoa.service.event.Event
-import com.jksoa.service.event.IEventService
-import org.junit.Test
+import com.jksoa.mq.IEventService
+import com.jksoa.mq.Message
 
 /**
  * @ClassName: ClientTests
@@ -21,13 +20,5 @@ class ClientTests {
             val content = service.sayHi("shijianhang")
             println("调用服务结果： $content")
         }
-    }
-
-    /**
-     * 测试事件生产
-     */
-    @Test
-    fun testEventProduct(){
-        IEventService.broadcastEvent(Event("myEvent", "xxx"))
     }
 }

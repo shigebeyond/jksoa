@@ -29,6 +29,9 @@ class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
      * @param req
      */
     public override fun channelRead0(ctx: ChannelHandlerContext, req: IRpcRequest) {
+        if(req !is IRpcRequest)
+            return
+
         serverLogger.debug("NettyServer收到请求: " + req)
         // 处理请求
         val res = rpcRequestHandler.handle(req)

@@ -1,11 +1,7 @@
 package com.jksoa.tests
 
-import com.jksoa.service.event.Event
-import com.jksoa.service.event.EventService
-import com.jksoa.service.event.IEventListener
 import com.jksoa.protocol.netty.NettyServer
 import com.jksoa.protocol.rmi.RmiServer
-import org.junit.Test
 
 /**
  * @ClassName: ClientTests
@@ -27,18 +23,4 @@ class ServerTests {
         println("启动服务")
     }
 
-    /**
-     * 测试事件消费
-     */
-    @Test
-    fun testEventConsume(){
-        testNettyServer()
-
-        // 监听事件
-        EventService.addEventListener("myEvent", object:IEventListener{
-            override fun handleEvent(event: Event) {
-                println("收到事件: $event")
-            }
-        })
-    }
 }
