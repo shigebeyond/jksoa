@@ -1,5 +1,8 @@
 package com.jksoa.client
 
+import com.jksoa.common.IRpcRequest
+import com.jksoa.common.RpcRequest
+
 /**
  * 分片的rpc请求
  *
@@ -25,8 +28,17 @@ interface IShardingRpcRequest {
         get() = shardingArgses.size
 
     /**
-     * 某个分片要调用的实参
+     * 分片要调用的实参
      */
     val shardingArgses: Array<Array<Any?>>
+
+    /**
+     * 构建rpc请求
+     * @param 分片序号
+     * @return
+     */
+    public fun buildRpcRequest(iSharding: Int): IRpcRequest {
+        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding])
+    }
 
 }

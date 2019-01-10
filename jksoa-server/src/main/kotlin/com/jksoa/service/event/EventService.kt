@@ -1,6 +1,9 @@
 package com.jksoa.service.event
 
+import com.jksoa.client.IRpcRequestDistributor
+import com.jksoa.client.RcpRequestDistributor
 import com.jksoa.client.Referer
+import com.jksoa.common.RpcRequest
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -14,6 +17,11 @@ class EventService : IEventService  {
     companion object {
 
         /**
+         * 请求分发者
+         */
+        protected val distr: IRpcRequestDistributor = RcpRequestDistributor
+
+        /**
          * 添加事件监听器
          * @param name 事件名
          * @param listener
@@ -23,6 +31,19 @@ class EventService : IEventService  {
             val eventService = Referer.getRefer<IEventService>() as EventService
             // 添加事件监听器
             eventService.addEventListener(name, listener)
+        }
+
+        /**
+         * 广播事件
+         * @param event 事件
+         */
+        public fun broadcastEvent(event: Event){
+            // 调用所有节点的 IEventService::notifyEvent(event)
+            // 1 构建请求
+            val req = RpcRequest(IEventService::notifyEvent, arrayOf<Any?>(event))
+
+            // 2 分发请求
+            distr.distributeToAll(req)
         }
     }
 

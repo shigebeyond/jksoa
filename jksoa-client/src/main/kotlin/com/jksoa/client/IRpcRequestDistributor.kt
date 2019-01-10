@@ -29,9 +29,9 @@ interface IRpcRequestDistributor {
      * 分片多个请求
      *   将多个请求分片, 逐片分配给对应的节点
      *
-     * @param reqs 多个请求, 请求同一个服务方法
+     * @param shdReq 分片的rpc请求
      * @return 多个响应结果
      */
-    fun distributeShardings(reqs: Array<IRpcRequest>): Array<Any?>
+    fun distributeShardings(shdReq: IShardingRpcRequest): Array<Any?>
 
 }

@@ -3,6 +3,7 @@ package com.jksoa.client
 import com.jkmvc.common.Config
 import com.jkmvc.common.get
 import com.jksoa.common.IRpcRequest
+import com.jksoa.common.RpcRequest
 import com.jksoa.common.future.IRpcResponseFuture
 import com.jksoa.common.future.RpcResponseFuture
 import com.jksoa.common.jobLogger
@@ -76,17 +77,16 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * 分片多个请求
      *   将多个请求分片, 逐片分配给对应的节点
      *
-     * @param reqs 多个请求, 调用同一个服务方法
+     * @param shdReq 分片的rpc请求
      * @return
      */
-    public override fun distributeShardings(reqs: Array<IRpcRequest>): Array<Any?> {
-        val serviceId = reqs.first().serviceId
+    public override fun distributeShardings(shdReq: IShardingRpcRequest): Array<Any?> {
         // 1 分片
         // 获得所有连接(节点)
-        val conns = connHub.selectAll(serviceId)
+        val conns = connHub.selectAll(shdReq.serviceId)
         val connSize = conns.size
         // 请求分片, 每片对应连接(节点)序号
-        val shardingSize = reqs.size
+        val shardingSize = shdReq.shardingSize
         val shd2Conns = shardingStrategy.sharding(shardingSize, connSize)
         // 记录分片结果
         val conn2Shds = connection2Shardings(shd2Conns, conns)
@@ -97,8 +97,11 @@ object RcpRequestDistributor : IRpcRequestDistributor {
 
         // 2 逐个分片构建并发送rpc请求
         val resFutures = shd2Conns.mapIndexed { iSharding, iConn ->
+            // 构建请求
+            val req = shdReq.buildRpcRequest(iSharding)
+
             // 发送请求，并获得异步响应
-            conns[iConn].send(reqs[iSharding])
+            conns[iConn].send(req)
         }
 
         // 3 等待全部分片请求的响应结果

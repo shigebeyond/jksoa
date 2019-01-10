@@ -3,6 +3,8 @@ package com.jksoa.common
 import com.jkmvc.common.SnowflakeIdWorker
 import com.jkmvc.common.getSignature
 import java.lang.reflect.Method
+import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.javaMethod
 
 /**
  * rpc请求
@@ -26,8 +28,23 @@ class RpcRequest(public override val serviceId: String, /* 服务标识，即接
      * @param args 实参
      * @param id 请求标识
      */
-    public constructor(intf: Class<out IService>, method: Method, args: Array<Any?>, id: Long = SnowflakeIdWorker.instance().nextId()): this(intf.name, method.getSignature(), args, id){
-    }
+    public constructor(intf: Class<out IService>, method: Method, args: Array<Any?>, id: Long = SnowflakeIdWorker.instance().nextId()): this(intf.name, method.getSignature(), args, id){}
+
+    /**
+     * 构造函数
+     *
+     * @param method 方法
+     * @param args 实参
+     */
+    public constructor(method: Method, args: Array<Any?>, id: Long = SnowflakeIdWorker.instance().nextId()) : this(method.getServiceClass(), method, args, id)
+
+    /**
+     * 构造函数
+     *
+     * @param func 方法
+     * @param args 实参
+     */
+    public constructor(func: KFunction<*>, shardingParams: Array<Any?>) : this(func.javaMethod!!, shardingParams)
 
     /**
      * 转为字符串
