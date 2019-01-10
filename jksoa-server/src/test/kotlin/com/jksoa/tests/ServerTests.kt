@@ -32,6 +32,8 @@ class ServerTests {
      */
     @Test
     fun testEventConsume(){
+        testNettyServer()
+
         // 监听事件
         EventService.addEventListener("myEvent", object:IEventListener{
             override fun handleEvent(event: Event) {
