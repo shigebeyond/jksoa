@@ -30,6 +30,31 @@ class Url(override var protocol: String /* 协议 */,
     companion object{
 
         /**
+         * 路径前缀
+         */
+        public val UrlPrefix: String = "/jksoa/"
+
+        /**
+         * 服务标识转根节点路径
+         *
+         * @param serviceId
+         * @return
+         */
+        public fun serviceId2rootPath(serviceId: String): String {
+            return "$UrlPrefix$serviceId"
+        }
+
+        /**
+         * 服务标识转根节点路径
+         *
+         * @param rootPath
+         * @return
+         */
+        public fun rootPath2serviceId(rootPath: String): String {
+            return rootPath.substring(UrlPrefix.length)
+        }
+
+        /**
          * 端口的正则
          */
         protected val RegexPort: String = "(:(\\d+))?"
@@ -64,26 +89,30 @@ class Url(override var protocol: String /* 协议 */,
             }
             return params
         }
+    }
 
-        /**
-         * 服务标识转根节点路径
-         *
-         * @param serviceId
-         * @return
-         */
-        public fun serviceId2rootPath(serviceId: String): String {
-            return "/$serviceId"
-        }
+    /**
+     * 根节点路径
+     *    格式为 /jksoa/路径
+     */
+    public override val rootPath: String by lazy{
+        serviceId2rootPath(path)
+    }
 
-        /**
-         * 服务标识转根节点路径
-         *
-         * @param rootPath
-         * @return
-         */
-        public fun rootPath2serviceId(rootPath: String): String {
-            return rootPath.substring(1)
-        }
+    /**
+     * 子节点名称
+     *    格式为 协议:ip:端口
+     */
+    public override val childName: String by lazy{
+        "$protocol:$host:$port"
+    }
+
+    /**
+     * 子节点路径
+     *    格式为 /jksoa/路径/协议:ip:端口
+     */
+    public override val childPath: String by lazy{
+        "/$rootPath/$childName"
     }
 
     /**

@@ -47,28 +47,19 @@ interface IUrl {
 
     /**
      * 根节点路径
-     *    格式为 /路径
+     *    格式为 /jksoa/路径
      */
     val rootPath: String
-        get(){
-            return "/$path"
-        }
 
     /**
      * 子节点名称
      *    格式为 协议:ip:端口
      */
     val childName: String
-        get(){
-            return "$protocol:$host:$port"
-        }
 
     /**
      * 子节点路径
-     *    格式为 /路径/协议:ip:端口
+     *    格式为 /jksoa/路径/协议:ip:端口
      */
     val childPath: String
-        get(){
-            return "/$path/$protocol:$host:$port"
-        }
 }
