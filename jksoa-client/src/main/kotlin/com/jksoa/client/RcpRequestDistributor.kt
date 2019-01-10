@@ -3,7 +3,6 @@ package com.jksoa.client
 import com.jkmvc.common.Config
 import com.jkmvc.common.get
 import com.jksoa.common.IRpcRequest
-import com.jksoa.common.RpcRequest
 import com.jksoa.common.future.IRpcResponseFuture
 import com.jksoa.common.future.RpcResponseFuture
 import com.jksoa.common.jobLogger

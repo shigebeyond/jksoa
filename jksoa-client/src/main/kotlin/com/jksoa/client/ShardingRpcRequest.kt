@@ -1,8 +1,6 @@
 package com.jksoa.client
 
 import com.jkmvc.common.getSignature
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.RpcRequest
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod

@@ -20,4 +20,12 @@ class ClientTests {
             println("调用服务结果： $content")
         }
     }
+
+    /**
+     * 测试事件生产
+     */
+    @Test
+    fun testEventProduct(){
+        EventService
+    }
 }

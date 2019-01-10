@@ -27,13 +27,16 @@ class ServerTests {
         println("启动服务")
     }
 
+    /**
+     * 测试事件消费
+     */
     @Test
-    fun testEvent(){
+    fun testEventConsume(){
+        // 监听事件
         EventService.addEventListener("myEvent", object:IEventListener{
             override fun handleEvent(event: Event) {
                 println("收到事件: $event")
             }
-
         })
     }
 }
