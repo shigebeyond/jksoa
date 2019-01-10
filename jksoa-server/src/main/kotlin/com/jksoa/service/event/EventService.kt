@@ -20,9 +20,9 @@ class EventService : IEventService  {
          */
         public fun addEventListener(name: String, listener: IEventListener){
             // 本地服务
-            val eventService = Referer.getRefer<IEventService>() as EventService
+            val localEventService = Referer.getRefer<IEventService>(true) as EventService
             // 添加事件监听器
-            eventService.addEventListener(name, listener)
+            localEventService.addEventListener(name, listener)
         }
     }
 

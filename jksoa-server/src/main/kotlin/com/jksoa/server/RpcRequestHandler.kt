@@ -24,17 +24,17 @@ object RpcRequestHandler : IRpcRequestHandler {
      */
     public override fun handle(req: IRpcRequest): RpcResponse {
         try{
-            // 获得provider
+            // 1 获得provider
             val provider = ProviderLoader.get(req.serviceId)
             if(provider == null)
                 throw RpcServerException("服务[${req.serviceId}]没有提供者");
 
-            // 获得方法
+            // 2 获得方法
             val method = provider.getMethod(req.methodSignature)
             if(method == null)
                 throw RpcServerException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
-            // 调用方法
+            // 3 调用方法
             try {
                 val value = method.invoke(provider.service, *req.args)
                 serverLogger.debug("Server处理请求：$req，结果: $value")

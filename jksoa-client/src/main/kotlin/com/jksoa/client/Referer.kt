@@ -1,6 +1,7 @@
 package com.jksoa.client
 
 import com.jkmvc.common.ShutdownHook
+import com.jkmvc.common.isSuperClass
 import com.jksoa.common.IService
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
@@ -33,23 +34,38 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
         /**
          * 根据服务接口，来获得服务引用
          *
-         * @param clazz
+         * @param clazzName
+         * @param local 限制本地服务
          * @return
          */
-        public fun <T: IService> getRefer(clazz: Class<T>): T {
-            val referer = RefererLoader.get(clazz.name)
+        internal fun <T: IService> getRefer(clazzName: String, local: Boolean = false): T {
+            val referer = RefererLoader.get(clazzName) as Referer?
             if(referer == null)
-                throw RpcClientException("未加载远程服务: " + clazz.name);
+                throw RpcClientException("未加载远程服务: " + clazzName)
+            if(local && !referer.local) // 限制本地服务
+                throw RpcClientException("没有本地服务: " + clazzName)
             return referer.service as T
         }
 
         /**
          * 根据服务接口，来获得服务引用
          *
+         * @param clazz
+         * @param local 限制本地服务
          * @return
          */
-        public inline fun <reified T: IService> getRefer(): T {
-            return getRefer(T::class.java)
+        public fun <T: IService> getRefer(clazz: Class<T>, local: Boolean = false): T {
+            return getRefer(clazz.name, local)
+        }
+
+        /**
+         * 根据服务接口，来获得服务引用
+         *
+         * @param local 限制本地服务
+         * @return
+         */
+        public inline fun <reified T: IService> getRefer(local: Boolean = false): T {
+            return getRefer(T::class.java, local)
         }
     }
 

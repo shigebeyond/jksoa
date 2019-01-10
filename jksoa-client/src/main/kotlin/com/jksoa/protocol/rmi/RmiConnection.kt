@@ -37,17 +37,17 @@ class RmiConnection(url: Url): IConnection(url){
      */
     public override fun send(req: IRpcRequest): IRpcResponseFuture {
         try{
-            // 获得referer
+            // 1 获得referer
             val referer = RefererLoader.get(req.serviceId)
             if(referer == null)
                 throw RpcClientException("远程服务[${req.serviceId}]没有引用者");
 
-            // 获得方法
+            // 2 获得方法
             val method = referer.getMethod(req.methodSignature)
             if(method == null)
                 throw RpcClientException("远程服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
-            // 调用远程对象的方法
+            // 3 调用远程对象的方法
             val value = method.invoke(remoteObject, *req.args)
             val res = RpcResponse(req.id, value)
             return CompletedRpcResponseFuture(res)
