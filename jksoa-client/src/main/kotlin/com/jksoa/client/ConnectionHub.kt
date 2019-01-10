@@ -110,8 +110,6 @@ object ConnectionHub: IConnectionHub {
      * @return
      */
     public fun buildConnection(url: Url): IConnection {
-
-
         // 根据rpc协议获得对应的client
         val client = IProtocolClient.instance(url.protocol)
         // 连接server

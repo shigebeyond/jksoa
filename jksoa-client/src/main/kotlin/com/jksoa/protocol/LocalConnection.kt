@@ -14,7 +14,8 @@ import java.io.Closeable
 
 /**
  * 本地的rpc连接
- *   无需建立真正的连接, 发送请求时直接调用本地服务的方法
+ *   当且仅当 client端与server端在同一个进程时, 则无需建立真正的连接, 发送请求时直接调用本地服务的方法
+ *   TODO: 当 jkmvc 与 jksoa 公用同一个netty server时才考虑支持, 直接改写 ConnectionHub.buildConnection(url): 当url是本地地址时返回的是 LocalConnection 对象
  *
  * @author shijianhang
  * @create 2017-12-15 下午9:25
