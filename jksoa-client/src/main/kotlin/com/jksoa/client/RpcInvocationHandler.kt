@@ -25,7 +25,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
         /**
          * 请求分发者
          */
-        protected val distr: IRpcRequestDistributor = RcpRequestDistributor()
+        protected val distr: IRpcRequestDistributor = RcpRequestDistributor
 
         /**
          * 创建服务代理

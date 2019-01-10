@@ -19,15 +19,12 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
-class RcpRequestDistributor : IRpcRequestDistributor {
+object RcpRequestDistributor : IRpcRequestDistributor {
 
-    companion object {
-
-        /**
-         * 客户端配置
-         */
-        public val config = Config.instance("client", "yaml")
-    }
+    /**
+     * 客户端配置
+     */
+    public val config = Config.instance("client", "yaml")
 
     /**
      * rpc连接集中器
@@ -79,7 +76,7 @@ class RcpRequestDistributor : IRpcRequestDistributor {
      * 分片多个请求
      *   将多个请求分片, 逐片分配给对应的节点
      *
-     * @param reqs 多个请求, 请求同一个服务方法
+     * @param reqs 多个请求, 调用同一个服务方法
      * @return
      */
     public override fun distributeShardings(reqs: Array<IRpcRequest>): Array<Any?> {
@@ -89,11 +86,11 @@ class RcpRequestDistributor : IRpcRequestDistributor {
         val conns = connHub.selectAll(serviceId)
         val connSize = conns.size
         // 请求分片, 每片对应连接(节点)序号
-        val shardingNum = reqs.size
-        val shd2Conns = shardingStrategy.sharding(shardingNum, connSize)
+        val shardingSize = reqs.size
+        val shd2Conns = shardingStrategy.sharding(shardingSize, connSize)
         // 记录分片结果
         val conn2Shds = connection2Shardings(shd2Conns, conns)
-        val msg = conn2Shds.entries.joinToString(", ", "Sharding result from $shardingNum sharding to $connSize Node: ")  {
+        val msg = conn2Shds.entries.joinToString(", ", "Sharding result from $shardingSize sharding to $connSize Node: ")  {
             "${it.key} => ${it.value}"
         }
         jobLogger.info(msg)
@@ -115,7 +112,7 @@ class RcpRequestDistributor : IRpcRequestDistributor {
      * @param conns
      * @return
      */
-    protected fun connection2Shardings(shd2Conns: IntArray, conns: Collection<IConnection>): HashMap<IConnection, MutableList<Int>> {
+    private fun connection2Shardings(shd2Conns: IntArray, conns: Collection<IConnection>): HashMap<IConnection, MutableList<Int>> {
         val conn2Shds = HashMap<IConnection, MutableList<Int>>(conns.size)
         shd2Conns.forEachIndexed { iSharding, iConn ->
             val conn = conns[iConn]
@@ -132,7 +129,7 @@ class RcpRequestDistributor : IRpcRequestDistributor {
      * @param resFutures
      * @return
      */
-    protected fun joinResults(resFutures: List<IRpcResponseFuture>): Array<Any?> {
+    private fun joinResults(resFutures: List<IRpcResponseFuture>): Array<Any?> {
         val latch = CountDownLatch(resFutures.size)
         val callback = object : FutureCallback<Any?> {
             public override fun cancelled() {

@@ -52,7 +52,6 @@ class NettyConnection(protected val channel: Channel, url: Url) : IConnection(ur
         }
         writeFuture.addListener(listener)*/
 
-
         // 2 阻塞等待发送完成，有超时
         val timeout: Long = config["requestTimeout"]!!
         val result = writeFuture.awaitUninterruptibly(timeout, TimeUnit.MILLISECONDS)
