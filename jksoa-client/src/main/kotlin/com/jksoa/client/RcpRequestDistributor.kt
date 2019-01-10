@@ -1,0 +1,169 @@
+package com.jksoa.client
+
+import com.jkmvc.common.Config
+import com.jkmvc.common.get
+import com.jksoa.common.IRpcRequest
+import com.jksoa.common.future.IRpcResponseFuture
+import com.jksoa.common.future.RpcResponseFuture
+import com.jksoa.common.jobLogger
+import com.jksoa.protocol.IConnection
+import com.jksoa.sharding.IShardingStrategy
+import org.apache.http.concurrent.FutureCallback
+import java.lang.Exception
+import java.util.*
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+
+/**
+ * 请求分发者
+ * @author shijianhang<772910474@qq.com>
+ * @date 2019-01-07 11:10 AM
+ */
+class RcpRequestDistributor : IRpcRequestDistributor {
+
+    companion object {
+
+        /**
+         * 客户端配置
+         */
+        public val config = Config.instance("client", "yaml")
+    }
+
+    /**
+     * rpc连接集中器
+     */
+    public val connHub: IConnectionHub = ConnectionHub
+
+    /**
+     * 分片策略
+     */
+    public val shardingStrategy: IShardingStrategy = IShardingStrategy.instance(config["shardingStrategy"]!!)
+
+    /**
+     * 将一个请求发给任一节点
+     *
+     * @param req 请求
+     * @return 响应结果
+     */
+    public override fun distributeToAny(req: IRpcRequest): Any? {
+        // 1 选择连接
+        val conn = connHub.select(req)
+
+        // 2 发送请求，并获得异步响应
+        val resFuture = conn.send(req)
+
+        // 3 返回结果
+        return resFuture.get(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+    }
+
+    /**
+     * 将一个请求分配给所有节点
+     *
+     * @param req 请求
+     * @return 多个响应结果
+     */
+    public override fun distributeToAll(req: IRpcRequest): Array<Any?> {
+        // 1 选择全部连接
+        val conns = connHub.selectAll(req.serviceId)
+
+        // 2 发送请求，并获得异步响应
+        val resFutures = conns.map {conn ->
+            conn.send(req)
+        }
+
+        // 3 等待全部请求的响应结果
+        return joinResults(resFutures)
+    }
+
+    /**
+     * 分片多个请求
+     *   将多个请求分片, 逐片分配给对应的节点
+     *
+     * @param reqs 多个请求, 请求同一个服务方法
+     * @return
+     */
+    public override fun distributeShardings(reqs: Array<IRpcRequest>): Array<Any?> {
+        val serviceId = reqs.first().serviceId
+        // 1 分片
+        // 获得所有连接(节点)
+        val conns = connHub.selectAll(serviceId)
+        val connSize = conns.size
+        // 请求分片, 每片对应连接(节点)序号
+        val shardingNum = reqs.size
+        val shd2Conns = shardingStrategy.sharding(shardingNum, connSize)
+        // 记录分片结果
+        val conn2Shds = connection2Shardings(shd2Conns, conns)
+        val msg = conn2Shds.entries.joinToString(", ", "Sharding result from $shardingNum sharding to $connSize Node: ")  {
+            "${it.key} => ${it.value}"
+        }
+        jobLogger.info(msg)
+
+        // 2 逐个分片构建并发送rpc请求
+        val resFutures = shd2Conns.mapIndexed { iSharding, iConn ->
+            // 发送请求，并获得异步响应
+            conns[iConn].send(reqs[iSharding])
+        }
+
+        // 3 等待全部分片请求的响应结果
+        return joinResults(resFutures)
+    }
+
+    /**
+     * 构建连接(节点)对分片的映射
+     *
+     * @param shd2Conns
+     * @param conns
+     * @return
+     */
+    protected fun connection2Shardings(shd2Conns: IntArray, conns: Collection<IConnection>): HashMap<IConnection, MutableList<Int>> {
+        val conn2Shds = HashMap<IConnection, MutableList<Int>>(conns.size)
+        shd2Conns.forEachIndexed { iSharding, iConn ->
+            val conn = conns[iConn]
+            val shardings = conn2Shds.getOrPut(conn) {
+                LinkedList()
+            }!!
+            shardings.add(iSharding)
+        }
+        return conn2Shds
+    }
+
+    /**
+     * 等待多个响应结果
+     * @param resFutures
+     * @return
+     */
+    protected fun joinResults(resFutures: List<IRpcResponseFuture>): Array<Any?> {
+        val latch = CountDownLatch(resFutures.size)
+        val callback = object : FutureCallback<Any?> {
+            public override fun cancelled() {
+            }
+
+            public override fun completed(result: Any?) {
+                latch.countDown()
+            }
+
+            public override fun failed(ex: Exception?) {
+                // TODO: 失败转移
+                latch.countDown()
+            }
+        }
+        for (resFuture in resFutures)
+            (resFuture as RpcResponseFuture).callback = callback
+
+        try {
+            latch.await()
+        } catch (ex: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
+
+        // 收集结果
+        val results = arrayOfNulls<Any?>(resFutures.size)
+        results.forEachIndexed { i, _ ->
+            results[i] = resFutures[i].get()
+        }
+
+        return results
+    }
+
+
+}

@@ -8,6 +8,7 @@ import com.jksoa.client.IConnectionHub
 import com.jksoa.common.future.RpcResponseFuture
 import com.jksoa.common.jobLogger
 import com.jksoa.protocol.IConnection
+import com.jksoa.sharding.IShardingStrategy
 import org.apache.http.concurrent.FutureCallback
 import java.lang.Exception
 import java.util.*
@@ -36,7 +37,7 @@ class JobDistributor : IJobDistributor {
     /**
      * 分片策略
      */
-    public val shardingStrategy: IJobShardingStrategy = IJobShardingStrategy.instance(config["shardingStrategy"]!!)
+    public val shardingStrategy: IShardingStrategy = IShardingStrategy.instance(config["shardingStrategy"]!!)
 
     /**
      * 分发作业

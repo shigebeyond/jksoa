@@ -1,14 +1,14 @@
-package com.jksoa.job
+package com.jksoa.sharding
 
 import com.jkmvc.common.randomBoolean
 import com.jkmvc.common.randomInt
 
 /**
- * 作业分片策略: 平均分
+ * 分片策略: 平均分
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 9:01 AM
  */
-class AverageJobShardingStrategy : IJobShardingStrategy {
+class AverageShardingStrategy : IShardingStrategy {
 
     /**
      * 分片, 将 shardingNum 分成 nodeNum 份

@@ -1,22 +1,22 @@
-package com.jksoa.job
+package com.jksoa.sharding
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jkmvc.common.NamedSingleton
 
 /**
- * 作业分片策略
+ * 分片策略
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 9:01 AM
  */
-interface IJobShardingStrategy {
+interface IShardingStrategy {
 
     // 可配置的单例
-    companion object: NamedSingleton<IJobShardingStrategy>() {
+    companion object: NamedSingleton<IShardingStrategy>() {
         /**
          * 配置，内容是哈希 <单例名 to 单例类>
          */
-        public override val config: IConfig = Config.instance("job_sharding_strategy", "yaml")
+        public override val config: IConfig = Config.instance("sharding-strategy", "yaml")
     }
 
     /**

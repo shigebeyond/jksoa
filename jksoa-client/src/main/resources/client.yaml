@@ -1,6 +1,7 @@
 # 客户端配置
 serializeType: fst # 序列化类型
 loadbalanceStrategy: random # 均衡负载类型
+shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
     - com.jksoa.example
 requestTimeout: !!java.lang.Long 5000 # 请求超时，Long类型，单位：微秒
