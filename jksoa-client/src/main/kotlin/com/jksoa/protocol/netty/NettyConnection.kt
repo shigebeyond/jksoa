@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyConnection(protected val channel: Channel, url: Url) : IConnection(url) {
+class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1) : IConnection(url, weight) {
 
     companion object{
         /**

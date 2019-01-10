@@ -2,7 +2,7 @@
 protocol: netty # 协议
 #ip: 192.168.0.17 # ip
 port: 9080 # 端口
-#parameters: # 参数
-#  weight: 1
+parameters: # 参数
+  weight: 1
 servicePackages: # service类所在的包路径
     - com.jksoa.example

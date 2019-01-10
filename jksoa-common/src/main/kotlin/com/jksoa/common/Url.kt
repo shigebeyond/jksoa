@@ -1,5 +1,7 @@
 package com.jksoa.common
 
+import com.jkmvc.common.getAndConvert
+
 /**
  * url与字符串互转的工具类
  *
@@ -109,6 +111,16 @@ class Url(override var protocol: String /* 协议 */,
             parameters = parseParams(paramStr)
     }
 
+    /**
+     * 获得配置项的值
+     *    注：调用时需明确指定返回类型，来自动转换参数值为指定类型
+     * @param key
+     * @param defaultValue
+     * @return
+     */
+    public inline fun <reified T:Any> getParameter(key: String, defaultValue: T? = null): T?{
+        return parameters?.getAndConvert(key, defaultValue)
+    }
 
     /**
      * 转为字符串

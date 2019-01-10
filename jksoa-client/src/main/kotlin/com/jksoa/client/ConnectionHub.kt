@@ -122,8 +122,10 @@ object ConnectionHub: IConnectionHub {
      * @param url
      */
     public override fun handleParametersChange(url: Url): Unit{
-        // TODO
-        //重整负载策略
+        //重整负载参数
+        connections[url.childName]?.forEach { key, conn ->
+            conn.weight = url.getParameter("weight", 1)!!
+        }
     }
 
     /**

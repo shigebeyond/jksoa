@@ -69,7 +69,8 @@ class NettyClient: IProtocolClient {
         // Wait until the connection is closed.
         //f.channel().closeFuture().sync();
 
-        return NettyConnection(f.channel(), url)
+        val weight: Int = url.getParameter("weight", 1)!!
+        return NettyConnection(f.channel(), url, weight)
     }
 
 }
