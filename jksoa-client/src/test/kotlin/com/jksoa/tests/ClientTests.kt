@@ -2,6 +2,8 @@ package com.jksoa.tests
 
 import com.jksoa.client.Referer
 import com.jksoa.example.IExampleService
+import com.jksoa.service.event.Event
+import com.jksoa.service.event.IEventService
 import org.junit.Test
 
 /**
@@ -26,6 +28,6 @@ class ClientTests {
      */
     @Test
     fun testEventProduct(){
-        EventService
+        IEventService.broadcastEvent(Event("myEvent", "xxx"))
     }
 }
