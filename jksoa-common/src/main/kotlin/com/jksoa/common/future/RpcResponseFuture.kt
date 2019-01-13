@@ -18,17 +18,8 @@ import java.util.concurrent.TimeUnit
  * @date 2017-12-30 6:43 PM
  */
 class RpcResponseFuture(public val request: IRpcRequest, /* 请求 */
-                     public val timeout: Long, /* 超时，单位毫秒 */
-                     callback: FutureCallback<Any?>? = null /* 回调 */
-): IRpcResponseFuture, BasicFuture<Any>(callback) {
-
-    /**
-     * 构造函数
-     *
-     * @param request
-     * @param callback
-     */
-    public constructor(request: IRpcRequest, callback: FutureCallback<Any?>? = null): this(request, 100000 /* 默认超时5s */, callback){}
+                     public val timeout: Long = 6000 /* 超时，单位毫秒, 默认6s */
+): IRpcResponseFuture, BasicFuture<Any>() {
 
     /**
      * 创建时间

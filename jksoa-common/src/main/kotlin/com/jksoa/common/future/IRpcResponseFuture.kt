@@ -1,6 +1,7 @@
 package com.jksoa.common.future
 
 import com.jksoa.common.IRpcResponse
+import org.apache.http.concurrent.FutureCallback
 import java.util.concurrent.Future
 
 /**
