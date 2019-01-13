@@ -19,9 +19,9 @@ interface IProtocolClient {
     // 可配置的单例
     companion object: NamedSingleton<IProtocolClient>() {
         /**
-         * 配置，内容是哈希 <单例名 to 单例类>
+         * 单例类的配置，内容是哈希 <单例名 to 单例类>
          */
-        public override val config: IConfig = Config.instance("protocol.client", "yaml")
+        public override val instsConfig: IConfig = Config.instance("protocol.client", "yaml")
     }
 
     /**
