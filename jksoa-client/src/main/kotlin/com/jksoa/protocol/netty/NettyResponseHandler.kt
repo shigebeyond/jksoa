@@ -8,10 +8,15 @@ import com.jksoa.common.clientLogger
 import com.jksoa.common.future.RpcResponseFuture
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
+import io.netty.util.HashedWheelTimer
+import io.netty.util.Timeout
+import io.netty.util.TimerTask
+import org.apache.http.concurrent.FutureCallback
 import java.io.Closeable
+import java.lang.Exception
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 /**
  * netty客户端的响应处理器
@@ -21,7 +26,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang
  * @create 2018-01-01 上午12:32
  **/
-object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>(), Runnable, Closeable {
+object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>(), Closeable {
 
     /**
      * 客户端配置
@@ -36,7 +41,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>(), Runnab
     /**
      * 清除过期异步响应的定时器
      */
-    private val expireFutureTimer = Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(this, 1000, config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+    val timer = HashedWheelTimer(1, TimeUnit.SECONDS, 8 /* 2的次幂 */)
 
     init {
         ShutdownHook.addClosing(this)
@@ -49,7 +54,32 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>(), Runnab
      * @param future
      */
     public fun putResponseFuture(requestId: Long, future: RpcResponseFuture){
+        // 记录异步响应
         futures[requestId] = future
+
+        // 定时清除过期异步响应
+        val timeout = timer.newTimeout(object : TimerTask {
+            override fun run(timeout: Timeout) {
+                if (futures.contains(requestId) && future.expireTime < System.currentTimeMillis()) { // 过期的异步响应
+                    future.failed(TimeoutException("Timeout waiting for response for request[$requestId]"))
+                    futures.remove(future.requestId) // 删除
+                }
+            }
+        }, config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+
+        val callback = object : FutureCallback<Any?> {
+            public override fun cancelled() {
+            }
+
+            public override fun completed(result: Any?) {
+                timeout.cancel()
+            }
+
+            public override fun failed(ex: Exception?) {
+                timeout.cancel()
+            }
+        }
+        future.addCallback(callback)
     }
 
     /**
@@ -89,29 +119,9 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>(), Runnab
     }
 
     /**
-     * 定时清除过期异步响应
-     */
-    public override fun run() {
-        clearExpiredFuture()
-    }
-
-    /**
-     * 清除过期异步响应
-     */
-    private fun clearExpiredFuture() {
-        val now = System.currentTimeMillis()
-        for ((reqId, future) in futures) {
-            if (future.expireTime < now) { // 过期的异步响应
-                future.cancel() // 取消
-                futures.remove(reqId) // 删除
-            }
-        }
-    }
-
-    /**
      * 关闭定时器
      */
     public override fun close() {
-        expireFutureTimer.cancel(true)
+        timer.stop()
     }
 }
