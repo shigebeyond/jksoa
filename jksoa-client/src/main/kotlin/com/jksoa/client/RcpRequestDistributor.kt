@@ -64,7 +64,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
         val conns = connHub.selectAll(req.serviceId)
 
         // 2 发送请求，并获得异步响应
-        val resFutures = conns.map {conn ->
+        val resFutures = conns.map { conn ->
             conn.send(req)
         }
 
@@ -147,7 +147,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
             }
         }
         for (resFuture in resFutures)
-            (resFuture as RpcResponseFuture).callback = callback
+            (resFuture as RpcResponseFuture).addCallback(callback)
 
         try {
             latch.await()

@@ -2,6 +2,7 @@ package com.jksoa.client
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
+import com.jkmvc.common.get
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
@@ -139,10 +140,11 @@ object ConnectionHub: IConnectionHub {
         val conns = selectAll(req.serviceId)
 
         // 2 按均衡负载策略，来选择连接
-        val conn = loadBalanceStrategy.select(conns, req) as IConnection?
-        if(conn == null)
+        val i = loadBalanceStrategy.select(conns, req)
+        if(i == -1)
             throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
 
+        val conn = conns[i]
         clientLogger.debug("ConnectionHub选择远程服务[${req.serviceId}]的一个连接${conn}来发送rpc请求")
 
         return conn
