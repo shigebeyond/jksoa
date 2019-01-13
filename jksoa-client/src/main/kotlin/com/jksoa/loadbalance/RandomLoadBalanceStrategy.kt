@@ -1,6 +1,7 @@
 package com.jksoa.loadbalance
 
-import com.jkmvc.common.getRandom
+import com.jkmvc.common.get
+import com.jkmvc.common.randomInt
 import com.jksoa.common.IRpcRequest
 
 /**
@@ -15,13 +16,13 @@ class RandomLoadBalanceStrategy : ILoadBalanceStrategy {
      *
      * @param node
      * @param req
-     * @return
+     * @return 选中的节点序号
      */
-    public override fun select(nodes: Collection<INode>, req: IRpcRequest): INode? {
+    public override fun select(nodes: Collection<INode>, req: IRpcRequest): Int {
         if(nodes.isEmpty())
-            return null
+            return -1
 
         // 随机选个节点
-        return nodes.getRandom()
+        return randomInt(nodes.size)
     }
 }

@@ -24,9 +24,9 @@ interface ILoadBalanceStrategy {
     /**
      * 选择节点
      *
-     * @param node
+     * @param nodes
      * @param req
-     * @return
+     * @return 选中的节点序号
      */
-    fun select(nodes: Collection<INode>, req: IRpcRequest): INode?
+    fun select(nodes: Collection<INode>, req: IRpcRequest): Int
 }
