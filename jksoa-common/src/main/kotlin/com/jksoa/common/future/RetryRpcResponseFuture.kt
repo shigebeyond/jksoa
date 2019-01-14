@@ -13,26 +13,31 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-class RetryRpcResponseFuture(protected var retryNum: Int = 0 /* 失败重试次数 */,
-                             protected val responseFactory: () -> RpcResponseFuture /* 响应工厂, 用于发送发布请求 */
+class RetryRpcResponseFuture(protected val maxTryTimes: Int = 1 /* 最大尝试次数 */,
+                             protected val responseFactory: (tryTimes: Int) -> IRpcResponseFuture /* 响应工厂方法, 参数是当前尝试次数, 用于发送发送请求 */
 ) : IRpcResponseFuture, Callbackable<Any?>()  {
+
+    /**
+     * 已尝试次数
+     */
+    protected var tryTimes: Int = 0
 
     /**
      * 被代理的目标异步响应对象
      */
-    protected var targetResFuture: RpcResponseFuture = buildResponseFuture()
+    protected var targetResFuture: IRpcResponseFuture = buildResponseFuture()
 
     init{
-        if(retryNum < 0)
-            throw RpcClientException("RetryNum must greater than or equals 0")
+        if(maxTryTimes < 1)
+            throw RpcClientException("maxTryTimes must greater than or equals 1")
     }
 
     /**
      * 构建异步响应
      * @return
      */
-    protected fun buildResponseFuture(): RpcResponseFuture {
-        val res = responseFactory()
+    protected fun buildResponseFuture(): IRpcResponseFuture {
+        val res = responseFactory(tryTimes)
         val callback = object : FutureCallback<Any?> {
             public override fun cancelled() {
                 callbacks?.forEach {
@@ -48,7 +53,7 @@ class RetryRpcResponseFuture(protected var retryNum: Int = 0 /* 失败重试次�
 
             // 出错重试
             public override fun failed(ex: Exception?) {
-                if(retryNum-- > 0) // 串行重试, retryNum-- 线程安全
+                if(++tryTimes < maxTryTimes) // 串行重试, ++tryTimes 线程安全
                     targetResFuture = buildResponseFuture()
                 else
                     callbacks?.forEach {
@@ -95,7 +100,7 @@ class RetryRpcResponseFuture(protected var retryNum: Int = 0 /* 失败重试次�
      * 同步获得任务结果, 有默认超时
      */
     public override fun get(): Any? {
-        return get(targetResFuture.timeout, TimeUnit.MILLISECONDS)
+        return get((targetResFuture as RpcResponseFuture).timeout, TimeUnit.MILLISECONDS)
     }
 
     /**
@@ -107,13 +112,12 @@ class RetryRpcResponseFuture(protected var retryNum: Int = 0 /* 失败重试次�
      */
     public override fun get(timeout: Long, unit: TimeUnit): Any? {
         var ex: Exception? = null
-        val tryNum = retryNum + 1
-        while(retryNum >= 0){
+        while(tryTimes < maxTryTimes){
             try {
                 return targetResFuture.get(timeout, unit)
             }catch(e: Exception){
-                // [retryNum--] is done in [FutureCallback.failed()]
-                clientLogger.error("Exception in [targetResFuture.get()], And it retry ${tryNum - retryNum} times.")
+                // [++tryTimes] is done in [FutureCallback.failed()]
+                clientLogger.error("Exception in [targetResFuture.get()], And it already try [$tryTimes] times.")
                 ex = e
             }
         }

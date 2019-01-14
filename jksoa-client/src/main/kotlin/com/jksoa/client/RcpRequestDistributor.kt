@@ -4,6 +4,7 @@ import com.jkmvc.common.Config
 import com.jkmvc.common.get
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.future.IRpcResponseFuture
+import com.jksoa.common.future.RetryRpcResponseFuture
 import com.jksoa.common.future.RpcResponseFuture
 import com.jksoa.common.jobLogger
 import com.jksoa.protocol.IConnection
@@ -27,6 +28,11 @@ object RcpRequestDistributor : IRpcRequestDistributor {
     public val config = Config.instance("client", "yaml")
 
     /**
+     * 最大尝试次数, 用于支持失败重试
+     */
+    public val maxTryTimes: Int = config["maxTryTimes"]!!
+
+    /**
      * rpc连接集中器
      */
     public val connHub: IConnectionHub = ConnectionHub
@@ -43,11 +49,13 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @return 响应结果
      */
     public override fun distributeToAny(req: IRpcRequest): Any? {
-        // 1 选择连接
-        val conn = connHub.select(req)
+        val resFuture = RetryRpcResponseFuture(maxTryTimes){
+            // 1 选择连接
+            val conn = connHub.select(req)
 
-        // 2 发送请求，并获得异步响应
-        val resFuture = conn.send(req)
+            // 2 发送请求，并获得异步响应
+            conn.send(req)
+        }
 
         // 3 返回结果
         return resFuture.get(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
@@ -147,7 +155,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
             }
         }
         for (resFuture in resFutures)
-            (resFuture as RpcResponseFuture).addCallback(callback)
+            resFuture.addCallback(callback)
 
         try {
             latch.await()
