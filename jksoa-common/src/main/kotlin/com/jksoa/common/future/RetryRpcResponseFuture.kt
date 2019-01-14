@@ -2,6 +2,7 @@ package com.jksoa.common.future
 
 import com.jkmvc.future.Callbackable
 import com.jksoa.common.clientLogger
+import com.jksoa.common.exception.RpcClientException
 import org.apache.http.concurrent.FutureCallback
 import java.util.concurrent.TimeUnit
 
@@ -20,6 +21,11 @@ class RetryRpcResponseFuture(protected var retryNum: Int = 0 /* 失败重试次�
      * 被代理的目标异步响应对象
      */
     protected var targetResFuture: RpcResponseFuture = buildResponseFuture()
+
+    init{
+        if(retryNum < 0)
+            throw RpcClientException("RetryNum must greater than or equals 0")
+    }
 
     /**
      * 构建异步响应
@@ -101,13 +107,13 @@ class RetryRpcResponseFuture(protected var retryNum: Int = 0 /* 失败重试次�
      */
     public override fun get(timeout: Long, unit: TimeUnit): Any? {
         var ex: Exception? = null
-        val orgnRetryNum = retryNum
-        while(retryNum > 0){
+        val tryNum = retryNum + 1
+        while(retryNum >= 0){
             try {
                 return targetResFuture.get(timeout, unit)
             }catch(e: Exception){
                 // [retryNum--] is done in [FutureCallback.failed()]
-                clientLogger.error("Exception in [targetResFuture.get()], And it retry ${orgnRetryNum - retryNum} times.")
+                clientLogger.error("Exception in [targetResFuture.get()], And it retry ${tryNum - retryNum} times.")
                 ex = e
             }
         }
