@@ -27,7 +27,15 @@ class LazyConnection(url: Url, weight: Int = 1) : IConnection(url, weight) {
         // 根据rpc协议获得对应的client
         val client = IProtocolClient.instance(url.protocol)
         // 连接server
-        return client.connect(url)
+        val conn = client.connect(url)
+        // 连接关闭回调
+        conn.closeCallback = {
+            // 代理回调的调用
+            this.closeCallback?.invoke()
+            // 清空被代理的连接
+            this.conn = null
+        }
+        return conn
     }
 
     /**

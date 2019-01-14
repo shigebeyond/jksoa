@@ -15,7 +15,10 @@ abstract class IConnection(public val url: Url /* 服务端地址 */,
                            public override var weight: Int = 1 /* 权重 */
 ) : Closeable, INode {
 
-//    public var closeListener
+    /**
+     * 连接关闭的回调
+     */
+    public var closeCallback: (() -> Unit)? = null
 
     /**
      * 客户端发送请求

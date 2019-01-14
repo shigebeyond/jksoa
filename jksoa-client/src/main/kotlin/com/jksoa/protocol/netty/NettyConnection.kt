@@ -88,12 +88,15 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
      * 关闭连接
      */
     public override fun close() {
-        // 关闭channel
+        // 1 关闭channel
         if(channel.isOpen || channel.isActive)
             channel.close().sync()
 
-        // 删除引用
+        // 2 删除引用
         channel.attr<NettyConnection>(connKey).set(null)
+
+        // 3 调用回调
+        closeCallback?.invoke()
     }
 
 }
