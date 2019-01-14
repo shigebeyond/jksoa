@@ -1,5 +1,7 @@
 package com.jksoa.common.future
 
+import com.jkmvc.future.Callbackable
+import com.jksoa.common.clientLogger
 import org.apache.http.concurrent.FutureCallback
 import java.util.concurrent.TimeUnit
 
@@ -12,7 +14,7 @@ import java.util.concurrent.TimeUnit
  */
 class RetryRpcResponseFuture(protected var retryNum: Int = 0 /* 失败重试次数 */,
                              protected val responseFactory: () -> RpcResponseFuture /* 响应工厂, 用于发送发布请求 */
-) : IRpcResponseFuture  {
+) : IRpcResponseFuture, Callbackable<Any?>()  {
 
     /**
      * 被代理的目标异步响应对象
@@ -27,14 +29,25 @@ class RetryRpcResponseFuture(protected var retryNum: Int = 0 /* 失败重试次�
         val res = responseFactory()
         val callback = object : FutureCallback<Any?> {
             public override fun cancelled() {
+                callbacks?.forEach {
+                    it.cancelled()
+                }
             }
 
             public override fun completed(result: Any?) {
+                callbacks?.forEach {
+                    it.completed(result)
+                }
             }
 
-            public override fun failed(ex: java.lang.Exception?) {
-                if(retryNum-- > 0)
+            // 出错重试
+            public override fun failed(ex: Exception?) {
+                if(retryNum-- > 0) // 串行重试, retryNum-- 线程安全
                     targetResFuture = buildResponseFuture()
+                else
+                    callbacks?.forEach {
+                        it.failed(ex)
+                    }
             }
         }
         res.addCallback(callback)
@@ -65,32 +78,49 @@ class RetryRpcResponseFuture(protected var retryNum: Int = 0 /* 失败重试次�
     }
 
     /**
-     * 同步获得任务结果, 无超时
-     */
-    public override fun get(): Any? {
-        return targetResFuture.get()
-    }
-
-    /**
-     * 获得任务结果, 有超时
-     */
-    public override fun get(timeout: Long, unit: TimeUnit): Any? {
-        return targetResFuture.get(timeout, unit)
-    }
-
-    /**
-     * 取消任务
-     */
-    public override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
-        return targetResFuture.cancel(mayInterruptIfRunning)
-    }
-
-    /**
      * 判断任务是否取消
+     * @return
      */
     public override fun isCancelled(): Boolean {
         return targetResFuture.isCancelled
     }
 
+    /**
+     * 同步获得任务结果, 有默认超时
+     */
+    public override fun get(): Any? {
+        return get(targetResFuture.timeout, TimeUnit.MILLISECONDS)
+    }
+
+    /**
+     * 同步获得结果，有超时
+     *
+     * @param timeout
+     * @param unit
+     * @return
+     */
+    public override fun get(timeout: Long, unit: TimeUnit): Any? {
+        var ex: Exception? = null
+        val orgnRetryNum = retryNum
+        while(retryNum > 0){
+            try {
+                return targetResFuture.get(timeout, unit)
+            }catch(e: Exception){
+                // [retryNum--] is done in [FutureCallback.failed()]
+                clientLogger.error("Exception in [targetResFuture.get()], And it retry ${orgnRetryNum - retryNum} times.")
+                ex = e
+            }
+        }
+        throw ex!!
+    }
+
+    /**
+     * 取消任务
+     * @param mayInterruptIfRunning
+     * @return
+     */
+    public override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+        return targetResFuture.cancel(mayInterruptIfRunning)
+    }
 
 }

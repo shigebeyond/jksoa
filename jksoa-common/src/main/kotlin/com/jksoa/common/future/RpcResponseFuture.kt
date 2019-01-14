@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-class RpcResponseFuture(public val request: IRpcRequest, /* 请求 */
-                     public val timeout: Long = 6000 /* 超时，单位毫秒, 默认6s */
-): IRpcResponseFuture, BasicFuture<Any>() {
+class RpcResponseFuture(public val request: IRpcRequest /* 请求 */,
+                        public val timeout: Long = 6000 /* 超时，单位毫秒, 默认6s */
+): IRpcResponseFuture, BasicFuture<Any?>() {
 
     /**
      * 创建时间
@@ -58,6 +58,13 @@ class RpcResponseFuture(public val request: IRpcRequest, /* 请求 */
         return get(timeout, TimeUnit.MILLISECONDS)
     }
 
+    /**
+     * 同步获得结果，有超时
+     *
+     * @param timeout
+     * @param unit
+     * @return
+     */
     public override fun get(timeout: Long, unit: TimeUnit): Any? {
         try{
             return super.get(timeout, unit)
