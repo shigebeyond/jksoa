@@ -30,7 +30,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
     private val futures: ConcurrentHashMap<Long, NettyRpcResponseFuture> = ConcurrentHashMap()
 
     /**
-     * 记录异步响应，以便响应到来时设置结果
+     * 记录单个异步响应，以便响应到来时设置结果
      *
      * @param requestId
      * @param future
@@ -41,7 +41,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
     }
 
     /**
-     * 删除异步响应
+     * 删除单个异步响应
      *
      * @param requestId
      * @return
@@ -51,7 +51,23 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
     }
 
     /**
-     * 响应
+     * 删除满足条件的多个异步响应
+     *
+     * @param 条件函数
+     */
+    public fun removeResponseFutures(predicate: (NettyRpcResponseFuture) -> Boolean){
+        if(futures.isEmpty())
+            return
+
+        // 收集要删除的元素
+        val removedValue = futures.values.filter(predicate)
+        // 删除元素
+        for(v in removedValue)
+            futures.remove(v.requestId)
+    }
+
+    /**
+     * 处理收到的响应
      *
      * @param ctx
      * @param res
@@ -75,5 +91,18 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         else
             future.failed(res.exception!!)
     }
+
+    /**
+     * 处理事件: channel已死
+     *    删掉该channel对应的异步响应记录
+     * @param ctx
+     */
+    public override fun channelInactive(ctx: ChannelHandlerContext) {
+        val channel = ctx.channel()
+        removeResponseFutures { future ->
+            future.channel == channel
+        }
+    }
+
 
 }

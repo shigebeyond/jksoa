@@ -4,6 +4,7 @@ import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.future.RpcResponseFuture
+import io.netty.channel.Channel
 import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
@@ -19,7 +20,9 @@ import java.util.concurrent.TimeoutException
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-14 6:11 PM
  */
-class NettyRpcResponseFuture(request: IRpcRequest /* 请求 */) : RpcResponseFuture(request) {
+class NettyRpcResponseFuture(request: IRpcRequest /* 请求 */,
+                             public val channel: Channel /* netty channel, 仅用于在[NettyResponseHandler.channelInactive()]中删掉该channel对应的异步响应记录 */
+) : RpcResponseFuture(request) {
 
     companion object: Closeable {
 

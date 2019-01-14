@@ -19,10 +19,10 @@ class LazyConnection(url: Url, weight: Int = 1) : IConnection(url, weight) {
     protected var conn: IConnection? = null
 
     /**
-     * 连接是否关闭
+     * 连接是否活着
      */
-    public override val closed: Boolean
-        get() = conn == null || conn!!.closed
+    public override val active: Boolean
+        get() = conn == null || conn!!.active
 
     /**
      * 根据url建立连接
@@ -45,7 +45,11 @@ class LazyConnection(url: Url, weight: Int = 1) : IConnection(url, weight) {
     public override fun send(req: IRpcRequest): IRpcResponseFuture {
         // 建立连接
         if(conn == null)
-            conn = buildConnection()
+            synchronized(this) {
+                if(conn == null)
+                    conn = buildConnection()
+            }
+
         // 发送请求
         return conn!!.send(req)
     }

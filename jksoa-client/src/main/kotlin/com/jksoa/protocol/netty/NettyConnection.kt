@@ -9,6 +9,7 @@ import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.future.IRpcResponseFuture
 import com.jksoa.protocol.IConnection
 import io.netty.channel.Channel
+import io.netty.util.AttributeKey
 import java.util.concurrent.TimeUnit
 
 /**
@@ -18,6 +19,11 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
+
+// Channel 与 NettyConnection 相互引用
+val Channel.connection: NettyConnection
+    get() = this.attr<NettyConnection>(NettyConnection.connKey).get()
+
 class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1) : IConnection(url, weight) {
 
     companion object{
@@ -25,13 +31,23 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
          * 客户端配置
          */
         public val config: IConfig = Config.instance("client", "yaml")
+
+        /**
+         *
+         */
+        public val connKey = AttributeKey.valueOf<NettyConnection>("connection")
+    }
+
+    init {
+        // 将连接塞到channel的属性中, 以便相互引用
+        channel.attr<NettyConnection>(connKey).set(this)
     }
 
     /**
-     * 连接是否关闭
+     * 连接是否活着
      */
-    public override val closed: Boolean
-        get() = !channel.isActive
+    public override val active: Boolean
+        get() = !channel.isOpen || !channel.isActive
 
     /**
      * 客户端发送请求
@@ -61,7 +77,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
 
         // 2.1 发送成功
         if (result && writeFuture.isSuccess()) {
-            return NettyRpcResponseFuture(req) // 返回异步响应
+            return NettyRpcResponseFuture(req, channel) // 返回异步响应
         }
 
         // 2.2 超时

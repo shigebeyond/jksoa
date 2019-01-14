@@ -16,9 +16,9 @@ abstract class IConnection(public val url: Url /* 服务端地址 */,
 ) : Closeable, INode {
 
     /**
-     * 连接是否关闭
+     * 连接是否活着
      */
-    public abstract val closed: Boolean
+    public abstract val active: Boolean
 
     /**
      * 客户端发送请求
