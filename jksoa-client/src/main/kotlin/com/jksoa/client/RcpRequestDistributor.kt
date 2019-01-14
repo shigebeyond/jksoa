@@ -153,7 +153,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
             }
         }
         for (resFuture in resFutures)
-            resFuture.addCallback(callback)
+            resFuture.callback = callback
 
         try {
             latch.await()

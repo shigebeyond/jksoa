@@ -13,12 +13,13 @@ import org.apache.http.concurrent.FutureCallback
  * @date 2017-12-30 6:43 PM
  */
 class CompletedRpcResponseFuture(res: RpcResponse): IRpcResponseFuture, CompletedFuture<Any?>(res.value), IRpcResponse by res {
-
+    
     /**
-     * 添加回调
-     * @param callback
+     * 回调
      */
-    override fun addCallback(callback: FutureCallback<Any?>) {
-        callback.completed(result)
-    }
+    public override var callback: FutureCallback<Any?>? = null
+        set(value: FutureCallback<Any?>?) {
+            field = value
+            value?.completed(result)
+        }
 }

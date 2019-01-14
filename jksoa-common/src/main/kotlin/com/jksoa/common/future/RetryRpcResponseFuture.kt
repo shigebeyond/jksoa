@@ -47,17 +47,13 @@ class RetryRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次�
      */
     protected fun buildResponseFuture(): IRpcResponseFuture {
         val res = responseFactory(tryTimes)
-        val callback = object : FutureCallback<Any?> {
+        res.callback = object : FutureCallback<Any?> {
             public override fun cancelled() {
-                callbacks?.forEach {
-                    it.cancelled()
-                }
+                callback?.cancelled()
             }
 
             public override fun completed(result: Any?) {
-                callbacks?.forEach {
-                    it.completed(result)
-                }
+                callback?.completed(result)
             }
 
             // 出错重试
@@ -65,12 +61,9 @@ class RetryRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次�
                 if(++tryTimes < maxTryTimes) // 串行重试, ++tryTimes 线程安全
                     targetResFuture = buildResponseFuture()
                 else
-                    callbacks?.forEach {
-                        it.failed(ex)
-                    }
+                    callback?.failed(ex)
             }
         }
-        res.addCallback(callback)
         return res
     }
 
