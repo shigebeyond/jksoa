@@ -6,7 +6,6 @@ import com.jksoa.mq.IEventService
 import com.jksoa.mq.Message
 
 /**
- * @ClassName: ClientTests
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM

@@ -8,7 +8,6 @@ import com.jksoa.common.ServiceClassLoader
 /**
  * 加载服务引用者
  *
- * @ClassName:RefererLoader
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM

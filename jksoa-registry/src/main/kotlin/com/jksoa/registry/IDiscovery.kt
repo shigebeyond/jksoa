@@ -5,7 +5,6 @@ import com.jksoa.common.Url
 /**
  * 服务发现
  *
- * @ClasssName: Registry
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 12:48 PM

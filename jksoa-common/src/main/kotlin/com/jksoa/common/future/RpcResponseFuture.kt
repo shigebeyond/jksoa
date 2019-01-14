@@ -1,10 +1,10 @@
 package com.jksoa.common.future
 
+import com.jkmvc.common.Config
 import com.jkmvc.future.BasicFuture
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.exception.RpcBusinessException
 import com.jksoa.common.exception.RpcClientException
-import org.apache.http.concurrent.FutureCallback
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
@@ -12,25 +12,19 @@ import java.util.concurrent.TimeUnit
  * 异步响应
  *   可以通过以下方法来表示完成状态: cancel() / failed() / completed()
  *
- * @ClassName: ResponseFuture
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-class RpcResponseFuture(public val request: IRpcRequest /* 请求 */,
-                        public val timeout: Long = 6000 /* 超时，单位毫秒, 默认6s */
-): IRpcResponseFuture, BasicFuture<Any?>() {
+open class RpcResponseFuture(public val request: IRpcRequest /* 请求 */): IRpcResponseFuture, BasicFuture<Any?>() {
 
-    /**
-     * 创建时间
-     */
-    public val createTime: Long = System.currentTimeMillis()
+    companion object {
 
-    /**
-     * 过期时间
-     */
-    public val expireTime: Long
-        get() = createTime + timeout
+        /**
+         * 客户端配置
+         */
+        public val config = Config.instance("client", "yaml")
+    }
 
     /**
      * 请求标识
@@ -55,7 +49,7 @@ class RpcResponseFuture(public val request: IRpcRequest /* 请求 */,
      * @return
      */
     public override fun get(): Any? {
-        return get(timeout, TimeUnit.MILLISECONDS)
+        return get(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
     }
 
     /**

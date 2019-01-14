@@ -7,7 +7,6 @@ import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.future.IRpcResponseFuture
-import com.jksoa.common.future.RpcResponseFuture
 import com.jksoa.protocol.IConnection
 import io.netty.channel.Channel
 import java.util.concurrent.TimeUnit
@@ -15,7 +14,6 @@ import java.util.concurrent.TimeUnit
 /**
  * netty连接
  *
- * @ClasssName: NettyClient
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
@@ -28,6 +26,12 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
          */
         public val config: IConfig = Config.instance("client", "yaml")
     }
+
+    /**
+     * 连接是否关闭
+     */
+    public override val closed: Boolean
+        get() = !channel.isActive
 
     /**
      * 客户端发送请求
@@ -53,14 +57,11 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
         writeFuture.addListener(listener)*/
 
         // 2 阻塞等待发送完成，有超时
-        val timeout: Long = config["requestTimeout"]!!
-        val result = writeFuture.awaitUninterruptibly(timeout, TimeUnit.MILLISECONDS)
+        val result = writeFuture.awaitUninterruptibly(config["connectTimeout"]!!, TimeUnit.MILLISECONDS)
 
         // 2.1 发送成功
         if (result && writeFuture.isSuccess()) {
-            val resFuture = RpcResponseFuture(req, timeout) // 返回异步响应
-            NettyResponseHandler.putResponseFuture(req.id, resFuture) // 记录异步响应，以便响应到来时设置结果
-            return resFuture
+            return NettyRpcResponseFuture(req) // 返回异步响应
         }
 
         // 2.2 超时

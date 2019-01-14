@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * 基于zookeeper的服务发现
  *
- * @ClassName: ZkDiscovery
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 11:22 AM

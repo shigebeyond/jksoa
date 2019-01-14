@@ -12,7 +12,6 @@ import javax.naming.InitialContext
 /**
  * rmi链接
  *
- * @ClassName: Protocol
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM

@@ -10,7 +10,6 @@ import io.netty.channel.SimpleChannelInboundHandler
 /**
  * netty服务端请求处理器
  *
- * @ClasssName: NettyServer
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM

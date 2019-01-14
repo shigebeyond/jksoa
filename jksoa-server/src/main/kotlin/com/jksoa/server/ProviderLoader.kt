@@ -9,7 +9,6 @@ import com.jksoa.common.ServiceClassLoader
 /**
  * 加载服务提供者
  *
- * @ClassName:ProviderLoader
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM

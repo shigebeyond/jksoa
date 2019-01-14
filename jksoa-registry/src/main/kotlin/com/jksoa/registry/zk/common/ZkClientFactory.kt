@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * zk连接工厂
  *
- * @ClassName: ZkClientFactory
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 11:22 AM

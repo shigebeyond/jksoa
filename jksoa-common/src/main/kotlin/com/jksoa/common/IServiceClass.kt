@@ -6,7 +6,6 @@ import java.lang.reflect.Method
 /**
  * 服务类元数据
  *
- * @ClassName: ICaller
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 3:48 PM

@@ -10,7 +10,6 @@ import com.jksoa.server.ProviderLoader
 /**
  * rpc协议-服务器端
  *
- * @ClassName: IProtocolServer
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM

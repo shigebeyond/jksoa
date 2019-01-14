@@ -21,6 +21,8 @@ class MqBroker : IMqBroker {
      * @param message 消息
      */
     public override fun distributeMessage(message: Message){
+        // todo: 不是发送请求, 是直接发送响应, 是没有关联请求的响应
+        // 是要对订阅过该主题的连接来发送
         // 1 构建请求
         val req = RpcRequest(IMqConsumer::pushMessage, arrayOf<Any?>(message))
 

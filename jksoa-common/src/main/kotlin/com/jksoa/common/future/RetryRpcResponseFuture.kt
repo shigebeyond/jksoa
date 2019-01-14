@@ -1,5 +1,6 @@
 package com.jksoa.common.future
 
+import com.jkmvc.common.Config
 import com.jkmvc.future.Callbackable
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
@@ -13,9 +14,17 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-class RetryRpcResponseFuture(protected val maxTryTimes: Int = 1 /* 最大尝试次数 */,
+class RetryRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次数 */,
                              protected val responseFactory: (tryTimes: Int) -> IRpcResponseFuture /* 响应工厂方法, 参数是当前尝试次数, 用于发送发送请求 */
 ) : IRpcResponseFuture, Callbackable<Any?>()  {
+
+    companion object {
+
+        /**
+         * 客户端配置
+         */
+        public val config = Config.instance("client", "yaml")
+    }
 
     /**
      * 已尝试次数
@@ -100,7 +109,7 @@ class RetryRpcResponseFuture(protected val maxTryTimes: Int = 1 /* 最大尝试�
      * 同步获得任务结果, 有默认超时
      */
     public override fun get(): Any? {
-        return get((targetResFuture as RpcResponseFuture).timeout, TimeUnit.MILLISECONDS)
+        return get(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
     }
 
     /**

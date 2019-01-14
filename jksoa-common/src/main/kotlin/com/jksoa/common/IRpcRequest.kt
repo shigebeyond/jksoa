@@ -5,7 +5,6 @@ import java.io.Serializable
 /**
  * rpc请求
  *
- * @ClassName: Request
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM

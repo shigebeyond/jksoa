@@ -5,7 +5,6 @@ import com.jkmvc.common.get
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.future.IRpcResponseFuture
 import com.jksoa.common.future.RetryRpcResponseFuture
-import com.jksoa.common.future.RpcResponseFuture
 import com.jksoa.common.jobLogger
 import com.jksoa.protocol.IConnection
 import com.jksoa.sharding.IShardingStrategy
@@ -150,7 +149,6 @@ object RcpRequestDistributor : IRpcRequestDistributor {
             }
 
             public override fun failed(ex: Exception?) {
-                // TODO: 失败转移
                 latch.countDown()
             }
         }

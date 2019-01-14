@@ -13,7 +13,12 @@ import java.io.Closeable
  **/
 abstract class IConnection(public val url: Url /* 服务端地址 */,
                            public override var weight: Int = 1 /* 权重 */
-) : Closeable, IUrl by url, INode {
+) : Closeable, INode {
+
+    /**
+     * 连接是否关闭
+     */
+    public abstract val closed: Boolean
 
     /**
      * 客户端发送请求

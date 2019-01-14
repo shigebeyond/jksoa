@@ -9,7 +9,6 @@ import com.jksoa.common.Url
 /**
  * rpc协议-客户端
  *
- * @ClassName: IProtocolClient
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM

@@ -10,7 +10,6 @@ import org.apache.zookeeper.Watcher
 /**
  * 基于zookeeper的注册中心
  *
- * @ClassName: ZkRegistry
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 11:22 AM

@@ -7,8 +7,7 @@ import com.jksoa.common.Url
 /**
  * 注册中心
  *
- * @ClasssName: Registry
- * @Description: 
+ * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 12:48 PM
  */

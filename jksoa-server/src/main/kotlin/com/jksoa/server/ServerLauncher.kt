@@ -7,7 +7,6 @@ import com.jksoa.protocol.IProtocolServer
 /**
  * 服务器启动
  *
- * @ClassName: Server
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-16.

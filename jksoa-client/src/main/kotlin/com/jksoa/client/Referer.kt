@@ -13,7 +13,6 @@ import com.jksoa.registry.zk.ZkRegistry
  *   1 引用服务
  *   2 向注册中心订阅服务
  *
- * @ClassName: Referer
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 9:52 AM

@@ -3,7 +3,6 @@ package com.jksoa.protocol.netty.codec
 /**
  * 编码
  *
- * @ClasssName: NettyMessageEncoder
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM

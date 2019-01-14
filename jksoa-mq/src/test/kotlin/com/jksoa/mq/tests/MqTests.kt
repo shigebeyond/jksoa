@@ -4,7 +4,6 @@ import com.jksoa.mq.*
 import org.junit.Test
 
 /**
- * @ClassName: MqTests
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM
