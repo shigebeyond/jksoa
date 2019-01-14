@@ -19,12 +19,6 @@ class LazyConnection(url: Url, weight: Int = 1) : IConnection(url, weight) {
     protected var conn: IConnection? = null
 
     /**
-     * 连接是否活着
-     */
-    public override val active: Boolean
-        get() = conn != null && conn!!.active
-
-    /**
      * 根据url建立连接
      *
      * @return

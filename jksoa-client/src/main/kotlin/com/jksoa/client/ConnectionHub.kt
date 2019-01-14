@@ -9,7 +9,6 @@ import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
 import com.jksoa.loadbalance.ILoadBalanceStrategy
 import com.jksoa.protocol.IConnection
-import com.jksoa.protocol.IProtocolClient
 import com.jksoa.protocol.LazyConnection
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap

@@ -15,10 +15,7 @@ abstract class IConnection(public val url: Url /* 服务端地址 */,
                            public override var weight: Int = 1 /* 权重 */
 ) : Closeable, INode {
 
-    /**
-     * 连接是否活着
-     */
-    public abstract val active: Boolean
+//    public var closeListener
 
     /**
      * 客户端发送请求

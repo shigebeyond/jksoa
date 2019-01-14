@@ -44,12 +44,6 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
     }
 
     /**
-     * 连接是否活着
-     */
-    public override val active: Boolean
-        get() = !channel.isOpen || !channel.isActive
-
-    /**
      * 客户端发送请求
      *
      * @param req
@@ -95,7 +89,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
      */
     public override fun close() {
         // 关闭channel
-        if(channel.isActive)
+        if(channel.isOpen || channel.isActive)
             channel.close().sync()
 
         // 删除引用
