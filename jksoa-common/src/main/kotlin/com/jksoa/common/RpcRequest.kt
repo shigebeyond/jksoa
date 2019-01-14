@@ -1,7 +1,7 @@
 package com.jksoa.common
 
-import com.jkmvc.common.SnowflakeIdWorker
 import com.jkmvc.common.getSignature
+import com.jkmvc.idworker.IIdWorker
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -17,8 +17,16 @@ import kotlin.reflect.jvm.javaMethod
 class RpcRequest(public override val serviceId: String, /* 服务标识，即接口类全名 */
               public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
               public override val args: Array<Any?>, /* 实参 */
-              public override val id: Long = SnowflakeIdWorker.instance().nextId() /* 请求标识，全局唯一 */
+              public override val id: Long = idWorker.nextId() /* 请求标识，全局唯一 */
 ): IRpcRequest {
+
+    companion object {
+
+        /**
+         * id生成器
+         */
+        protected val idWorker: IIdWorker = IIdWorker.instance("snowflakeId")
+    }
 
     /**
      * 构造函数
@@ -28,7 +36,7 @@ class RpcRequest(public override val serviceId: String, /* 服务标识，即接
      * @param args 实参
      * @param id 请求标识
      */
-    public constructor(intf: Class<out IService>, method: Method, args: Array<Any?>, id: Long = SnowflakeIdWorker.instance().nextId()): this(intf.name, method.getSignature(), args, id){}
+    public constructor(intf: Class<out IService>, method: Method, args: Array<Any?>, id: Long = idWorker.nextId()): this(intf.name, method.getSignature(), args, id){}
 
     /**
      * 构造函数
@@ -36,7 +44,7 @@ class RpcRequest(public override val serviceId: String, /* 服务标识，即接
      * @param method 方法
      * @param args 实参
      */
-    public constructor(method: Method, args: Array<Any?>, id: Long = SnowflakeIdWorker.instance().nextId()) : this(method.getServiceClass(), method, args, id)
+    public constructor(method: Method, args: Array<Any?>, id: Long = idWorker.nextId()) : this(method.getServiceClass(), method, args, id)
 
     /**
      * 构造函数
