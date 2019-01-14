@@ -6,6 +6,7 @@ import com.jksoa.common.RpcResponse
 import com.jksoa.common.clientLogger
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
+import java.nio.channels.ClosedChannelException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -51,22 +52,6 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
     }
 
     /**
-     * 删除满足条件的多个异步响应
-     *
-     * @param 条件函数
-     */
-    public fun removeResponseFutures(predicate: (NettyRpcResponseFuture) -> Boolean){
-        if(futures.isEmpty())
-            return
-
-        // 收集要删除的元素
-        val removedValue = futures.values.filter(predicate)
-        // 删除元素
-        for(v in removedValue)
-            futures.remove(v.requestId)
-    }
-
-    /**
      * 处理收到的响应
      *
      * @param ctx
@@ -93,14 +78,27 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
     }
 
     /**
-     * 处理事件: channel已死
-     *    删掉该channel对应的异步响应记录
+     * 处理事件: channel已死/断开连接
+     *   TODO: 优化性能, 避免遍历
+     *
      * @param ctx
      */
     public override fun channelInactive(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
-        removeResponseFutures { future ->
+        channel.connection.close() // 关掉连接
+
+        if(futures.isEmpty())
+            return
+
+        // 收集要删除的异步响应的记录
+        val removedValue = futures.values.filter{ future ->
             future.channel == channel
+        }
+        for(future in removedValue) {
+            // 1 删除异步响应的记录
+            futures.remove(future.requestId)
+            // 2 设置结果: channel关闭的异常
+            future.failed(ClosedChannelException())
         }
     }
 

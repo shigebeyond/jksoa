@@ -34,7 +34,7 @@ class NettyRpcResponseFuture(request: IRpcRequest /* 请求 */,
         /**
          * 超时定时器
          */
-        val timer = HashedWheelTimer(1, TimeUnit.SECONDS, 8 /* 2的次幂 */)
+        val timer = HashedWheelTimer(200, TimeUnit.MILLISECONDS, 64 /* 2的次幂 */)
 
         init {
             ShutdownHook.addClosing(this)

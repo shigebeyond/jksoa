@@ -22,7 +22,7 @@ class LazyConnection(url: Url, weight: Int = 1) : IConnection(url, weight) {
      * 连接是否活着
      */
     public override val active: Boolean
-        get() = conn == null || conn!!.active
+        get() = conn != null && conn!!.active
 
     /**
      * 根据url建立连接

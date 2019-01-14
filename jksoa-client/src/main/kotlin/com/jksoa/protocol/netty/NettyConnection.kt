@@ -94,7 +94,12 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
      * 关闭连接
      */
     public override fun close() {
-        channel.close().sync()
+        // 关闭channel
+        if(channel.isActive)
+            channel.close().sync()
+
+        // 删除引用
+        channel.attr<NettyConnection>(connKey).set(null)
     }
 
 }

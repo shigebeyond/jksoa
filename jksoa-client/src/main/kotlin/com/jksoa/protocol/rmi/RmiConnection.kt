@@ -19,6 +19,12 @@ import javax.naming.InitialContext
 class RmiConnection(url: Url): IConnection(url){
 
     /**
+     * 连接是否活着
+     */
+    override val active: Boolean
+        get() = true
+
+    /**
      * 命名空间
      */
     protected val namingContext = InitialContext()
