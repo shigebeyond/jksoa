@@ -42,7 +42,7 @@ class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
     }
 
     /**
-     * 处理空闲事件
+     * 处理channel空闲事件
      *
      * @param ctx
      * @param event

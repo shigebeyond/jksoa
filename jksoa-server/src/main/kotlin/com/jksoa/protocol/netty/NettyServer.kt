@@ -63,7 +63,7 @@ class NettyServer : IProtocolServer {
                            serverLogger.info("NettyServer接收客户端连接: " + channel)
                            // 为channel添加io处理器
                            channel.pipeline()
-                                   .addLast(IdleStateHandler(config["readerIdleTimeSecond"]!!, config["writerIdleTimeSeconds"]!!, config["allIdleTimeSeconds"]!!)) // 空闲连接检查
+                                   .addLast(IdleStateHandler(config["readerIdleTimeSecond"]!!, config["writerIdleTimeSeconds"]!!, config["allIdleTimeSeconds"]!!)) // channel空闲检查
                                    .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                    .addLast(NettyMessageEncoder()) // 编码
                                    .addLast(businessGroup, NettyRequestHandler()) // 业务处理
