@@ -6,6 +6,8 @@ import com.jksoa.server.IRpcRequestHandler
 import com.jksoa.server.RpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
+import io.netty.handler.timeout.IdleState
+import io.netty.handler.timeout.IdleStateEvent
 
 /**
  * netty服务端请求处理器
@@ -22,7 +24,7 @@ class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
     protected val rpcRequestHandler: IRpcRequestHandler = RpcRequestHandler
 
     /**
-     * 处理请求
+     * 处理收到的请求
      *
      * @param ctx
      * @param req
@@ -37,6 +39,22 @@ class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
 
         // 返回响应
         ctx.writeAndFlush(res)
+    }
+
+    /**
+     * 处理空闲事件
+     *
+     * @param ctx
+     * @param event
+     */
+    public override fun userEventTriggered(ctx: ChannelHandlerContext, event: Any) {
+        if (event is IdleStateEvent) {
+            if (event.state() == IdleState.ALL_IDLE) { // 指定时间内没有读写, 则关掉该channel
+                val channel = ctx.channel()
+                serverLogger.debug("Close idle channel = [$channel], ip = [${channel.remoteAddress()}]")
+                ctx.close()
+            }
+        }
     }
     
 }
