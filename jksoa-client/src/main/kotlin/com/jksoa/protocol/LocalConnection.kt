@@ -24,7 +24,7 @@ class LocalConnection(url: Url): IConnection(url){
      * @param req
      * @return
      */
-    public override fun send(req: IRpcRequest): IRpcResponseFuture{
+    public override fun doSend(req: IRpcRequest): IRpcResponseFuture{
         // 直接调用本地服务的方法
         // 1 获得本地服务
         val referer = RefererLoader.get(req.serviceId) as Referer?

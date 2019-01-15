@@ -30,7 +30,7 @@ interface IShardingRpcRequest {
     /**
      * 分片要调用的实参
      */
-    val shardingArgses: Array<Array<Any?>>
+    val shardingArgses: Array<Array<*>>
 
     /**
      * 构建rpc请求
@@ -38,7 +38,7 @@ interface IShardingRpcRequest {
      * @return
      */
     public fun buildRpcRequest(iSharding: Int): IRpcRequest {
-        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding])
+        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding] as Array<Any?>)
     }
 
 }

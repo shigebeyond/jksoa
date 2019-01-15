@@ -89,7 +89,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
      */
     public override fun close() {
         // 1 关闭channel
-        if(channel.isOpen || channel.isActive)
+        if(channel.isOpen /* || channel.isActive*/)
             channel.close().sync()
 
         // 2 删除引用

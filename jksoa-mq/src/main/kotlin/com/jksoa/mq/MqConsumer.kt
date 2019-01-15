@@ -42,5 +42,6 @@ class MqConsumer : IMqConsumer {
      * @return
      */
     public override fun pullMessage(topic: String): List<Message> {
+        throw Exception("todo")
     }
 }
