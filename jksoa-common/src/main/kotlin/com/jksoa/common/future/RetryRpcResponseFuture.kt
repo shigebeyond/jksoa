@@ -58,7 +58,7 @@ class RetryRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次�
 
             // 出错重试
             public override fun failed(ex: Exception?) {
-                if(++tryTimes < maxTryTimes) // 串行重试, ++tryTimes 线程安全
+                if(++tryTimes <= maxTryTimes) // 串行重试, ++tryTimes 线程安全
                     targetResFuture = buildResponseFuture()
                 else
                     callback?.failed(ex)
@@ -114,7 +114,7 @@ class RetryRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次�
      */
     public override fun get(timeout: Long, unit: TimeUnit): Any? {
         var ex: Exception? = null
-        while(tryTimes < maxTryTimes){
+        while(tryTimes <= maxTryTimes){
             try {
                 return targetResFuture.get(timeout, unit)
             }catch(e: Exception){
