@@ -34,7 +34,7 @@ class RmiConnection(url: Url): IConnection(url){
      * @param req
      * @return
      */
-    public override fun send(req: IRpcRequest): IRpcResponseFuture {
+    public override fun doSend(req: IRpcRequest): IRpcResponseFuture {
         try{
             // 1 获得referer
             val referer = RefererLoader.get(req.serviceId)

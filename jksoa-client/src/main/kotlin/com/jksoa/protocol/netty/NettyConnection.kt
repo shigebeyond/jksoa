@@ -33,7 +33,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
         public val config: IConfig = Config.instance("client", "yaml")
 
         /**
-         *
+         * 在Channel中引用NettyConnection的属性名
          */
         public val connKey = AttributeKey.valueOf<NettyConnection>("connection")
     }
@@ -49,7 +49,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
      * @param req
      * @return
      */
-    public override fun send(req: IRpcRequest): IRpcResponseFuture {
+    public override fun doSend(req: IRpcRequest): IRpcResponseFuture {
         clientLogger.debug("NettyConnection发送请求: " + req)
         // 1 发送请求
         val writeFuture = channel.writeAndFlush(req)
