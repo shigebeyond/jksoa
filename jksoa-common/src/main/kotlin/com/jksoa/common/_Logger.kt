@@ -8,5 +8,3 @@ val registerLogger = LoggerFactory.getLogger("com.jksoa.registry")
 val clientLogger = LoggerFactory.getLogger("com.jksoa.client")
 // 服务端的日志
 val serverLogger = LoggerFactory.getLogger("com.jksoa.server")
-// 作业调度的日志
-val jobLogger = LoggerFactory.getLogger("com.jksoa.job")

@@ -1,2 +1,2 @@
-# 作业分片策略
-average: com.jksoa.sharding.AverageJobShardingStrategy
+# 分片策略
+average: com.jksoa.sharding.AverageShardingStrategy

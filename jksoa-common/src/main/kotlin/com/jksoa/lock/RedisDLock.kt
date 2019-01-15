@@ -1,15 +1,15 @@
-package com.jksoa.common.lock
+package com.jksoa.lock
 
 import com.jkmvc.cache.JedisFactory
 import redis.clients.jedis.Jedis
 
 /**
- * 分布式锁接口
+ * 分布式锁实现: redis锁
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
-class RedisLock(protected val configName: String = "default") : ILock {
+class RedisDLock(protected val configName: String = "default") : IDLock {
 
     companion object {
 

@@ -1,4 +1,4 @@
-package com.jksoa.common.lock
+package com.jksoa.lock
 
 /**
  * 分布式锁接口
@@ -6,7 +6,7 @@ package com.jksoa.common.lock
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
-interface ILock {
+interface IDLock {
 
     /**
      * 加锁
