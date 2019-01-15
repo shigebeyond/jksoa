@@ -55,7 +55,7 @@ class NettyRpcResponseFuture(request: IRpcRequest /* 请求 */,
         override fun run(timeout: Timeout) {
             handleExpired()
         }
-    }, config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+    }, config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
 
     init{
         // 记录异步响应，以便响应到来时设置结果

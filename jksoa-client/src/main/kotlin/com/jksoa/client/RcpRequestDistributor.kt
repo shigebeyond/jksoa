@@ -57,7 +57,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
         }
 
         // 3 返回结果
-        return resFuture.get(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+        return resFuture.get(config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
     }
 
     /**

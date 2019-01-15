@@ -49,7 +49,7 @@ open class RpcResponseFuture(public val request: IRpcRequest /* 请求 */): IRpc
      * @return
      */
     public override fun get(): Any? {
-        return get(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+        return get(config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
     }
 
     /**

@@ -67,7 +67,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
         writeFuture.addListener(listener)*/
 
         // 2 阻塞等待发送完成，有超时
-        val result = writeFuture.awaitUninterruptibly(config["connectTimeout"]!!, TimeUnit.MILLISECONDS)
+        val result = writeFuture.awaitUninterruptibly(config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
 
         // 2.1 发送成功
         if (result && writeFuture.isSuccess()) {

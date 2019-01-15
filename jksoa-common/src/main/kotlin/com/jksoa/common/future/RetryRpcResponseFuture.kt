@@ -102,7 +102,7 @@ class RetryRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次�
      * 同步获得任务结果, 有默认超时
      */
     public override fun get(): Any? {
-        return get(config["requestTimeout"]!!, TimeUnit.MILLISECONDS)
+        return get(config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
     }
 
     /**
