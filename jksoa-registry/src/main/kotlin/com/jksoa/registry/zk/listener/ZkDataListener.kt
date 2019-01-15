@@ -35,7 +35,7 @@ class ZkDataListener(public val url: com.jksoa.common.Url, public val discoveryL
     public override fun handleDataDeleted(dataPath: String) {
         try {
             // 处理更新地址
-            url.parameters = null
+            url.parameters = emptyMap()
             discoveryListener.handleParametersChange(url)
             registerLogger.info("处理zk节点[$dataPath]数据删除事件")
         }catch(e: Exception){

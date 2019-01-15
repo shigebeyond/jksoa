@@ -31,7 +31,7 @@ interface IUrl {
     /**
      * 参数
      */
-    var parameters: MutableMap<String, String>?
+    var parameters: Map<String, Any?>
 
     /**
      * 服务标识 = 路径 = 接口类名

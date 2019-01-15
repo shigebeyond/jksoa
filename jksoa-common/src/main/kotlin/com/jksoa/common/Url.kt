@@ -16,7 +16,7 @@ class Url(override var protocol: String /* 协议 */,
 
           override var path: String /* 路径 = 服务标识 = 接口类名 */ = "",
 
-          override var parameters: MutableMap<String, String>? = null /* 参数 */
+          override var parameters: Map<String, Any?> = emptyMap() /* 参数 */
 ) : IUrl {
 
     /**
@@ -112,7 +112,7 @@ class Url(override var protocol: String /* 协议 */,
      *    格式为 /jksoa/路径/协议:ip:端口
      */
     public override val childPath: String by lazy{
-        "/$rootPath/$childName"
+        "$rootPath/$childName"
     }
 
     /**
@@ -148,7 +148,7 @@ class Url(override var protocol: String /* 协议 */,
      * @return
      */
     public inline fun <reified T:Any> getParameter(key: String, defaultValue: T? = null): T?{
-        return parameters?.getAndConvert(key, defaultValue)
+        return parameters.getAndConvert(key, defaultValue)
     }
 
     /**
@@ -175,9 +175,11 @@ class Url(override var protocol: String /* 协议 */,
             str.append(':').append(port)
         str.append("/").append(path)
         // 参数
-        if(withQuery && parameters != null){
-            parameters!!.entries.joinTo(str, "&", "?"){
-                it.key + '=' + it.value
+        if(withQuery){
+            parameters.entries.joinTo(str, "&", "?"){
+                // fix bug: java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
+                //it.key + '=' + it.value
+                "${it.key}=${it.value}"
             }
         }
         return str.toString()
@@ -189,7 +191,7 @@ class Url(override var protocol: String /* 协议 */,
      * @return
      */
     public override fun hashCode(): Int {
-        return protocol.hashCode() + host.hashCode() + port + path.hashCode() +  if(parameters == null) 0 else parameters!!.hashCode()
+        return protocol.hashCode() + host.hashCode() + port + path.hashCode() + parameters.hashCode()
     }
 
     /**
