@@ -9,7 +9,7 @@ import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
 import com.jksoa.loadbalance.ILoadBalanceStrategy
 import com.jksoa.protocol.IConnection
-import com.jksoa.protocol.LazyConnection
+import com.jksoa.protocol.RecoverableConnection
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.HashMap
@@ -88,7 +88,7 @@ object ConnectionHub: IConnectionHub {
         // 5 新加的地址
         for (key in addKeys){
             clientLogger.debug("ConnectionHub处理服务[$serviceId]新加地址: " + newUrls[key])
-            oldUrls[key] = LazyConnection(newUrls[key]!!) // 创建连接
+            oldUrls[key] = RecoverableConnection(newUrls[key]!!) // 创建连接
         }
 
         // 6 删除的地址

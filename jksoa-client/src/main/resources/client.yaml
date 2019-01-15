@@ -7,3 +7,4 @@ servicePackages: # service类所在的包路径
 connectTimeout: !!java.lang.Long 1000 # 连接超时，Long类型，单位：微秒
 requestTimeout: !!java.lang.Long 200 # 请求超时，Long类型，单位：微秒
 maxTryNum: 1 # 最大尝试次数, 用于支持失败重试
+autoReconnectTimeSeconds: 1 # 自动重连的时间阀值, 在这段时间内连接断开, 则自动重连
