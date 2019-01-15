@@ -48,7 +48,7 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
     /**
      * 服务路径
      */
-    public override val serviceUrl:Url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!, `interface`.name, config["parameters"]);
+    public override val serviceUrl:Url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!, `interface`.name, config.getMap("parameters", emptyMap<String, Any?>())!!);
 
     /**
      * 服务实例

@@ -3,9 +3,9 @@ package com.jksoa.client
 import com.jkmvc.common.Config
 import com.jkmvc.common.get
 import com.jksoa.common.IRpcRequest
+import com.jksoa.common.clientLogger
 import com.jksoa.common.future.IRpcResponseFuture
 import com.jksoa.common.future.RetryRpcResponseFuture
-import com.jksoa.common.jobLogger
 import com.jksoa.protocol.IConnection
 import com.jksoa.sharding.IShardingStrategy
 import org.apache.http.concurrent.FutureCallback
@@ -99,7 +99,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
         val msg = conn2Shds.entries.joinToString(", ", "Sharding result from $shardingSize sharding to $connSize Node: ")  {
             "${it.key} => ${it.value}"
         }
-        jobLogger.info(msg)
+        clientLogger.info(msg)
 
         // 2 逐个分片构建并发送rpc请求
         val resFutures = shd2Conns.mapIndexed { iSharding, iConn ->
