@@ -60,7 +60,7 @@ class RecoverableConnection(url: Url, weight: Int = 1) : IConnection(url, weight
      */
     protected fun onConnectionClosed() {
         // 1 调用回调
-        closeCallback?.invoke()
+        closeCallback?.invoke(conn!!)
         // 2 清空被代理的连接
         conn = null
         // 3 自动重连: 在时间阀值内连接断开, 则自动重连

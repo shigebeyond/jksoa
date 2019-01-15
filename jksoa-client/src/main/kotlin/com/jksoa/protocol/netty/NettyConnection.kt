@@ -96,7 +96,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
         channel.attr<NettyConnection>(connKey).set(null)
 
         // 3 调用回调
-        closeCallback?.invoke()
+        closeCallback?.invoke(this)
     }
 
 }

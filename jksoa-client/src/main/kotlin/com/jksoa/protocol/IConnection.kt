@@ -18,7 +18,7 @@ abstract class IConnection(public val url: Url /* 服务端地址 */,
     /**
      * 连接关闭的回调
      */
-    public var closeCallback: (() -> Unit)? = null
+    public var closeCallback: ((IConnection) -> Unit)? = null
 
     /**
      * 上一次发送的时间
