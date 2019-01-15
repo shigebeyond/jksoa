@@ -21,10 +21,27 @@ abstract class IConnection(public val url: Url /* 服务端地址 */,
     public var closeCallback: (() -> Unit)? = null
 
     /**
+     * 上一次发送的时间
+     */
+    public var lastSendTime: Long = 0
+        protected set
+
+    /**
      * 客户端发送请求
      *
      * @param req
      * @return
      */
-    public abstract fun send(req: IRpcRequest): IRpcResponseFuture
+    public fun send(req: IRpcRequest): IRpcResponseFuture{
+        lastSendTime = System.currentTimeMillis()
+        return doSend(req)
+    }
+
+    /**
+     * 客户端发送请求
+     *
+     * @param req
+     * @return
+     */
+    public abstract fun doSend(req: IRpcRequest): IRpcResponseFuture
 }
