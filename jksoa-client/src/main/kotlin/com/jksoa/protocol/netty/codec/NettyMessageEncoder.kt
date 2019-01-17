@@ -1,5 +1,8 @@
 package com.jksoa.protocol.netty.codec
 
+import com.jkmvc.common.Config
+import com.jkmvc.serialize.ISerializer
+
 /**
  * 编码
  *
@@ -12,12 +15,12 @@ class NettyMessageEncoder : io.netty.handler.codec.MessageToByteEncoder<Any>() {
     /**
      * 客户端配置
      */
-    public val config = com.jkmvc.common.Config.Companion.instance("client", "yaml")
+    public val config = Config.instance("client", "yaml")
 
     /**
      * 序列化
      */
-    public val serializer: com.jkmvc.serialize.ISerializer = com.jkmvc.serialize.ISerializer.Companion.instance(config["serializeType"]!!)
+    public val serializer: ISerializer = ISerializer.instance(config["serializeType"]!!)
 
     /**
      * 编码要发送的消息

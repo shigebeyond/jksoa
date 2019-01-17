@@ -1,12 +1,13 @@
 package com.jksoa.protocol.rmi
 
 import com.jksoa.client.RefererLoader
-import com.jksoa.common.*
+import com.jksoa.common.IRpcRequest
+import com.jksoa.common.RpcResponse
+import com.jksoa.common.Url
 import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.future.CompletedRpcResponseFuture
 import com.jksoa.common.future.IRpcResponseFuture
-import com.jksoa.common.RpcResponse
-import com.jksoa.protocol.IConnection
+import com.jksoa.protocol.BasicConnection
 import javax.naming.InitialContext
 
 /**
@@ -16,7 +17,7 @@ import javax.naming.InitialContext
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-class RmiConnection(url: Url): IConnection(url){
+class RmiConnection(url: Url): BasicConnection(url){
 
     /**
      * 命名空间
@@ -34,7 +35,7 @@ class RmiConnection(url: Url): IConnection(url){
      * @param req
      * @return
      */
-    public override fun doSend(req: IRpcRequest): IRpcResponseFuture {
+    public override fun send(req: IRpcRequest): IRpcResponseFuture {
         try{
             // 1 获得referer
             val referer = RefererLoader.get(req.serviceId)

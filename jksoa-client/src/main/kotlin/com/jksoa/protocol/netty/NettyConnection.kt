@@ -7,7 +7,7 @@ import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.future.IRpcResponseFuture
-import com.jksoa.protocol.IConnection
+import com.jksoa.protocol.BasicConnection
 import io.netty.channel.Channel
 import io.netty.util.AttributeKey
 import java.util.concurrent.TimeUnit
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 val Channel.connection: NettyConnection
     get() = this.attr<NettyConnection>(NettyConnection.connKey).get()
 
-class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1) : IConnection(url, weight) {
+class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1) : BasicConnection(url, weight) {
 
     companion object{
         /**
@@ -49,7 +49,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
      * @param req
      * @return
      */
-    public override fun doSend(req: IRpcRequest): IRpcResponseFuture {
+    public override fun send(req: IRpcRequest): IRpcResponseFuture {
         clientLogger.debug("NettyConnection发送请求: " + req)
         // 1 发送请求
         val writeFuture = channel.writeAndFlush(req)

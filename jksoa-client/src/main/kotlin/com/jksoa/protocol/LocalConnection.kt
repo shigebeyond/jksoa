@@ -16,7 +16,7 @@ import com.jksoa.common.future.IRpcResponseFuture
  * @author shijianhang
  * @create 2017-12-15 下午9:25
  **/
-class LocalConnection(url: Url): IConnection(url){
+class LocalConnection(url: Url): BasicConnection(url){
 
     /**
      * 客户端发送请求
@@ -24,7 +24,7 @@ class LocalConnection(url: Url): IConnection(url){
      * @param req
      * @return
      */
-    public override fun doSend(req: IRpcRequest): IRpcResponseFuture{
+    public override fun send(req: IRpcRequest): IRpcResponseFuture{
         // 直接调用本地服务的方法
         // 1 获得本地服务
         val referer = RefererLoader.get(req.serviceId) as Referer?

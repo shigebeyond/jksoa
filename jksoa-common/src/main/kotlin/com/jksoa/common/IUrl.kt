@@ -66,7 +66,6 @@ interface IUrl {
 
     /**
      * 转化为仅包含服务节点信息的url
-     * @return
      */
-    public fun toServerUrl(): Url
+    val serverUrl: Url
 }

@@ -117,12 +117,10 @@ class Url(override var protocol: String /* 协议 */,
 
     /**
      * 转化为仅包含服务节点信息的url
-     * @return
      */
-    public override fun toServerUrl(): Url {
-        return Url(protocol, host, port)
+    public override val serverUrl: Url by lazy{
+        Url(protocol, host, port)
     }
-
     /**
      * 解析url
      *
