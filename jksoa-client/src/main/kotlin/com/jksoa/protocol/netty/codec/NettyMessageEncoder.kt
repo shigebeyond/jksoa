@@ -2,6 +2,7 @@ package com.jksoa.protocol.netty.codec
 
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer
+import com.jksoa.common.clientLogger
 
 /**
  * 编码
@@ -34,7 +35,7 @@ class NettyMessageEncoder : io.netty.handler.codec.MessageToByteEncoder<Any>() {
             throw Exception("The encode message is null")
 
         try {
-            com.jksoa.common.clientLogger.debug("编码要发送的消息: $msg")
+            clientLogger.debug("编码要发送的消息: $msg")
             // 序列化
             val bytes = serializer.serialize(msg)
             if (bytes == null)
@@ -46,7 +47,7 @@ class NettyMessageEncoder : io.netty.handler.codec.MessageToByteEncoder<Any>() {
             // 2 写数据
             out.writeBytes(bytes)
         }catch (e: Exception){
-            com.jksoa.common.clientLogger.error("编码要发送的消息失败", e)
+            clientLogger.error("编码要发送的消息失败", e)
             throw e
         }
     }

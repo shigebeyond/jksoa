@@ -119,7 +119,7 @@ class RetryRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次�
                 return targetResFuture.get(timeout, unit)
             }catch(e: Exception){
                 // [++tryTimes] is done in [FutureCallback.failed()]
-                clientLogger.error("Exception in [targetResFuture.get()], And it already try [$tryTimes] times.")
+                clientLogger.error("Exception [${e.message}] happens in [targetResFuture.get()], And it already try [$tryTimes] times.")
                 ex = e
             }
         }

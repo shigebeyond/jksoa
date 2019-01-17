@@ -61,12 +61,12 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         if(res !is RpcResponse)
             return
 
-        clientLogger.debug("NettyClient获得响应: $res")
+        clientLogger.debug("NettyResponseHandler获得响应: $res")
 
         // 1 删除异步响应的记录
         val future = removeResponseFuture(res.requestId)
         if(future == null){
-            clientLogger.warn("NettyClient无法处理响应，没有找到requestId=${res.requestId}}的异步响应");
+            clientLogger.warn("NettyResponseHandler无法处理响应，没有找到requestId=${res.requestId}}的异步响应");
             return
         }
 

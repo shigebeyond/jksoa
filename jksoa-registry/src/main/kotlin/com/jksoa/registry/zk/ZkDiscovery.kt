@@ -1,6 +1,7 @@
 package com.jksoa.registry.zk
 
 import com.jksoa.common.Url
+import com.jksoa.common.clientLogger
 import com.jksoa.registry.IDiscovery
 import com.jksoa.registry.IDiscoveryListener
 import com.jksoa.registry.RegistryException
@@ -42,6 +43,7 @@ open class ZkDiscovery: IDiscovery {
      */
     public override fun subscribe(serviceId: String, listener: IDiscoveryListener){
         try{
+            clientLogger.info("ZkDiscovery监听服务[$serviceId]变化")
             val rootPath = Url.serviceId2serviceRegistryPath(serviceId)
             // 1 监听子节点
             val childListener = ZkChildListener(listener)
@@ -69,7 +71,7 @@ open class ZkDiscovery: IDiscovery {
                 ConcurrentHashMap()
             }.put(listener, list)
         } catch (e: Throwable) {
-            throw RegistryException("发现服务[$serviceId]失败：${e.message}", e)
+            throw RegistryException("ZkDiscovery监听服务[$serviceId]变化失败：${e.message}", e)
         }
     }
 
@@ -81,6 +83,7 @@ open class ZkDiscovery: IDiscovery {
      */
     public override fun unsubscribe(serviceId: String, listener: IDiscoveryListener){
         try{
+            clientLogger.info("ZkDiscovery取消监听服务[$serviceId]变化")
             val rootPath = Url.serviceId2serviceRegistryPath(serviceId)
             // 1 取消监听子节点
             zkClient.unsubscribeChildChanges(rootPath, childListeners[serviceId]!![listener]!!)
@@ -91,7 +94,7 @@ open class ZkDiscovery: IDiscovery {
                 zkClient.unsubscribeDataChanges(path, dataListener)
             }
         } catch (e: Throwable) {
-            throw RegistryException("发现服务[$serviceId]失败：${e.message}", e)
+            throw RegistryException("ZkDiscovery取消监听服务[$serviceId]变化失败：${e.message}", e)
         }
     }
 
