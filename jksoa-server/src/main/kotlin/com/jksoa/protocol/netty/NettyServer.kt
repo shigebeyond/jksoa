@@ -58,6 +58,7 @@ class NettyServer : IProtocolServer {
                    .channel(NioServerSocketChannel::class.java)
                    .option(ChannelOption.SO_BACKLOG, 128 * 8) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
                    .childOption(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
+                   .childOption(ChannelOption.SO_REUSEADDR, true) // 复用端口
                    .childHandler(object : ChannelInitializer<SocketChannel>() {
                        public override fun initChannel(channel: SocketChannel) {
                            serverLogger.info("NettyServer接收客户端连接: " + channel)

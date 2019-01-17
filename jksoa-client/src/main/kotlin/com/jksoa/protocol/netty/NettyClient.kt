@@ -1,5 +1,7 @@
 package com.jksoa.protocol.netty
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
 import com.jkmvc.common.ShutdownHook
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
@@ -25,6 +27,12 @@ import java.io.Closeable
  * @date 2017-12-30 12:48 PM
  */
 class NettyClient: IProtocolClient {
+
+    /**
+     * 客户端配置
+     */
+    public val config: IConfig = Config.instance("client", "yaml")
+
     /**
      * 工作线程池：处理io
      */
@@ -37,7 +45,9 @@ class NettyClient: IProtocolClient {
             Bootstrap()
                 .group(workerGroup)
                 .channel(NioSocketChannel::class.java)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, config["connectTimeoutMillis"]!!) // 连接超时
                 .option(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
+                .option(ChannelOption.SO_REUSEADDR, true) // 复用端口
                 .handler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
                         clientLogger.info("NettyClient连接服务器: " + channel)
