@@ -5,7 +5,7 @@ import com.jkmvc.common.get
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.clientLogger
 import com.jksoa.common.future.IRpcResponseFuture
-import com.jksoa.common.future.RetryRpcResponseFuture
+import com.jksoa.common.future.FailoveRpcResponseFuture
 import com.jksoa.protocol.IConnection
 import com.jksoa.sharding.IShardingStrategy
 import org.apache.http.concurrent.FutureCallback
@@ -48,7 +48,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @return 响应结果
      */
     public override fun distributeToAny(req: IRpcRequest): Any? {
-        val resFuture = RetryRpcResponseFuture(maxTryTimes){
+        val resFuture = FailoveRpcResponseFuture(maxTryTimes){
             // 1 选择连接
             val conn = connHub.select(req)
 
@@ -153,7 +153,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
             }
         }
         for (resFuture in resFutures)
-            resFuture.callback = callback
+            resFuture.addCallback(callback)
 
         try {
             latch.await()

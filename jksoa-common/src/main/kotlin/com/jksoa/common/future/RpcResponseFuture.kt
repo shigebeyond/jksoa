@@ -10,7 +10,10 @@ import java.util.concurrent.TimeUnit
 
 /**
  * 异步响应
- *   可以通过以下方法来表示完成状态: cancel() / failed() / completed()
+ *   1. 实现 IRpcResponseFuture
+ *   2. 用以下方法来设置结果, 代表异步操作已完成: cancel() / failed() / completed()
+ *   3. 改写 get() 给默认超时
+ *   4. 改写 get(timeout, unit) 直抛业务异常
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -25,6 +28,12 @@ open class RpcResponseFuture(public val request: IRpcRequest /* 请求 */): IRpc
          */
         public val config = Config.instance("client", "yaml")
     }
+
+    /**
+     * 描述
+     */
+    protected override val desc: String
+        get() = "请求1[$requestId]"
 
     /**
      * 请求标识

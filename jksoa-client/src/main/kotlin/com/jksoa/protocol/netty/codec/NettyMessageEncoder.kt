@@ -32,10 +32,10 @@ class NettyMessageEncoder : io.netty.handler.codec.MessageToByteEncoder<Any>() {
      */
     public override fun encode(ctx: io.netty.channel.ChannelHandlerContext, msg: Any?, out: io.netty.buffer.ByteBuf) {
         if(msg == null)
-            throw Exception("The encode message is null")
+            throw IllegalArgumentException("The encode message is null")
 
         try {
-            clientLogger.debug("编码要发送的消息: $msg")
+            clientLogger.debug("NettyMessageEncoder编码要发送的消息: $msg")
             // 序列化
             val bytes = serializer.serialize(msg)
             if (bytes == null)
@@ -47,7 +47,7 @@ class NettyMessageEncoder : io.netty.handler.codec.MessageToByteEncoder<Any>() {
             // 2 写数据
             out.writeBytes(bytes)
         }catch (e: Exception){
-            clientLogger.error("编码要发送的消息失败", e)
+            clientLogger.error("NettyMessageEncoder编码要发送的消息失败", e)
             throw e
         }
     }

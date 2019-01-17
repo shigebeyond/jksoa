@@ -45,11 +45,11 @@ class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(ma
             // 反序列化
             ByteBufInputStream(frame).use {
                 val result = serializer.unserizlize(it)
-                clientLogger.debug("解码接收到的消息: $result")
+                clientLogger.debug("NettyMessageDecoder解码接收到的消息: $result")
                 return result
             }
         }catch (e: Exception){
-            clientLogger.error("解码接收到的消息失败", e)
+            clientLogger.error("NettyMessageDecoder解码接收到的消息失败", e)
             throw e
         }
     }
