@@ -59,7 +59,7 @@ object ConnectionHub: IConnectionHub {
         // 1 构建新的服务地址
         val newUrls = HashMap<String, Url>()
         for (url in urls) {
-            newUrls[url.childName] = url
+            newUrls[url.serverName] = url
         }
 
         // 2 获得旧的服务地址
@@ -111,7 +111,7 @@ object ConnectionHub: IConnectionHub {
      */
     public override fun handleParametersChange(url: Url): Unit{
         //重整负载参数
-        connections[url.childName]?.forEach { key, conn ->
+        connections[url.serverName]?.forEach { key, conn ->
             conn.weight = url.getParameter("weight", 1)!!
         }
     }

@@ -46,20 +46,27 @@ interface IUrl {
         get() = Class.forName(path) as Class<out IService>
 
     /**
-     * 根节点路径
-     *    格式为 /jksoa/路径
+     * 服务路径
+     *    格式为 /jksoa/服务
      */
-    val rootPath: String
+    val serviceRegistryPath: String
 
     /**
-     * 子节点名称
+     * 服务节点名称
      *    格式为 协议:ip:端口
      */
-    val childName: String
+    val serverName: String
 
     /**
-     * 子节点路径
-     *    格式为 /jksoa/路径/协议:ip:端口
+     * 服务节点路径
+     *    格式为 /jksoa/服务/协议:ip:端口
      */
-    val childPath: String
+    val serverRegistryPath: String
+
+
+    /**
+     * 转化为仅包含服务节点信息的url
+     * @return
+     */
+    public fun toServerUrl(): Url
 }

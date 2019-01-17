@@ -35,23 +35,23 @@ class Url(override var protocol: String /* 协议 */,
         public val UrlPrefix: String = "/jksoa/"
 
         /**
-         * 服务标识转根节点路径
+         * 服务标识转服务路径
          *
          * @param serviceId
          * @return
          */
-        public fun serviceId2rootPath(serviceId: String): String {
+        public fun serviceId2serviceRegistryPath(serviceId: String): String {
             return "$UrlPrefix$serviceId"
         }
 
         /**
-         * 服务标识转根节点路径
+         * 服务路径转服务标识
          *
-         * @param rootPath
+         * @param path
          * @return
          */
-        public fun rootPath2serviceId(rootPath: String): String {
-            return rootPath.substring(UrlPrefix.length)
+        public fun serviceRegistryPath2serviceId(path: String): String {
+            return path.substring(UrlPrefix.length)
         }
 
         /**
@@ -92,27 +92,35 @@ class Url(override var protocol: String /* 协议 */,
     }
 
     /**
-     * 根节点路径
-     *    格式为 /jksoa/路径
+     * 服务路径
+     *    格式为 /jksoa/服务
      */
-    public override val rootPath: String by lazy{
-        serviceId2rootPath(path)
+    public override val serviceRegistryPath: String by lazy{
+        serviceId2serviceRegistryPath(path)
     }
 
     /**
-     * 子节点名称
+     * 服务节点名称
      *    格式为 协议:ip:端口
      */
-    public override val childName: String by lazy{
+    public override val serverName: String by lazy{
         "$protocol:$host:$port"
     }
 
     /**
-     * 子节点路径
-     *    格式为 /jksoa/路径/协议:ip:端口
+     * 服务节点路径
+     *    格式为 /jksoa/服务/协议:ip:端口
      */
-    public override val childPath: String by lazy{
-        "$rootPath/$childName"
+    public override val serverRegistryPath: String by lazy{
+        "$serviceRegistryPath/$serverName"
+    }
+
+    /**
+     * 转化为仅包含服务节点信息的url
+     * @return
+     */
+    public override fun toServerUrl(): Url {
+        return Url(protocol, host, port)
     }
 
     /**
@@ -132,7 +140,7 @@ class Url(override var protocol: String /* 协议 */,
         val portStr = match.groups[4]?.value
         if (portStr != null)
             port = portStr.toInt()
-        // 路径
+        // 路径(服务)
         path = match.groups[5]!!.value
         // 解析参数
         val paramStr = match.groups[7]?.value
@@ -153,7 +161,7 @@ class Url(override var protocol: String /* 协议 */,
 
     /**
      * 转为字符串
-     *    格式为 协议://ip:端口/路径?参数
+     *    格式为 协议://ip:端口/路径(服务)?参数
      *
      * @return
      */
@@ -163,7 +171,7 @@ class Url(override var protocol: String /* 协议 */,
 
     /**
      * 转为字符串
-     *    格式为 协议://ip:端口/路径?参数
+     *    格式为 协议://ip:端口/路径(服务)?参数
      *
      * @param withQuery 是否带query string
      * @return

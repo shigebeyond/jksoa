@@ -31,7 +31,7 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChil
     public override fun handleChildChange(parentPath: String, currentChilds: List<String>) {
         try {
             // 更新服务地址
-            val serviceId = Url.rootPath2serviceId(parentPath)
+            val serviceId = Url.serviceRegistryPath2serviceId(parentPath)
             discoveryListener.handleServiceUrlsChange(serviceId, zkClient.nodeChilds2Urls(parentPath, currentChilds))
             registerLogger.info("处理zk[$parentPath]子节点变化事件, 子节点为: $currentChilds")
         }catch(e: Exception){

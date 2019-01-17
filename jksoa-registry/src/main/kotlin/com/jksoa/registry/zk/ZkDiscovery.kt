@@ -42,7 +42,7 @@ open class ZkDiscovery: IDiscovery {
      */
     public override fun subscribe(serviceId: String, listener: IDiscoveryListener){
         try{
-            val rootPath = Url.serviceId2rootPath(serviceId)
+            val rootPath = Url.serviceId2serviceRegistryPath(serviceId)
             // 1 监听子节点
             val childListener = ZkChildListener(listener)
             childListeners.getOrPut(serviceId){ // 记录监听器，以便取消监听时使用
@@ -63,7 +63,7 @@ open class ZkDiscovery: IDiscovery {
             for (url in urls){
                 val dataListener = ZkDataListener(url, listener)
                 list.add(dataListener)
-                zkClient.subscribeDataChanges(url.childPath, dataListener);
+                zkClient.subscribeDataChanges(url.serverRegistryPath, dataListener);
             }
             dataListeners.getOrPut(serviceId){ // 记录监听器，以便取消监听时使用
                 ConcurrentHashMap()
@@ -81,13 +81,13 @@ open class ZkDiscovery: IDiscovery {
      */
     public override fun unsubscribe(serviceId: String, listener: IDiscoveryListener){
         try{
-            val rootPath = Url.serviceId2rootPath(serviceId)
+            val rootPath = Url.serviceId2serviceRegistryPath(serviceId)
             // 1 取消监听子节点
             zkClient.unsubscribeChildChanges(rootPath, childListeners[serviceId]!![listener]!!)
             
             // 2 取消监听子节点的数据变化
             for(dataListener in dataListeners[serviceId]!![listener]!!){
-                val path = dataListener.url.childPath
+                val path = dataListener.url.serverRegistryPath
                 zkClient.unsubscribeDataChanges(path, dataListener)
             }
         } catch (e: Throwable) {
@@ -103,7 +103,7 @@ open class ZkDiscovery: IDiscovery {
      */
     public override fun discover(serviceId: String): List<Url> {
         try {
-            val rootPath = Url.serviceId2rootPath(serviceId)
+            val rootPath = Url.serviceId2serviceRegistryPath(serviceId)
             // 获得子节点
             var currentChilds: List<String> = emptyList()
             if (zkClient.exists(rootPath))

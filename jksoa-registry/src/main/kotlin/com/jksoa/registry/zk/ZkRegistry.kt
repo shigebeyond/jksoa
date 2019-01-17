@@ -90,12 +90,12 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
      */
     private fun createNode(url: Url) {
         // 创建根节点
-        val root = url.rootPath
+        val root = url.serviceRegistryPath
         if (!zkClient.exists(root))
             zkClient.createPersistent(root, true)
 
         // 创建子节点: Ephemeral节点，session长的生命周期，zk自动通过心跳保持会话
-        zkClient.createEphemeral(url.childPath, url.toString())
+        zkClient.createEphemeral(url.serverRegistryPath, url.toString())
     }
 
     /**
@@ -105,7 +105,7 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
      */
     private fun removeNode(url: Url) {
         // 删除节点
-        val path = url.childPath
+        val path = url.serverRegistryPath
         if (zkClient.exists(path))
             zkClient.delete(path)
     }
