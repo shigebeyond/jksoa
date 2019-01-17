@@ -66,7 +66,7 @@ open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): IRpcRes
      * @param result
      * @return
      */
-    public fun completed(result: IRpcResponse): Boolean {
+    public open fun completed(result: IRpcResponse): Boolean {
         synchronized(this) {
             if (isDone) // 处理重入
                 return false
@@ -88,7 +88,7 @@ open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): IRpcRes
      * @param ex
      * @return
      */
-    public fun failed(ex: Exception): Boolean {
+    public open fun failed(ex: Exception): Boolean {
         synchronized(this) {
             if (isDone) // 处理重入
                 return false

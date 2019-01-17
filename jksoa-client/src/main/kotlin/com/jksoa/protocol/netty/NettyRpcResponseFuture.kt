@@ -63,20 +63,8 @@ class NettyRpcResponseFuture(reqId: Long /* 请求标识 */,
     }, config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
 
     init{
-        // 1 记录异步响应，以便响应到来时设置结果
+        // 记录异步响应，以便响应到来时设置结果
         NettyResponseHandler.putResponseFuture(reqId, this)
-
-        // 2 添加回调来取消定时
-        val callback = object: IFutureCallback<Any?> {
-            override fun completed(result: Any?) {
-                timeout.cancel()
-            }
-
-            override fun failed(ex: Exception) {
-                timeout.cancel()
-            }
-        }
-        addCallback(callback)
     }
 
     /**
@@ -103,4 +91,29 @@ class NettyRpcResponseFuture(reqId: Long /* 请求标识 */,
         return super.get(timeout, unit)
     }
 
+    /**
+     * 完成
+     *   删掉异步超时定时器
+     *
+     * @param result
+     * @return
+     */
+    public override fun completed(result: IRpcResponse): Boolean {
+        timeout.cancel()
+        return super.completed(result)
+    }
+
+    /**
+     * 失败
+     *   删掉异步超时定时器
+     *
+     * @param ex
+     * @return
+     */
+    public override fun failed(ex: Exception): Boolean {
+        timeout.cancel()
+        return super.failed(ex)
+    }
+
 }
+

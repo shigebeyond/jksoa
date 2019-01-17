@@ -47,8 +47,8 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      */
     public override fun collectClass(relativePath: String): Unit {
         // 过滤service的类文件
-        if(!relativePath.endsWith("Service.class"))
-            return
+//        if(!relativePath.endsWith("Service.class"))
+//            return
 
         // 获得类名
         val className = relativePath.substringBefore(".class").replace(File.separatorChar, '.')
