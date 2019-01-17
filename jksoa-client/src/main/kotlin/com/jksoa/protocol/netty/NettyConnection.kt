@@ -1,5 +1,6 @@
 package com.jksoa.protocol.netty
 
+import com.jkmvc.common.Application
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jksoa.common.IRpcRequest
@@ -36,6 +37,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
          * 在Channel中引用NettyConnection的属性名
          */
         public val connKey = AttributeKey.valueOf<NettyConnection>("connection")
+
     }
 
     init {
@@ -66,21 +68,26 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
         }
         writeFuture.addListener(listener)*/
 
-        // 2 阻塞等待发送完成，有超时
+        // 2 在debug环境下提前创建好异步响应
+        // 当client调用本机server时, client很快收到响应
+        // 而在debug环境下, 在代码 writeFuture.awaitUninterruptibly() 执行之前就收到响应了, 如果在该代码之后才创建并记录异步响应, 则无法识别并处理早已收到的响应
+        val resFuture: NettyRpcResponseFuture? = if(Application.isDebug) NettyRpcResponseFuture(req, channel) else null
+
+        // 3 阻塞等待发送完成，有超时
         val result = writeFuture.awaitUninterruptibly(config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
 
-        // 2.1 发送成功
+        // 3.1 发送成功
         if (result && writeFuture.isSuccess()) {
-            return NettyRpcResponseFuture(req, channel) // 返回异步响应
+            return if(resFuture != null) resFuture else NettyRpcResponseFuture(req, channel) // 返回异步响应
         }
 
-        // 2.2 超时
+        // 3.2 超时
         if (writeFuture.cause() == null){
             writeFuture.cancel(false)
             throw RpcClientException("远程调用超时: $req")
         }
 
-        // 2.3 io异常
+        // 3.3 io异常
         throw RpcClientException("远程调用发生io异常: $req", writeFuture.cause())
     }
 
