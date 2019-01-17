@@ -42,7 +42,7 @@ class RecoverableConnection(url: Url, weight: Int = 1) : BasicConnection(url, we
      * 被代理的连接
      */
     protected var conn: BasicConnection? =
-            if(config["lazyConnection"]!!) // 延迟创建连接
+            if(config["lazyConnect"]!!) // 延迟创建连接
                 null
             else
                 newConnection()
