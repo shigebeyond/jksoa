@@ -3,6 +3,7 @@ package com.jksoa.protocol.netty
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
 import com.jksoa.common.IRpcRequest
+import com.jksoa.common.clientLogger
 import com.jksoa.common.future.RpcResponseFuture
 import io.netty.channel.Channel
 import io.netty.util.HashedWheelTimer
@@ -66,10 +67,11 @@ class NettyRpcResponseFuture(request: IRpcRequest /* 请求 */,
      * 处理超时
      */
     protected fun handleExpired() {
+        clientLogger.error("请求[$requestId]超时")
         // 1 删除异步响应的记录
         NettyResponseHandler.removeResponseFuture(requestId)
         // 2 设置响应结果: 超时异常
-        super.failed(TimeoutException("Timeout waiting for response for request[$requestId]"))
+        super.failed(TimeoutException("请求[$requestId]超时"))
     }
 
     /**
