@@ -1,6 +1,7 @@
 package com.jksoa.client
 
 import com.jkmvc.common.Config
+import com.jkmvc.common.toExpr
 import com.jksoa.common.IService
 import com.jksoa.common.RpcRequest
 import com.jksoa.common.clientLogger
@@ -51,7 +52,9 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
      * @param args 参数
      */
     public override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
-        clientLogger.debug("RpcInvocationHandler调用远端方法: " + `interface`.name + '.' + method.name + '(' + args.joinToString() + ')')
+        clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: ${`interface`.name}.${method.name}(", ")"){
+            it.toExpr()
+        })
 
         // 1 封装请求
         val req = RpcRequest(`interface`, method, args)
