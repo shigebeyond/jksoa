@@ -1,12 +1,13 @@
 package com.jksoa.loadbalance
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.NamedSingleton
 import com.jkmvc.common.IConfig
+import com.jkmvc.common.NamedSingleton
 import com.jksoa.common.IRpcRequest
+import com.jksoa.protocol.IConnection
 
 /**
- * 选择节点的均衡负载算法
+ * 选择连接的均衡负载算法
  * 
  * @author shijianhang
  * @create 2017-12-18 下午9:04
@@ -22,11 +23,11 @@ interface ILoadBalanceStrategy {
     }
 
     /**
-     * 选择节点
+     * 选择连接
      *
-     * @param nodes
+     * @param conns
      * @param req
-     * @return 选中的节点序号
+     * @return 选中的连接序号
      */
-    fun select(nodes: Collection<INode>, req: IRpcRequest): Int
+    fun select(conns: Collection<IConnection>, req: IRpcRequest): Int
 }
