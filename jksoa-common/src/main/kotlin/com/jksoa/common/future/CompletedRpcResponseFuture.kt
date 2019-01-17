@@ -1,6 +1,7 @@
 package com.jksoa.common.future
 
 import com.jkmvc.future.CompletedFuture
+import com.jkmvc.future.IFutureCallback
 import com.jksoa.common.IRpcResponse
 import com.jksoa.common.RpcResponse
 import org.apache.http.concurrent.FutureCallback
@@ -12,14 +13,20 @@ import org.apache.http.concurrent.FutureCallback
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-class CompletedRpcResponseFuture(res: RpcResponse): IRpcResponseFuture, CompletedFuture<Any?>(res.value), IRpcResponse by res {
+class CompletedRpcResponseFuture(res: RpcResponse): IRpcResponseFuture, CompletedFuture<IRpcResponse>(res) {
+
+    /**
+     * 响应结果
+     */
+    public override val result: IRpcResponse
+        get() = super<CompletedFuture>.result
 
     /**
      * 添加回调
      *   立即执行
      * @param
      */
-    public override fun addCallback(callback: FutureCallback<Any?>) {
+    public override fun addCallback(callback: IFutureCallback<Any?>) {
         callback.completed(result)
     }
 

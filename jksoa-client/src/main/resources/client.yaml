@@ -4,7 +4,8 @@ loadbalanceStrategy: random # 均衡负载类型
 shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
     - com.jksoa.example
+connectTimeoutMillis: 500 # 连接超时，int类型，单位：微秒
 requestTimeoutMillis: !!java.lang.Long 200 # 请求超时，Long类型，单位：微秒
 maxTryTimes: 1 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
-lazyConnection: false # 是否延迟创建连接, 用在 RecoverableConnection
+lazyConnect: false # 是否延迟创建连接, 用在 RecoverableConnection
 autoReconnectTimeSeconds: 30 # 自动重连的时间阀值, 在这段时间内连接断开, 则自动重连, 用在 RecoverableConnection

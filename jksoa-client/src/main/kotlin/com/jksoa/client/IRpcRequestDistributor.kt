@@ -1,6 +1,7 @@
 package com.jksoa.client
 
 import com.jksoa.common.IRpcRequest
+import com.jksoa.common.IRpcResponse
 
 /**
  * 请求分发者
@@ -15,7 +16,7 @@ interface IRpcRequestDistributor {
      * @param req 请求
      * @return 响应结果
      */
-    fun distributeToAny(req: IRpcRequest): Any?
+    fun distributeToAny(req: IRpcRequest): IRpcResponse
 
     /**
      * 将一个请求分配给所有节点
@@ -23,7 +24,7 @@ interface IRpcRequestDistributor {
      * @param req 请求
      * @return 多个响应结果
      */
-    fun distributeToAll(req: IRpcRequest): Array<Any?>
+    fun distributeToAll(req: IRpcRequest): Array<IRpcResponse>
 
     /**
      * 分片多个请求
@@ -32,6 +33,6 @@ interface IRpcRequestDistributor {
      * @param shdReq 分片的rpc请求
      * @return 多个响应结果
      */
-    fun distributeShardings(shdReq: IShardingRpcRequest): Array<Any?>
+    fun distributeShardings(shdReq: IShardingRpcRequest): Array<IRpcResponse>
 
 }

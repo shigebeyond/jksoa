@@ -5,8 +5,8 @@ import com.jksoa.client.RcpRequestDistributor
 import com.jksoa.client.Referer
 import com.jksoa.client.ShardingRpcRequest
 import com.jksoa.common.Url
-import com.jksoa.example.IEchoService
 import com.jksoa.example.IExampleService
+import com.jksoa.example.IPingService
 import com.jksoa.protocol.netty.NettyClient
 import org.junit.Test
 
@@ -55,9 +55,9 @@ class ClientTests {
 
     @Test
     fun testReferer(){
-        val echoService = Referer.getRefer<IEchoService>()
-        val pong = echoService.echo("ping")
-        println("调用服务[IEchoService.echo()]结果： $pong")
+        val pingService = Referer.getRefer<IPingService>()
+        val pong = pingService.ping()
+        println("调用服务[IPingService.ping()]结果： $pong")
 
 //        val exampleService = Referer.getRefer<IExampleService>()
 //        val content = exampleService.sayHi("shijianhang")

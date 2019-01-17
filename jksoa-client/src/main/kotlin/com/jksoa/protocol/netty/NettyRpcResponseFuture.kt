@@ -2,14 +2,14 @@ package com.jksoa.protocol.netty
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
-import com.jksoa.common.IRpcRequest
+import com.jkmvc.future.IFutureCallback
+import com.jksoa.common.IRpcResponse
 import com.jksoa.common.clientLogger
 import com.jksoa.common.future.RpcResponseFuture
 import io.netty.channel.Channel
 import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
-import org.apache.http.concurrent.FutureCallback
 import java.io.Closeable
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -20,14 +20,14 @@ import java.util.concurrent.TimeoutException
  *   异步响应有3个情况: 1 正常响应 2 超时 3 断开连接
  *   都需要做 1 删除异步响应记录 2 设置响应结果(NettyRpcResponseFuture会自动取消超时定时器)
  *   2. 记录与删除异步响应
- *   3. 异步超时定时器, 与父类 BasicFuture.get() 中的同步超时是重复的
+ *   3. 异步超时定时器, 与父类 RpcResponseFuture.get() 中的同步超时是重复的
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-14 6:11 PM
  */
-class NettyRpcResponseFuture(request: IRpcRequest /* 请求 */,
+class NettyRpcResponseFuture(reqId: Long /* 请求标识 */,
                              public val channel: Channel /* netty channel, 仅用于在[NettyResponseHandler.channelInactive()]中删掉该channel对应的异步响应记录 */
-) : RpcResponseFuture(request) {
+) : RpcResponseFuture(reqId) {
 
     companion object: Closeable {
 
@@ -64,19 +64,15 @@ class NettyRpcResponseFuture(request: IRpcRequest /* 请求 */,
 
     init{
         // 1 记录异步响应，以便响应到来时设置结果
-        NettyResponseHandler.putResponseFuture(requestId, this)
+        NettyResponseHandler.putResponseFuture(reqId, this)
 
         // 2 添加回调来取消定时
-        val callback = object: FutureCallback<Any?>{
-            override fun cancelled() {
-                timeout.cancel()
-            }
-
+        val callback = object: IFutureCallback<Any?> {
             override fun completed(result: Any?) {
                 timeout.cancel()
             }
 
-            override fun failed(ex: java.lang.Exception?) {
+            override fun failed(ex: Exception) {
                 timeout.cancel()
             }
         }
@@ -87,11 +83,11 @@ class NettyRpcResponseFuture(request: IRpcRequest /* 请求 */,
      * 处理超时
      */
     protected fun handleExpired() {
-        clientLogger.error("请求X[$requestId]超时")
+        clientLogger.error("请求X[$reqId]超时")
         // 1 删除异步响应的记录
-        NettyResponseHandler.removeResponseFuture(requestId)
+        NettyResponseHandler.removeResponseFuture(reqId)
         // 2 设置响应结果: 超时异常
-        super.failed(TimeoutException("请求X[$requestId]超时"))
+        super.failed(TimeoutException("请求X[$reqId]超时"))
     }
 
     /**
@@ -102,7 +98,7 @@ class NettyRpcResponseFuture(request: IRpcRequest /* 请求 */,
      * @param unit
      * @return
      */
-    public override fun get(timeout: Long, unit: TimeUnit): Any? {
+    public override fun get(timeout: Long, unit: TimeUnit): IRpcResponse {
         this.timeout.cancel()
         return super.get(timeout, unit)
     }

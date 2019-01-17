@@ -49,9 +49,10 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
      *
      * @param proxy 代理对象
      * @param method 方法
-     * @param args 参数
+     * @param args0 参数
      */
-    public override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
+    public override fun invoke(proxy: Any, method: Method, args0: Array<Any?>?): Any? {
+        val args: Array<Any?> = if(args0 == null) emptyArray() else args0
         clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: ${`interface`.name}.${method.name}(", ")"){
             it.toExpr()
         })
@@ -59,8 +60,11 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
         // 1 封装请求
         val req = RpcRequest(`interface`, method, args)
 
-        // 2 分发请求
-        return distr.distributeToAny(req)
+        // 2 分发请求, 获得响应
+        val res = distr.distributeToAny(req)
+
+        // 3 获得值
+        return res.getOrThrow()
     }
 
 

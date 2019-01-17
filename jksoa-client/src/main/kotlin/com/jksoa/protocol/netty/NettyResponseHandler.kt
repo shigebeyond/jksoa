@@ -71,10 +71,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         }
 
         // 2 设置响应结果
-        if(res.exception == null)
-            future.completed(res.value)
-        else
-            future.failed(res.exception!!)
+        future.completed(res)
     }
 
     /**
@@ -96,7 +93,7 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         }
         for(future in removedValue) {
             // 1 删除异步响应的记录
-            futures.remove(future.requestId)
+            futures.remove(future.reqId)
             // 2 设置结果: channel关闭的异常
             future.failed(ClosedChannelException())
         }

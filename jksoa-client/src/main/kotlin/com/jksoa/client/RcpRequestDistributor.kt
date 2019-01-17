@@ -2,13 +2,14 @@ package com.jksoa.client
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.get
+import com.jkmvc.future.IFutureCallback
 import com.jksoa.common.IRpcRequest
+import com.jksoa.common.IRpcResponse
 import com.jksoa.common.clientLogger
-import com.jksoa.common.future.IRpcResponseFuture
 import com.jksoa.common.future.FailoveRpcResponseFuture
+import com.jksoa.common.future.IRpcResponseFuture
 import com.jksoa.protocol.IConnection
 import com.jksoa.sharding.IShardingStrategy
-import org.apache.http.concurrent.FutureCallback
 import java.lang.Exception
 import java.util.*
 import java.util.concurrent.CountDownLatch
@@ -47,7 +48,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @param req 请求
      * @return 响应结果
      */
-    public override fun distributeToAny(req: IRpcRequest): Any? {
+    public override fun distributeToAny(req: IRpcRequest): IRpcResponse {
         val resFuture = FailoveRpcResponseFuture(maxTryTimes){
             // 1 选择连接
             val conn = connHub.select(req)
@@ -66,7 +67,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @param req 请求
      * @return 多个响应结果
      */
-    public override fun distributeToAll(req: IRpcRequest): Array<Any?> {
+    public override fun distributeToAll(req: IRpcRequest): Array<IRpcResponse> {
         // 1 选择全部连接
         val conns = connHub.selectAll(req.serviceId)
 
@@ -86,7 +87,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @param shdReq 分片的rpc请求
      * @return
      */
-    public override fun distributeShardings(shdReq: IShardingRpcRequest): Array<Any?> {
+    public override fun distributeShardings(shdReq: IShardingRpcRequest): Array<IRpcResponse> {
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(shdReq.serviceId)
@@ -138,17 +139,14 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @param resFutures
      * @return
      */
-    private fun joinResults(resFutures: List<IRpcResponseFuture>): Array<Any?> {
+    private fun joinResults(resFutures: List<IRpcResponseFuture>): Array<IRpcResponse> {
         val latch = CountDownLatch(resFutures.size)
-        val callback = object : FutureCallback<Any?> {
-            public override fun cancelled() {
-            }
-
+        val callback = object : IFutureCallback<Any?> {
             public override fun completed(result: Any?) {
                 latch.countDown()
             }
 
-            public override fun failed(ex: Exception?) {
+            public override fun failed(ex: Exception) {
                 latch.countDown()
             }
         }
@@ -162,12 +160,12 @@ object RcpRequestDistributor : IRpcRequestDistributor {
         }
 
         // 收集结果
-        val results = arrayOfNulls<Any?>(resFutures.size)
+        val results = arrayOfNulls<IRpcResponse>(resFutures.size)
         results.forEachIndexed { i, _ ->
             results[i] = resFutures[i].get()
         }
 
-        return results
+        return results as Array<IRpcResponse>
     }
 
 

@@ -25,4 +25,10 @@ interface IRpcResponse: Serializable {
      * 异常
      */
     val exception: Exception?
+
+    /**
+     * 获得结果值或抛出异常
+     * @return
+     */
+    fun getOrThrow(): Any?
 }
