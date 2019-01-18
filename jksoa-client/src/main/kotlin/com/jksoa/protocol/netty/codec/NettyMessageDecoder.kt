@@ -36,7 +36,7 @@ class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(ma
      */
     public override fun decode(ctx: ChannelHandlerContext, `in`: ByteBuf): Any? {
         // 1 解析长度
-        val frame = super.decode(ctx, `in`) as ByteBuf
+        val frame = super.decode(ctx, `in`) as ByteBuf?
         if(frame == null)
             return null
 
