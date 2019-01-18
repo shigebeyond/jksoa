@@ -3,6 +3,8 @@ package com.jksoa.protocol.netty.codec
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer
 import com.jksoa.common.clientLogger
+import io.netty.buffer.ByteBuf
+import io.netty.channel.ChannelHandlerContext
 
 /**
  * 编码
@@ -30,7 +32,7 @@ class NettyMessageEncoder : io.netty.handler.codec.MessageToByteEncoder<Any>() {
      * @param msg
      * @param out
      */
-    public override fun encode(ctx: io.netty.channel.ChannelHandlerContext, msg: Any?, out: io.netty.buffer.ByteBuf) {
+    public override fun encode(ctx: ChannelHandlerContext, msg: Any?, out: ByteBuf) {
         if(msg == null)
             throw IllegalArgumentException("The encode message is null")
 
