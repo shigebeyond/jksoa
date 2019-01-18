@@ -1,6 +1,7 @@
 package com.jksoa.common
 
 import com.jkmvc.common.ClassScanner
+import com.jkmvc.common.classPath2class
 import com.jkmvc.common.isSuperClass
 import java.io.File
 
@@ -45,13 +46,11 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      */
     public override fun collectClass(relativePath: String): Unit {
         // 过滤service的类文件
-//        if(!relativePath.endsWith("Service.class"))
-//            return
+        if(!relativePath.endsWith("Service.class"))
+            return
+        val clazz = relativePath.classPath2class() as Class<IService>
 
-        // 获得类名
-        val className = relativePath.substringBefore(".class").replace(File.separatorChar, '.')
-        // 获得类
-        val clazz = Class.forName(className) as Class<IService>
+
         // 过滤service子类
         if(IService::class.java.isSuperClass(clazz) /* 继承IService */)
             addClass(clazz) // 收集类
