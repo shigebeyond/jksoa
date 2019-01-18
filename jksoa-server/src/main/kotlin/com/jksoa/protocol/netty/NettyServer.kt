@@ -6,10 +6,7 @@ import com.jksoa.protocol.IProtocolServer
 import com.jksoa.protocol.netty.codec.NettyMessageDecoder
 import com.jksoa.protocol.netty.codec.NettyMessageEncoder
 import io.netty.bootstrap.ServerBootstrap
-import io.netty.channel.ChannelFuture
-import io.netty.channel.ChannelInitializer
-import io.netty.channel.ChannelOption
-import io.netty.channel.EventLoopGroup
+import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
@@ -53,23 +50,7 @@ class NettyServer : IProtocolServer {
     public override fun doStart(port: Int): Unit{
        try {
            // Create ServerBootstrap
-           val b = ServerBootstrap()
-                   .group(bossGroup, workerGroup)
-                   .channel(NioServerSocketChannel::class.java)
-                   .option(ChannelOption.SO_BACKLOG, 128 * 8) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
-                   .childOption(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
-                   .childOption(ChannelOption.SO_REUSEADDR, true) // 复用端口
-                   .childHandler(object : ChannelInitializer<SocketChannel>() {
-                       public override fun initChannel(channel: SocketChannel) {
-                           serverLogger.info("NettyServer接收客户端连接: " + channel)
-                           // 为channel添加io处理器
-                           channel.pipeline()
-                                   .addLast(IdleStateHandler(config["readerIdleTimeSecond"]!!, config["writerIdleTimeSeconds"]!!, config["allIdleTimeSeconds"]!!)) // channel空闲检查
-                                   .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
-                                   .addLast(NettyMessageEncoder()) // 编码
-                                   .addLast(businessGroup, NettyRequestHandler()) // 业务处理
-                       }
-                   })
+           val b = buildBootstrap()
            // Bind and start to accept incoming connections.
            val f: ChannelFuture = b.bind(port).sync()
 
@@ -84,6 +65,59 @@ class NettyServer : IProtocolServer {
            workerGroup.shutdownGracefully();
            bossGroup.shutdownGracefully();
        }
+    }
+
+    fun buildBootstrap(): ServerBootstrap {
+        val bootstrap = ServerBootstrap()
+                .group(bossGroup, workerGroup)
+                .channel(NioServerSocketChannel::class.java)
+                .option(ChannelOption.SO_BACKLOG, 128 * 8) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
+                .childOption(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
+                .childOption(ChannelOption.SO_REUSEADDR, true)
+        // 自定义启动选项
+        for((k, v) in customBootstrapOptions())
+            bootstrap.option(k, v)
+        // 自定义子channel启动选项
+        for((k, v) in customBootstrapChildOptions())
+            bootstrap.childOption(k, v)
+
+        return bootstrap // 复用端口
+                .childHandler(object : ChannelInitializer<SocketChannel>() {
+                    public override fun initChannel(channel: SocketChannel) {
+                        serverLogger.info("NettyServer接收客户端连接: " + channel)
+                        // 添加io处理器
+                        val pipeline = channel.pipeline()
+                        pipeline.addLast(IdleStateHandler(config["readerIdleTimeSecond"]!!, config["writerIdleTimeSeconds"]!!, config["allIdleTimeSeconds"]!!)) // channel空闲检查
+                                .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
+                                .addLast(NettyMessageEncoder()) // 编码
+                                .addLast(businessGroup, NettyRequestHandler) // 业务处理
+
+                        // 自定义子channel处理器
+                        for(h in customChildChannelHandlers())
+                            pipeline.addLast(h)
+                    }
+                })
+    }
+
+    /**
+     * 自定义启动选项
+     */
+    protected open fun customBootstrapOptions(): Map<ChannelOption<Any>, Any>{
+        return emptyMap()
+    }
+
+    /**
+     * 自定义子channel启动选项
+     */
+    protected open fun customBootstrapChildOptions(): Map<ChannelOption<Any>, Any>{
+        return emptyMap()
+    }
+
+    /**
+     * 自定义子channel处理器
+     */
+    protected open fun customChildChannelHandlers(): Array<ChannelHandler>{
+        return emptyArray()
     }
 
 }
