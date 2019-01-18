@@ -1,10 +1,8 @@
 package com.jksoa.common
 
 import com.jkmvc.common.ClassScanner
-import com.jkmvc.common.IConfig
 import com.jkmvc.common.isSuperClass
 import java.io.File
-import java.lang.reflect.Modifier
 
 /**
  * 加载服务类
@@ -55,20 +53,28 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
         // 获得类
         val clazz = Class.forName(className) as Class<IService>
         // 过滤service子类
-        if(IService::class.java.isSuperClass(clazz) /* 继承IService */){
-            // 创建服务类元数据
-            val serviceClass = collectServiceClass(clazz)
-            // 缓存服务提供者，key是服务标识，即接口类全名
-            if(serviceClass != null)
-                serviceClasses[serviceClass.serviceId] = serviceClass
-        }
+        if(IService::class.java.isSuperClass(clazz) /* 继承IService */)
+            addClass(clazz) // 收集类
     }
 
     /**
-     * 收集服务类元数据
+     * 收集Service类
+     *
+     * @param clazz 类
+     */
+    public fun addClass(clazz: Class<out IService>) {
+        // 创建服务类元数据
+        val serviceClass = createServiceClass(clazz)
+        // 缓存服务提供者，key是服务标识，即接口类全名
+        if (serviceClass != null)
+            serviceClasses[serviceClass.serviceId] = serviceClass
+    }
+
+    /**
+     * 创建服务类元数据
      *
      * @param clazz
      * @return
      */
-    public abstract fun collectServiceClass(clazz: Class<IService>): T?
+    protected abstract fun createServiceClass(clazz: Class<out IService>): T?
 }

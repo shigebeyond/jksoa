@@ -52,11 +52,11 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
     }
 
     /**
-     * 收集service类
+     * 创建service类
      *
      * @param clazz
      */
-    public override fun collectServiceClass(clazz: Class<IService>): Referer? {
+    public override fun createServiceClass(clazz: Class<out IService>): Referer? {
         //去重：对已添加的本地服务，不用再次扫描添加
         if(serviceClasses.containsKey(clazz.name))
             return null

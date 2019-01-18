@@ -28,12 +28,12 @@ object ProviderLoader: ServiceClassLoader<IProvider>() {
     }
 
     /**
-     * 收集service类
+     * 创建service类
      *
      * @param clazz
      * @return
      */
-    public override fun collectServiceClass(clazz: Class<IService>): Provider? {
+    public override fun createServiceClass(clazz: Class<out IService>): Provider? {
         if (!clazz.isAbstract /* 非抽象类 */ && !clazz.isInterface /* 非接口 */)
             return Provider(clazz) // 服务提供者
 
