@@ -20,7 +20,7 @@ import io.netty.util.concurrent.DefaultEventExecutor
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyServer : IProtocolServer {
+open class NettyServer : IProtocolServer {
 
     /**
      * 服务端配置
@@ -48,6 +48,7 @@ class NettyServer : IProtocolServer {
      * @param port 端口
      */
     public override fun doStart(port: Int): Unit{
+
        try {
            // Create ServerBootstrap
            val b = buildBootstrap()
@@ -55,6 +56,7 @@ class NettyServer : IProtocolServer {
            val f: ChannelFuture = b.bind(port).sync()
 
            // 注册服务
+           println("server注册服务")
            registerServices()
 
            // Wait until the server socket is closed.
@@ -67,19 +69,21 @@ class NettyServer : IProtocolServer {
        }
     }
 
-    fun buildBootstrap(): ServerBootstrap {
+    protected fun buildBootstrap(): ServerBootstrap {
         val bootstrap = ServerBootstrap()
                 .group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel::class.java)
                 .option(ChannelOption.SO_BACKLOG, 128 * 8) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
                 .childOption(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
-                .childOption(ChannelOption.SO_REUSEADDR, true)
+                .childOption(ChannelOption.SO_REUSEADDR, true) // 重用端口
+//                .childOption(ChannelOption.TCP_NODELAY, true) // test
+//                .childOption(ChannelOption.SO_TIMEOUT, 5000)
         // 自定义启动选项
-        for((k, v) in customBootstrapOptions())
-            bootstrap.option(k, v)
-        // 自定义子channel启动选项
-        for((k, v) in customBootstrapChildOptions())
-            bootstrap.childOption(k, v)
+//        for((k, v) in customBootstrapOptions())
+//            bootstrap.option(k, v)
+//        // 自定义子channel启动选项
+//        for((k, v) in customBootstrapChildOptions())
+//            bootstrap.childOption(k, v)
 
         return bootstrap // 复用端口
                 .childHandler(object : ChannelInitializer<SocketChannel>() {
@@ -87,14 +91,15 @@ class NettyServer : IProtocolServer {
                         serverLogger.info("NettyServer接收客户端连接: " + channel)
                         // 添加io处理器
                         val pipeline = channel.pipeline()
-                        pipeline.addLast(IdleStateHandler(config["readerIdleTimeSecond"]!!, config["writerIdleTimeSeconds"]!!, config["allIdleTimeSeconds"]!!)) // channel空闲检查
+                        pipeline
                                 .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                 .addLast(NettyMessageEncoder()) // 编码
-                                .addLast(businessGroup, NettyRequestHandler) // 业务处理
+                                .addLast(IdleStateHandler(config["readerIdleTimeSecond"]!!, config["writerIdleTimeSeconds"]!!, config["allIdleTimeSeconds"]!!)) // channel空闲检查
+                                .addLast(businessGroup, NettyRequestHandler()) // 业务处理
 
                         // 自定义子channel处理器
-                        for(h in customChildChannelHandlers())
-                            pipeline.addLast(h)
+//                        for(h in customChildChannelHandlers())
+//                            pipeline.addLast(h)
                     }
                 })
     }
