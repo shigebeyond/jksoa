@@ -20,5 +20,5 @@ interface ISystemService : IService /*, Remote // rmi协议服务接口 */ {
     fun echo(msg: String): String
 
     @Throws(RemoteException::class) // rim异常
-    fun sleep(millis: Long): String
+    fun sleep(): Long
 }

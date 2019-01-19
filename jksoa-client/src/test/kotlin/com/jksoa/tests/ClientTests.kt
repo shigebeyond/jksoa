@@ -1,6 +1,5 @@
 package com.jksoa.tests
 
-import com.jkmvc.common.format
 import com.jkmvc.common.getRootResource
 import com.jksoa.client.RcpRequestDistributor
 import com.jksoa.client.Referer
@@ -10,7 +9,6 @@ import com.jksoa.example.IExampleService
 import com.jksoa.example.ISystemService
 import com.jksoa.protocol.netty.NettyClient
 import org.junit.Test
-import java.util.*
 
 /**
  * @Description:
@@ -69,10 +67,8 @@ class ClientTests {
     @Test
     fun testFailove() {
         val sysService = Referer.getRefer<ISystemService>()
-        val clientTime = Date().format()
-        println("clientTime： $clientTime")
-        val serverTime = sysService.sleep(1000)
-        println("serverTime： $serverTime")
+        val millis = sysService.sleep()
+        println("睡 $millis ms")
     }
 
     @Test
