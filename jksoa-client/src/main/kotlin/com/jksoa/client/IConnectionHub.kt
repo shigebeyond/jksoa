@@ -14,7 +14,7 @@ import java.io.Closeable
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-15 9:25 AM
  */
-interface IConnectionHub: IDiscoveryListener, Closeable {
+interface IConnectionHub: IDiscoveryListener {
 
     /**
      * 选择一个连接

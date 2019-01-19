@@ -39,11 +39,6 @@ object ConnectionHub: IConnectionHub {
      */
     private val connections: ConcurrentHashMap<String, HashMap<String, IConnection>> = ConcurrentHashMap()
 
-    init {
-        // 要关闭
-        ShutdownHook.addClosing(this)
-    }
-
     /**
      * 处理服务地址变化
      *
@@ -152,15 +147,4 @@ object ConnectionHub: IConnectionHub {
         return conns.values
     }
 
-    /**
-     * 关闭客户端的所有连接
-     */
-    public override fun close() {
-        clientLogger.info("ConnectionHub.close(): 关闭客户端的所有连接")
-        for((serviceId, conns) in connections){
-            for((host, conn) in conns){
-                conn.close()
-            }
-        }
-    }
 }
