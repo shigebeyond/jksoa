@@ -2,7 +2,6 @@ package com.jksoa.protocol.netty
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.ShutdownHook
-import com.jkmvc.future.IFutureCallback
 import com.jksoa.common.IRpcResponse
 import com.jksoa.common.clientLogger
 import com.jksoa.common.future.RpcResponseFuture
