@@ -16,5 +16,6 @@ interface IExampleService : IService /*, Remote // rmi协议服务接口 */ {
     @Throws(RemoteException::class) // rmi异常
     fun sayHi(name: String): String
 
+    @Throws(RemoteException::class) // rim异常
     fun sumRange(start: Int, endInclusive: Int): Int
 }
