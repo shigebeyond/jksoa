@@ -1,7 +1,6 @@
 package com.jksoa.server
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.ShutdownHook
 import com.jkmvc.common.isSuperClass
 import com.jksoa.client.RefererLoader
 import com.jksoa.common.IService
@@ -54,11 +53,6 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
      * 服务实例
      */
     public override val service: IService = clazz.newInstance()
-
-    init {
-        // 要关闭
-        ShutdownHook.addClosing(this)
-    }
 
     /**
      * 注册服务

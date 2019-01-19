@@ -6,6 +6,7 @@ import com.jkmvc.common.NamedSingleton
 import com.jksoa.common.serverLogger
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.server.ProviderLoader
+import java.io.Closeable
 
 /**
  * rpc协议-服务器端
@@ -14,7 +15,7 @@ import com.jksoa.server.ProviderLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  **/
-interface IProtocolServer {
+interface IProtocolServer : Closeable {
 
     // 可配置的单例
     companion object mxx: NamedSingleton<IProtocolServer>() {
@@ -47,7 +48,7 @@ interface IProtocolServer {
             serverLogger.info("${name}在端口${port}上启动")
             doStart(port) // 可能阻塞，只能在最后一句执行
         }catch(e: Exception){
-            serverLogger.error("${name}在端口${port}上启动失败: ${e.message}")
+            serverLogger.error("${name}在端口${port}上启动失败", e)
             throw RpcServerException(e)
         }
     }

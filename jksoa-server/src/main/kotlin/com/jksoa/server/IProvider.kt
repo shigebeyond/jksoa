@@ -14,7 +14,7 @@ import java.io.Closeable
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 3:48 PM
  */
-abstract class IProvider : IServiceClass(), Closeable {
+abstract class IProvider : IServiceClass() {
 
     /**
      * 服务路径

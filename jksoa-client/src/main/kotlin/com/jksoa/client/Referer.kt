@@ -1,7 +1,5 @@
 package com.jksoa.client
 
-import com.jkmvc.common.ShutdownHook
-import com.jkmvc.common.isSuperClass
 import com.jksoa.common.IService
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
@@ -73,9 +71,6 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
             // 监听服务变化
             clientLogger.debug("Referer监听服务[$serviceId]变化")
             registry.subscribe(serviceId, ConnectionHub)
-
-            // 要关闭
-            ShutdownHook.addClosing(this)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.jksoa.common
 
+import com.jkmvc.common.ClosingOnShutdown
 import com.jkmvc.common.getMethodMaps
 import java.lang.reflect.Method
 
@@ -10,7 +11,7 @@ import java.lang.reflect.Method
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 3:48 PM
  */
-abstract class IServiceClass {
+abstract class IServiceClass: ClosingOnShutdown() {
     /**
      * 接口类
      */

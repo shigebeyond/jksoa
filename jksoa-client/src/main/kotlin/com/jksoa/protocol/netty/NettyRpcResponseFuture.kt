@@ -1,7 +1,7 @@
 package com.jksoa.protocol.netty
 
+import com.jkmvc.common.ClosingOnShutdown
 import com.jkmvc.common.Config
-import com.jkmvc.common.ShutdownHook
 import com.jksoa.common.IRpcResponse
 import com.jksoa.common.clientLogger
 import com.jksoa.common.future.RpcResponseFuture
@@ -9,7 +9,6 @@ import io.netty.channel.Channel
 import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
-import java.io.Closeable
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
@@ -28,7 +27,7 @@ class NettyRpcResponseFuture(reqId: Long /* 请求标识 */,
                              public val channel: Channel /* netty channel, 仅用于在[NettyResponseHandler.channelInactive()]中删掉该channel对应的异步响应记录 */
 ) : RpcResponseFuture(reqId) {
 
-    companion object: Closeable {
+    companion object: ClosingOnShutdown() {
 
         /**
          * 客户端配置
@@ -39,10 +38,6 @@ class NettyRpcResponseFuture(reqId: Long /* 请求标识 */,
          * 异步超时定时器
          */
         val timer = HashedWheelTimer(200, TimeUnit.MILLISECONDS, 64 /* 2的次幂 */)
-
-        init {
-            ShutdownHook.addClosing(this)
-        }
 
         /**
          * 关闭定时器

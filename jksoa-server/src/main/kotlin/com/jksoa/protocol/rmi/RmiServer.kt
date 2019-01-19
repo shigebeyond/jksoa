@@ -36,4 +36,7 @@ class RmiServer : IProtocolServer {
         registerServices()
     }
 
+    public override fun close() {
+    }
+
 }

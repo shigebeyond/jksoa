@@ -5,6 +5,7 @@ import com.jkmvc.common.NamedSingleton
 import com.jkmvc.common.IConfig
 import com.jkmvc.serialize.ISerializer
 import com.jksoa.common.Url
+import java.io.Closeable
 
 /**
  * rpc协议-客户端
@@ -13,7 +14,7 @@ import com.jksoa.common.Url
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-interface IProtocolClient {
+interface IProtocolClient: Closeable {
 
     // 可配置的单例
     companion object: NamedSingleton<IProtocolClient>() {
@@ -24,7 +25,7 @@ interface IProtocolClient {
     }
 
     /**
-     * 客户端连接服务器
+     * 连接server
      *
      * @param url
      * @return

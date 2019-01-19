@@ -1,5 +1,6 @@
 package com.jksoa.protocol.netty
 
+import com.jkmvc.common.ClosingOnShutdown
 import com.jkmvc.common.Config
 import com.jksoa.common.serverLogger
 import com.jksoa.protocol.IProtocolServer
@@ -20,7 +21,7 @@ import io.netty.util.concurrent.DefaultEventExecutor
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-open class NettyServer : IProtocolServer {
+open class NettyServer : IProtocolServer, ClosingOnShutdown() {
 
     /**
      * 服务端配置
@@ -43,12 +44,11 @@ open class NettyServer : IProtocolServer {
     val businessGroup = DefaultEventExecutor()
 
     /**
-     * 启动服务器
+     * 启动server
      *
      * @param port 端口
      */
     public override fun doStart(port: Int): Unit{
-
        try {
            // Create ServerBootstrap
            val b = buildBootstrap()
@@ -56,17 +56,25 @@ open class NettyServer : IProtocolServer {
            val f: ChannelFuture = b.bind(port).sync()
 
            // 注册服务
-           println("server注册服务")
            registerServices()
 
            // Wait until the server socket is closed.
            // In this example, this does not happen, but you can do that to gracefully
            // shut down your server.
            f.channel().closeFuture().sync()
-       }finally {
-           workerGroup.shutdownGracefully();
-           bossGroup.shutdownGracefully();
+       }catch(e: Exception) {
+           serverLogger.error("NettyServer运行异常", e)
+           e.printStackTrace()
        }
+    }
+
+    /**
+     * 关闭server
+     */
+    public override fun close() {
+        serverLogger.debug("NettyServer关闭netty工作线程池")
+        workerGroup.shutdownGracefully();
+        bossGroup.shutdownGracefully();
     }
 
     protected fun buildBootstrap(): ServerBootstrap {
@@ -76,20 +84,19 @@ open class NettyServer : IProtocolServer {
                 .option(ChannelOption.SO_BACKLOG, 128 * 8) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
                 .childOption(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
                 .childOption(ChannelOption.SO_REUSEADDR, true) // 重用端口
-//                .childOption(ChannelOption.TCP_NODELAY, true) // test
-//                .childOption(ChannelOption.SO_TIMEOUT, 5000)
+
         // 自定义启动选项
-//        for((k, v) in customBootstrapOptions())
-//            bootstrap.option(k, v)
-//        // 自定义子channel启动选项
-//        for((k, v) in customBootstrapChildOptions())
-//            bootstrap.childOption(k, v)
+        for((k, v) in customBootstrapOptions())
+            bootstrap.option(k, v)
+        // 自定义子channel启动选项
+        for((k, v) in customBootstrapChildOptions())
+            bootstrap.childOption(k, v)
 
         return bootstrap // 复用端口
                 .childHandler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
-                        serverLogger.info("NettyServer接收客户端连接: " + channel)
-                        // 添加io处理器
+                        serverLogger.info("NettyServer收到client连接: $channel")
+                        // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
                         val pipeline = channel.pipeline()
                         pipeline
                                 .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
@@ -98,8 +105,8 @@ open class NettyServer : IProtocolServer {
                                 .addLast(businessGroup, NettyRequestHandler()) // 业务处理
 
                         // 自定义子channel处理器
-//                        for(h in customChildChannelHandlers())
-//                            pipeline.addLast(h)
+                        for(h in customChildChannelHandlers())
+                            pipeline.addLast(h)
                     }
                 })
     }

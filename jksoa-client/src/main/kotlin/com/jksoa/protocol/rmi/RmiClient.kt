@@ -1,7 +1,7 @@
 package com.jksoa.protocol.rmi
 
-import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.Url
+import com.jksoa.common.exception.RpcClientException
 import com.jksoa.protocol.IConnection
 import com.jksoa.protocol.IProtocolClient
 
@@ -13,8 +13,9 @@ import com.jksoa.protocol.IProtocolClient
  * @date 2017-09-08 2:58 PM
  */
 open class RmiClient : IProtocolClient {
+
     /**
-     * 客户端连接服务器
+     * 连接server
      *
      * @param url
      * @return
@@ -25,5 +26,8 @@ open class RmiClient : IProtocolClient {
         } catch (e: Exception) {
             throw RpcClientException("客户端创建rmi连接失败: " + e.message)
         }
+    }
+
+    public override fun close() {
     }
 }
