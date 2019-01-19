@@ -116,7 +116,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      * 处理channel发生异常事件
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        clientLogger.error("NettyResponseHandler捕获 channel ${ctx.channel()} 异常: ${cause.message}")
+        clientLogger.error("NettyResponseHandler捕获 channel ${ctx.channel()} 异常", cause)
         cause.printStackTrace()
         super.exceptionCaught(ctx, cause)
     }
