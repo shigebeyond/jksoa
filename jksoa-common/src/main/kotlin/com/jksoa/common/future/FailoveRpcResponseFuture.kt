@@ -147,7 +147,7 @@ class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次
 
             // 异常
             ex = res.exception!!
-            clientLogger.error("[FailoveRpcResponseFuture.get()]发生异常, 已重试 $tryTimes] 次: ${ex.message}]")
+            clientLogger.error("[FailoveRpcResponseFuture.get()]发生异常, 已重试 $tryTimes] 次", ex)
         }while(tryTimes < maxTryTimes) // [tryTimes++] is done in [buildResponseFuture()]
         throw ex!!
     }
