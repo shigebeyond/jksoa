@@ -3,7 +3,6 @@ package com.jksoa.common
 import com.jkmvc.common.ClassScanner
 import com.jkmvc.common.classPath2class
 import com.jkmvc.common.isSuperClass
-import java.io.File
 
 /**
  * 加载服务类
@@ -53,17 +52,18 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
 
         // 过滤service子类
         if(IService::class.java.isSuperClass(clazz) /* 继承IService */)
-            addClass(clazz) // 收集类
+            addClass(clazz, true) // 收集类
     }
 
     /**
      * 收集Service类
      *
      * @param clazz 类
+     * @param registerable 是否注册
      */
-    public fun addClass(clazz: Class<out IService>) {
+    public fun addClass(clazz: Class<out IService>, registerable: Boolean) {
         // 创建服务类元数据
-        val serviceClass = createServiceClass(clazz)
+        val serviceClass = createServiceClass(clazz, registerable)
         // 缓存服务提供者，key是服务标识，即接口类全名
         if (serviceClass != null)
             serviceClasses[serviceClass.serviceId] = serviceClass
@@ -73,7 +73,8 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      * 创建服务类元数据
      *
      * @param clazz
+     * @param registerable 是否注册
      * @return
      */
-    protected abstract fun createServiceClass(clazz: Class<out IService>): T?
+    protected abstract fun createServiceClass(clazz: Class<out IService>, registerable: Boolean): T?
 }

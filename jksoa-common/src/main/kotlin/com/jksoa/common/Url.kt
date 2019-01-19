@@ -9,15 +9,21 @@ import com.jkmvc.common.getAndConvert
  * @create 2017-12-12 下午10:27
  **/
 class Url(override var protocol: String /* 协议 */,
-
           override var host: String /* ip */,
-
           override var port: Int /* 端口 */,
-
           override var path: String /* 路径 = 服务标识 = 接口类名 */ = "",
-
           override var parameters: Map<String, Any?> = emptyMap() /* 参数 */
 ) : IUrl {
+
+    /**
+     * 解析url字符串
+     * @param protocol
+     * @param host
+     * @param port
+     * @param path
+     * @param parameters
+     */
+    public constructor(protocol: String, host: String, port: Int, path: String, parameters: String) : this(protocol, host, port, path, parseParams(parameters))
 
     /**
      * 解析url字符串
@@ -32,7 +38,7 @@ class Url(override var protocol: String /* 协议 */,
         /**
          * 路径前缀
          */
-        public val UrlPrefix: String = "/jksoa/"
+        public val PathPrefix: String = "/jksoa/"
 
         /**
          * 服务标识转服务路径
@@ -41,7 +47,7 @@ class Url(override var protocol: String /* 协议 */,
          * @return
          */
         public fun serviceId2serviceRegistryPath(serviceId: String): String {
-            return "$UrlPrefix$serviceId"
+            return "$PathPrefix$serviceId"
         }
 
         /**
@@ -51,7 +57,7 @@ class Url(override var protocol: String /* 协议 */,
          * @return
          */
         public fun serviceRegistryPath2serviceId(path: String): String {
-            return path.substring(UrlPrefix.length)
+            return path.substring(PathPrefix.length)
         }
 
         /**
@@ -181,13 +187,33 @@ class Url(override var protocol: String /* 协议 */,
             str.append(':').append(port)
         str.append("/").append(path)
         // 参数
-        if(withQuery){
-            parameters.entries.joinTo(str, "&", "?"){
-                // fix bug: java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
-                //it.key + '=' + it.value
-                "${it.key}=${it.value}"
-            }
+        if(withQuery) {
+            str.append('?')
+            buildQueryString(str)
         }
+
+        return str.toString()
+    }
+
+    /**
+     * 将参数转为查询字符串
+     * @param str
+     */
+    protected fun buildQueryString(str: StringBuilder) {
+        parameters.entries.joinTo(str, "&") {
+            // fix bug: java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
+            //it.key + '=' + it.value
+            "${it.key}=${it.value}"
+        }
+    }
+
+    /**
+     * 将参数转为查询字符串
+     * @return
+     */
+    public fun getQueryString(): String {
+        val str = StringBuilder()
+        buildQueryString(str)
         return str.toString()
     }
 

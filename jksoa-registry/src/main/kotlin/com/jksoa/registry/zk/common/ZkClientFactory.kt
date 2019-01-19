@@ -1,6 +1,7 @@
 package com.jksoa.registry.zk.common
 
 import com.jkmvc.common.Config
+import com.jkmvc.common.getOrPutOnce
 import org.I0Itec.zkclient.ZkClient
 import java.util.concurrent.ConcurrentHashMap
 
@@ -38,7 +39,7 @@ object ZkClientFactory{
      * @return
      */
     public fun instance(name: String = "default"): org.I0Itec.zkclient.ZkClient {
-        return clients.getOrPut(name){
+        return clients.getOrPutOnce(name){
             buildClient(name)
         }
     }

@@ -95,7 +95,7 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
             zkClient.createPersistent(root, true)
 
         // 创建子节点: Ephemeral节点，session长的生命周期，zk自动通过心跳保持会话
-        zkClient.createEphemeral(url.serverRegistryPath, url.toString())
+        zkClient.createEphemeral(url.serverRegistryPath, url.getQueryString())
     }
 
     /**
