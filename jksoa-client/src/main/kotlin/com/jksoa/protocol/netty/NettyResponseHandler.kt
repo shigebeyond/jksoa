@@ -8,51 +8,57 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import java.nio.channels.ClosedChannelException
 import java.util.concurrent.ConcurrentHashMap
+import io.netty.channel.ChannelPromise
+
+
 
 /**
  * netty客户端的响应处理器
- *   异步响应有2个情况: 1 正常响应 2 超时 3 断开连接
+ *   异步响应有2个情况: 1 正常响应 2 超时 3 连接关闭
  *   都需要做 1 删除异步响应记录 2 设置响应结果
  *
  * @Description:
  * @author shijianhang
  * @create 2018-01-01 上午12:32
  **/
-object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
+class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
 
-    /**
-     * 客户端配置
-     */
-    public val config: IConfig = Config.instance("client", "yaml")
+    companion object {
+        /**
+         * 客户端配置
+         */
+        public val config: IConfig = Config.instance("client", "yaml")
 
-    /**
-     * 异步响应记录
-     */
-    private val futures: ConcurrentHashMap<Long, NettyRpcResponseFuture> = ConcurrentHashMap()
+        /**
+         * 异步响应记录
+         */
+        private val futures: ConcurrentHashMap<Long, NettyRpcResponseFuture> = ConcurrentHashMap()
 
-    /**
-     * 记录单个异步响应，以便响应到来时设置结果
-     *
-     * @param requestId
-     * @param future
-     */
-    public fun putResponseFuture(requestId: Long, future: NettyRpcResponseFuture){
-        // 记录异步响应
-        futures[requestId] = future
+        /**
+         * 记录单个异步响应，以便响应到来时设置结果
+         *
+         * @param requestId
+         * @param future
+         */
+        public fun putResponseFuture(requestId: Long, future: NettyRpcResponseFuture){
+            // 记录异步响应
+            futures[requestId] = future
+        }
+
+        /**
+         * 删除单个异步响应
+         *
+         * @param requestId
+         * @return
+         */
+        public fun removeResponseFuture(requestId: Long): NettyRpcResponseFuture? {
+            return futures.remove(requestId)
+        }
     }
 
-    /**
-     * 删除单个异步响应
-     *
-     * @param requestId
-     * @return
-     */
-    public fun removeResponseFuture(requestId: Long): NettyRpcResponseFuture? {
-        return futures.remove(requestId)
-    }
 
     /**
-     * 处理收到的响应
+     * 处理收到响应的事件
      *
      * @param ctx
      * @param res
@@ -75,13 +81,22 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
     }
 
     /**
-     * 处理事件: channel已死/断开连接
+     * 处理channel可用事件
+     */
+    public override fun channelActive(ctx: ChannelHandlerContext) {
+        clientLogger.debug("NettyResponseHandler检查channel可用: ${ctx.channel()}")
+        super.channelActive(ctx)
+    }
+
+    /**
+     * 处理channel关闭事件
      *   TODO: 优化性能, 避免遍历
      *
      * @param ctx
      */
     public override fun channelInactive(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
+        clientLogger.debug("NettyResponseHandler检查channel关闭: $channel")
         channel.connection.close() // 关掉连接
 
         if(futures.isEmpty())
@@ -99,5 +114,12 @@ object NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         }
     }
 
-
+    /**
+     * 处理channel发生异常事件
+     */
+    public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
+        clientLogger.error("NettyResponseHandler捕获 ${ctx.channel()} 异常: ${cause.message}")
+        cause.printStackTrace()
+        super.exceptionCaught(ctx, cause)
+    }
 }

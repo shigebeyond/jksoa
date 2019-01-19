@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException
 /**
  * netty的异步响应
  *   1. 响应情况
- *   异步响应有3个情况: 1 正常响应 2 超时 3 断开连接
+ *   异步响应有3个情况: 1 正常响应 2 超时 3 连接关闭
  *   都需要做 1 删除异步响应记录 2 设置响应结果(NettyRpcResponseFuture会自动取消超时定时器)
  *   2. 记录与删除异步响应
  *   3. 异步超时定时器, 与父类 RpcResponseFuture.get() 中的同步超时是重复的
@@ -71,11 +71,11 @@ class NettyRpcResponseFuture(reqId: Long /* 请求标识 */,
      * 处理超时
      */
     protected fun handleExpired() {
-        clientLogger.error("请求X[$reqId]超时")
+        clientLogger.error("请求[$reqId]超时")
         // 1 删除异步响应的记录
         NettyResponseHandler.removeResponseFuture(reqId)
         // 2 设置响应结果: 超时异常
-        super.failed(TimeoutException("请求X[$reqId]超时"))
+        super.failed(TimeoutException("请求[$reqId]超时"))
     }
 
     /**
