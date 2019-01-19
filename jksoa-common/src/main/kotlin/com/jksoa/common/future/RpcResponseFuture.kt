@@ -66,19 +66,18 @@ open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): IRpcRes
      * @param result
      * @return
      */
+    @Synchronized
     public open fun completed(result: IRpcResponse): Boolean {
-        synchronized(this) {
-            if (isDone) // 处理重入
-                return false
+        if (isDone) // 处理重入
+            return false
 
-            // 设置结果
-            this.result = result
-            // 回调, 必须在释放锁之前调用, 否则会导致回调所在线程与唤醒的业务线程的状态不一致
-            callbacks?.forEach {
-                it.completed(result)
-            }
-            latch.countDown()
+        // 设置结果
+        this.result = result
+        // 回调, 必须在释放锁之前调用, 否则会导致回调所在线程与唤醒的业务线程的状态不一致
+        callbacks?.forEach {
+            it.completed(result)
         }
+        latch.countDown()
         return true
     }
 
@@ -88,19 +87,18 @@ open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): IRpcRes
      * @param ex
      * @return
      */
+    @Synchronized
     public open fun failed(ex: Exception): Boolean {
-        synchronized(this) {
-            if (isDone) // 处理重入
-                return false
+        if (isDone) // 处理重入
+            return false
 
-            // 记录异常
-            this.result = RpcResponse(reqId, ex)
-            // 回调, 必须在释放锁之前调用, 否则会导致回调所在线程与唤醒的业务线程的状态不一致
-            callbacks?.forEach {
-                it.failed(ex)
-            }
-            latch.countDown()
+        // 记录异常
+        this.result = RpcResponse(reqId, ex)
+        // 回调, 必须在释放锁之前调用, 否则会导致回调所在线程与唤醒的业务线程的状态不一致
+        callbacks?.forEach {
+            it.failed(ex)
         }
+        latch.countDown()
         return true
     }
 
@@ -127,7 +125,7 @@ open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): IRpcRes
                 return result!!
 
             // 超时
-            failed(TimeoutException("请求[$reqId]超时")) // TODO 多一次无所谓无影响的 countDown()
+            failed(TimeoutException("请求[$reqId]超时: $timeout $unit")) // TODO 多一次无所谓无影响的 countDown()
             return result!!
         } catch (e: InterruptedException) {
             return RpcResponse(reqId, e)
