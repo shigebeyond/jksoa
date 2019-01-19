@@ -35,7 +35,7 @@ object ConnectionHub: IConnectionHub {
     private val loadBalanceStrategy: ILoadBalanceStrategy = ILoadBalanceStrategy.instance(config["loadbalanceStrategy"]!!)
 
     /**
-     * 连接池： <服务标识 to <ip端口 to 连接>>
+     * 连接池： <服务标识 to <协议ip端口 to 连接>>
      */
     private val connections: ConcurrentHashMap<String, HashMap<String, IConnection>> = ConcurrentHashMap()
 

@@ -96,12 +96,12 @@ class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
     }
 
     /**
-     * 处理channel关闭事件
+     * 处理channel关闭后事件
      *
      * @param ctx
      */
     public override fun channelInactive(ctx: ChannelHandlerContext) {
-        clientLogger.debug("NettyRequestHandler检查channel关闭: ${ctx.channel()}")
+        clientLogger.debug("NettyRequestHandler检测到channel关闭: ${ctx.channel()}")
         super.channelInactive(ctx)
     }
 

@@ -56,6 +56,7 @@ interface IProtocolServer {
      * 注册服务
      */
     fun registerServices(){
+        serverLogger.debug("NettyServer调用Provider注册服务")
         // 对每个服务提供者，来注册服务
         for(provider in ProviderLoader.getAll()){
             provider.registerService()

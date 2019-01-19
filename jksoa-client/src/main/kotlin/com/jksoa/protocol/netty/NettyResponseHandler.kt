@@ -89,14 +89,14 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
     }
 
     /**
-     * 处理channel关闭事件
+     * 处理channel关闭后事件
      *   TODO: 优化性能, 避免遍历
      *
      * @param ctx
      */
     public override fun channelInactive(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
-        clientLogger.debug("NettyResponseHandler检查channel关闭: $channel")
+        clientLogger.debug("NettyResponseHandler检测到channel关闭: $channel")
         channel.connection.close() // 关掉连接
 
         if(futures.isEmpty())
