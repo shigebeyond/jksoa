@@ -8,9 +8,6 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import java.nio.channels.ClosedChannelException
 import java.util.concurrent.ConcurrentHashMap
-import io.netty.channel.ChannelPromise
-
-
 
 /**
  * netty客户端的响应处理器
@@ -97,19 +94,20 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
     public override fun channelInactive(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
         clientLogger.debug("NettyResponseHandler检测到channel关闭: $channel")
-        channel.connection.close() // 关掉连接
+
 
         if(futures.isEmpty())
             return
 
-        // 收集要删除的异步响应的记录
+        // 删除的异步响应的记录
+        // 1 收集记录
         val removedValue = futures.values.filter{ future ->
             future.channel == channel
         }
         for(future in removedValue) {
-            // 1 删除异步响应的记录
+            // 2 删除异步响应的记录
             futures.remove(future.reqId)
-            // 2 设置结果: channel关闭的异常
+            // 3 设置结果: channel关闭的异常
             future.failed(ClosedChannelException())
         }
     }
@@ -118,7 +116,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      * 处理channel发生异常事件
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        clientLogger.error("NettyResponseHandler捕获 ${ctx.channel()} 异常: ${cause.message}")
+        clientLogger.error("NettyResponseHandler捕获 channel ${ctx.channel()} 异常: ${cause.message}")
         cause.printStackTrace()
         super.exceptionCaught(ctx, cause)
     }

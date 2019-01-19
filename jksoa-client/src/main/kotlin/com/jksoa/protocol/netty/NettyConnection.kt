@@ -20,11 +20,6 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-
-// Channel 与 NettyConnection 相互引用
-val Channel.connection: NettyConnection
-    get() = this.attr<NettyConnection>(NettyConnection.connKey).get()
-
 class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1) : BasicConnection(url, weight) {
 
     companion object{
