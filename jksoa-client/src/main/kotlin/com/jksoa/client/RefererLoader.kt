@@ -55,8 +55,9 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
      * 创建service类
      *
      * @param clazz
+     * @param registerable 是否注册, 引用者不关心这个
      */
-    public override fun createServiceClass(clazz: Class<out IService>): Referer? {
+    public override fun createServiceClass(clazz: Class<out IService>, registerable: Boolean): Referer? {
         //去重：对已添加的本地服务，不用再次扫描添加
         if(serviceClasses.containsKey(clazz.name))
             return null
