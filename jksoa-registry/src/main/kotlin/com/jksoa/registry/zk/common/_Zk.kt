@@ -16,15 +16,18 @@ public fun ZkClient.nodeChilds2Urls(parentPath: String, currentChilds: List<Stri
     if(currentChilds.isEmpty())
         return emptyList()
 
+    // 服务标识
+    val serviceId = Url.serviceRegistryPath2serviceId(parentPath)
+
     // 遍历节点
     val urls = ArrayList<Url>()
     for (node in currentChilds) {
-        // 构造节点路径
-        val nodePath = "$parentPath/$node"
-        // 读节点数据
-        val data = this.readData<String>(nodePath, true)
+        // 读节点数据为参数
+        val params = this.readData<String>("$parentPath/$node", true)
+        // 解析节点名为 - 协议:ip:端口
+        val (protocol, ip, port) = node.split(':')
         // 转为url
-        val url = Url(data)
+        val url = Url(protocol, ip, port.toInt(), serviceId, params)
         urls.add(url)
     }
     return urls
