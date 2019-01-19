@@ -20,7 +20,7 @@ import getIntranetHost
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 3:48 PM
  */
-class Provider(public override val clazz:Class<out IService> /* 实现类 */) : IProvider() {
+class Provider(public override val clazz: Class<out IService> /* 实现类 */, public val registerable: Boolean /* 是否注册 */) : IProvider() {
 
     companion object{
         /**
@@ -65,6 +65,9 @@ class Provider(public override val clazz:Class<out IService> /* 实现类 */) : 
      *   不在 Provider 初始化时注册，递延在启动服务器后注册，因此不要暴露给方法
      */
     public override fun registerService(){
+        if(!registerable)
+            return
+
         serverLogger.info("Provider注册服务: " + serviceUrl)
         // 1 注册注册中心的服务
         registry.register(serviceUrl)

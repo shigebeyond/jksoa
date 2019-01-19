@@ -31,11 +31,12 @@ object ProviderLoader: ServiceClassLoader<IProvider>() {
      * 创建service类
      *
      * @param clazz
+     * @param registerable 是否注册
      * @return
      */
-    public override fun createServiceClass(clazz: Class<out IService>): Provider? {
+    public override fun createServiceClass(clazz: Class<out IService>, registerable: Boolean): Provider? {
         if (!clazz.isAbstract /* 非抽象类 */ && !clazz.isInterface /* 非接口 */)
-            return Provider(clazz) // 服务提供者
+            return Provider(clazz, registerable) // 服务提供者
 
         return null
     }
