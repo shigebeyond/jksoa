@@ -53,6 +53,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
      */
     public override fun send(req: IRpcRequest): IRpcResponseFuture {
         clientLogger.debug("NettyConnection发送请求: " + req)
+
         // 1 发送请求
         val writeFuture = channel.writeAndFlush(req)
 
@@ -93,11 +94,14 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
 
     /**
      * 关闭连接
+     *   在shutdown时 或 channelInactive事件中触发
      */
     public override fun close() {
-        // 1 关闭channel
-        if(channel.isOpen /* || channel.isActive*/)
-            channel.close().sync()
+        // 1 在shutdown时, 需手动关闭channel
+        if(channel.isOpen && channel.isActive){
+            clientLogger.info("Close active channel $channel, when shutdown")
+            channel.close()
+        }
 
         // 2 删除引用
         channel.attr<NettyConnection>(connKey).set(null)
