@@ -1,5 +1,6 @@
 package com.jksoa.server
 
+import com.jkmvc.common.ClosingOnRequestEnd
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
 import com.jksoa.common.exception.RpcBusinessException
@@ -43,6 +44,9 @@ object RpcRequestHandler : IRpcRequestHandler {
             }
         }catch (t: Throwable){
             return RpcResponse(req.id, t)
+        }finally {
+            // 请求处理后，关闭资源
+            ClosingOnRequestEnd.triggerClosings()
         }
     }
 
