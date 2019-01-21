@@ -14,9 +14,9 @@ import kotlin.reflect.jvm.javaMethod
  * @date 2017-09-08 2:05 PM
  */
 class RpcRequest(public override val serviceId: String, /* 服务标识，即接口类全名 */
-              public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
-              public override val args: Array<Any?> = emptyArray(), /* 实参 */
-              public override val id: Long = idWorker.nextId() /* 请求标识，全局唯一 */
+                 public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
+                 public override val args: Array<Any?> = emptyArray(), /* 实参 */
+                 public override val id: Long = idWorker.nextId() /* 请求标识，全局唯一 */
 ): IRpcRequest {
 
     companion object {
