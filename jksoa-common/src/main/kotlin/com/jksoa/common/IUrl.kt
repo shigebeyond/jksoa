@@ -67,5 +67,5 @@ interface IUrl {
     /**
      * 转化为仅包含服务节点信息的url
      */
-    val serverUrl: Url
+    val serverPart: Url
 }
