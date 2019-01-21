@@ -25,6 +25,19 @@ class RpcRequest(public override val serviceId: String, /* 服务标识，即接
          * id生成器
          */
         protected val idWorker: IIdWorker = IIdWorker.instance("snowflakeId")
+
+        /**
+         * 线程安全的请求对象缓存
+         */
+        protected val reqs:ThreadLocal<RpcRequest> = ThreadLocal();
+
+        /**
+         * 获得当前请求
+         */
+        @JvmStatic
+        public fun current(): RpcRequest {
+            return reqs.get()!!;
+        }
     }
 
     /**
@@ -52,6 +65,10 @@ class RpcRequest(public override val serviceId: String, /* 服务标识，即接
      * @param args 实参
      */
     public constructor(func: KFunction<*>, args: Array<Any?> = emptyArray()) : this(func.javaMethod!!, args)
+
+    init{
+        reqs.set(this);
+    }
 
     /**
      * 转为字符串

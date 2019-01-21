@@ -6,6 +6,7 @@ import com.jksoa.client.RefererLoader
 import com.jksoa.common.IService
 import com.jksoa.common.Url
 import com.jksoa.common.serverLogger
+import com.jksoa.protocol.IProtocolServer
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
 import getIntranetHost
@@ -47,7 +48,7 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
     /**
      * 服务路径
      */
-    public override val serviceUrl:Url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!, `interface`.name, config.getMap("parameters", emptyMap<String, Any?>())!!);
+    public override val serviceUrl:Url = IProtocolServer.current().serverUrl.withPathPart(`interface`.name, config.getMap("parameters", emptyMap<String, Any?>())!!);
 
     /**
      * 服务实例

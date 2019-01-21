@@ -124,9 +124,20 @@ class Url(override var protocol: String /* 协议 */,
     /**
      * 转化为仅包含服务节点信息的url
      */
-    public override val serverUrl: Url by lazy{
+    public override val serverPart: Url by lazy{
         Url(protocol, host, port)
     }
+
+    /**
+     * 转为包含新的路径+参数信息的url
+     * @param path 路径 = 服务标识 = 接口类名
+     * @param parameters 参数
+     * @return
+     */
+    public fun withPathPart(path: String, parameters: Map<String, Any?> = emptyMap()): Url {
+        return Url(protocol, host, port, path, parameters)
+    }
+
     /**
      * 解析url
      *

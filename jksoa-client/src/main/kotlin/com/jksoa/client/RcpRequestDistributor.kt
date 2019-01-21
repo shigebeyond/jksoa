@@ -28,11 +28,6 @@ object RcpRequestDistributor : IRpcRequestDistributor {
     public val config = Config.instance("client", "yaml")
 
     /**
-     * 最大尝试次数, 用于支持失败重试
-     */
-    public val maxTryTimes: Int = config["maxTryTimes"]!!
-
-    /**
      * rpc连接集中器
      */
     public val connHub: IConnectionHub = ConnectionHub
@@ -49,7 +44,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @return 响应结果
      */
     public override fun distributeToAny(req: IRpcRequest): IRpcResponse {
-        val resFuture = FailoveRpcResponseFuture(maxTryTimes){
+        val resFuture = FailoveRpcResponseFuture(config["maxTryTimes"]!!){
             // 1 选择连接
             val conn = connHub.select(req)
 

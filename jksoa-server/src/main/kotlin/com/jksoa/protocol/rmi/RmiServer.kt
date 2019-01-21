@@ -12,17 +12,15 @@ import javax.naming.InitialContext
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-class RmiServer : IProtocolServer {
+class RmiServer : IProtocolServer() {
 
     /**
      * 启动服务器
      *   必须在启动后，主动调用 registerServices() 来注册服务
-     *
-     * @param port 端口
      */
-    public override fun doStart(port: Int): Unit{
+    public override fun doStart(): Unit{
         // 监听端口
-        LocateRegistry.createRegistry(port)
+        LocateRegistry.createRegistry(serverUrl.port)
 
         // 初始化命名空间
         val namingContext = InitialContext()

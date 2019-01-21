@@ -21,7 +21,7 @@ import io.netty.util.concurrent.DefaultEventExecutor
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-open class NettyServer : IProtocolServer, ClosingOnShutdown() {
+open class NettyServer : IProtocolServer() {
 
     /**
      * 服务端配置
@@ -45,15 +45,13 @@ open class NettyServer : IProtocolServer, ClosingOnShutdown() {
 
     /**
      * 启动server
-     *
-     * @param port 端口
      */
-    public override fun doStart(port: Int): Unit{
+    public override fun doStart(): Unit{
        try {
            // Create ServerBootstrap
            val b = buildBootstrap()
            // Bind and start to accept incoming connections.
-           val f: ChannelFuture = b.bind(port).sync()
+           val f: ChannelFuture = b.bind(serverUrl.port).sync()
 
            // 注册服务
            registerServices()

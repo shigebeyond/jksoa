@@ -11,6 +11,6 @@ import com.jksoa.common.*
  **/
 class ReusableConnection(public override val url: Url /* 服务端地址 */,
                          public override var weight: Int = 1 /* 权重 */
-) : IConnection by ReconnectableConnection.instance(url.serverUrl).incrRef() // 根据 serverUrl 来复用 ReconnectableConnection 的实例
+) : IConnection by ReconnectableConnection.instance(url.serverPart).incrRef() // 根据 serverPart 来复用 ReconnectableConnection 的实例
 {
 }
