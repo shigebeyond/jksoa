@@ -1,6 +1,9 @@
 package com.jksoa.mq.tests
 
-import com.jksoa.mq.*
+import com.jksoa.mq.common.Message
+import com.jksoa.mq.consumer.IMessageListener
+import com.jksoa.mq.consumer.MqConsumer
+import com.jksoa.mq.producer.MqProducer
 import org.junit.Test
 
 /**

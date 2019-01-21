@@ -1,4 +1,6 @@
-package com.jksoa.mq
+package com.jksoa.mq.producer
+
+import com.jksoa.mq.common.Message
 
 /**
  * 消息生产者

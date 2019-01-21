@@ -1,4 +1,6 @@
-package com.jksoa.mq
+package com.jksoa.mq.consumer
+
+import com.jksoa.mq.common.Message
 
 /**
  * 消息监听器

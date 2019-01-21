@@ -1,9 +1,8 @@
-package com.jksoa.mq
+package com.jksoa.mq.producer
 
-import com.jksoa.client.IRpcRequestDistributor
-import com.jksoa.client.RcpRequestDistributor
 import com.jksoa.client.Referer
-import com.jksoa.common.RpcRequest
+import com.jksoa.mq.broker.IMqBroker
+import com.jksoa.mq.common.Message
 
 /**
  * 消息生产者

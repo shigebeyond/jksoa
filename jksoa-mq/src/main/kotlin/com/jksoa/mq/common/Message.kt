@@ -1,4 +1,4 @@
-package com.jksoa.mq
+package com.jksoa.mq.common
 
 /**
  * 消息

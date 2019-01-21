@@ -1,6 +1,7 @@
-package com.jksoa.mq
+package com.jksoa.mq.broker
 
 import com.jksoa.common.IService
+import com.jksoa.mq.common.Message
 
 /**
  * 消息中转者
@@ -8,6 +9,12 @@ import com.jksoa.common.IService
  * @date 2019-01-10 8:41 PM
  */
 interface IMqBroker : IService {
+
+    /**
+     * 订阅主题
+     * @param topic 主题
+     */
+    fun subscribeTopic(topic: String)
 
     /**
      * 分发消息

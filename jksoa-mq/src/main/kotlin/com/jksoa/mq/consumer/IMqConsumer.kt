@@ -1,9 +1,7 @@
-package com.jksoa.mq
+package com.jksoa.mq.consumer
 
-import com.jksoa.client.IRpcRequestDistributor
-import com.jksoa.client.RcpRequestDistributor
 import com.jksoa.common.IService
-import com.jksoa.common.RpcRequest
+import com.jksoa.mq.common.Message
 
 /**
  * 消息消费者

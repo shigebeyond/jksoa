@@ -1,5 +1,6 @@
-package com.jksoa.mq
+package com.jksoa.mq.consumer
 
+import com.jksoa.mq.common.Message
 import java.util.concurrent.ConcurrentHashMap
 
 /**
