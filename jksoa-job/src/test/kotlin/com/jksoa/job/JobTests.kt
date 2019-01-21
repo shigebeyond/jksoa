@@ -36,7 +36,7 @@ class JobTests{
 
     @Test
     fun testPeriodicTrigger(){
-        trigger = PeriodicTrigger(10, 5)
+        trigger = PeriodicTrigger(3, 5)
         println("触发器: $trigger")
         trigger.addJob(){
             println("周期性执行作业: id = ${it.jobId}, triggerCount = ${it.triggerCount}, triggerTime = ${it.triggerTime.format()}")

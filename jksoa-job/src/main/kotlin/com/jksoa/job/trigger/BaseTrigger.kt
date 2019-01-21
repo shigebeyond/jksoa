@@ -1,10 +1,9 @@
 package com.jksoa.job.trigger
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.DirtyFlagMap
-import com.jkmvc.common.IConfig
+import com.jkmvc.common.*
 import com.jksoa.job.IJob
 import com.jksoa.job.ITrigger
+import com.jksoa.job.jobLogger
 import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
@@ -31,12 +30,16 @@ abstract class BaseTrigger : ITrigger {
         /**
          * 定时器
          */
-        internal val timer = HashedWheelTimer(config["tickDurationMillis"]!!, TimeUnit.MILLISECONDS, config["ticksPerWheel"]!!)
+        internal val timer by lazy{
+            HashedWheelTimer(config["tickDurationMillis"]!!, TimeUnit.MILLISECONDS, config["ticksPerWheel"]!!)
+        }
 
         /**
          * 执行作业的工作线程池
          */
-        internal val workerThreadPool = Executors.newWorkStealingPool(config.getInt("workerThreadNum", Runtime.getRuntime().availableProcessors())!!) as ForkJoinPool
+        internal val workerThreadPool by lazy{
+            Executors.newWorkStealingPool(config.getInt("workerThreadNum", Runtime.getRuntime().availableProcessors())!!) as ForkJoinPool
+        }
 
     }
 
@@ -72,6 +75,7 @@ abstract class BaseTrigger : ITrigger {
         if(delaySeconds == null)
             return
 
+        jobLogger.debug("下一轮的等待秒数: $delaySeconds, 当前时间 = " + Date().format() + ", 下一轮时间 = " + Date().add(Calendar.SECOND, delaySeconds.toInt()).format())
         // 添加定时器
         timer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
