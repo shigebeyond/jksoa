@@ -1,9 +1,7 @@
 package com.jksoa.client
 
 import com.jksoa.common.IRpcRequest
-import com.jksoa.protocol.IConnection
 import com.jksoa.registry.IDiscoveryListener
-import java.io.Closeable
 
 /**
  * rpc连接集中器

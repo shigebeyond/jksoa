@@ -4,7 +4,7 @@ import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jkmvc.common.NamedSingleton
 import com.jksoa.common.IRpcRequest
-import com.jksoa.protocol.IConnection
+import com.jksoa.client.IConnection
 
 /**
  * 选择连接的均衡负载算法

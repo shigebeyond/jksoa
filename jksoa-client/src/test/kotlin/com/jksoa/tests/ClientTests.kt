@@ -2,12 +2,12 @@ package com.jksoa.tests
 
 import com.jkmvc.common.getRootResource
 import com.jksoa.client.RcpRequestDistributor
-import com.jksoa.client.Referer
+import com.jksoa.client.referer.Referer
 import com.jksoa.client.ShardingRpcRequest
 import com.jksoa.common.Url
 import com.jksoa.example.IExampleService
 import com.jksoa.example.ISystemService
-import com.jksoa.protocol.netty.NettyClient
+import com.jksoa.client.protocol.netty.NettyClient
 import org.junit.Test
 
 /**

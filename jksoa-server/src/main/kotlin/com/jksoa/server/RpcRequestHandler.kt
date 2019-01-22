@@ -6,6 +6,7 @@ import com.jksoa.common.RpcResponse
 import com.jksoa.common.exception.RpcBusinessException
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.common.serverLogger
+import com.jksoa.server.provider.ProviderLoader
 
 /**
  * Rpc请求处理者
