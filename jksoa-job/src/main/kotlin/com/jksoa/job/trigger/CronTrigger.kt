@@ -12,17 +12,18 @@ data class CronTrigger (public val cronExpr: CronExpression /* cron表达式 */)
     public constructor(cronExpr: String): this(CronExpression(cronExpr))
 
     /**
-     * 获得下一轮的等待秒数
+     * 获得下一轮的等待毫
+     * 秒数
      * @return
      */
-    protected override fun getNextDelaySeconds(): Long?{
+    protected override fun getNextDelayMillis(): Long?{
         val afterTime = Date()
         // 获得下一轮的时间
         val nextTime = cronExpr.getTimeAfter(afterTime)
         if (nextTime == null)
             return null
 
-        return (nextTime.time - afterTime.time) / 1000
+        return nextTime.time - afterTime.time
     }
 
 }

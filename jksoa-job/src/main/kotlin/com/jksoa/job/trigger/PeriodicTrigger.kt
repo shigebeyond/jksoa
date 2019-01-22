@@ -10,13 +10,13 @@ data class PeriodicTrigger(public val intervalSeconds: Long /* 重复的时间�
 ) : BaseTrigger() {
 
     /**
-     * 获得下一轮的等待秒数
+     * 获得下一轮的等待毫秒数
      * @return
      */
-    protected override fun getNextDelaySeconds(): Long?{
+    protected override fun getNextDelayMillis(): Long?{
         if (triggerCount >= repeatCount)
             return null
 
-        return intervalSeconds
+        return intervalSeconds * 1000
     }
 }

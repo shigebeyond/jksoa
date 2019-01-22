@@ -70,12 +70,12 @@ abstract class BaseTrigger : ITrigger {
      * 准备好下一轮的定时器
      */
     protected fun prepareNextTimeout() {
-        // 获得下一轮的等待秒数
-        val delaySeconds = getNextDelaySeconds()
-        if(delaySeconds == null)
+        // 获得下一轮的等待毫秒数
+        val delayMillis = getNextDelayMillis()
+        if(delayMillis == null)
             return
 
-        jobLogger.debug("下一轮的等待秒数: $delaySeconds, 当前时间 = " + Date().format() + ", 下一轮时间 = " + Date().add(Calendar.SECOND, delaySeconds.toInt()).format())
+        jobLogger.debug("下一轮的等待毫秒数: $delayMillis, 当前时间 = " + Date().format() + ", 下一轮时间 = " + Date().add(Calendar.MILLISECOND, delayMillis.toInt()).format())
         // 添加定时器
         timer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
@@ -85,14 +85,14 @@ abstract class BaseTrigger : ITrigger {
                 // 准备下一轮的定时器
                 prepareNextTimeout()
             }
-        }, delaySeconds, TimeUnit.SECONDS)
+        }, delayMillis, TimeUnit.MILLISECONDS)
     }
 
     /**
-     * 获得下一轮的等待秒数
+     * 获得下一轮的等待毫秒数
      * @return
      */
-    protected abstract fun getNextDelaySeconds(): Long?
+    protected abstract fun getNextDelayMillis(): Long?
 
     /**
      * 执行作业
@@ -145,7 +145,7 @@ abstract class BaseTrigger : ITrigger {
 
         // 等待作业完成
         if(waitForJobsToComplete && !workerThreadPool.isQuiescent) {
-            val delaySeconds: Long = getNextDelaySeconds() ?: config["ticksPerWheel"]!!
+            val delaySeconds: Long = getNextDelayMillis() ?: config["ticksPerWheel"]!!
             workerThreadPool.awaitQuiescence(delaySeconds, TimeUnit.SECONDS)
         }
 
