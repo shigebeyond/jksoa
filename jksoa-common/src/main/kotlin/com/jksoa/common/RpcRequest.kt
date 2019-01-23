@@ -60,6 +60,7 @@ class RpcRequest(public override val serviceId: String, /* 服务标识，即接
 
     /**
      * 构造函数
+     *   如果被调用的kotlin方法中有默认参数, 则 func.javaMethod 获得的java方法签名是包含默认参数类型的
      *
      * @param func 方法
      * @param args 实参
