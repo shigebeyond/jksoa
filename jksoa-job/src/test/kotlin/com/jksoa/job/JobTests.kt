@@ -1,10 +1,13 @@
 package com.jksoa.job
 
 import com.jkmvc.common.format
-import com.jksoa.common.RpcRequest
 import com.jksoa.example.ISystemService
-import com.jksoa.job.job.RpcJob
-import com.jksoa.job.job.ShardingRpcJob
+import com.jksoa.example.SystemService
+import com.jksoa.job.job.LambdaJob
+import com.jksoa.job.job.bean.BeanJob
+import com.jksoa.job.job.rpc.RpcJob
+import com.jksoa.job.job.bean.ShardingBeanJob
+import com.jksoa.job.job.rpc.ShardingRpcJob
 import com.jksoa.job.trigger.CronTrigger
 import com.jksoa.job.trigger.PeriodicTrigger
 import org.junit.After
@@ -38,51 +41,62 @@ class JobTests{
         trigger.shutdown(true)
     }
 
-    protected fun buildTrigger(trigger: ITrigger, action:() -> Unit) {
+    protected fun buildTrigger(trigger: ITrigger, job: IJob) {
         this.trigger = trigger
         println("触发器: $trigger")
-        action()
+        trigger.addJob(job)
         trigger.start()
     }
 
     /**
      * 构建周期性重复的触发器
      */
-    protected fun buildPeriodicTrigger(action:() -> Unit) {
-        buildTrigger(PeriodicTrigger(3, 5), action)
+    protected fun buildPeriodicTrigger(job: IJob) {
+        buildTrigger(PeriodicTrigger(3, 5), job)
     }
 
     /**
      * 构建cron表达式定义的触发器
      */
-    protected fun buildCronTrigger(action:() -> Unit){
-        buildTrigger(CronTrigger("0/20 * * * * ?"), action)
+    protected fun buildCronTrigger(job: IJob){
+        buildTrigger(CronTrigger("0/20 * * * * ?"), job)
     }
 
     @Test
     fun testCronTrigger(){
-        buildCronTrigger {
-            trigger.addJob {
-                println("cron表达式控制执行作业: id = ${it.jobId}, triggerCount = ${it.triggerCount}, triggerTime = ${it.triggerTime.format()}")
-            }
+        val job = LambdaJob {
+            println("cron表达式控制执行作业: id = ${it.jobId}, triggerCount = ${it.triggerCount}, triggerTime = ${it.triggerTime.format()}")
         }
+        buildPeriodicTrigger(job)
     }
 
     @Test
     fun testPeriodicTrigger(){
-        buildPeriodicTrigger {
-            trigger.addJob(){
-                println("周期性执行作业: id = ${it.jobId}, triggerCount = ${it.triggerCount}, triggerTime = ${it.triggerTime.format()}")
-            }
+        val job = LambdaJob{
+            println("周期性执行作业: id = ${it.jobId}, triggerCount = ${it.triggerCount}, triggerTime = ${it.triggerTime.format()}")
         }
+        buildPeriodicTrigger(job)
+    }
+
+    @Test
+    fun testBeanJob(){
+        val job = BeanJob(SystemService::ping)
+        buildPeriodicTrigger(job)
+    }
+
+    @Test
+    fun testShardingBeanJob(){
+        val args:Array<Array<*>> = Array(3) { i ->
+            arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
+        }
+        val job = ShardingBeanJob(SystemService::echo, args)
+        buildPeriodicTrigger(job)
     }
 
     @Test
     fun testRpcJob(){
         val job = RpcJob(ISystemService::ping)
-        buildPeriodicTrigger {
-            trigger.addJob(job)
-        }
+        buildPeriodicTrigger(job)
     }
 
     @Test
@@ -91,9 +105,7 @@ class JobTests{
             arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
         }
         val job = ShardingRpcJob(ISystemService::echo, args)
-        buildPeriodicTrigger {
-            trigger.addJob(job)
-        }
+        buildPeriodicTrigger(job)
     }
 
 }

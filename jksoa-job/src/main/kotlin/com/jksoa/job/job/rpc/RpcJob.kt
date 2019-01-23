@@ -1,10 +1,12 @@
-package com.jksoa.job.job
+package com.jksoa.job.job.rpc
 
-import com.jkmvc.common.getSignature
 import com.jksoa.client.IRpcRequestDistributor
 import com.jksoa.client.RcpRequestDistributor
-import com.jksoa.client.ShardingRpcRequest
+import com.jksoa.common.IService
+import com.jksoa.common.RpcRequest
+import com.jksoa.common.getServiceClass
 import com.jksoa.job.IJobExecutionContext
+import com.jksoa.job.job.BasicJob
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -15,7 +17,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM
  */
-class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob() {
+class RpcJob(protected val req: RpcRequest) : BasicJob(req.id) {
 
     companion object {
         /**
@@ -28,24 +30,25 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob() {
      * 构造函数
      *
      * @param method 方法
-     * @param shardingArgses 分片要调用的实参
+     * @param args 实参
      */
-    public constructor(method: Method, shardingArgses: Array<Array<*>>) : this(ShardingRpcRequest(method.declaringClass.name, method.getSignature(), shardingArgses))
+    public constructor(method: Method, args: Array<Any?> = emptyArray()) : this(RpcRequest(method, args))
 
     /**
      * 构造函数
+     *   如果被调用的kotlin方法中有默认参数, 则 func.javaMethod 获得的java方法签名是包含默认参数类型的
      *
      * @param func 方法
-     * @param shardingArgses 分片要调用的实参
+     * @param args 实参
      */
-    public constructor(func: KFunction<*>, shardingArgses: Array<Array<*>>) : this(func.javaMethod!!, shardingArgses)
+    public constructor(func: KFunction<*>, args: Array<Any?> = emptyArray()) : this(func.javaMethod!!, args)
 
     /**
      * 执行作业
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        distr.distributeShardings(req)
+        distr.distribute(req)
     }
 
 }

@@ -1,7 +1,9 @@
 package com.jksoa.common
 
 import com.jkmvc.common.getSignature
+import com.jkmvc.common.isSubClass
 import com.jkmvc.idworker.IIdWorker
+import com.jksoa.common.exception.RpcClientException
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -13,7 +15,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-class RpcRequest(public override val serviceId: String, /* 服务标识，即接口类全名 */
+class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
                  public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
                  public override val args: Array<Any?> = emptyArray(), /* 实参 */
                  public override val id: Long = idWorker.nextId() /* 请求标识，全局唯一 */
@@ -43,20 +45,10 @@ class RpcRequest(public override val serviceId: String, /* 服务标识，即接
     /**
      * 构造函数
      *
-     * @param intf 接口类
-     * @param method 方法
-     * @param args 实参
-     * @param id 请求标识
-     */
-    public constructor(intf: Class<out IService>, method: Method, args: Array<Any?> = emptyArray(), id: Long = idWorker.nextId()): this(intf.name, method.getSignature(), args, id){}
-
-    /**
-     * 构造函数
-     *
      * @param method 方法
      * @param args 实参
      */
-    public constructor(method: Method, args: Array<Any?> = emptyArray(), id: Long = idWorker.nextId()) : this(method.getServiceClass(), method, args, id)
+    public constructor(method: Method, args: Array<Any?> = emptyArray(), id: Long = idWorker.nextId()) : this(method.getServiceClass().name, method.getSignature(), args, id)
 
     /**
      * 构造函数

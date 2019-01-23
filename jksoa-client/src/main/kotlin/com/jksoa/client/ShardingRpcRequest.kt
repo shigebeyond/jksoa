@@ -14,7 +14,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:03 AM
  */
-class ShardingRpcRequest(override val serviceId: String, /* 要调用的服务标识，即接口类全名 */
+class ShardingRpcRequest(override val clazz: String, /* 服务接口类全名 */
                          override val methodSignature: String, /* 要调用的方法签名：包含方法名+参数类型 */
                          override val shardingArgses: Array<Array<*>> /* 分片要调用的实参 */
 ) : IShardingRpcRequest {
@@ -26,7 +26,7 @@ class ShardingRpcRequest(override val serviceId: String, /* 要调用的服务�
      * @param method 方法
      * @param shardingArgses 分片要调用的实参
      */
-    public constructor(intf: Class<out IService>, method: Method, shardingArgses: Array<Array<*>>): this(intf.name, method.getSignature(), shardingArgses)
+    protected constructor(intf: Class<out IService>, method: Method, shardingArgses: Array<Array<*>>): this(intf.name, method.getSignature(), shardingArgses)
 
     /**
      * 构造函数

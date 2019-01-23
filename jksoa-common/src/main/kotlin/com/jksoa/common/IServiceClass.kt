@@ -1,7 +1,7 @@
 package com.jksoa.common
 
 import com.jkmvc.common.ClosingOnShutdown
-import com.jkmvc.common.getMethodMaps
+import com.jkmvc.common.getMethodBySignature
 import java.lang.reflect.Method
 
 /**
@@ -29,22 +29,13 @@ abstract class IServiceClass: ClosingOnShutdown() {
     public abstract val service: IService
 
     /**
-     * 所有方法
-     */
-    //public val methods: Map<String, Method> = `interface`.getMethodMaps()
-    // 由于`interface`属性在子类初始化，递延引用
-    public val methods: Map<String, Method> by lazy{
-        `interface`.getMethodMaps()
-    }
-
-    /**
      * 根据方法签名来获得方法
      *
      * @param methodSignature
      * @return
      */
     public fun getMethod(methodSignature: String): Method?{
-        return methods[methodSignature]
+        return `interface`.getMethodBySignature(methodSignature)
     }
 
 }

@@ -9,22 +9,13 @@ import java.io.Serializable
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IRpcRequest: Serializable {
+interface IRpcRequest: Serializable, IInvocation {
 
     /**
      * 服务标识，即接口类全名
      */
     val serviceId: String
-
-    /**
-     * 方法签名：包含方法名+参数类型
-     */
-    val methodSignature: String
-
-    /**
-     * 实参
-     */
-    val args: Array<Any?>
+        get() = clazz
 
     /**
      * 请求标识，全局唯一

@@ -2,6 +2,7 @@ package com.jksoa.job
 
 import com.jkmvc.common.DirtyFlagMap
 import com.jksoa.job.job.BasicJob
+import com.jksoa.job.job.LambdaJob
 
 /**
  * 作业的定时触发器
@@ -31,11 +32,7 @@ interface ITrigger {
      * @param action
      */
     fun addJob(action: (IJobExecutionContext) -> Unit){
-        val job = object: BasicJob(){
-            public override fun execute(context: IJobExecutionContext) {
-                action(context)
-            }
-        }
+        val job = LambdaJob(action)
         addJob(job)
     }
 
