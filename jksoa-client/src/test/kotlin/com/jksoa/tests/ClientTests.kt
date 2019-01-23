@@ -92,6 +92,6 @@ class ClientTests {
             arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
         }
         val job = ShardingRpcRequest(IExampleService::sayHi, args)
-        RcpRequestDistributor.distributeShardings(job)
+        RcpRequestDistributor.distributeSharding(job)
     }
 }

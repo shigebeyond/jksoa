@@ -1,6 +1,9 @@
 package com.jksoa.client
 
 import com.jkmvc.common.getSignature
+import com.jksoa.common.IService
+import com.jksoa.common.RpcRequest
+import com.jksoa.common.getServiceClass
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -19,10 +22,19 @@ class ShardingRpcRequest(override val serviceId: String, /* 要调用的服务�
     /**
      * 构造函数
      *
+     * @param intf 接口类
      * @param method 方法
      * @param shardingArgses 分片要调用的实参
      */
-    public constructor(method: Method, shardingArgses: Array<Array<*>>) : this(method.declaringClass.name, method.getSignature(), shardingArgses)
+    public constructor(intf: Class<out IService>, method: Method, shardingArgses: Array<Array<*>>): this(intf.name, method.getSignature(), shardingArgses)
+
+    /**
+     * 构造函数
+     *
+     * @param method 方法
+     * @param shardingArgses 分片要调用的实参
+     */
+    public constructor(method: Method, shardingArgses: Array<Array<*>>) : this(method.getServiceClass(), method, shardingArgses)
 
     /**
      * 构造函数

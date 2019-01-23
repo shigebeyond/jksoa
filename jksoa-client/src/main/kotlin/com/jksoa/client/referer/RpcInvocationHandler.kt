@@ -65,7 +65,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
         val req = RpcRequest(`interface`, method, args)
 
         // 2 分发请求, 获得响应
-        val res = distr.distributeToAny(req)
+        val res = distr.distribute(req)
 
         // 3 获得值
         return res.getOrThrow()
