@@ -80,7 +80,7 @@ abstract class BaseTrigger : ITrigger {
         timer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
                 // 执行作业
-                execJob()
+                executeJob()
 
                 // 准备下一轮的定时器
                 prepareNextTimeout()
@@ -95,9 +95,18 @@ abstract class BaseTrigger : ITrigger {
     protected abstract fun getNextDelayMillis(): Long?
 
     /**
+     * 执行其他工作
+     *   对外分享内部线程池
+     * @param work
+     */
+    internal fun executeOtherWork(work: Runnable){
+        workerThreadPool.execute(work)
+    }
+
+    /**
      * 执行作业
      */
-    protected fun execJob() {
+    protected fun executeJob() {
         // 执行作业
         workerThreadPool.execute {
             for(job in jobs){
