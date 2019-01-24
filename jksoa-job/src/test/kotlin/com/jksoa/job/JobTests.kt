@@ -2,6 +2,7 @@ package com.jksoa.job
 
 import com.jkmvc.common.format
 import com.jkmvc.common.getMethodBySignature
+import com.jkmvc.common.getSignature
 import com.jksoa.example.ISystemService
 import com.jksoa.example.SystemService
 import com.jksoa.job.job.LambdaJob
@@ -81,11 +82,22 @@ class JobTests{
 
     @Test
     fun testLpc(){
-        val c = SystemService::class.java
-        val m = c.getMethodBySignature("ping()")
-        val bean = c.newInstance()
-        val result = m!!.invoke(bean)
-        println(result)
+        try {
+            val c = Class.forName("fuck")
+
+//        val c = SystemService::class.java
+//        val m = c.getMethod("echo", String::class.java)
+//        println(m.getSignature())
+
+            val m = c.getMethodBySignature("ping()")
+            val bean = c.newInstance()
+            val result = m!!.invoke(bean)
+            println(result)
+        }catch(e: Exception){
+            e.printStackTrace()
+        }
+
+
     }
 
     @Test
@@ -117,6 +129,13 @@ class JobTests{
         }
         val job = ShardingRpcJob(ISystemService::echo, args)
         buildPeriodicTrigger(job)
+    }
+
+    @Test
+    fun testJobExprParser(){
+        val job = JobExprParser.parse("")
+        println(job)
+        println(job.toExpr())
     }
 
 }

@@ -18,4 +18,13 @@ interface IJob {
      * @param context 作业执行的上下文
      */
     fun execute(context: IJobExecutionContext)
+
+    /**
+     * 转为作业表达式
+     * @return
+     */
+    public fun toExpr(): String {
+        return "custom " + javaClass.name
+    }
+
 }

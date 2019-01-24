@@ -1,6 +1,7 @@
 package com.jksoa.job.job.local
 
 import com.jkmvc.common.getSignature
+import com.jkmvc.common.toExpr
 import com.jksoa.common.IInvocation
 import com.jksoa.job.IJobExecutionContext
 import com.jksoa.job.jobLogger
@@ -40,7 +41,7 @@ class LpcJob(public override val clazz: String, /* 服务接口类全名 */
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        jobLogger.debug("lpc call: bean=$bean, method=$method, ")
+        jobLogger.debug("lpc call: bean=$bean, method=$methodSignature, ")
         method.invoke(bean, *args)
     }
 
@@ -50,6 +51,18 @@ class LpcJob(public override val clazz: String, /* 服务接口类全名 */
      * @return
      */
     public override fun toString(): String {
-        return "method=$clazz.$methodSignature, args=" + args.joinToString(", ", "[", "]");
+        return "LpcJob: method=$clazz.$methodSignature, args=" +  args.joinToString(", ", "[", "]"){
+            it.toExpr()
+        }
+    }
+
+    /**
+     * 转为作业表达式
+     * @return
+     */
+    public override fun toExpr(): String {
+        return "lpc $clazz $methodSignature " + args.joinToString(",", "(", ")"){
+            it.toExpr()
+        }
     }
 }

@@ -1,7 +1,9 @@
 package com.jksoa.job.job.remote
 
+import com.jkmvc.common.toExpr
 import com.jksoa.client.IRpcRequestDistributor
 import com.jksoa.client.RcpRequestDistributor
+import com.jksoa.common.IInvocation
 import com.jksoa.common.RpcRequest
 import com.jksoa.job.IJobExecutionContext
 import com.jksoa.job.job.BasicJob
@@ -15,7 +17,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM
  */
-class RpcJob(protected val req: RpcRequest) : BasicJob(req.id) {
+class RpcJob(protected val req: RpcRequest) : BasicJob(req.id), IInvocation by req {
 
     companion object {
         /**
@@ -56,6 +58,16 @@ class RpcJob(protected val req: RpcRequest) : BasicJob(req.id) {
      */
     public override fun toString(): String {
         return "RpcJob: $req"
+    }
+
+    /**
+     * 转为作业表达式
+     * @return
+     */
+    public override fun toExpr(): String {
+        return "rpc $clazz $methodSignature " + args.joinToString(",", "(", ")"){
+            it.toExpr()
+        }
     }
 
 }

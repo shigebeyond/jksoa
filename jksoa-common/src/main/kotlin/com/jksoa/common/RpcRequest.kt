@@ -2,6 +2,7 @@ package com.jksoa.common
 
 import com.jkmvc.common.getSignature
 import com.jkmvc.common.isSubClass
+import com.jkmvc.common.toExpr
 import com.jkmvc.idworker.IIdWorker
 import com.jksoa.common.exception.RpcClientException
 import java.lang.reflect.Method
@@ -69,7 +70,9 @@ class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
      * @return
      */
     public override fun toString(): String {
-        return "RpcRequest: id=$id, service=$serviceId.$methodSignature, args=" + args.joinToString(", ", "[", "]");
+        return "RpcRequest: id=$id, service=$serviceId.$methodSignature, args=" + args.joinToString(", ", "[", "]"){
+            it.toExpr()
+        }
     }
 
 }

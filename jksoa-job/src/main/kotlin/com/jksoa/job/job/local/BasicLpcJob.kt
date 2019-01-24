@@ -30,7 +30,7 @@ abstract class BasicLpcJob : BasicJob(), IInvocationMethod {
      */
     protected val bean:Any by lazy {
         beans.getOrPutOnce(clazz){
-            val c = Class.forName(clazz)
+            val c = Class.forName(clazz) // ClassNotFoundException
             // 检查bean类的默认构造函数
             if(c.getConstructorOrNull() == null)
                 throw JobException("Bean Class [$c] has no no-arg constructor") // 无默认构造函数
@@ -44,11 +44,10 @@ abstract class BasicLpcJob : BasicJob(), IInvocationMethod {
      *   由于clazz属性在子类初始化，递延引用
      */
     protected val method: Method by lazy {
-        val c = Class.forName(clazz)
+        val c = Class.forName(clazz) // ClassNotFoundException
         val m = c.getMethodBySignature(methodSignature)
         if(m == null)
-            throw JobException("Bean Class [$clazz] has no method [$methodSignature]") // 无默认构造函数
+            throw JobException("Bean Class [$clazz] has no method [$methodSignature]") // 无函数
         m!!
     }
-
 }

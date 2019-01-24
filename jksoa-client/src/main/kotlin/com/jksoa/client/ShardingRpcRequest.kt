@@ -1,6 +1,7 @@
 package com.jksoa.client
 
 import com.jkmvc.common.getSignature
+import com.jkmvc.common.toExpr
 import com.jksoa.common.IService
 import com.jksoa.common.RpcRequest
 import com.jksoa.common.getServiceClass
@@ -45,6 +46,10 @@ class ShardingRpcRequest(override val clazz: String, /* 服务接口类全名 */
     public constructor(func: KFunction<*>, shardingArgses: Array<Array<*>>) : this(func.javaMethod!!, shardingArgses)
 
     public override fun toString(): String {
-        return "ShardingRpcRequest: service=$serviceId.$methodSignature, shardingSize=$shardingSize, shardingArgses=$shardingArgses";
+        return "ShardingRpcRequest: service=$serviceId.$methodSignature, shardingSize=$shardingSize, shardingArgses=" + shardingArgses.joinToString(", ", "[", "]"){ args ->
+            args.joinToString(", ", "(", ")"){
+                it.toExpr()
+            }
+        }
     }
 }

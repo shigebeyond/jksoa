@@ -10,8 +10,11 @@ import com.jksoa.job.trigger.CronTrigger
 object CronJobLaucher {
 
     fun lauch(cronJobExpr: String){
+
         val trigger = CronTrigger("0/20 * * * * ?")
         println("触发器: $trigger")
         trigger.start()
     }
+
+
 }

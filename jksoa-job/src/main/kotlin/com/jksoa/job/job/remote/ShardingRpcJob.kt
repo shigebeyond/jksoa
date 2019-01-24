@@ -1,6 +1,8 @@
 package com.jksoa.job.job.remote
 
+import com.jkmvc.common.toExpr
 import com.jksoa.client.IRpcRequestDistributor
+import com.jksoa.client.IShardingInvocation
 import com.jksoa.client.RcpRequestDistributor
 import com.jksoa.client.ShardingRpcRequest
 import com.jksoa.job.IJobExecutionContext
@@ -15,7 +17,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM
  */
-class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob() {
+class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob(), IShardingInvocation by req {
 
     companion object {
         /**
@@ -55,5 +57,17 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob() {
      */
     public override fun toString(): String {
         return "ShardingRpcJob: $req"
+    }
+
+    /**
+     * 转为作业表达式
+     * @return
+     */
+    public override fun toExpr(): String {
+        return "shardingRpc $clazz $methodSignature " + shardingArgses.joinToString(", ", "[", "]"){ args ->
+            args.joinToString(",", "(", ")"){
+                it.toExpr()
+            }
+        }
     }
 }
