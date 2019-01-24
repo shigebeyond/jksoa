@@ -5,6 +5,7 @@ import com.jksoa.common.serverLogger
 import com.jksoa.server.IRpcServer
 import com.jksoa.client.protocol.netty.codec.NettyMessageDecoder
 import com.jksoa.client.protocol.netty.codec.NettyMessageEncoder
+import com.jksoa.server.provider.ProviderLoader
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup
@@ -44,6 +45,7 @@ open class NettyServer : IRpcServer() {
 
     /**
      * 启动server
+     *   必须在启动后，主动调用 ProviderLoader.load() 来加载服务
      */
     public override fun doStart(): Unit{
        try {
@@ -52,8 +54,8 @@ open class NettyServer : IRpcServer() {
            // Bind and start to accept incoming connections.
            val f: ChannelFuture = b.bind(serverUrl.port).sync()
 
-           // 注册服务
-           registerServices()
+           // 加载服务
+           ProviderLoader.load()
 
            // Wait until the server socket is closed.
            // In this example, this does not happen, but you can do that to gracefully

@@ -26,12 +26,12 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
     private val initialized: Boolean = false
 
     /**
-     * 递延初始化
-     *   不能在一开始就初始化
+     * 递延加载服务
+     *   不能在一开始就加载
      *   如果当前环境是server时，应先添加本地服务引用，然后再扫描添加远程服务引用
      *   注意去重：对已添加的本地服务，不用再次扫描添加
      */
-    private fun initialize(){
+    public override fun load(){
         if(!initialized)
             synchronized(this){
                 if(!initialized)
@@ -77,7 +77,7 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
      * @return
      */
     public override fun get(name: String): IReferer?{
-        initialize() // 递延初始化
+        load() // 递延初始化
         return super.get(name)
     }
 
@@ -86,7 +86,7 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
      * @return
      */
     public override fun getAll(): Collection<IReferer> {
-        initialize() // 递延初始化
+        load() // 递延初始化
         return super.getAll()
     }
 

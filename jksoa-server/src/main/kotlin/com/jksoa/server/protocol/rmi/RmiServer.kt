@@ -16,7 +16,7 @@ class RmiServer : IRpcServer() {
 
     /**
      * 启动服务器
-     *   必须在启动后，主动调用 registerServices() 来注册服务
+     *   必须在启动后，主动调用 ProviderLoader.load() 来加载服务
      */
     public override fun doStart(): Unit{
         // 监听端口
@@ -30,8 +30,8 @@ class RmiServer : IRpcServer() {
             namingContext.rebind(provider.serviceUrl.toString(), provider.service)
         }
 
-        // 注册服务
-        registerServices()
+        // 加载服务
+        ProviderLoader.load()
     }
 
     public override fun close() {

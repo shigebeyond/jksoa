@@ -76,19 +76,8 @@ abstract class IRpcServer : ClosingOnShutdown() {
     }
 
     /**
-     * 注册服务
-     */
-    fun registerServices(){
-        serverLogger.debug("NettyServer调用Provider注册服务")
-        // 对每个服务提供者，来注册服务
-        for(provider in ProviderLoader.getAll()){
-            provider.registerService()
-        }
-    }
-
-    /**
      * 启动服务器
-     *   必须在启动后，主动调用 registerServices() 来注册服务
+     *   必须在启动后，主动调用 ProviderLoader.load() 来加载服务
      */
     abstract fun doStart()
 }

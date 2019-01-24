@@ -23,7 +23,10 @@ object ProviderLoader: ServiceClassLoader<IProvider>() {
      */
     private val config: IConfig = Config.instance("server", "yaml")
 
-    init {
+    /**
+     * 加载服务
+     */
+    public override fun load(){
         // 系统的service包
         addPackage("com.jksoa.service")
         // 用户定义的service包
