@@ -9,7 +9,7 @@ import java.io.Serializable
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IRpcResponse: Serializable, IResult {
+interface IRpcResponse: Serializable, IInvocationResult {
 
     /**
      * 请求标识

@@ -1,6 +1,6 @@
 package com.jksoa.client
 
-import com.jksoa.common.IMethod
+import com.jksoa.common.IInvocationMethod
 
 /**
  * 分片方法调用的描述
@@ -9,7 +9,7 @@ import com.jksoa.common.IMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IShardingInvocation: IMethod {
+interface IShardingInvocation: IInvocationMethod {
 
     /**
      * 分片总数
