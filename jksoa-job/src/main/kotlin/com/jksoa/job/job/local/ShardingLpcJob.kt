@@ -1,13 +1,10 @@
-package com.jksoa.job.job.bean
+package com.jksoa.job.job.local
 
-import com.jkmvc.common.getOrPutOnce
 import com.jkmvc.common.getSignature
 import com.jksoa.client.IShardingInvocation
 import com.jksoa.job.IJobExecutionContext
-import com.jksoa.job.job.BasicJob
 import com.jksoa.job.trigger.BaseTrigger
 import java.lang.reflect.Method
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
@@ -18,10 +15,10 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM
  */
-class ShardingBeanJob(public override val clazz: String, /* 服务接口类全名 */
+class ShardingLpcJob(public override val clazz: String, /* 服务接口类全名 */
                       public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
                       public override val shardingArgses: Array<Array<*>> /* 分片要调用的实参 */
-) : BasicBeanJob(), IShardingInvocation {
+) : BasicLpcJob(), IShardingInvocation {
 
     /**
      * 构造函数

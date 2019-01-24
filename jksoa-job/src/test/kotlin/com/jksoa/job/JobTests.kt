@@ -4,10 +4,10 @@ import com.jkmvc.common.format
 import com.jksoa.example.ISystemService
 import com.jksoa.example.SystemService
 import com.jksoa.job.job.LambdaJob
-import com.jksoa.job.job.bean.BeanJob
-import com.jksoa.job.job.rpc.RpcJob
-import com.jksoa.job.job.bean.ShardingBeanJob
-import com.jksoa.job.job.rpc.ShardingRpcJob
+import com.jksoa.job.job.local.LpcJob
+import com.jksoa.job.job.remote.RpcJob
+import com.jksoa.job.job.local.ShardingLpcJob
+import com.jksoa.job.job.remote.ShardingRpcJob
 import com.jksoa.job.trigger.CronTrigger
 import com.jksoa.job.trigger.PeriodicTrigger
 import org.junit.After
@@ -79,17 +79,17 @@ class JobTests{
     }
 
     @Test
-    fun testBeanJob(){
-        val job = BeanJob(SystemService::ping)
+    fun testLpcJob(){
+        val job = LpcJob(SystemService::ping)
         buildPeriodicTrigger(job)
     }
 
     @Test
-    fun testShardingBeanJob(){
+    fun testShardingLpcJob(){
         val args:Array<Array<*>> = Array(3) { i ->
             arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
         }
-        val job = ShardingBeanJob(SystemService::echo, args)
+        val job = ShardingLpcJob(SystemService::echo, args)
         buildPeriodicTrigger(job)
     }
 

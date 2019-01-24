@@ -1,4 +1,4 @@
-package com.jksoa.job.job.bean
+package com.jksoa.job.job.local
 
 import com.jkmvc.common.getSignature
 import com.jksoa.common.IInvocation
@@ -12,10 +12,10 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-23 7:50 PM
  */
-class BeanJob(public override val clazz: String, /* 服务接口类全名 */
+class LpcJob(public override val clazz: String, /* 服务接口类全名 */
               public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
               public override val args: Array<Any?> = emptyArray() /* 实参 */
-): BasicBeanJob(), IInvocation {
+): BasicLpcJob(), IInvocation {
 
     /**
      * 构造函数
@@ -39,7 +39,7 @@ class BeanJob(public override val clazz: String, /* 服务接口类全名 */
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        println("bean=$bean, method=$method")
+        println("local=$bean, method=$method")
         method.invoke(this, *args)
     }
 }

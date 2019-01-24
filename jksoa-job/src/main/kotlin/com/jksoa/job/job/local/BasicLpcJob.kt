@@ -1,10 +1,9 @@
-package com.jksoa.job.job.bean
+package com.jksoa.job.job.local
 
 import com.jkmvc.common.getConstructorOrNull
 import com.jkmvc.common.getMethodBySignature
 import com.jkmvc.common.getOrPutOnce
-import com.jksoa.common.IInvocation
-import com.jksoa.common.IMethod
+import com.jksoa.common.IInvocationMethod
 import com.jksoa.job.JobException
 import com.jksoa.job.job.BasicJob
 import java.lang.reflect.Method
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-23 8:41 PM
  */
-abstract class BasicBeanJob : BasicJob(), IMethod {
+abstract class BasicLpcJob : BasicJob(), IInvocationMethod {
 
     companion object {
 

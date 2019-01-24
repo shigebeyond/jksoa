@@ -1,11 +1,8 @@
-package com.jksoa.job.job.rpc
+package com.jksoa.job.job.remote
 
-import com.jkmvc.common.getSignature
 import com.jksoa.client.IRpcRequestDistributor
 import com.jksoa.client.RcpRequestDistributor
 import com.jksoa.client.ShardingRpcRequest
-import com.jksoa.common.IService
-import com.jksoa.common.getServiceClass
 import com.jksoa.job.IJobExecutionContext
 import com.jksoa.job.job.BasicJob
 import java.lang.reflect.Method
