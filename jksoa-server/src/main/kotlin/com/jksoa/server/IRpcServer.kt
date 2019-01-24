@@ -3,7 +3,7 @@ package com.jksoa.server
 import com.jkmvc.common.ClosingOnShutdown
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jkmvc.common.NamedSingleton
+import com.jkmvc.common.NamedConfiguredSingletons
 import com.jksoa.common.Url
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.common.serverLogger
@@ -20,7 +20,7 @@ import getIntranetHost
 abstract class IRpcServer : ClosingOnShutdown() {
 
     // 可配置的单例
-    companion object mxx: NamedSingleton<IRpcServer>() {
+    companion object mxx: NamedConfiguredSingletons<IRpcServer>() {
         /**
          * 单例类的配置，内容是哈希 <单例名 to 单例类>
          */

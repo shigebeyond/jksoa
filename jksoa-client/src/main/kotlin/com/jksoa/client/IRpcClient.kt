@@ -1,7 +1,7 @@
 package com.jksoa.client
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.NamedSingleton
+import com.jkmvc.common.NamedConfiguredSingletons
 import com.jkmvc.common.IConfig
 import com.jksoa.common.Url
 import java.io.Closeable
@@ -16,7 +16,7 @@ import java.io.Closeable
 interface IRpcClient: Closeable {
 
     // 可配置的单例
-    companion object: NamedSingleton<IRpcClient>() {
+    companion object: NamedConfiguredSingletons<IRpcClient>() {
         /**
          * 单例类的配置，内容是哈希 <单例名 to 单例类>
          */
