@@ -37,8 +37,8 @@ object JobExprParser: IJobParser {
         // 解析元素
         // 作业表达式是由4个元素组成, 4个元素之间以空格分隔: 1 作业类型 2 类名 3 方法签名 4 方法实参列表
         // 1 当作业类型是custom, 则后面两个元素为空
-        val subexprs = expr.split(" ")
-        if(subexprs[0] == "custom"){ // 自定义的作业类型
+        if(expr.startsWith("custom")){ // 自定义的作业类型
+            val subexprs = expr.split(' ', limit = 2)
             if(subexprs.size != 2)
                 throw JobException("自定义的作业表达式是由2个元素组成, 2个元素之间以空格分隔: 1 作业类型 2 自定义的作业类名")
             val clazz = subexprs[1]
@@ -47,6 +47,7 @@ object JobExprParser: IJobParser {
         }
 
         // 2 其他作业类型: lpc / shardingLpc / rpc / shardingRpc
+        val subexprs = expr.split(' ', limit = 4)
         if(subexprs.size != 4)
             throw JobException("其他作业表达式是由4个元素组成, 4个元素之间以空格分隔: 1 作业类型 2 类名 3 方法签名 4 方法实参列表")
         val (type, clazz, methodSignature, argsExpr) = subexprs

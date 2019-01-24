@@ -137,10 +137,14 @@ class JobTests{
 
     fun toAndParseExpr(job: IJob){
         try {
+            // 生成表达式
             val expr = job.toExpr()
             println("生成作业表达式: $expr")
+            // 解析表达式
             val job2 = JobExprParser.parse(expr)
             println("解析作业表达式: $job2")
+            // 触发作业
+            buildPeriodicTrigger(job)
         }catch (e: Exception){
             e.printStackTrace()
         }
@@ -170,7 +174,7 @@ class JobTests{
     @Test
     fun testShardingRpcJobParse(){
         val args:Array<Array<*>> = Array(3) { i ->
-            arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
+            arrayOf("第 ${i} 个分片的参数") // IEchoService::sayHi 的实参
         }
         val job = ShardingRpcJob(ISystemService::echo, args)
         toAndParseExpr(job)
