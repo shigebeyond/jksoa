@@ -16,28 +16,9 @@ import com.jksoa.common.ServiceClassLoader
 object RefererLoader : ServiceClassLoader<IReferer>() {
 
     /**
-     * 服务端配置
+     * 客户端配置
      */
-    private val config: IConfig = Config.instance("client", "yaml")
-
-    /**
-     * 是否已初始化
-     */
-    private val initialized: Boolean = false
-
-    /**
-     * 递延加载服务
-     *   不能在一开始就加载
-     *   如果当前环境是server时，应先添加本地服务引用，然后再扫描添加远程服务引用
-     *   注意去重：对已添加的本地服务，不用再次扫描添加
-     */
-    public override fun load(){
-        if(!initialized)
-            synchronized(this){
-                if(!initialized)
-                    addPackages(config["servicePackages"]!!)
-            }
-    }
+    override val config: IConfig = Config.instance("client", "yaml")
 
     /**
      * 添加本地服务
@@ -69,26 +50,6 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
             return Referer(clazz) // 服务引用者
 
         return null
-    }
-
-    /**
-     * 根据服务标识来获得服务类元数据
-     *
-     * @param name
-     * @return
-     */
-    public override fun get(name: String): IReferer?{
-        load() // 递延初始化
-        return super.get(name)
-    }
-
-    /**
-     * 获得所有的服务类元数据
-     * @return
-     */
-    public override fun getAll(): Collection<IReferer> {
-        load() // 递延初始化
-        return super.getAll()
     }
 
 }

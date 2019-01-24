@@ -1,8 +1,6 @@
 package com.jksoa.common
 
-import com.jkmvc.common.ClassScanner
-import com.jkmvc.common.classPath2class
-import com.jkmvc.common.isSuperClass
+import com.jkmvc.common.*
 
 /**
  * 加载服务类
@@ -21,9 +19,31 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
     protected val serviceClasses:MutableMap<String, T> = HashMap()
 
     /**
-     * 加载服务
+     * 配置
      */
-    public abstract fun load()
+    protected abstract val config: IConfig
+
+    /**
+     * 是否已初始化
+     */
+    private val initialized: Boolean = false
+
+    /**
+     * 加载服务
+     *   如果是ProviderLoader, 则在server启动时调用
+     *   如果是RefererLoader, 则递延到发送rpc请求时才调用
+     */
+    public fun load(){
+        if(!initialized)
+            synchronized(this){
+                if(!initialized){
+                    // 系统的service包
+                    addPackage("com.jksoa.service")
+                    // 用户定义的service包
+                    addPackages(config["servicePackages"]!!)
+                }
+            }
+    }
 
     /**
      * 根据服务标识来获得服务类元数据
