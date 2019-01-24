@@ -60,6 +60,6 @@ abstract class BaseTests {
      * 构建cron表达式定义的触发器
      */
     protected fun buildCronTrigger(job: IJob){
-        buildTrigger(CronTrigger("0/20 * * * * ?"), job)
+        buildTrigger(CronTrigger("0/10 * * * * ?"), job)
     }
 }

@@ -40,7 +40,6 @@ class LpcJob(public override val clazz: String, /* 服务接口类全名 */
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        jobLogger.debug("lpc call: bean=$bean, method=$methodSignature, ")
         method.invoke(bean, *args)
     }
 
