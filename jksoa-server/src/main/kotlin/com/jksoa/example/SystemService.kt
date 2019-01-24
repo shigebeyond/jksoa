@@ -17,11 +17,13 @@ class SystemService : ISystemService /*, UnicastRemoteObject() // rmi协议服�
 
     @Throws(RemoteException::class) // rim异常
     public override fun ping(): String {
+        serverLogger.debug("收到ping请求, 响应pong")
         return "pong"
     }
 
     @Throws(RemoteException::class) // rim异常
     public override fun echo(msg: String): String{
+        serverLogger.debug("收到echo请求: $msg")
         return msg
     }
 
