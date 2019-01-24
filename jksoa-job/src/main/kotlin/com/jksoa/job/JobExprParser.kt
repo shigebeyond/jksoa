@@ -21,7 +21,7 @@ object JobExprParser: IJobParser {
      * 编译作业表达式
      *     作业表达式是由4个元素组成, 4个元素之间以空格分隔: 1 作业类型 2 类名 3 方法签名 4 方法实参列表
      *     当作业类型是custom, 则后面两个元素为空
-     *     方法实参列表, 是以()包围多个参数, 参数之间用,分隔
+     *     方法实参列表, 是以()包围多个参数, 参数之间用`,`分隔
      *     格式为: lpc com.jksoa.example.SystemService echo(String) ("hello")
      * <code>
      *     val job = IJobFactory::parseJob("lpc com.jksoa.example.SystemService echo(String) ("hello")");
@@ -57,8 +57,8 @@ object JobExprParser: IJobParser {
             throw JobException("Class [$clazz] has no method [$methodSignature]") // 无函数
 
         return when(type){
-            "lpc" -> LpcJob(m, ArgsParser.parse(argsExpr, m!!) /* 有括号 */)
-            "rpc" -> RpcJob(m, ArgsParser.parse(argsExpr, m!!) /* 有括号 */)
+            "lpc" -> LpcJob(m, ArgsParser.parse(argsExpr, m!!))
+            "rpc" -> RpcJob(m, ArgsParser.parse(argsExpr, m!!))
             "shardingLpc" -> ShardingLpcJob(m, parseShardingArgses(argsExpr, m!!))
             "shardingRpc" -> ShardingRpcJob(m, parseShardingArgses(argsExpr, m!!) )
             else -> throw JobException("无效作业类型: $type")
@@ -73,9 +73,10 @@ object JobExprParser: IJobParser {
      * @return
      */
     private fun parseShardingArgses(argExpr: String, method: Method): Array<Array<*>> {
-        val argses = argExpr.trim("(", ")").split("),(")
+        //val argses = argExpr.split("),(")
+        val argses = argExpr.split("(?<=\\)),(?=\\()".toRegex()) // 每个分片的参数表达式 保留()
         return argses.mapToArray { args ->
-            ArgsParser.parse(args, method) // 无括号
+            ArgsParser.parse(args, method)
         }
     }
 
