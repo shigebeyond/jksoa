@@ -49,6 +49,7 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
     public fun addLocal(intf: Class<out IService>, service: IService): Unit{
         val serviceId = intf.name
         val localReferer = Referer(intf, service /* 本地服务 */, true) // 本地服务的引用
+        // 直接覆盖
         serviceClasses[serviceId] = localReferer
     }
 
