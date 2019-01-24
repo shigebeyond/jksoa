@@ -52,4 +52,24 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
         return null
     }
 
+    /**
+     * 根据服务标识来获得服务类元数据
+     *
+     * @param name
+     * @return
+     */
+    public override fun get(name: String): IReferer?{
+        load() // 递延加载服务
+        return super.get(name)
+    }
+
+    /**
+     * 获得所有的服务类元数据
+     * @return
+     */
+    public override fun getAll(): Collection<IReferer> {
+        load() // 递延加载服务
+        return super.getAll()
+    }
+
 }
