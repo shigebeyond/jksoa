@@ -66,14 +66,12 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      * @param registerable 是否注册
      */
     public fun addClass(clazz: Class<out IService>, registerable: Boolean) {
-        if(serviceClasses.containsKey(clazz.name))
-            return
-
         // 创建服务类元数据
         val serviceClass = createServiceClass(clazz, registerable)
         // 缓存服务提供者，key是服务标识，即接口类全名
         if (serviceClass != null)
-            serviceClasses[clazz.name] = serviceClass
+            //serviceClasses[clazz.name] = serviceClass // wrong: key是接口类, 而不是当前类
+            serviceClasses[serviceClass.serviceId] = serviceClass
     }
 
     /**
