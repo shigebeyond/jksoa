@@ -4,6 +4,7 @@ import com.jkmvc.common.Config
 import com.jkmvc.common.get
 import com.jkmvc.future.IFutureCallback
 import com.jksoa.client.connection.ConnectionHub
+import com.jksoa.client.referer.RefererLoader
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.IRpcResponse
 import com.jksoa.common.IShardingRpcRequest
@@ -46,6 +47,9 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @return 响应结果
      */
     public override fun distribute(req: IRpcRequest): IRpcResponse {
+        // 递延加载服务
+        RefererLoader.load()
+
         val resFuture = FailoveRpcResponseFuture(config["maxTryTimes"]!!){
             // 1 选择连接
             val conn = connHub.select(req)
@@ -66,6 +70,9 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @return
      */
     public override fun distributeSharding(shdReq: IShardingRpcRequest): Array<IRpcResponse> {
+        // 递延加载服务
+        RefererLoader.load()
+
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(shdReq.serviceId)
