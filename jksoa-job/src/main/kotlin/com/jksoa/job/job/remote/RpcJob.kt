@@ -49,4 +49,13 @@ class RpcJob(protected val req: RpcRequest) : BasicJob(req.id) {
         distr.distribute(req)
     }
 
+    /**
+     * 转为字符串
+     *
+     * @return
+     */
+    public override fun toString(): String {
+        return "RpcJob: $req"
+    }
+
 }

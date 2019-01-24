@@ -1,6 +1,7 @@
 package com.jksoa.job
 
 import com.jkmvc.common.format
+import com.jkmvc.common.getMethodBySignature
 import com.jksoa.example.ISystemService
 import com.jksoa.example.SystemService
 import com.jksoa.job.job.LambdaJob
@@ -79,8 +80,18 @@ class JobTests{
     }
 
     @Test
+    fun testLpc(){
+        val c = SystemService::class.java
+        val m = c.getMethodBySignature("ping()")
+        val bean = c.newInstance()
+        val result = m!!.invoke(bean)
+        println(result)
+    }
+
+    @Test
     fun testLpcJob(){
-        val job = LpcJob(SystemService::ping)
+        //val job = LpcJob(SystemService::ping)
+        val job = LpcJob("com.jksoa.example.SystemService", "ping()")
         buildPeriodicTrigger(job)
     }
 

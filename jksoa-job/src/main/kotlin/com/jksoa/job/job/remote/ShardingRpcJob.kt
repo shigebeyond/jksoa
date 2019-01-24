@@ -48,4 +48,12 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob() {
         distr.distributeSharding(req)
     }
 
+    /**
+     * 转为字符串
+     *
+     * @return
+     */
+    public override fun toString(): String {
+        return "ShardingRpcJob: $req"
+    }
 }

@@ -13,4 +13,5 @@ interface IInvocation : IInvocationMethod {
      * 实参
      */
     val args: Array<Any?>
+
 }

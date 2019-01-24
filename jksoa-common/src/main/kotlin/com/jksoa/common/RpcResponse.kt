@@ -45,6 +45,6 @@ class RpcResponse(public override val requestId: Long, /* 请求标识 */
      * @return
      */
     public override fun toString(): String {
-        return "reqId=$requestId, result=$value, exception=${exception?.message}";
+        return "RpcResponse: reqId=$requestId, result=$value, exception=${exception?.message}";
     }
 }

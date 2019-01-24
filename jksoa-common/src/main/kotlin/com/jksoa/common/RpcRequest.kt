@@ -69,7 +69,7 @@ class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
      * @return
      */
     public override fun toString(): String {
-        return "id=$id, service=$serviceId.$methodSignature, args=" + args.joinToString(", ", "[", "]");
+        return "RpcRequest: id=$id, service=$serviceId.$methodSignature, args=" + args.joinToString(", ", "[", "]");
     }
 
 }

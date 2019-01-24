@@ -45,6 +45,6 @@ class ShardingRpcRequest(override val clazz: String, /* 服务接口类全名 */
     public constructor(func: KFunction<*>, shardingArgses: Array<Array<*>>) : this(func.javaMethod!!, shardingArgses)
 
     public override fun toString(): String {
-        return "service=$serviceId.$methodSignature, shardingSize=$shardingSize, shardingArgses=$shardingArgses";
+        return "ShardingRpcRequest: service=$serviceId.$methodSignature, shardingSize=$shardingSize, shardingArgses=$shardingArgses";
     }
 }
