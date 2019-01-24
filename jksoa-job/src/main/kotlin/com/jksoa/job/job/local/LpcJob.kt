@@ -1,8 +1,7 @@
 package com.jksoa.job.job.local
 
 import com.jkmvc.common.getSignature
-import com.jkmvc.common.toExpr
-import com.jksoa.common.IInvocation
+import com.jksoa.common.invocation.IInvocation
 import com.jksoa.job.IJobExecutionContext
 import com.jksoa.job.jobLogger
 import java.lang.reflect.Method
@@ -51,9 +50,7 @@ class LpcJob(public override val clazz: String, /* 服务接口类全名 */
      * @return
      */
     public override fun toString(): String {
-        return "LpcJob: method=$clazz.$methodSignature, args=" +  args.joinToString(", ", "[", "]"){
-            it.toExpr()
-        }
+        return "LpcJob: " + toDesc()
     }
 
     /**
@@ -61,8 +58,6 @@ class LpcJob(public override val clazz: String, /* 服务接口类全名 */
      * @return
      */
     public override fun toExpr(): String {
-        return "lpc $clazz $methodSignature " + args.joinToString(",", "(", ")"){
-            it.toExpr()
-        }
+        return "lpc " + super<IInvocation>.toExpr()
     }
 }

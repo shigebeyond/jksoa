@@ -1,9 +1,8 @@
 package com.jksoa.job.job.remote
 
-import com.jkmvc.common.toExpr
 import com.jksoa.client.IRpcRequestDistributor
 import com.jksoa.client.RcpRequestDistributor
-import com.jksoa.common.IInvocation
+import com.jksoa.common.invocation.IInvocation
 import com.jksoa.common.RpcRequest
 import com.jksoa.job.IJobExecutionContext
 import com.jksoa.job.job.BasicJob
@@ -65,9 +64,7 @@ class RpcJob(protected val req: RpcRequest) : BasicJob(req.id), IInvocation by r
      * @return
      */
     public override fun toExpr(): String {
-        return "rpc $clazz $methodSignature " + args.joinToString(",", "(", ")"){
-            it.toExpr()
-        }
+        return "rpc " + super<IInvocation>.toExpr()
     }
 
 }

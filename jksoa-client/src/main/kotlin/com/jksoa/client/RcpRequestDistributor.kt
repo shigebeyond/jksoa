@@ -6,6 +6,7 @@ import com.jkmvc.future.IFutureCallback
 import com.jksoa.client.connection.ConnectionHub
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.IRpcResponse
+import com.jksoa.common.IShardingRpcRequest
 import com.jksoa.common.clientLogger
 import com.jksoa.common.future.FailoveRpcResponseFuture
 import com.jksoa.common.future.IRpcResponseFuture

@@ -2,6 +2,7 @@ package com.jksoa.client
 
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.IRpcResponse
+import com.jksoa.common.IShardingRpcRequest
 
 /**
  * 请求分发者

@@ -47,8 +47,8 @@ object JobExprParser: IJobParser {
         }
 
         // 2 其他作业类型: lpc / shardingLpc / rpc / shardingRpc
-        if(subexprs.size != 3)
-            throw JobException("其他作业表达式是由4个元素组成, 4个元素之间以空格分隔: 1 作业类型 2 类名 3 方法签名 4 方法实参列表, 当作业类型是custom, 则后面两个元素为空")
+        if(subexprs.size != 4)
+            throw JobException("其他作业表达式是由4个元素组成, 4个元素之间以空格分隔: 1 作业类型 2 类名 3 方法签名 4 方法实参列表")
         val (type, clazz, methodSignature, argsExpr) = subexprs
         val c = Class.forName(clazz) // ClassNotFoundException
         val m = c.getMethodBySignature(methodSignature)

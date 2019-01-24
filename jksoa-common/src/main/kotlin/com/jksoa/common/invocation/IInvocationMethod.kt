@@ -1,4 +1,4 @@
-package com.jksoa.common
+package com.jksoa.common.invocation
 
 /**
  * 方法调用的描述: 方法
@@ -17,4 +17,16 @@ interface IInvocationMethod {
      */
     val methodSignature: String
 
+    /**
+     * 转为描述
+     *
+     * @return
+     */
+    fun toDesc(): String
+
+    /**
+     * 转为作业表达式
+     * @return
+     */
+    fun toExpr(): String
 }

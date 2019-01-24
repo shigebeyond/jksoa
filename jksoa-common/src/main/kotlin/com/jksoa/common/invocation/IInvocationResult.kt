@@ -1,4 +1,4 @@
-package com.jksoa.common
+package com.jksoa.common.invocation
 
 /**
  * 调用结果

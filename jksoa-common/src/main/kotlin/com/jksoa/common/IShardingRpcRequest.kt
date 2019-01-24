@@ -1,7 +1,8 @@
-package com.jksoa.client
+package com.jksoa.common
 
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcRequest
+import com.jksoa.common.invocation.IShardingInvocation
 
 /**
  * 分片的rpc请求

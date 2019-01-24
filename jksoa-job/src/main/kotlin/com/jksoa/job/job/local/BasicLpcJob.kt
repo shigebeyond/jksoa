@@ -3,7 +3,7 @@ package com.jksoa.job.job.local
 import com.jkmvc.common.getConstructorOrNull
 import com.jkmvc.common.getMethodBySignature
 import com.jkmvc.common.getOrPutOnce
-import com.jksoa.common.IInvocationMethod
+import com.jksoa.common.invocation.IInvocationMethod
 import com.jksoa.job.JobException
 import com.jksoa.job.job.BasicJob
 import java.lang.reflect.Method

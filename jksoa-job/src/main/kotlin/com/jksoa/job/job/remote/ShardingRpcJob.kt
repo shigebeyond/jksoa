@@ -1,10 +1,9 @@
 package com.jksoa.job.job.remote
 
-import com.jkmvc.common.toExpr
 import com.jksoa.client.IRpcRequestDistributor
-import com.jksoa.client.IShardingInvocation
+import com.jksoa.common.invocation.IShardingInvocation
 import com.jksoa.client.RcpRequestDistributor
-import com.jksoa.client.ShardingRpcRequest
+import com.jksoa.common.ShardingRpcRequest
 import com.jksoa.job.IJobExecutionContext
 import com.jksoa.job.job.BasicJob
 import java.lang.reflect.Method
@@ -64,10 +63,6 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob(), IShard
      * @return
      */
     public override fun toExpr(): String {
-        return "shardingRpc $clazz $methodSignature " + shardingArgses.joinToString(", ", "[", "]"){ args ->
-            args.joinToString(",", "(", ")"){
-                it.toExpr()
-            }
-        }
+        return "shardingRpc " + super<IShardingInvocation>.toExpr()
     }
 }

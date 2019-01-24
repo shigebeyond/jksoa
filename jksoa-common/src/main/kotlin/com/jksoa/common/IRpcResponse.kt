@@ -1,5 +1,6 @@
 package com.jksoa.common
 
+import com.jksoa.common.invocation.IInvocationResult
 import java.io.Serializable
 
 /**

@@ -44,10 +44,14 @@ class JobTests{
     }
 
     protected fun buildTrigger(trigger: ITrigger, job: IJob) {
-        this.trigger = trigger
-        println("触发器: $trigger")
-        trigger.addJob(job)
-        trigger.start()
+        try{
+            this.trigger = trigger
+            println("触发器: $trigger")
+            trigger.addJob(job)
+            trigger.start()
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
     /**
@@ -131,13 +135,46 @@ class JobTests{
         buildPeriodicTrigger(job)
     }
 
-    @Test
-    fun testJobExprParser(){
-        val job = JobExprParser.parse("")
-        println(job)
-        println(job.toExpr())
+    fun toAndParseExpr(job: IJob){
+        try {
+            val expr = job.toExpr()
+            println("生成作业表达式: $expr")
+            val job2 = JobExprParser.parse(expr)
+            println("解析作业表达式: $job2")
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
+    @Test
+    fun testLpcJobParse(){
+        val job = LpcJob(SystemService::ping)
+        toAndParseExpr(job)
+    }
+
+    @Test
+    fun testShardingLpcJobParse(){
+        val args:Array<Array<*>> = Array(3) { i ->
+            arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
+        }
+        val job = ShardingLpcJob(SystemService::echo, args)
+        toAndParseExpr(job)
+    }
+
+    @Test
+    fun testRpcJobParse(){
+        val job = RpcJob(ISystemService::ping)
+        toAndParseExpr(job)
+    }
+
+    @Test
+    fun testShardingRpcJobParse(){
+        val args:Array<Array<*>> = Array(3) { i ->
+            arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
+        }
+        val job = ShardingRpcJob(ISystemService::echo, args)
+        toAndParseExpr(job)
+    }
 }
 
 

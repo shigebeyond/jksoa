@@ -2,7 +2,7 @@ package com.jksoa.job.job.local
 
 import com.jkmvc.common.getSignature
 import com.jkmvc.common.toExpr
-import com.jksoa.client.IShardingInvocation
+import com.jksoa.common.invocation.IShardingInvocation
 import com.jksoa.job.IJobExecutionContext
 import com.jksoa.job.trigger.BaseTrigger
 import java.lang.reflect.Method
@@ -84,10 +84,6 @@ class ShardingLpcJob(public override val clazz: String, /* 服务接口类全名
      * @return
      */
     public override fun toExpr(): String {
-        return "shardingLpc $clazz $methodSignature " + shardingArgses.joinToString(", ", "[", "]"){ args ->
-            args.joinToString(",", "(", ")"){
-                it.toExpr()
-            }
-        }
+        return "shardingLpc " + super<IShardingInvocation>.toExpr()
     }
 }
