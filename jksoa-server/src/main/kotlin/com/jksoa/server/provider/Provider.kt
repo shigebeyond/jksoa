@@ -1,5 +1,6 @@
 package com.jksoa.server.provider
 
+import com.jkmvc.common.BeanSingletons
 import com.jkmvc.common.Config
 import com.jkmvc.common.isSuperClass
 import com.jksoa.client.referer.RefererLoader
@@ -53,7 +54,7 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
     /**
      * 服务实例
      */
-    public override val service: IService = clazz.newInstance()
+    public override val service: IService = BeanSingletons.instance(clazz) as IService
 
     /**
      * 注册服务
