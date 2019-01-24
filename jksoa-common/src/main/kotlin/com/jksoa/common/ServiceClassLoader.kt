@@ -21,6 +21,11 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
     protected val serviceClasses:MutableMap<String, T> = HashMap()
 
     /**
+     * 加载服务
+     */
+    public abstract fun load()
+
+    /**
      * 根据服务标识来获得服务类元数据
      *
      * @param name
@@ -49,7 +54,6 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
             return
         val clazz = relativePath.classPath2class() as Class<IService>
 
-
         // 过滤service子类
         if(IService::class.java.isSuperClass(clazz) /* 继承IService */)
             addClass(clazz, true) // 收集类
@@ -62,7 +66,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      * @param registerable 是否注册
      */
     public fun addClass(clazz: Class<out IService>, registerable: Boolean) {
-        if(!serviceClasses.containsKey(clazz.name))
+        if(serviceClasses.containsKey(clazz.name))
             return
 
         // 创建服务类元数据
