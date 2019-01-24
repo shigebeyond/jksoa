@@ -1,21 +1,12 @@
 package com.jksoa.job
 
-import com.jkmvc.common.format
 import com.jkmvc.common.getMethodBySignature
-import com.jkmvc.common.getSignature
 import com.jksoa.example.ISystemService
-import com.jksoa.example.SystemService
-import com.jksoa.job.job.LambdaJob
 import com.jksoa.job.job.local.LpcJob
-import com.jksoa.job.job.remote.RpcJob
 import com.jksoa.job.job.local.ShardingLpcJob
+import com.jksoa.job.job.remote.RpcJob
 import com.jksoa.job.job.remote.ShardingRpcJob
-import com.jksoa.job.trigger.CronTrigger
-import com.jksoa.job.trigger.PeriodicTrigger
-import org.junit.After
-import org.junit.Before
 import org.junit.Test
-import java.util.*
 
 class JobTests: BaseTests(){
 
@@ -35,14 +26,11 @@ class JobTests: BaseTests(){
         }catch(e: Exception){
             e.printStackTrace()
         }
-
-
     }
 
     @Test
     fun testLpcJob(){
-        //val job = LpcJob(SystemService::ping)
-        val job = LpcJob("com.jksoa.example.SystemService", "ping()")
+        val job = LpcJob(LocalBean::echo, arrayOf<Any?>("测试消息"))
         buildPeriodicTrigger(job)
     }
 
@@ -51,13 +39,13 @@ class JobTests: BaseTests(){
         val args:Array<Array<*>> = Array(3) { i ->
             arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
         }
-        val job = ShardingLpcJob(SystemService::echo, args)
+        val job = ShardingLpcJob(LocalBean::echo, args)
         buildPeriodicTrigger(job)
     }
 
     @Test
     fun testRpcJob(){
-        val job = RpcJob(ISystemService::ping)
+        val job = RpcJob(ISystemService::echo, arrayOf<Any?>("测试消息"))
         buildPeriodicTrigger(job)
     }
 

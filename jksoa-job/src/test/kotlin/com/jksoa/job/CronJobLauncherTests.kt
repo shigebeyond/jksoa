@@ -1,11 +1,5 @@
 package com.jksoa.job
 
-import com.jksoa.example.ISystemService
-import com.jksoa.example.SystemService
-import com.jksoa.job.job.local.LpcJob
-import com.jksoa.job.job.local.ShardingLpcJob
-import com.jksoa.job.job.remote.RpcJob
-import com.jksoa.job.job.remote.ShardingRpcJob
 import org.junit.Test
 
 /**
@@ -18,8 +12,9 @@ class CronJobLauncherTests: BaseTests() {
     @Test
     fun testLaunch(){
         try {
-
-            trigger = CronJobLaucher.lauch("0/10 * * * * ? :lpc com.jksoa.example.SystemService ping() ()")
+            val cronJobExpr = "0/10 * * * * ? :lpc com.jksoa.job.LocalBean echo(String) (\\\"测试消息\\\")"
+            //val cronJobExpr = "0/10 * * * * ? :rpc com.jksoa.example.ISystemService echo(String) (\"测试消息\")"
+            trigger = CronJobLaucher.lauch(cronJobExpr)
         }catch (e: Exception){
             e.printStackTrace()
         }

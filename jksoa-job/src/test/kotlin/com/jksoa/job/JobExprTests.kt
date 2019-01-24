@@ -1,7 +1,6 @@
 package com.jksoa.job
 
 import com.jksoa.example.ISystemService
-import com.jksoa.example.SystemService
 import com.jksoa.job.job.local.LpcJob
 import com.jksoa.job.job.local.ShardingLpcJob
 import com.jksoa.job.job.remote.RpcJob
@@ -32,7 +31,7 @@ class JobExprTests: BaseTests() {
 
     @Test
     fun testLpcJobExpr(){
-        val job = LpcJob(SystemService::ping)
+        val job = LpcJob(LocalBean::echo, arrayOf<Any?>("测试消息"))
         toAndParseExpr(job)
     }
 
@@ -41,7 +40,7 @@ class JobExprTests: BaseTests() {
         val args:Array<Array<*>> = Array(3) { i ->
             arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
         }
-        val job = ShardingLpcJob(SystemService::echo, args)
+        val job = ShardingLpcJob(LocalBean::echo, args)
         toAndParseExpr(job)
     }
 
