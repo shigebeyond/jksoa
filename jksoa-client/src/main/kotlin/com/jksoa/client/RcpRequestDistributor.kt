@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * 请求分发者
+ *    作为请求的唯一出口, 统一调用 RefererLoader.load() 来扫描加载识别服务
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
@@ -39,6 +40,11 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      */
     public val shardingStrategy: IShardingStrategy = IShardingStrategy.instance(config["shardingStrategy"]!!)
 
+    init {
+        // 扫描加载服务
+        RefererLoader.load()
+    }
+
     /**
      * 分发一个请求
      *   将该请求发给任一节点
@@ -47,9 +53,6 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @return 响应结果
      */
     public override fun distribute(req: IRpcRequest): IRpcResponse {
-        // 递延加载服务
-        RefererLoader.load()
-
         val resFuture = FailoveRpcResponseFuture(config["maxTryTimes"]!!){
             // 1 选择连接
             val conn = connHub.select(req)
@@ -70,9 +73,6 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @return
      */
     public override fun distributeSharding(shdReq: IShardingRpcRequest): Array<IRpcResponse> {
-        // 递延加载服务
-        RefererLoader.load()
-
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(shdReq.serviceId)

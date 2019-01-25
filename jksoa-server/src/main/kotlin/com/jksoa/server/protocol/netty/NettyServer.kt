@@ -45,7 +45,7 @@ open class NettyServer : IRpcServer() {
 
     /**
      * 启动server
-     *   必须在启动后，主动调用 ProviderLoader.load() 来加载服务
+     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载服务
      */
     public override fun doStart(): Unit{
        try {
@@ -54,7 +54,7 @@ open class NettyServer : IRpcServer() {
            // Bind and start to accept incoming connections.
            val f: ChannelFuture = b.bind(serverUrl.port).sync()
 
-           // 加载服务
+           // 扫描加载服务
            ProviderLoader.load()
 
            // Wait until the server socket is closed.

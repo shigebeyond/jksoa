@@ -24,25 +24,15 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
     protected abstract val config: IConfig
 
     /**
-     * 是否已初始化
-     */
-    private val initialized: Boolean = false
-
-    /**
-     * 加载服务
+     * 扫描加载服务
      *   如果是ProviderLoader, 则在server启动时调用
-     *   如果是RefererLoader, 则递延到发送rpc请求时才调用
+     *   如果是RefererLoader, 则初始化时就调用
      */
     public fun load(){
-        if(!initialized)
-            synchronized(this){
-                if(!initialized){
-                    // 系统的service包
-                    addPackage("com.jksoa.service")
-                    // 用户定义的service包
-                    addPackages(config["servicePackages"]!!)
-                }
-            }
+        // 系统的service包
+        addPackage("com.jksoa.service")
+        // 用户定义的service包
+        addPackages(config["servicePackages"]!!)
     }
 
     /**

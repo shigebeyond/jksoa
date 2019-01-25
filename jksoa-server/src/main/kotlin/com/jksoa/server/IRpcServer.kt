@@ -77,7 +77,7 @@ abstract class IRpcServer : ClosingOnShutdown() {
 
     /**
      * 启动服务器
-     *   必须在启动后，主动调用 ProviderLoader.load() 来加载服务
+     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载服务
      */
     abstract fun doStart()
 }

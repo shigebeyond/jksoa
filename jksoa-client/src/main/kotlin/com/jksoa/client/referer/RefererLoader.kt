@@ -22,6 +22,7 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
 
     /**
      * 添加本地服务
+     *   直接覆盖
      *
      * @param intf
      * @param service
@@ -36,6 +37,7 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
 
     /**
      * 创建service类
+     *   不重复添加
      *
      * @param clazz
      * @param registerable 是否注册, 引用者不关心这个
@@ -50,26 +52,6 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
             return Referer(clazz) // 服务引用者
 
         return null
-    }
-
-    /**
-     * 根据服务标识来获得服务类元数据
-     *
-     * @param name
-     * @return
-     */
-    public override fun get(name: String): IReferer?{
-        load() // 递延加载服务
-        return super.get(name)
-    }
-
-    /**
-     * 获得所有的服务类元数据
-     * @return
-     */
-    public override fun getAll(): Collection<IReferer> {
-        load() // 递延加载服务
-        return super.getAll()
     }
 
 }
