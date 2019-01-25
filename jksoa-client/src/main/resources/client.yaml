@@ -5,6 +5,6 @@ shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
     - com.jksoa.example
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：微秒
-requestTimeoutMillis: !!java.lang.Long 200 # 请求超时，Long类型，单位：微秒
+requestTimeoutMillis: !!java.lang.Long 300 # 请求超时，Long类型，单位：微秒
 maxTryTimes: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
 lazyConnect: false # 是否延迟创建连接, 用在 ReconnectableConnection
