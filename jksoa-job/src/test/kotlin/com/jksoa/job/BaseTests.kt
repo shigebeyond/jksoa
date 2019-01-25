@@ -6,6 +6,7 @@ import com.jksoa.job.trigger.PeriodicTrigger
 import org.junit.After
 import org.junit.Before
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -30,7 +31,8 @@ abstract class BaseTests {
     @After
     fun teardown(){
         try {
-            Thread.sleep(300L * 1000L)
+            TimeUnit.MINUTES.sleep(20)
+            //Thread.sleep(20 * 60 * 1000L)
         } catch (e: Exception) {
         }
 
@@ -60,6 +62,6 @@ abstract class BaseTests {
      * 构建cron表达式定义的触发器
      */
     protected fun buildCronTrigger(job: IJob){
-        buildTrigger(CronTrigger("0/10 * * * * ?"), job)
+        buildTrigger(CronTrigger("0/3 * * * * ?"), job)
     }
 }
