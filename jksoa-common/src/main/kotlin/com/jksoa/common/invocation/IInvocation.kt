@@ -22,7 +22,7 @@ interface IInvocation : IInvocationMethod {
      * @return
      */
     override fun toDesc(): String {
-        return "method=$clazz.$methodSignature, args=" +  args.joinToString(", ", "[", "]"){
+        return "id=$id, method=$clazz.$methodSignature, args=" +  args.joinToString(", ", "[", "]"){
             it.toExpr()
         }
     }

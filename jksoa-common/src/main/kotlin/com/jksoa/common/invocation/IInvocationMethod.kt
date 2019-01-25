@@ -8,6 +8,11 @@ package com.jksoa.common.invocation
 interface IInvocationMethod {
 
     /**
+     * 调用标识，全局唯一
+     */
+    val id: Long
+
+    /**
      * 类名
      */
     val clazz: String

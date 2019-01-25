@@ -45,6 +45,7 @@ class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
      *
      * @param method 方法
      * @param args 实参
+     * @param id 请求标识，全局唯一
      */
     public constructor(method: Method, args: Array<Any?> = emptyArray(), id: Long = idWorker.nextId()) : this(method.getServiceClass().name, method.getSignature(), args, id)
 
@@ -54,8 +55,9 @@ class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
      *
      * @param func 方法
      * @param args 实参
+     * @param id 请求标识，全局唯一
      */
-    public constructor(func: KFunction<*>, args: Array<Any?> = emptyArray()) : this(func.javaMethod!!, args)
+    public constructor(func: KFunction<*>, args: Array<Any?> = emptyArray(), id: Long = idWorker.nextId()) : this(func.javaMethod!!, args, id)
 
     init{
         reqs.set(this);

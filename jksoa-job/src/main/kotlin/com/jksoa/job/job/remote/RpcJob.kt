@@ -5,6 +5,7 @@ import com.jksoa.client.RcpRequestDistributor
 import com.jksoa.common.invocation.IInvocation
 import com.jksoa.common.RpcRequest
 import com.jksoa.job.IJobExecutionContext
+import com.jksoa.job.JobException
 import com.jksoa.job.job.BasicJob
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
@@ -47,7 +48,12 @@ class RpcJob(protected val req: RpcRequest) : BasicJob(req.id), IInvocation by r
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        distr.distribute(req)
+        try {
+            distr.distribute(req)
+        }catch (e: Exception){
+            e.printStackTrace()
+            throw JobException("执行作业[发送rpc请求]失败: ${e.message}", e)
+        }
     }
 
     /**

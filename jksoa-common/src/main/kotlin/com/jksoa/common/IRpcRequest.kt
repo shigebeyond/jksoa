@@ -18,9 +18,4 @@ interface IRpcRequest: Serializable, IInvocation {
     val serviceId: String
         get() = clazz
 
-    /**
-     * 请求标识，全局唯一
-     */
-    val id: Long
-
 }

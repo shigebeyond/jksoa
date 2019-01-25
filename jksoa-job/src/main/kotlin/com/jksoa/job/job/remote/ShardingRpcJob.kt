@@ -16,7 +16,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM
  */
-class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob(), IShardingInvocation by req {
+class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob(req.id), IShardingInvocation by req {
 
     companion object {
         /**
