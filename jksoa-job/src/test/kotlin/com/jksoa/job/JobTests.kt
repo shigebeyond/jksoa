@@ -46,7 +46,7 @@ class JobTests: BaseTests(){
     @Test
     fun testRpcJob(){
         val job = RpcJob(ISystemService::echo, arrayOf<Any?>("测试消息"))
-        buildPeriodicTrigger(job)
+        buildCronTrigger(job)
     }
 
     @Test

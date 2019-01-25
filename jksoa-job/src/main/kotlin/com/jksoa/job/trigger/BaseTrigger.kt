@@ -125,6 +125,7 @@ abstract class BaseTrigger : ITrigger {
                 // 执行作业, 要处理好异常
                 var ex: Exception? = null
                 try {
+                    jobLogger.debug("${this.javaClass.simpleName}执行作业: $context")
                     job.execute(context)
                 }catch (e: Exception){
                     e.printStackTrace()

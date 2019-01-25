@@ -1,5 +1,6 @@
 package com.jksoa.job.trigger
 
+import com.jkmvc.common.format
 import com.jksoa.job.IJobExecutionContext
 import com.jksoa.job.ITrigger
 import java.util.*
@@ -18,6 +19,10 @@ internal class JobExecutionContext(public override val jobId: Long/* 作业标�
      */
     public override val triggerTime: Date by lazy{
         Date()
+    }
+
+    public override fun toString(): String {
+        return "id = ${jobId}, triggerCount = ${triggerCount}, triggerTime = ${triggerTime.format()}"
     }
 
 }

@@ -14,7 +14,7 @@ class TriggerTests: BaseTests() {
     @Test
     fun testPeriodicTrigger(){
         val job = LambdaJob{
-            println("周期性执行作业: id = ${it.jobId}, triggerCount = ${it.triggerCount}, triggerTime = ${it.triggerTime.format()}")
+            println("测试周期性重复的触发器")
         }
         buildPeriodicTrigger(job)
     }
@@ -22,7 +22,7 @@ class TriggerTests: BaseTests() {
     @Test
     fun testCronTrigger(){
         val job = LambdaJob {
-            println("cron表达式控制执行作业: id = ${it.jobId}, triggerCount = ${it.triggerCount}, triggerTime = ${it.triggerTime.format()}")
+            println("测试cron表达式定义的触发器")
         }
         buildCronTrigger(job)
     }
