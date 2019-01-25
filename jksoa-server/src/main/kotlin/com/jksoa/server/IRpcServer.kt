@@ -1,13 +1,12 @@
 package com.jksoa.server
 
-import com.jkmvc.common.ClosingOnShutdown
+import com.jkmvc.closing.ClosingOnShutdown
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jkmvc.common.NamedConfiguredSingletons
+import com.jkmvc.singleton.NamedConfiguredSingletons
 import com.jksoa.common.Url
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.common.serverLogger
-import com.jksoa.server.provider.ProviderLoader
 import getIntranetHost
 
 /**

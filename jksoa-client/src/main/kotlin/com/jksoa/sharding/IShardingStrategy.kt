@@ -2,7 +2,7 @@ package com.jksoa.sharding
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jkmvc.common.NamedConfiguredSingletons
+import com.jkmvc.singleton.NamedConfiguredSingletons
 
 /**
  * 分片策略

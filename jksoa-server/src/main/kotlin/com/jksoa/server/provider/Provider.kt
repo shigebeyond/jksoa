@@ -1,6 +1,6 @@
 package com.jksoa.server.provider
 
-import com.jkmvc.common.BeanSingletons
+import com.jkmvc.singleton.BeanSingletons
 import com.jkmvc.common.Config
 import com.jkmvc.common.isSuperClass
 import com.jksoa.client.referer.RefererLoader

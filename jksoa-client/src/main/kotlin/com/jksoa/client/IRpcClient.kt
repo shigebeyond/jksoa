@@ -1,7 +1,7 @@
 package com.jksoa.client
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.NamedConfiguredSingletons
+import com.jkmvc.singleton.NamedConfiguredSingletons
 import com.jkmvc.common.IConfig
 import com.jksoa.common.Url
 import java.io.Closeable

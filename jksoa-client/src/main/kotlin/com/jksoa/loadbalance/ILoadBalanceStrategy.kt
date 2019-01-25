@@ -2,7 +2,7 @@ package com.jksoa.loadbalance
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jkmvc.common.NamedConfiguredSingletons
+import com.jkmvc.singleton.NamedConfiguredSingletons
 import com.jksoa.common.IRpcRequest
 import com.jksoa.client.IConnection
 

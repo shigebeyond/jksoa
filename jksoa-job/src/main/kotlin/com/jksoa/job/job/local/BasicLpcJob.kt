@@ -1,6 +1,6 @@
 package com.jksoa.job.job.local
 
-import com.jkmvc.common.BeanSingletons
+import com.jkmvc.singleton.BeanSingletons
 import com.jkmvc.common.getMethodBySignature
 import com.jksoa.common.invocation.IInvocationMethod
 import com.jksoa.job.JobException

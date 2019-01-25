@@ -1,6 +1,6 @@
 package com.jksoa.client.protocol.netty
 
-import com.jkmvc.common.ClosingOnShutdown
+import com.jkmvc.closing.ClosingOnShutdown
 import com.jkmvc.common.Config
 import com.jksoa.common.IRpcResponse
 import com.jksoa.common.clientLogger
