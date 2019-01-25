@@ -1,7 +1,6 @@
 package com.jksoa.job
 
 import com.jkmvc.common.DirtyFlagMap
-import com.jksoa.job.job.BasicJob
 import com.jksoa.job.job.LambdaJob
 
 /**

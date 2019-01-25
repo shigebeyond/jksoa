@@ -1,21 +1,18 @@
 package com.jksoa.job.job.local
 
 import com.jkmvc.common.BeanSingletons
-import com.jkmvc.common.getConstructorOrNull
 import com.jkmvc.common.getMethodBySignature
-import com.jkmvc.common.getOrPutOnce
 import com.jksoa.common.invocation.IInvocationMethod
 import com.jksoa.job.JobException
 import com.jksoa.job.job.BasicJob
 import java.lang.reflect.Method
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 调用bean方法的作业
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-23 8:41 PM
  */
-abstract class BasicLpcJob : BasicJob(), IInvocationMethod {
+abstract class BasicLpcJob() : BasicJob(), IInvocationMethod {
 
     /**
      * 被调用的bean
@@ -36,4 +33,10 @@ abstract class BasicLpcJob : BasicJob(), IInvocationMethod {
             throw JobException("Bean Class [$clazz] has no method [$methodSignature]") // 无函数
         m!!
     }
+
+    /**
+     * 转为作业表达式
+     * @return
+     */
+    public abstract override fun toExpr(): String
 }

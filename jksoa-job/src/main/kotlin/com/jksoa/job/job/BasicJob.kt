@@ -4,7 +4,8 @@ import com.jkmvc.idworker.IIdWorker
 import com.jksoa.job.IJob
 
 /**
- * 作业
+ * 基础作业
+ *   就是简单的实现了id属性
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM
  */

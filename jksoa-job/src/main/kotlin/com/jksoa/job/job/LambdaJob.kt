@@ -1,5 +1,6 @@
 package com.jksoa.job.job
 
+import com.jksoa.job.IJob
 import com.jksoa.job.IJobExecutionContext
 
 /**
@@ -7,7 +8,7 @@ import com.jksoa.job.IJobExecutionContext
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-23 7:56 PM
  */
-class LambdaJob(protected val lambda: (IJobExecutionContext) -> Unit) : BasicJob(){
+class LambdaJob(protected val lambda: (IJobExecutionContext) -> Unit) : BasicJob() {
 
     /**
      * 执行作业

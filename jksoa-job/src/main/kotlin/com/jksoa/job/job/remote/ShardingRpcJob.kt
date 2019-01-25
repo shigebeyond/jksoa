@@ -1,11 +1,11 @@
 package com.jksoa.job.job.remote
 
 import com.jksoa.client.IRpcRequestDistributor
-import com.jksoa.common.invocation.IShardingInvocation
 import com.jksoa.client.RcpRequestDistributor
 import com.jksoa.common.ShardingRpcRequest
+import com.jksoa.common.invocation.IShardingInvocation
+import com.jksoa.job.IJob
 import com.jksoa.job.IJobExecutionContext
-import com.jksoa.job.job.BasicJob
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -16,7 +16,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM
  */
-class ShardingRpcJob(protected val req: ShardingRpcRequest) : BasicJob(req.id), IShardingInvocation by req {
+class ShardingRpcJob(protected val req: ShardingRpcRequest) : IJob, IShardingInvocation by req {
 
     companion object {
         /**

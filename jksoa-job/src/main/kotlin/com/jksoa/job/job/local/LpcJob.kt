@@ -14,8 +14,8 @@ import kotlin.reflect.jvm.javaMethod
  * @date 2019-01-23 7:50 PM
  */
 class LpcJob(public override val clazz: String, /* 服务接口类全名 */
-              public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
-              public override val args: Array<Any?> = emptyArray() /* 实参 */
+             public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
+             public override val args: Array<Any?> = emptyArray() /* 实参 */
 ): BasicLpcJob(), IInvocation {
 
     /**

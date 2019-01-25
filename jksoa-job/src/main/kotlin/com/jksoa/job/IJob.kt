@@ -23,7 +23,7 @@ interface IJob {
      * 转为作业表达式
      * @return
      */
-    public fun toExpr(): String {
+    fun toExpr(): String {
         return "custom " + javaClass.name
     }
 
