@@ -59,11 +59,9 @@ class ShardingLpcJob(public override val clazz: String, /* 服务接口类全名
         }
 
         // 2 使用trigger的线程池来并发处理每个分片
-        (context.trigger as BaseTrigger).executeOtherWork(object : Runnable {
-            override fun run() {
-                method.invoke(bean, *shardingArgses[i]) // 调用bean方法
-            }
-        })
+        (context.trigger as BaseTrigger).executeOtherWork {
+            method.invoke(bean, *shardingArgses[i]) // 调用bean方法
+        }
     }
 
     /**
