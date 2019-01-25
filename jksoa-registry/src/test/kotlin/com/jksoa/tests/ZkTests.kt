@@ -1,6 +1,6 @@
 package com.jksoa.tests
 
-import com.jksoa.registry.zk.common.ZkClientFactory
+import com.jksoa.common.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
 import org.junit.Test
 

@@ -5,8 +5,8 @@ import com.jksoa.common.clientLogger
 import com.jksoa.registry.IDiscovery
 import com.jksoa.registry.IDiscoveryListener
 import com.jksoa.registry.RegistryException
-import com.jksoa.registry.zk.common.ZkClientFactory
-import com.jksoa.registry.zk.common.nodeChilds2Urls
+import com.jksoa.common.zk.ZkClientFactory
+import com.jksoa.common.zk.nodeChilds2Urls
 import com.jksoa.registry.zk.listener.ZkChildListener
 import com.jksoa.registry.zk.listener.ZkDataListener
 import org.I0Itec.zkclient.ZkClient

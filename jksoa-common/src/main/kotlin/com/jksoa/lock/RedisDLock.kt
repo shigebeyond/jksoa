@@ -1,6 +1,6 @@
 package com.jksoa.lock
 
-import com.jkmvc.cache.JedisFactory
+import com.jkmvc.redis.JedisFactory
 import redis.clients.jedis.Jedis
 
 /**

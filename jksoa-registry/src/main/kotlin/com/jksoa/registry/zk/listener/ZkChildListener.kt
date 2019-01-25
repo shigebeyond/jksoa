@@ -3,8 +3,8 @@ package com.jksoa.registry.zk.listener
 import com.jksoa.common.Url
 import com.jksoa.common.registerLogger
 import com.jksoa.registry.IDiscoveryListener
-import com.jksoa.registry.zk.common.ZkClientFactory
-import com.jksoa.registry.zk.common.nodeChilds2Urls
+import com.jksoa.common.zk.ZkClientFactory
+import com.jksoa.common.zk.nodeChilds2Urls
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient
 
