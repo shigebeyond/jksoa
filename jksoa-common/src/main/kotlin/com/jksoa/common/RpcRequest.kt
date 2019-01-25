@@ -1,7 +1,7 @@
 package com.jksoa.common
 
 import com.jkmvc.common.getSignature
-import com.jkmvc.idworker.IIdWorker
+import com.jkmvc.common.generateId
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -21,11 +21,6 @@ class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
     companion object {
 
         /**
-         * id生成器
-         */
-        protected val idWorker: IIdWorker = IIdWorker.instance("snowflakeId")
-
-        /**
          * 线程安全的请求对象缓存
          */
         protected val reqs:ThreadLocal<RpcRequest> = ThreadLocal();
@@ -42,7 +37,7 @@ class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
     /**
      * 请求标识，全局唯一
      */
-    public override val id: Long = idWorker.nextId()
+    public override val id: Long = generateId()
 
     /**
      * 构造函数

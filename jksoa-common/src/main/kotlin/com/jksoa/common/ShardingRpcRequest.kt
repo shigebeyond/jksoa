@@ -1,7 +1,7 @@
 package com.jksoa.common
 
 import com.jkmvc.common.getSignature
-import com.jkmvc.idworker.IIdWorker
+import com.jkmvc.common.generateId
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -17,19 +17,10 @@ class ShardingRpcRequest(override val clazz: String, /* 服务接口类全名 */
                          override val shardingArgses: Array<Array<*>> /* 分片要调用的实参 */
 ) : IShardingRpcRequest {
 
-    companion object {
-
-        /**
-         * id生成器
-         */
-        protected val idWorker: IIdWorker = IIdWorker.instance("snowflakeId")
-
-    }
-
     /**
      * 请求标识，全局唯一
      */
-    public override val id: Long = idWorker.nextId()
+    public override val id: Long = generateId()
 
     /**
      * 构造函数
