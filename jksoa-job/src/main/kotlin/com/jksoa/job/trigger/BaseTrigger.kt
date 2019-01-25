@@ -3,6 +3,7 @@ package com.jksoa.job.trigger
 import com.jkmvc.common.*
 import com.jksoa.job.IJob
 import com.jksoa.job.ITrigger
+import com.jksoa.job.JobException
 import com.jksoa.job.jobLogger
 import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
@@ -96,11 +97,18 @@ abstract class BaseTrigger : ITrigger {
 
     /**
      * 执行其他工作
-     *   对外分享内部线程池
+     *   对外分享内部线程池, 但要处理好异常
      * @param work
      */
-    internal fun executeOtherWork(work: Runnable){
-        workerThreadPool.execute(work)
+    internal inline fun executeOtherWork(crossinline work: () -> Unit){
+        workerThreadPool.execute{
+            // 执行工作, 要处理好异常
+            try{
+                work()
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
     }
 
     /**
@@ -114,11 +122,19 @@ abstract class BaseTrigger : ITrigger {
                 val attr = getJobAttr(job.id)
                 // 构建执行上下文
                 val context = JobExecutionContext(job.id, this)
-                // 执行作业
-                job.execute(context)
+                // 执行作业, 要处理好异常
+                var ex: Exception? = null
+                try {
+                    job.execute(context)
+                }catch (e: Exception){
+                    e.printStackTrace()
+                    ex = e
+                }
                 // 更新作业属性
                 if(attr.dirty)
                     jobAttrs.put(job.id, attr)
+
+                // TODO: 记录作业执行结果
             }
 
             // 重复次数+1
