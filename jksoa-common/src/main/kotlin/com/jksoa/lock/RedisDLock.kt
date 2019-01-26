@@ -1,5 +1,7 @@
 package com.jksoa.lock
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
 import com.jkmvc.redis.JedisFactory
 import redis.clients.jedis.Jedis
 
@@ -9,9 +11,7 @@ import redis.clients.jedis.Jedis
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
-class RedisDLock(public override val name: String, /* 锁标识 */
-                 protected val configName: String = "default" /* redis配置名 */
-) : IDLock() {
+class RedisDLock(public override val name: String/* 锁标识 */) : IDLock() {
 
     companion object {
 
@@ -20,6 +20,10 @@ class RedisDLock(public override val name: String, /* 锁标识 */
          */
         public val KeyPrefix: String = "lock/"
 
+        /**
+         * 配置
+         */
+        public val config: IConfig = Config.instance("dlock", "yaml")
     }
 
     /**
@@ -32,7 +36,7 @@ class RedisDLock(public override val name: String, /* 锁标识 */
      */
     protected val jedis: Jedis
         get(){
-            return JedisFactory.instance(configName)
+            return JedisFactory.instance(config["redisConfigName"]!!)
         }
 
     /**

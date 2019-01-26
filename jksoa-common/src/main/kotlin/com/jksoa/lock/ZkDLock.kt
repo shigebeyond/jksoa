@@ -1,6 +1,8 @@
 package com.jksoa.lock
 
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
 import com.jksoa.common.CommonTimer
 import com.jksoa.common.zk.ZkClientFactory
 import io.netty.util.Timeout
@@ -11,7 +13,7 @@ import org.I0Itec.zkclient.exception.ZkNoNodeException
 import java.util.concurrent.TimeUnit
 
 class ZkDLock(public override val name: String, /* 锁标识 */
-              protected val configName: String = "default" /* redis配置名 */
+              protected val configName: String = "default" /* zk配置名 */
 ) : IDLock() {
 
     companion object {
@@ -21,6 +23,10 @@ class ZkDLock(public override val name: String, /* 锁标识 */
          */
         public val PathPrefix: String = "/lock/"
 
+        /**
+         * 配置
+         */
+        public val config: IConfig = Config.instance("dlock", "yaml")
     }
 
     /**
@@ -31,7 +37,7 @@ class ZkDLock(public override val name: String, /* 锁标识 */
     /**
      * zk客户端
      */
-    protected val client: ZkClient = ZkClientFactory.instance(configName)
+    public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
 
     /**
      * 定时任务
@@ -53,7 +59,7 @@ class ZkDLock(public override val name: String, /* 锁标识 */
 
         try {
             // 创建临时节点
-            client.createEphemeralSequential(path, null)
+            zkClient.createEphemeralSequential(path, null)
             // 更新过期时间
             updateExpireTime(expireSeconds)
             // 更新过期定时器
@@ -90,7 +96,7 @@ class ZkDLock(public override val name: String, /* 锁标识 */
     public override fun unlock(){
         if(locked) { // 未过期
             // 删除临时节点
-            client.delete(path)
+            zkClient.delete(path)
             // 停止定时任务
             expireTimeout?.cancel()
         }
