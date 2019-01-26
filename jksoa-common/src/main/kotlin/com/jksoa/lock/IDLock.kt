@@ -25,6 +25,14 @@ abstract class IDLock {
         get() = expireTime != null && expireTime!! < System.currentTimeMillis() // 未过期
 
     /**
+     * 更新过期时间
+     * @param expireSeconds 锁的过期时间, 单位秒
+     */
+    protected fun updateExpireTime(expireSeconds: Int) {
+        expireTime = System.currentTimeMillis() + expireSeconds * 1000
+    }
+
+    /**
      * 尝试加锁
      *
      * @param expireSeconds 锁的过期时间, 单位秒

@@ -60,8 +60,8 @@ class RedisDLock(public override val name: String, /* 锁标识 */
         // 锁n秒，注：此时可能进程中断，导致设置过期时间失败，则ttl = -1
         jedis.expire(key, expireSeconds)
 
-        // 记录过期时间
-        expireTime = System.currentTimeMillis() + expireSeconds * 1000
+        // 更新过期时间
+        updateExpireTime(expireSeconds)
         return true
     }
 
