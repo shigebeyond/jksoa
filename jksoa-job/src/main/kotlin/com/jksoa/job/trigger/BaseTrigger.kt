@@ -3,13 +3,11 @@ package com.jksoa.job.trigger
 import com.jkmvc.common.*
 import com.jksoa.job.IJob
 import com.jksoa.job.ITrigger
-import com.jksoa.job.JobException
 import com.jksoa.job.jobLogger
 import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import java.util.*
-import java.util.concurrent.Executors
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
@@ -31,16 +29,14 @@ abstract class BaseTrigger : ITrigger {
         /**
          * 定时器
          */
-        internal val timer by lazy{
+        internal val timer: HashedWheelTimer by lazy{
             HashedWheelTimer(config["tickDurationMillis"]!!, TimeUnit.MILLISECONDS, config["ticksPerWheel"]!!)
         }
 
         /**
          * 执行作业的工作线程池
          */
-        internal val workerThreadPool by lazy{
-            Executors.newWorkStealingPool(config.getInt("workerThreadNum", Runtime.getRuntime().availableProcessors())!!) as ForkJoinPool
-        }
+        internal val workerThreadPool: ForkJoinPool = ForkJoinPool.commonPool()
 
     }
 

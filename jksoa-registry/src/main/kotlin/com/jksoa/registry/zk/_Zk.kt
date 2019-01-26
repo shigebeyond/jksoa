@@ -1,4 +1,4 @@
-package com.jksoa.common.zk
+package com.jksoa.registry.zk
 
 import com.jksoa.common.Url
 import org.I0Itec.zkclient.ZkClient
