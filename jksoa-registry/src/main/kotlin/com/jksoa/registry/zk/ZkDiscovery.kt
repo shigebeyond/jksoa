@@ -1,5 +1,7 @@
 package com.jksoa.registry.zk
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
 import com.jksoa.registry.IDiscovery
@@ -20,9 +22,14 @@ import java.util.concurrent.ConcurrentHashMap
  */
 open class ZkDiscovery: IDiscovery {
     /**
+     * 注册中心配置
+     */
+    public val config: IConfig = Config.instance("registry", "yaml")
+
+    /**
      * zk客户端
      */
-    protected val zkClient: ZkClient = ZkClientFactory.instance()
+    public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
 
     /**
      * zk子节点监听器: <服务标识 to <服务监听器 to zk监听器>>
