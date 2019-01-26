@@ -27,17 +27,17 @@ class ZkDLock(public override val name: String, /* 锁标识 */
          * 配置
          */
         public val config: IConfig = Config.instance("dlock", "yaml")
+
+        /**
+         * zk客户端
+         */
+        public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
     }
 
     /**
      * zk的锁节点路径
      */
     protected val path: String = "$PathPrefix.$name"
-
-    /**
-     * zk客户端
-     */
-    public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
 
     /**
      * 定时任务

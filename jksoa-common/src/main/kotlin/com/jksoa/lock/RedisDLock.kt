@@ -24,20 +24,20 @@ class RedisDLock(public override val name: String/* 锁标识 */) : IDLock() {
          * 配置
          */
         public val config: IConfig = Config.instance("dlock", "yaml")
+
+        /**
+         * redis连接
+         */
+        protected val jedis: Jedis
+            get(){
+                return JedisFactory.instance(config["redisConfigName"]!!)
+            }
     }
 
     /**
      * redis的key
      */
     protected val key = "$KeyPrefix$name"
-
-    /**
-     * redis连接
-     */
-    protected val jedis: Jedis
-        get(){
-            return JedisFactory.instance(config["redisConfigName"]!!)
-        }
 
     /**
      * 尝试加锁
