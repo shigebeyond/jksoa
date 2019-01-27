@@ -1,5 +1,6 @@
 package com.jksoa.lock
 
+import com.jkmvc.common.Application
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jkmvc.redis.JedisFactory
@@ -53,7 +54,7 @@ class RedisDLock(public override val name: String/* 锁标识 */) : IDLock() {
         }
 
         // 锁不住直接false
-        if(jedis.setnx(key, "1") === 0L){
+        if(jedis.setnx(key, Application.workerThreadId) === 0L){
             // 处理没有过期时间(即上一次设置过期时间失败)的情况：直接删锁，下一个请求就正常了
             if(jedis.ttl(key) === -1L)
                 jedis.del(key);

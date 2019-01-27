@@ -1,6 +1,7 @@
 package com.jksoa.lock
 
 
+import com.jkmvc.common.Application
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jksoa.common.CommonTimer
@@ -19,9 +20,9 @@ class ZkDLock(public override val name: String, /* 锁标识 */
     companion object {
 
         /**
-         * zk节点路径的前缀
+         * zk根节点路径
          */
-        public val PathPrefix: String = "/lock/"
+        public val RootPath: String = "/lock"
 
         /**
          * 配置
@@ -32,12 +33,18 @@ class ZkDLock(public override val name: String, /* 锁标识 */
          * zk客户端
          */
         public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
+
+        init{
+            // 创建根节点
+            if (!zkClient.exists(RootPath))
+                zkClient.createPersistent(RootPath, true)
+        }
     }
 
     /**
      * zk的锁节点路径
      */
-    protected val path: String = "$PathPrefix.$name"
+    protected val path: String = "$RootPath/$name"
 
     /**
      * 定时任务
@@ -59,7 +66,7 @@ class ZkDLock(public override val name: String, /* 锁标识 */
 
         try {
             // 创建临时节点
-            zkClient.createEphemeralSequential(path, null)
+            zkClient.createEphemeral(path, Application.workerThreadId)
             // 更新过期时间
             updateExpireTime(expireSeconds)
             // 更新过期定时器

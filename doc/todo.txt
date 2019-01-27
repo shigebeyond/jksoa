@@ -22,3 +22,11 @@ addCallback() 改为 setCallback(), 语义更严谨
 抽取 Invocation 接口, 统一 RpcRequest 与 Job 共同接口
 
 job分lpc + rpc
+
+
+----------
+
+BaseTrigger.executeJob()
+
+处理好异常
+记录作业执行结果

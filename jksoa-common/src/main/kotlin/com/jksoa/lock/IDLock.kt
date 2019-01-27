@@ -33,10 +33,10 @@ abstract class IDLock {
     }
 
     /**
-     * 尝试加锁
+     * 尝试加锁, 有过期时间
      *
      * @param expireSeconds 锁的过期时间, 单位秒
-     * @return
+     * @return 是否加锁成功
      */
     public abstract fun attemptLock(expireSeconds: Int = 5): Boolean
 
