@@ -45,7 +45,6 @@ object ConnectionHub: IConnectionHub {
      * @param urls 服务地址
      */
     public override fun handleServiceUrlsChange(serviceId: String, urls: List<Url>){
-        clientLogger.debug("ConnectionHub处理服务[$serviceId]地址变化: " + urls)
         var addKeys:Set<String> = emptySet() // 新加的url
         var removeKeys:Set<String> = emptySet() // 新加的url
         var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
@@ -105,6 +104,8 @@ object ConnectionHub: IConnectionHub {
      * @param url
      */
     public override fun handleParametersChange(url: Url): Unit{
+        val serviceId = url.path
+        clientLogger.debug("ConnectionHub处理服务[$serviceId]参数变化: " + url.getQueryString())
         //重整负载参数
         connections[url.serverName]?.forEach { key, conn ->
             conn.weight = url.getParameter("weight", 1)!!

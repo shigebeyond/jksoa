@@ -55,8 +55,6 @@ object ZkRegistry : IRegistry, ZkDiscovery() {
      */
     public override fun register(url: Url) {
         try{
-            // 删除旧的节点
-            removeNode(url)
             // 创建新节点
             createNode(url)
             // 记录地址
