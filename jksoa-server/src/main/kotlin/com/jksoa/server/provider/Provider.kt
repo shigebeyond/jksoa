@@ -61,7 +61,7 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
     init{
         if(ILeaderService::class.java.isSuperClass(`interface`)){ // 要选举leader的服务接口
             // 先选举leader才注册服务
-            val election = ZkLeaderElection("cronJob"){
+            val election = ZkLeaderElection(serviceId){
                 registerService()
             }
             election.start()
