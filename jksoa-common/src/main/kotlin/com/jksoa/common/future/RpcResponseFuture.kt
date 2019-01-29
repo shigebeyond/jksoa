@@ -121,7 +121,7 @@ open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): IRpcRes
     public override fun get(timeout: Long, unit: TimeUnit): IRpcResponse {
         try {
             // 完成
-            if (latch.await(timeout, unit))
+            if (latch.await(timeout, unit) || isDone /* 已完成 */)
                 return result!!
 
             // 超时

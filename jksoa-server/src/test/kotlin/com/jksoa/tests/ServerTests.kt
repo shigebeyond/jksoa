@@ -2,8 +2,8 @@ package com.jksoa.tests
 
 import com.jkmvc.common.Config
 import com.jksoa.common.Url
-import com.jksoa.protocol.netty.NettyServer
-import com.jksoa.protocol.rmi.RmiServer
+import com.jksoa.server.protocol.netty.NettyServer
+import com.jksoa.server.protocol.rmi.RmiServer
 import getIntranetHost
 import org.junit.Test
 

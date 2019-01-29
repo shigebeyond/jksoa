@@ -1,0 +1,82 @@
+package com.jksoa.server
+
+import com.jkmvc.closing.ClosingOnShutdown
+import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
+import com.jkmvc.singleton.NamedConfiguredSingletons
+import com.jksoa.common.Url
+import com.jksoa.common.exception.RpcServerException
+import com.jksoa.common.serverLogger
+import getIntranetHost
+
+/**
+ * rpc协议-服务器端
+ *
+ * @Description:
+ * @author shijianhang<772910474@qq.com>
+ * @date 2017-09-08 2:58 PM
+ **/
+abstract class IRpcServer : ClosingOnShutdown() {
+
+    // 可配置的单例
+    companion object mxx: NamedConfiguredSingletons<IRpcServer>() {
+        /**
+         * 单例类的配置，内容是哈希 <单例名 to 单例类>
+         */
+        public override val instsConfig: IConfig = Config.instance("protocol.server", "yaml")
+
+        /**
+         * 服务端配置
+         */
+        public val config = Config.instance("server", "yaml")
+
+        /**
+         * 当前服务器
+         */
+        protected lateinit var server: IRpcServer
+
+        /**
+         * 获得当前服务器
+         */
+        @JvmStatic
+        public fun current(): IRpcServer {
+            return server
+        }
+    }
+
+    /**
+     * 服务器url
+     */
+    val serverUrl: Url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!)
+
+    /**
+     * 服务器名
+     */
+    val name: String
+        get(){
+            val clazz = this.javaClass.name
+            val i = clazz.lastIndexOf('.')
+            return clazz.substring(i + 1)
+        }
+
+    /**
+     * 启动服务器
+     */
+    fun start(){
+        // 启动服务器
+        try{
+            serverLogger.info("${name}在地址[$serverUrl]上启动")
+            server = this
+            doStart() // 可能阻塞，只能在最后一句执行
+        }catch(e: Exception){
+            serverLogger.error("${name}在地址[$serverUrl]上启动失败", e)
+            throw RpcServerException(e)
+        }
+    }
+
+    /**
+     * 启动服务器
+     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载服务
+     */
+    abstract fun doStart()
+}

@@ -17,7 +17,7 @@ interface ISystemService : IService /*, Remote // rmi协议服务接口 */ {
     fun ping(): String
 
     @Throws(RemoteException::class) // rmi异常
-    fun echo(msg: String): String
+    fun echo(msg: String = "test"): String
 
     @Throws(RemoteException::class) // rim异常
     fun sleep(): Long

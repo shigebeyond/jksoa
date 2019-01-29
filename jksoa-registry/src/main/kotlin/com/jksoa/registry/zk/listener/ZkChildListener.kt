@@ -1,10 +1,12 @@
 package com.jksoa.registry.zk.listener
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.IConfig
 import com.jksoa.common.Url
 import com.jksoa.common.registerLogger
 import com.jksoa.registry.IDiscoveryListener
-import com.jksoa.registry.zk.common.ZkClientFactory
-import com.jksoa.registry.zk.common.nodeChilds2Urls
+import com.jksoa.common.zk.ZkClientFactory
+import com.jksoa.registry.zk.nodeChilds2Urls
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient
 
@@ -16,10 +18,18 @@ import org.I0Itec.zkclient.ZkClient
  **/
 class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChildListener {
 
+    companion object {
+
+        /**
+         * 注册中心配置
+         */
+        public val config: IConfig = Config.instance("registry", "yaml")
+    }
+
     /**
      * zk客户端
      */
-    public val zkClient: ZkClient = ZkClientFactory.instance()
+    public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
 
     /**
      * 处理zk中子节点变化事件

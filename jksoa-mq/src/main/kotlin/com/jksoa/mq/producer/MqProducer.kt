@@ -1,8 +1,6 @@
-package com.jksoa.mq.producer
+package com.jksoa.mq
 
-import com.jksoa.client.Referer
-import com.jksoa.mq.broker.IMqBroker
-import com.jksoa.mq.common.Message
+import com.jksoa.client.referer.Referer
 
 /**
  * 消息生产者

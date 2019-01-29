@@ -1,0 +1,4 @@
+# 作业触发配置
+tickDurationMillis: !!java.lang.Long 200 # 定时器HashedWheelTimer的一步的时间间隔, Long类型, 单位微秒
+ticksPerWheel: 300 # 定时器HashedWheelTimer的一个轮回的步数
+# workerThreadNum: 3 # 执行作业的线程数, 默认是cpu核数

@@ -1,9 +1,8 @@
 package com.jksoa.loadbalance
 
-import com.jkmvc.common.get
 import com.jkmvc.common.randomInt
 import com.jksoa.common.IRpcRequest
-import com.jksoa.protocol.IConnection
+import com.jksoa.client.IConnection
 
 /**
  * 随机的均衡负载算法

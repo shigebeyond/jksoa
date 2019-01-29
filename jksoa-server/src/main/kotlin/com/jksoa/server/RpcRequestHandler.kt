@@ -1,11 +1,12 @@
 package com.jksoa.server
 
-import com.jkmvc.common.ClosingOnRequestEnd
+import com.jkmvc.closing.ClosingOnRequestEnd
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
 import com.jksoa.common.exception.RpcBusinessException
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.common.serverLogger
+import com.jksoa.server.provider.ProviderLoader
 
 /**
  * Rpc请求处理者

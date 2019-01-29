@@ -10,9 +10,9 @@ import com.jksoa.common.exception.RpcClientException
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-class RpcResponse(public override val requestId: Long, /* 请求标识 */
-                  public override val value: Any? = null, /* 结果值 */
-                  public override val exception: Exception? = null /* 异常 */
+data class RpcResponse(public override val requestId: Long, /* 请求标识 */
+                       public override val value: Any? = null, /* 结果值 */
+                       public override val exception: Exception? = null /* 异常 */
 ) : IRpcResponse {
 
     /**
@@ -45,6 +45,6 @@ class RpcResponse(public override val requestId: Long, /* 请求标识 */
      * @return
      */
     public override fun toString(): String {
-        return "reqId=$requestId, result=$value, exception=${exception?.message}";
+        return "RpcResponse: reqId=$requestId, result=$value, exception=${exception?.message}";
     }
 }

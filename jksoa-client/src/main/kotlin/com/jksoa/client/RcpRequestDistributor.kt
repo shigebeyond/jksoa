@@ -3,12 +3,14 @@ package com.jksoa.client
 import com.jkmvc.common.Config
 import com.jkmvc.common.get
 import com.jkmvc.future.IFutureCallback
+import com.jksoa.client.connection.ConnectionHub
+import com.jksoa.client.referer.RefererLoader
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.IRpcResponse
+import com.jksoa.common.IShardingRpcRequest
 import com.jksoa.common.clientLogger
 import com.jksoa.common.future.FailoveRpcResponseFuture
 import com.jksoa.common.future.IRpcResponseFuture
-import com.jksoa.protocol.IConnection
 import com.jksoa.sharding.IShardingStrategy
 import java.lang.Exception
 import java.util.*
@@ -17,6 +19,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * 请求分发者
+ *    作为请求的唯一出口, 统一调用 RefererLoader.load() 来扫描加载识别服务
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
@@ -37,13 +40,19 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      */
     public val shardingStrategy: IShardingStrategy = IShardingStrategy.instance(config["shardingStrategy"]!!)
 
+    init {
+        // 扫描加载服务
+        RefererLoader.load()
+    }
+
     /**
-     * 将一个请求发给任一节点
+     * 分发一个请求
+     *   将该请求发给任一节点
      *
      * @param req 请求
      * @return 响应结果
      */
-    public override fun distributeToAny(req: IRpcRequest): IRpcResponse {
+    public override fun distribute(req: IRpcRequest): IRpcResponse {
         val resFuture = FailoveRpcResponseFuture(config["maxTryTimes"]!!){
             // 1 选择连接
             val conn = connHub.select(req)
@@ -57,32 +66,13 @@ object RcpRequestDistributor : IRpcRequestDistributor {
     }
 
     /**
-     * 将一个请求分配给所有节点
-     *
-     * @param req 请求
-     * @return 多个响应结果
-     */
-    public override fun distributeToAll(req: IRpcRequest): Array<IRpcResponse> {
-        // 1 选择全部连接
-        val conns = connHub.selectAll(req.serviceId)
-
-        // 2 发送请求，并获得异步响应
-        val resFutures = conns.map { conn ->
-            conn.send(req)
-        }
-
-        // 3 等待全部请求的响应结果
-        return joinResults(resFutures)
-    }
-
-    /**
-     * 分片多个请求
-     *   将多个请求分片, 逐片分配给对应的节点
+     * 分发一个分片的请求
+     *    将请求分成多片, 然后逐片分发给对应的节点
      *
      * @param shdReq 分片的rpc请求
      * @return
      */
-    public override fun distributeShardings(shdReq: IShardingRpcRequest): Array<IRpcResponse> {
+    public override fun distributeSharding(shdReq: IShardingRpcRequest): Array<IRpcResponse> {
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(shdReq.serviceId)

@@ -8,11 +8,11 @@ import com.jkmvc.common.getAndConvert
  * @author shijianhang
  * @create 2017-12-12 下午10:27
  **/
-class Url(override var protocol: String /* 协议 */,
-          override var host: String /* ip */,
-          override var port: Int /* 端口 */,
-          override var path: String /* 路径 = 服务标识 = 接口类名 */ = "",
-          override var parameters: Map<String, Any?> = emptyMap() /* 参数 */
+data class Url(public override var protocol: String /* 协议 */,
+               public override var host: String /* ip */,
+               public override var port: Int /* 端口 */,
+               public override var path: String /* 路径 = 服务标识 = 接口类名 */ = "",
+               public override var parameters: Map<String, Any?> = emptyMap() /* 参数 */
 ) : IUrl {
 
     /**

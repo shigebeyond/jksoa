@@ -26,10 +26,4 @@ abstract class IProvider : IServiceClass() {
      */
     public abstract val clazz: Class<out IService>
 
-    /**
-     * 注册服务
-     *   不在 Provider 初始化时注册，递延在启动服务器后注册，因此不要暴露给方法
-     */
-    public abstract fun registerService()
-
 }

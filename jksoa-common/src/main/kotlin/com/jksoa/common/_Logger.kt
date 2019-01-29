@@ -2,6 +2,8 @@ package com.jksoa.common
 
 import org.slf4j.LoggerFactory
 
+// 公用的日志
+val commonLogger = LoggerFactory.getLogger("com.jksoa.common")
 // 注册中心的日志
 val registerLogger = LoggerFactory.getLogger("com.jksoa.registry")
 // 客户端的日志

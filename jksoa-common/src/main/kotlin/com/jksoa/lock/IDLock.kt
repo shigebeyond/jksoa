@@ -1,20 +1,49 @@
 package com.jksoa.lock
 
+import com.jkmvc.common.time
+
 /**
  * 分布式锁接口
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
-interface IDLock {
+abstract class IDLock() {
 
     /**
-     * 加锁
-     *
-     * @param key 锁标识
-     * @param expireTime 锁的过期时间, 单位秒
-     * @return
+     * 锁标识
      */
-    fun lock(key: String, expireTime: Int = 3): Boolean
+    public abstract val name: String
 
+    /**
+     * 过期时间
+     */
+    protected var expireTime: Long? = null
+
+    /**
+     * 是否获得锁
+     */
+    public val locked: Boolean
+        get() = expireTime != null && expireTime!! < time() // 未过期
+
+    /**
+     * 更新过期时间
+     * @param expireSeconds 锁的过期时间, 单位秒
+     */
+    protected fun updateExpireTime(expireSeconds: Int) {
+        expireTime = time() + expireSeconds * 1000
+    }
+
+    /**
+     * 尝试加锁, 有过期时间
+     *
+     * @param expireSeconds 锁的过期时间, 单位秒
+     * @return 是否加锁成功
+     */
+    public abstract fun attemptLock(expireSeconds: Int = 5): Boolean
+
+    /**
+     * 解锁
+     */
+    public abstract fun unlock()
 }

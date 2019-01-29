@@ -1,8 +1,6 @@
 package com.jksoa.common
 
-import com.jkmvc.common.ClassScanner
-import com.jkmvc.common.classPath2class
-import com.jkmvc.common.isSuperClass
+import com.jkmvc.common.*
 
 /**
  * 加载服务类
@@ -19,6 +17,23 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      *   value为服务类元数据
      */
     protected val serviceClasses:MutableMap<String, T> = HashMap()
+
+    /**
+     * 配置
+     */
+    protected abstract val config: IConfig
+
+    /**
+     * 扫描加载服务
+     *   如果是ProviderLoader, 则在server启动时调用
+     *   如果是RefererLoader, 则初始化时就调用
+     */
+    public fun load(){
+        // 系统的service包
+        addPackage("com.jksoa.service")
+        // 用户定义的service包
+        addPackages(config["servicePackages"]!!)
+    }
 
     /**
      * 根据服务标识来获得服务类元数据
@@ -49,7 +64,6 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
             return
         val clazz = relativePath.classPath2class() as Class<IService>
 
-
         // 过滤service子类
         if(IService::class.java.isSuperClass(clazz) /* 继承IService */)
             addClass(clazz, true) // 收集类
@@ -66,6 +80,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
         val serviceClass = createServiceClass(clazz, registerable)
         // 缓存服务提供者，key是服务标识，即接口类全名
         if (serviceClass != null)
+            //serviceClasses[clazz.name] = serviceClass // wrong: key是接口类, 而不是当前类
             serviceClasses[serviceClass.serviceId] = serviceClass
     }
 
