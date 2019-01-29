@@ -1,5 +1,6 @@
 package com.jksoa.job
 
+import com.jksoa.job.cronjob.CronJobLaucher
 import org.junit.Test
 
 /**

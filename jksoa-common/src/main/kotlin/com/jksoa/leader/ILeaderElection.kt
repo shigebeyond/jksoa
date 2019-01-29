@@ -21,7 +21,7 @@ interface ILeaderElection {
     public val isLeader: Boolean
 
     /**
-     * 我的数据, 每个候选人节点都必须持有不同的数据
+     * 我的数据, 每个候选人节点都尽量持有不同的数据, 如服务地址
      */
     val myData: String
 
