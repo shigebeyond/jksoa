@@ -2,6 +2,7 @@ package com.jksoa.tests
 
 import com.jkmvc.common.Application
 import com.jkmvc.common.format
+import com.jkmvc.common.generateId
 import com.jkmvc.idworker.IIdWorker
 import com.jksoa.common.Url
 import com.jksoa.example.ISystemService
@@ -65,7 +66,7 @@ class MyTests {
 
     @Test
     fun testLeaderElection(){
-        val id = IIdWorker.instance("snowflakeId").nextId()
+        val id = generateId()
         println("当前候选人: $id")
         val election = ZkLeaderElection("test", id.toString()){
             println("在" + Date().format() + "时, 我被选为领导者: " + it.myData)

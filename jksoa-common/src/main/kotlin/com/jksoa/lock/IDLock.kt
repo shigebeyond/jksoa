@@ -1,5 +1,7 @@
 package com.jksoa.lock
 
+import com.jkmvc.common.time
+
 /**
  * 分布式锁接口
  *
@@ -22,14 +24,14 @@ abstract class IDLock() {
      * 是否获得锁
      */
     public val locked: Boolean
-        get() = expireTime != null && expireTime!! < System.currentTimeMillis() // 未过期
+        get() = expireTime != null && expireTime!! < time() // 未过期
 
     /**
      * 更新过期时间
      * @param expireSeconds 锁的过期时间, 单位秒
      */
     protected fun updateExpireTime(expireSeconds: Int) {
-        expireTime = System.currentTimeMillis() + expireSeconds * 1000
+        expireTime = time() + expireSeconds * 1000
     }
 
     /**
