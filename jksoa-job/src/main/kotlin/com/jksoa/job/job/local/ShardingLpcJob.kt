@@ -16,9 +16,9 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM
  */
-class ShardingLpcJob(public override val clazz: String, /* 服务接口类全名 */
-                      public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
-                      public override val shardingArgses: Array<Array<*>> /* 分片要调用的实参 */
+data class ShardingLpcJob(public override val clazz: String, /* 服务接口类全名 */
+                          public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
+                          public override val shardingArgses: Array<Array<*>> /* 分片要调用的实参 */
 ) : BasicLpcJob(), IShardingInvocation {
 
     /**

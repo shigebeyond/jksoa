@@ -13,9 +13,9 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
-                 public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
-                 public override val args: Array<Any?> = emptyArray() /* 实参 */
+data class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
+                      public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
+                      public override val args: Array<Any?> = emptyArray() /* 实参 */
 ): IRpcRequest {
 
     companion object {
