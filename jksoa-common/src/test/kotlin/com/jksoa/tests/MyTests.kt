@@ -1,8 +1,11 @@
 package com.jksoa.tests
 
+import com.jkmvc.common.Application
 import com.jkmvc.common.format
+import com.jkmvc.idworker.IIdWorker
 import com.jksoa.common.Url
 import com.jksoa.example.ISystemService
+import com.jksoa.leader.ZkLeaderElection
 import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
@@ -58,5 +61,19 @@ class MyTests {
         val func = ISystemService::echo
         // 对应的是java方法签名是包含默认参数类型的
         println(func.javaMethod)
+    }
+
+    @Test
+    fun testLeaderElection(){
+        val id = IIdWorker.instance("snowflakeId").nextId()
+        println("当前候选人: $id")
+        val election = ZkLeaderElection("test", id.toString()){
+            println("在" + Date().format() + "时, 我被选为领导者: " + it.myData)
+        }
+        election.start()
+
+        println("睡20秒")
+        TimeUnit.SECONDS.sleep(20)
+        println("在" + Date().format() + "时, 结束")
     }
 }
