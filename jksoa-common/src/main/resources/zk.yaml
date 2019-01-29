@@ -1,0 +1,6 @@
+default:
+    # zk服务器地址，可填多个地址，以逗号为分割
+    address : 127.0.0.1:2181
+    #address : 127.0.0.1:2181,127.0.0.1:2182
+    sessionTimeout : 5000 # 会话超时
+    connectionTimeout : 5000 # 连接超时

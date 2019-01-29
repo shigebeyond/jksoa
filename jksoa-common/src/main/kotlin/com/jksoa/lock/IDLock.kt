@@ -6,7 +6,7 @@ package com.jksoa.lock
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
-abstract class IDLock {
+abstract class IDLock() {
 
     /**
      * 锁标识

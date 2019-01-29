@@ -8,14 +8,11 @@ import com.jksoa.common.CommonTimer
 import com.jksoa.common.zk.ZkClientFactory
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
-
 import org.I0Itec.zkclient.ZkClient
-import org.I0Itec.zkclient.exception.ZkNoNodeException
+import org.I0Itec.zkclient.exception.ZkNodeExistsException
 import java.util.concurrent.TimeUnit
 
-class ZkDLock(public override val name: String, /* 锁标识 */
-              protected val configName: String = "default" /* zk配置名 */
-) : IDLock() {
+class ZkDLock(public override val name: String /* 锁标识 */) : IDLock() {
 
     companion object {
 
@@ -66,13 +63,13 @@ class ZkDLock(public override val name: String, /* 锁标识 */
 
         try {
             // 创建临时节点
-            zkClient.createEphemeral(path, Application.workerThreadId)
+            zkClient.createEphemeral(path, Application.fullWorkerId)
             // 更新过期时间
             updateExpireTime(expireSeconds)
             // 更新过期定时器
             refreshExpireTimeout(expireSeconds)
             return true
-        } catch (e: ZkNoNodeException) {
+        } catch (e: ZkNodeExistsException) {
             e.printStackTrace()
             return false
         }
