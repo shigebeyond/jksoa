@@ -67,15 +67,6 @@ open class NettyServer : IRpcServer() {
        }
     }
 
-    /**
-     * 关闭server
-     */
-    public override fun close() {
-        serverLogger.debug("NettyServer关闭netty工作线程池")
-        workerGroup.shutdownGracefully();
-        bossGroup.shutdownGracefully();
-    }
-
     protected fun buildBootstrap(): ServerBootstrap {
         val bootstrap = ServerBootstrap()
                 .group(bossGroup, workerGroup)
@@ -131,4 +122,12 @@ open class NettyServer : IRpcServer() {
         return emptyArray()
     }
 
+    /**
+     * 关闭server
+     */
+    public override fun close() {
+        serverLogger.debug("NettyServer关闭netty工作线程池")
+        workerGroup.shutdownGracefully();
+        bossGroup.shutdownGracefully();
+    }
 }
