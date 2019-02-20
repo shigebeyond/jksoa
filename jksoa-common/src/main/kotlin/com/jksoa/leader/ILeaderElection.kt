@@ -26,18 +26,8 @@ interface ILeaderElection {
     val myData: String
 
     /**
-     * 领导者的数据
-     */
-    val leaderData: String
-
-    /**
-     * 成功回调
-     */
-    val callback: (ZkLeaderElection)->Unit
-
-    /**
      * 参选
-     * @return 是否当选
+     * @param callback 成功回调
      */
-    fun run(): Boolean
+    fun run(callback: (ZkLeaderElection)->Unit)
 }
