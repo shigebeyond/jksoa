@@ -1,26 +1,23 @@
 package com.jksoa.leader
 
-
 import com.jkmvc.closing.ClosingOnShutdown
 import com.jkmvc.common.Application
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jksoa.common.commonLogger
 import com.jksoa.common.zk.ZkClientFactory
-import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.IZkDataListener
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNodeExistsException
-import java.util.*
 
 /**
- * 选举领导者: 基于zk的顺序节点来实现
+ * 选举领导者: 基于zk的单个临时节点来实现
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
 class ZkLeaderElection(public override val teamName: String /* 团队名 */,
-                       public override val myData: String = Application.fullWorkerId /* 我的数据 */,
+              public override val data: String = Application.fullWorkerId /* 数据 */
 ) : ILeaderElection, ClosingOnShutdown() {
 
     companion object {
@@ -41,117 +38,56 @@ class ZkLeaderElection(public override val teamName: String /* 团队名 */,
     }
 
     /**
-     * 我是否是leader
+     * zk的节点路径
      */
-    public override var isLeader: Boolean = false
-        protected set
+    protected val path: String = "${RootPath}/$teamName"
 
     /**
-     * zk的父节点路径
+     * 节点的事件监听器
      */
-    protected val parentPath: String = "${RootPath}/$teamName"
-
-    /**
-     * zk的前一个节点路径
-     */
-    protected var prePath: String? = null
-
-    /**
-     * 前一个节点的事件监听器
-     */
-    protected var preDataListener:IZkDataListener? = null
-
-    /**
-     * 子节点变化监听器
-     */
-    protected var childListener: IZkChildListener? = null
-
-    /**
-     * 参选
-     * @param callback 成功回调
-     */
-    public override fun run(callback: (ZkLeaderElection)->Unit) {
-        // 创建根节点
-        if (!zkClient.exists(parentPath))
-            try{
-                zkClient.createPersistent(parentPath, true)
-            } catch (e: ZkNodeExistsException) {
-                // do nothing
-            }
-
-        // 创建顺序节点
-        val path = zkClient.createEphemeralSequential(parentPath + "/", myData)
-        commonLogger.debug("团队[$teamName]的节点[$myData]路径: $path")
-
-        // 识别领导者
-        identifyLeader(path, callback)
-    }
-
-    /**
-     * 识别领导者
-     * @param path 当前节点路径
-     * @param callback 成功回调
-     * @return
-     */
-    protected fun identifyLeader(path: String, callback: (ZkLeaderElection)->Unit): Boolean {
-        // 当前节点序号
-        val no = path.substring(parentPath.length + 1)
-
-        // 获得所有顺序节点
-        val childrenNos = zkClient.getChildren(parentPath)
-        Collections.sort(childrenNos)
-
-        // 检查本机是否是最小的
-        val i = childrenNos.indexOf(no)
-        if (i == 0) {
-            commonLogger.debug("团队[$teamName]的节点[$myData]被选为领导者")
-            // 成为领导者
-            isLeader = true
-            // 成功回调
-            callback(this)
-            return true
-        }
-
-        // 取消之前订阅
-        if(prePath != null)
-            zkClient.unsubscribeDataChanges(prePath, preDataListener)
-
-        // 订阅前一个节点
-        preDataListener = object : IZkDataListener {
-            // 处理zk中节点数据删除事件
-            override fun handleDataDeleted(dataPath: String) {
-                // 识别领导者
-                identifyLeader(path, callback)
-            }
-
-            // 处理zk中节点数据变化事件
-            override fun handleDataChange(dataPath: String, data: Any) {
-            }
-        }
-        val preChildNo = childrenNos.get(i - 1)
-        prePath = "$parentPath/$preChildNo"
-        commonLogger.debug("团队[$teamName]的落选节点[$myData]订阅前一个节点: $prePath")
-        zkClient.subscribeDataChanges(prePath, preDataListener)
-        return false
-    }
+    protected var dataListener:IZkDataListener? = null
 
     /**
      * 监听选举结果
      * @param callback 选举结果的回调
      */
-    public fun listen(callback: (String)->Unit){
-        // 监听子节点变化
-        childListener = object: IZkChildListener{
-            // 处理zk中子节点变化事件
-            override fun handleChildChange(parentPath: String, childrenNos: List<String>) {
-                Collections.sort(childrenNos)
-                // 获得领导者的数据
-                val leaderData: String = zkClient.readData("$parentPath/${childrenNos.first()}")
-                // 选举结果回调
-                callback(leaderData)
+    public override fun listen(callback: (String)->Unit){
+        // 订阅节点
+        dataListener = object : IZkDataListener {
+            // 处理zk中节点数据删除事件
+            override fun handleDataDeleted(dataPath: String) {
+            }
+
+            // 处理zk中节点数据变化事件
+            override fun handleDataChange(dataPath: String, data: Any) {
+                callback(data as String)
             }
         }
-        zkClient.subscribeChildChanges(parentPath, childListener)
+        zkClient.subscribeDataChanges(path, dataListener)
+    }
+
+    /**
+     * 参选
+     * @param callback 成功回调
+     */
+    public override fun run(callback: (String)->Unit) {
+        // 创建根节点
+        if (!zkClient.exists(RootPath))
+            try{
+                zkClient.createPersistent(RootPath, true)
+            } catch (e: ZkNodeExistsException) {
+                // do nothing
+            }
+
+        try{
+            // 创建临时节点
+            zkClient.createEphemeral(path, data)
+            commonLogger.debug("团队[$teamName]的当选数据为[$data]")
+            // 成功回调
+            callback(data)
+        } catch (e: ZkNodeExistsException) {
+            // do nothing
+        }
     }
 
     /**
@@ -159,10 +95,8 @@ class ZkLeaderElection(public override val teamName: String /* 团队名 */,
      */
     public override fun close() {
         // 取消订阅
-        if(prePath != null)
-            zkClient.unsubscribeDataChanges(prePath, preDataListener)
-        if(childListener != null)
-            zkClient.unsubscribeChildChanges(parentPath, childListener)
+        if(dataListener != null)
+            zkClient.unsubscribeDataChanges(path, dataListener)
     }
 
 }

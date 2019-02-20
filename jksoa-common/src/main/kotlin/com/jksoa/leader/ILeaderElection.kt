@@ -16,18 +16,20 @@ interface ILeaderElection {
     val teamName: String
 
     /**
-     * 我是否是leader
+     * 数据, 每个候选人节点都尽量持有不同的数据, 如服务地址
      */
-    public val isLeader: Boolean
+    val data: String
 
     /**
-     * 我的数据, 每个候选人节点都尽量持有不同的数据, 如服务地址
+     * 监听选举结果 / listen to the election result
+     * @param callback 选举结果的回调
      */
-    val myData: String
+    fun listen(callback: (String)->Unit)
 
     /**
-     * 参选
+     * 参选 / run for election
      * @param callback 成功回调
      */
-    fun run(callback: (ZkLeaderElection)->Unit)
+    fun run(callback: (String)->Unit)
+
 }
