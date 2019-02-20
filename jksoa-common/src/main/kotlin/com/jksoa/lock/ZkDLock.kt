@@ -12,7 +12,9 @@ import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNodeExistsException
 import java.util.concurrent.TimeUnit
 
-class ZkDLock(public override val name: String /* 锁标识 */) : IDLock() {
+class ZkDLock(public override val name: String /* 锁标识 */,
+              public override val data: String = Application.fullWorkerId /* 数据 */
+) : IDLock() {
 
     companion object {
 
@@ -63,7 +65,7 @@ class ZkDLock(public override val name: String /* 锁标识 */) : IDLock() {
 
         try {
             // 创建临时节点
-            zkClient.createEphemeral(path, Application.fullWorkerId)
+            zkClient.createEphemeral(path, data)
             // 更新过期时间
             updateExpireTime(expireSeconds)
             // 更新过期定时器

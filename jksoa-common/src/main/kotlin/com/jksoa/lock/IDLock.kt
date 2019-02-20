@@ -16,6 +16,11 @@ abstract class IDLock() {
     public abstract val name: String
 
     /**
+     * 数据
+     */
+    public abstract val data: String
+
+    /**
      * 过期时间
      */
     protected var expireTime: Long? = null

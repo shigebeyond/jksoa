@@ -64,7 +64,7 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
             val election = ZkLeaderElection(serviceId){
                 registerService()
             }
-            election.start()
+            election.run()
         }else // 直接注册服务
             registerService()
     }

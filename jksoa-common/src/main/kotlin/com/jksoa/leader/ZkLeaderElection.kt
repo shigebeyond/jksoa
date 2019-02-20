@@ -94,9 +94,10 @@ class ZkLeaderElection(public override val teamName: String /* 团队名 */,
     }
 
     /**
-     * 开始选举
+     * 参选
+     * @return 是否当选
      */
-    public override fun start() {
+    public override fun run(): Boolean {
         // 创建根节点
         if (!zkClient.exists(parentPath))
             try{
@@ -110,7 +111,7 @@ class ZkLeaderElection(public override val teamName: String /* 团队名 */,
         commonLogger.debug("团队[$teamName]的节点[$myData]路径: $path")
 
         // 识别领导者
-        identifyLeader()
+        return identifyLeader()
     }
 
     /**

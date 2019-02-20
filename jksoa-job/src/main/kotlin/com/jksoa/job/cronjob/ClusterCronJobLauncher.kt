@@ -21,7 +21,7 @@ abstract class ClusterCronJobLauncher {
                 CronJobLaucher.lauch(cronJobExpr)
             }
         }
-        election.start()
+        election.run()
     }
 
     /**

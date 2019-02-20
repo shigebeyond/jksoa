@@ -12,7 +12,9 @@ import redis.clients.jedis.Jedis
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
-class RedisDLock(public override val name: String/* 锁标识 */) : IDLock() {
+class RedisDLock(public override val name: String/* 锁标识 */,
+                 public override val data: String = Application.fullWorkerId /* 数据 */
+) : IDLock() {
 
     companion object {
 
@@ -54,7 +56,7 @@ class RedisDLock(public override val name: String/* 锁标识 */) : IDLock() {
         }
 
         // 锁不住直接false
-        if(jedis.setnx(key, Application.fullWorkerId) === 0L){
+        if(jedis.setnx(key, data) === 0L){
             // 处理没有过期时间(即上一次设置过期时间失败)的情况：直接删锁，下一个请求就正常了
             if(jedis.ttl(key) === -1L)
                 jedis.del(key);

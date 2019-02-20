@@ -1,9 +1,7 @@
 package com.jksoa.tests
 
-import com.jkmvc.common.Application
 import com.jkmvc.common.format
 import com.jkmvc.common.generateId
-import com.jkmvc.idworker.IIdWorker
 import com.jksoa.common.Url
 import com.jksoa.example.ISystemService
 import com.jksoa.leader.ZkLeaderElection
@@ -71,7 +69,7 @@ class MyTests {
         val election = ZkLeaderElection("test", id.toString()){
             println("在" + Date().format() + "时, 我被选为领导者: " + it.myData)
         }
-        election.start()
+        election.run()
 
         println("睡20秒")
         TimeUnit.SECONDS.sleep(20)

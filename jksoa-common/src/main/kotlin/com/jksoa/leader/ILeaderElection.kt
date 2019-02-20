@@ -36,7 +36,8 @@ interface ILeaderElection {
     val callback: (ZkLeaderElection)->Unit
 
     /**
-     * 开始选举
+     * 参选
+     * @return 是否当选
      */
-    fun start()
+    fun run(): Boolean
 }
