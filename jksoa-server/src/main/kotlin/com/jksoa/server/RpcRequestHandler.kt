@@ -7,6 +7,7 @@ import com.jksoa.common.exception.RpcBusinessException
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.common.serverLogger
 import com.jksoa.server.provider.ProviderLoader
+import io.netty.channel.ChannelHandlerContext
 
 /**
  * Rpc请求处理者
@@ -21,9 +22,9 @@ object RpcRequestHandler : IRpcRequestHandler {
      * 处理请求: 调用Provider来处理
      *
      * @param req
-     * @return
      */
-    public override fun handle(req: IRpcRequest): RpcResponse {
+    public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
+        var res: RpcResponse? = null
         try{
             // 1 获得provider
             val provider = ProviderLoader.get(req.serviceId)
@@ -35,17 +36,20 @@ object RpcRequestHandler : IRpcRequestHandler {
             if(method == null)
                 throw RpcServerException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
-            // 3 调用方法
+            // 3 调用方法, 构建响应对象
             try {
                 val value = method.invoke(provider.service, *req.args)
                 serverLogger.debug("Server处理请求：$req，结果: $value")
-                return RpcResponse(req.id, value)
+                res = RpcResponse(req.id, value)
             }catch (t: Throwable){
                 throw RpcBusinessException(t) // 业务异常
             }
         }catch (t: Throwable){
-            return RpcResponse(req.id, t)
+            res = RpcResponse(req.id, t)
         }finally {
+            // 4 返回响应
+            ctx.writeAndFlush(res)
+
             // 请求处理后，关闭资源
             ClosingOnRequestEnd.triggerClosings()
         }

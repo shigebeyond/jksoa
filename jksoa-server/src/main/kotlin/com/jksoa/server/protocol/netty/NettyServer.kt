@@ -92,11 +92,10 @@ open class NettyServer : IRpcServer() {
                                 .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                 .addLast(NettyMessageEncoder()) // 编码
                                 .addLast(IdleStateHandler(config["readerIdleTimeSecond"]!!, config["writerIdleTimeSeconds"]!!, config["allIdleTimeSeconds"]!!)) // channel空闲检查
-                                .addLast(businessGroup, NettyRequestHandler()) // 业务处理
 
                         // 自定义子channel处理器
                         for(h in customChildChannelHandlers())
-                            pipeline.addLast(h)
+                            pipeline.addLast(businessGroup, h)
                     }
                 })
     }
@@ -119,7 +118,7 @@ open class NettyServer : IRpcServer() {
      * 自定义子channel处理器
      */
     protected open fun customChildChannelHandlers(): Array<ChannelHandler>{
-        return emptyArray()
+        return arrayOf(NettyRequestHandler()) // 处理请求
     }
 
     /**

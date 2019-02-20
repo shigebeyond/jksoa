@@ -2,6 +2,7 @@ package com.jksoa.server
 
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
+import io.netty.channel.ChannelHandlerContext
 
 /**
  * Rpc请求处理者
@@ -15,7 +16,6 @@ interface IRpcRequestHandler {
      * 处理请求
      *
      * @param req
-     * @return
      */
-    fun handle(req: IRpcRequest): RpcResponse
+    fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit
 }

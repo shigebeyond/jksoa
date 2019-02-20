@@ -17,29 +17,7 @@ import io.netty.handler.timeout.IdleStateEvent
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
-
-    companion object {
-
-        /**
-         * rpc请求处理器
-         */
-        private val rpcRequestHandler: IRpcRequestHandler = RpcRequestHandler
-
-        /**
-         * 线程安全的channel上下文
-         */
-        private val ctxs:ThreadLocal<ChannelHandlerContext> = ThreadLocal()
-
-        /**
-         * 获得当前的channel上下文
-         * @return
-         */
-        public fun currentContext(): ChannelHandlerContext {
-            return ctxs.get()
-        }
-
-    }
+open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
 
     /**
      * 处理收到请求事件
@@ -51,20 +29,9 @@ class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
         if(req !is IRpcRequest)
             return
 
-        // 设置上下文
-        ctxs.set(ctx)
-
-        try {
-            // 处理请求
-            serverLogger.debug("NettyRequestHandler收到请求: " + req)
-            val res = rpcRequestHandler.handle(req)
-
-            // 返回响应
-            ctx.writeAndFlush(res)
-        }finally {
-            // 删除上下文
-            ctxs.remove()
-        }
+        // 处理请求
+        serverLogger.debug("NettyRequestHandler收到请求: " + req)
+        RpcRequestHandler.handle(req, ctx)
     }
 
     /**
@@ -111,5 +78,4 @@ class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
         super.exceptionCaught(ctx, cause)
     }
 
-    
 }
