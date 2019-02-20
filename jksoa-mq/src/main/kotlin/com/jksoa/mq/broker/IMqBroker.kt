@@ -17,7 +17,7 @@ interface IMqBroker : IService {
     fun subscribeTopic(topic: String)
 
     /**
-     * 分发消息
+     * 新增消息
      * @param message 消息
      */
     fun addMessage(message: Message)

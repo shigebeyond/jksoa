@@ -1,6 +1,7 @@
-package com.jksoa.mq.broker
+package com.jksoa.mq.broker.server
 
 import com.jksoa.client.protocol.netty.NettyResponseHandler
+import com.jksoa.server.protocol.netty.NettyRequestHandler
 import com.jksoa.server.protocol.netty.NettyServer
 import io.netty.channel.ChannelHandler
 
@@ -11,7 +12,7 @@ import io.netty.channel.ChannelHandler
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-17 9:43 PM
  */
-class MqServer: NettyServer() {
+class MqNettyServer: NettyServer() {
 
     init {
     }
@@ -20,8 +21,10 @@ class MqServer: NettyServer() {
      * 自定义子channel处理器
      */
     protected override fun customChildChannelHandlers(): Array<ChannelHandler>{
-        // 处理响应, 让能处理对 IMqConsumer 的rpc响应
-        return arrayOf(NettyResponseHandler())
+        return arrayOf(
+                MqNettyRequestHandler(), // 处理请求, IMqBroker接口的请求单独处理
+                NettyResponseHandler() // 处理响应, 让能处理对 IMqConsumer 的rpc响应
+        )
     }
 
 }

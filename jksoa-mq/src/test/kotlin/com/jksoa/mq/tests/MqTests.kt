@@ -1,5 +1,6 @@
 package com.jksoa.mq.tests
 
+import com.jksoa.mq.MqProducer
 import com.jksoa.mq.common.Message
 import com.jksoa.mq.consumer.IMessageListener
 import com.jksoa.mq.consumer.MqConsumer
@@ -18,7 +19,7 @@ class MqTests {
      */
     @Test
     fun testProductor(){
-        MqProducer().sendMessage(Message("myEvent", "xxx"))
+        MqProducer().produce(Message("myEvent", "xxx"))
     }
 
     /**
