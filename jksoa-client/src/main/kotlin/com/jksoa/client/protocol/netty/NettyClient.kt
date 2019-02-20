@@ -62,7 +62,6 @@ open class NettyClient: IRpcClient, ClosingOnShutdown() {
                         val pipeline = channel.pipeline()
                         pipeline.addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                 .addLast(NettyMessageEncoder()) // 编码
-                                .addLast(NettyResponseHandler()) // 获得响应
 
                         // 自定义channel处理器
                         for(h in customChannelHandlers())
@@ -82,7 +81,7 @@ open class NettyClient: IRpcClient, ClosingOnShutdown() {
      * 自定义channel处理器
      */
     protected open fun customChannelHandlers(): Array<ChannelHandler>{
-        return emptyArray()
+        return arrayOf(NettyResponseHandler()) // 处理响应
     }
 
     /**
