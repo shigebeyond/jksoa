@@ -30,6 +30,6 @@ interface ILeaderElection {
      * 参选 / run for election
      * @param callback 成功回调
      */
-    fun run(callback: (String)->Unit)
+    fun run(callback: ()->Unit)
 
 }

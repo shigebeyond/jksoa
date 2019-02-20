@@ -66,10 +66,10 @@ class MyTests {
     fun testLeaderElection(){
         val id = generateId()
         println("当前候选人: $id")
-        val election = ZkLeaderElection("test", id.toString()){
-            println("在" + Date().format() + "时, 我被选为领导者: " + it)
+        val election = ZkLeaderElection("test", id.toString())
+        election.run(){
+            println("在" + Date().format() + "时, 我[$id]被选为领导者")
         }
-        election.run()
 
         println("睡20秒")
         TimeUnit.SECONDS.sleep(20)

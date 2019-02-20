@@ -84,7 +84,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
      * 参选
      * @param callback 成功回调
      */
-    public override fun run(callback: (String)->Unit) {
+    public override fun run(callback: ()->Unit) {
         // 创建根节点
         if (!zkClient.exists(parentPath))
             try{
@@ -107,7 +107,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
      * @param callback 成功回调
      * @return
      */
-    protected fun identifyLeader(path: String, callback: (String)->Unit): Boolean {
+    protected fun identifyLeader(path: String, callback: ()->Unit): Boolean {
         // 当前节点序号
         val no = path.substring(parentPath.length + 1)
 
@@ -120,7 +120,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
         if (i == 0) {
             commonLogger.debug("团队[$teamName]的节点[$data]被选为领导者")
             // 成功回调
-            callback(data)
+            callback()
             return true
         }
 

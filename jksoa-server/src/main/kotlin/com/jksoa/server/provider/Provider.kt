@@ -61,10 +61,10 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
     init{
         if(ILeaderService::class.java.isSuperClass(`interface`)){ // 要选举leader的服务接口
             // 先选举leader才注册服务
-            val election = ZkLeaderElection(serviceId){
+            val election = ZkLeaderElection(serviceId)
+            election.run(){
                 registerService()
             }
-            election.run()
         }else // 直接注册服务
             registerService()
     }

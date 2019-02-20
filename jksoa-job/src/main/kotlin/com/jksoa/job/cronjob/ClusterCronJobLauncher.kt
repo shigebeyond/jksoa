@@ -14,14 +14,14 @@ abstract class ClusterCronJobLauncher {
      */
     public fun lauch(){
         // 选举领导者: 只有一个启动作业执行
-        val election = ZkLeaderElection("cronJob"){
+        val election = ZkLeaderElection("cronJob")
+        election.run(){
             // 加载cron与作业的复合表达式
             for(cronJobExpr in loadCronJobs()) {
                 // 启动作业
                 CronJobLaucher.lauch(cronJobExpr)
             }
         }
-        election.run()
     }
 
     /**
