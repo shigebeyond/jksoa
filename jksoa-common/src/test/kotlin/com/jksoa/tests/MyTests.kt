@@ -67,8 +67,11 @@ class MyTests {
         val id = generateId()
         println("当前候选人: $id")
         val election = ZkLeaderElection("test", id.toString())
+        election.listen {
+            println("监听选举结果: 在" + Date().format() + "时, 节点[$it]被选为领导者")
+        }
         election.run(){
-            println("在" + Date().format() + "时, 我[$id]被选为领导者")
+            println("参选成功: 在" + Date().format() + "时, 我[$id]被选为领导者")
         }
 
         println("睡20秒")

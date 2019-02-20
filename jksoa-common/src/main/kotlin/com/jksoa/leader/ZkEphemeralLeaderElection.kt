@@ -55,13 +55,18 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
      * @param callback 选举结果的回调
      */
     public override fun listen(callback: (String)->Unit){
-        // 监听子节点变化
+        // 1 先查结果
+        val childrenNos = zkClient.getChildren(parentPath)
+        val leaderData = getLeaderData(childrenNos)
+        // 选举结果回调
+        callback(leaderData)
+
+        // 2 监听子节点变化
         childListener = object: IZkChildListener{
             // 处理zk中子节点变化事件
             override fun handleChildChange(parentPath: String, childrenNos: List<String>) {
-                Collections.sort(childrenNos)
                 // 获得领导者的数据
-                val leaderData: String = zkClient.readData("$parentPath/${childrenNos.first()}")
+                val leaderData = getLeaderData(childrenNos)
                 // 选举结果回调
                 callback(leaderData)
             }
@@ -69,9 +74,21 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
         zkClient.subscribeChildChanges(parentPath, childListener)
     }
 
+    /**
+     * 根据子节点列表, 获得领导者数据
+     * @param childrenNos 子节点列表
+     * @return
+     */
+    protected fun getLeaderData(childrenNos: List<String>): String {
+        Collections.sort(childrenNos)
+        // 获得领导者的数据
+        val leaderData: String = zkClient.readData("$parentPath/${childrenNos.first()}")
+        return leaderData
+    }
+
     /****************************** 竞选处理 *******************************/
     /**
-     * zk的前一个节点路径
+     * 前一个节点路径
      */
     protected var prePath: String? = null
 
@@ -98,7 +115,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
         commonLogger.debug("团队[$teamName]的竞选节点[$data]的路径: $path")
 
         // 识别领导者
-        identifyLeader(path, callback)
+        identifyLeaderNode(path, callback)
     }
 
     /**
@@ -107,7 +124,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
      * @param callback 成功回调
      * @return
      */
-    protected fun identifyLeader(path: String, callback: ()->Unit): Boolean {
+    protected fun identifyLeaderNode(path: String, callback: ()->Unit): Boolean {
         // 当前节点序号
         val no = path.substring(parentPath.length + 1)
 
@@ -133,7 +150,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
             // 处理zk中节点数据删除事件
             override fun handleDataDeleted(dataPath: String) {
                 // 识别领导者
-                identifyLeader(path, callback)
+                identifyLeaderNode(path, callback)
             }
 
             // 处理zk中节点数据变化事件

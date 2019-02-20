@@ -1,7 +1,5 @@
 package com.jksoa.leader
 
-import com.jkmvc.closing.ClosingOnShutdown
-
 /**
  * 选举领导者接口
  *
