@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
-object RcpRequestDistributor : IRpcRequestDistributor {
+object RcpRequestDispatcher : IRpcRequestDispatcher {
 
     /**
      * 客户端配置
@@ -52,7 +52,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @param req 请求
      * @return 响应结果
      */
-    public override fun distribute(req: IRpcRequest): IRpcResponse {
+    public override fun dispatch(req: IRpcRequest): IRpcResponse {
         val resFuture = FailoveRpcResponseFuture(config["maxTryTimes"]!!){
             // 1 选择连接
             val conn = connHub.select(req)
@@ -72,7 +72,7 @@ object RcpRequestDistributor : IRpcRequestDistributor {
      * @param shdReq 分片的rpc请求
      * @return
      */
-    public override fun distributeSharding(shdReq: IShardingRpcRequest): Array<IRpcResponse> {
+    public override fun dispatchSharding(shdReq: IShardingRpcRequest): Array<IRpcResponse> {
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(shdReq.serviceId)

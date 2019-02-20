@@ -13,5 +13,5 @@ interface IMqProducer {
      * 发送消息
      * @param message 消息
      */
-    fun sendMessage(message: Message)
+    fun produce(message: Message)
 }

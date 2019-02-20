@@ -95,7 +95,6 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         val channel = ctx.channel()
         clientLogger.debug("NettyResponseHandler检测到channel关闭: $channel")
 
-
         if(futures.isEmpty())
             return
 

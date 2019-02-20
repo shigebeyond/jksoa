@@ -1,12 +1,11 @@
 package com.jksoa.job.job.remote
 
-import com.jksoa.client.IRpcRequestDistributor
-import com.jksoa.client.RcpRequestDistributor
+import com.jksoa.client.IRpcRequestDispatcher
+import com.jksoa.client.RcpRequestDispatcher
 import com.jksoa.common.RpcRequest
 import com.jksoa.common.invocation.IInvocation
 import com.jksoa.job.IJob
 import com.jksoa.job.IJobExecutionContext
-import com.jksoa.job.JobException
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -23,7 +22,7 @@ class RpcJob(protected val req: RpcRequest) : IJob, IInvocation by req {
         /**
          * 请求分发者
          */
-        protected val distr: IRpcRequestDistributor = RcpRequestDistributor
+        protected val dispatcher: IRpcRequestDispatcher = RcpRequestDispatcher
     }
 
     /**
@@ -48,7 +47,7 @@ class RpcJob(protected val req: RpcRequest) : IJob, IInvocation by req {
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        distr.distribute(req)
+        dispatcher.dispatch(req)
     }
 
     /**

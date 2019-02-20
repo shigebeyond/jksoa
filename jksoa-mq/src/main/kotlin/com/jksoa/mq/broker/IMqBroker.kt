@@ -20,5 +20,5 @@ interface IMqBroker : IService {
      * 分发消息
      * @param message 消息
      */
-    fun distributeMessage(message: Message)
+    fun addMessage(message: Message)
 }

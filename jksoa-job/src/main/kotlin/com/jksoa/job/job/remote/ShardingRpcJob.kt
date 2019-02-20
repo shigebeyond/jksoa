@@ -1,7 +1,7 @@
 package com.jksoa.job.job.remote
 
-import com.jksoa.client.IRpcRequestDistributor
-import com.jksoa.client.RcpRequestDistributor
+import com.jksoa.client.IRpcRequestDispatcher
+import com.jksoa.client.RcpRequestDispatcher
 import com.jksoa.common.ShardingRpcRequest
 import com.jksoa.common.invocation.IShardingInvocation
 import com.jksoa.job.IJob
@@ -22,7 +22,7 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : IJob, IShardingInv
         /**
          * 请求分发者
          */
-        protected val distr: IRpcRequestDistributor = RcpRequestDistributor
+        protected val distr: IRpcRequestDispatcher = RcpRequestDispatcher
     }
 
     /**
@@ -46,7 +46,7 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : IJob, IShardingInv
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        distr.distributeSharding(req)
+        distr.dispatchSharding(req)
     }
 
     /**

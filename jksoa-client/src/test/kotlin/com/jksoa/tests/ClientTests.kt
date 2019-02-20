@@ -1,7 +1,7 @@
 package com.jksoa.tests
 
 import com.jkmvc.common.getRootResource
-import com.jksoa.client.RcpRequestDistributor
+import com.jksoa.client.RcpRequestDispatcher
 import com.jksoa.client.referer.Referer
 import com.jksoa.common.ShardingRpcRequest
 import com.jksoa.common.Url
@@ -92,6 +92,6 @@ class ClientTests {
             arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
         }
         val job = ShardingRpcRequest(IExampleService::sayHi, args)
-        RcpRequestDistributor.distributeSharding(job)
+        RcpRequestDispatcher.dispatchSharding(job)
     }
 }

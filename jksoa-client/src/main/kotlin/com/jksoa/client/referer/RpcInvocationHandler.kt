@@ -3,8 +3,8 @@ package com.jksoa.client.referer
 import com.jkmvc.common.Config
 import com.jkmvc.common.toExpr
 import com.jksoa.client.IConnectionHub
-import com.jksoa.client.IRpcRequestDistributor
-import com.jksoa.client.RcpRequestDistributor
+import com.jksoa.client.IRpcRequestDispatcher
+import com.jksoa.client.RcpRequestDispatcher
 import com.jksoa.client.connection.ConnectionHub
 import com.jksoa.common.IService
 import com.jksoa.common.RpcRequest
@@ -29,7 +29,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
         /**
          * 请求分发者
          */
-        protected val distr: IRpcRequestDistributor = RcpRequestDistributor
+        protected val dispatcher: IRpcRequestDispatcher = RcpRequestDispatcher
 
         /**
          * 创建服务代理
@@ -65,7 +65,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
         val req = RpcRequest(method, args)
 
         // 2 分发请求, 获得响应
-        val res = distr.distribute(req)
+        val res = dispatcher.dispatch(req)
 
         // 3 获得值
         return res.getOrThrow()

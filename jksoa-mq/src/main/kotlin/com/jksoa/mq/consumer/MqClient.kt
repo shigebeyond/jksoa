@@ -1,8 +1,8 @@
 package com.jksoa.mq.consumer
 
-import com.jksoa.protocol.netty.NettyClient
-import com.jksoa.protocol.netty.NettyRequestHandler
-import com.jksoa.server.ProviderLoader
+import com.jksoa.client.protocol.netty.NettyClient
+import com.jksoa.server.protocol.netty.NettyRequestHandler
+import com.jksoa.server.provider.ProviderLoader
 import io.netty.channel.ChannelHandler
 
 /**
@@ -24,7 +24,7 @@ class MqClient: NettyClient() {
      */
     protected override fun customChannelHandlers(): Array<ChannelHandler>{
         // 处理请求, 让能调用 IMqConsumer
-        return arrayOf(/*NettyRequestHandler*/)
+        return arrayOf(NettyRequestHandler())
     }
 
 }

@@ -1,14 +1,14 @@
 package com.jksoa.mq.broker
 
-import com.jksoa.client.IRpcRequestDistributor
-import com.jksoa.client.RcpRequestDistributor
+import com.jksoa.client.IConnection
+import com.jksoa.client.IRpcRequestDispatcher
+import com.jksoa.client.RcpRequestDispatcher
+import com.jksoa.client.protocol.netty.NettyConnection
 import com.jksoa.common.RpcRequest
 import com.jksoa.common.Url
-import com.jksoa.mq.consumer.IMqConsumer
 import com.jksoa.mq.common.Message
-import com.jksoa.protocol.IConnection
-import com.jksoa.protocol.netty.NettyConnection
-import com.jksoa.protocol.netty.NettyRequestHandler
+import com.jksoa.mq.consumer.IMqConsumer
+import com.jksoa.server.protocol.netty.NettyRequestHandler
 import java.net.InetSocketAddress
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -23,7 +23,7 @@ class MqBroker : IMqBroker {
     /**
      * 请求分发者
      */
-    protected val distr: IRpcRequestDistributor = RcpRequestDistributor
+    protected val dispatcher: IRpcRequestDispatcher = RcpRequestDispatcher
 
     /**
      * 主题映射channel
@@ -53,14 +53,14 @@ class MqBroker : IMqBroker {
      * 分发消息
      * @param message 消息
      */
-    public override fun distributeMessage(message: Message){
+    public override fun addMessage(message: Message){
         // todo: 不是发送请求, 是直接发送响应, 是没有关联请求的响应
         // 是要对订阅过该主题的连接来发送
         // 1 构建请求
         val req = RpcRequest(IMqConsumer::pushMessage, arrayOf<Any?>(message))
 
         // 2 分发请求
-        distr.distributeToAll(req)
+        dispatcher.dispatch(req)
     }
 
 }

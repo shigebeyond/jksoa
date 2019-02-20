@@ -9,7 +9,7 @@ import com.jksoa.common.IShardingRpcRequest
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
-interface IRpcRequestDistributor {
+interface IRpcRequestDispatcher {
 
     /**
      * 分发一个请求
@@ -18,7 +18,7 @@ interface IRpcRequestDistributor {
      * @param req 请求
      * @return 响应结果
      */
-    fun distribute(req: IRpcRequest): IRpcResponse
+    fun dispatch(req: IRpcRequest): IRpcResponse
 
     /**
      * 分发一个分片的请求
@@ -27,6 +27,6 @@ interface IRpcRequestDistributor {
      * @param shdReq 分片的请求
      * @return 多个响应结果
      */
-    fun distributeSharding(shdReq: IShardingRpcRequest): Array<IRpcResponse>
+    fun dispatchSharding(shdReq: IShardingRpcRequest): Array<IRpcResponse>
 
 }
