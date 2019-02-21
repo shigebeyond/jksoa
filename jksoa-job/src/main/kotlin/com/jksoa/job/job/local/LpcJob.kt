@@ -3,7 +3,6 @@ package com.jksoa.job.job.local
 import com.jkmvc.common.getSignature
 import com.jksoa.common.invocation.IInvocation
 import com.jksoa.job.IJobExecutionContext
-import com.jksoa.job.jobLogger
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -16,7 +15,7 @@ import kotlin.reflect.jvm.javaMethod
 data class LpcJob(public override val clazz: String, /* 服务接口类全名 */
                   public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
                   public override val args: Array<Any?> = emptyArray() /* 实参 */
-): BasicLpcJob(), IInvocation {
+): BaseLpcJob(), IInvocation {
 
     /**
      * 构造函数

@@ -2,6 +2,7 @@ package com.jksoa.job.job.local
 
 import com.jkmvc.common.getSignature
 import com.jkmvc.common.toExpr
+import com.jksoa.common.CommonThreadPool
 import com.jksoa.common.invocation.IShardingInvocation
 import com.jksoa.job.IJobExecutionContext
 import com.jksoa.job.trigger.BaseTrigger
@@ -19,7 +20,7 @@ import kotlin.reflect.jvm.javaMethod
 data class ShardingLpcJob(public override val clazz: String, /* 服务接口类全名 */
                           public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
                           public override val shardingArgses: Array<Array<*>> /* 分片要调用的实参 */
-) : BasicLpcJob(), IShardingInvocation {
+) : BaseLpcJob(), IShardingInvocation {
 
     /**
      * 构造函数
@@ -58,9 +59,13 @@ data class ShardingLpcJob(public override val clazz: String, /* 服务接口类�
             return
         }
 
-        // 2 使用trigger的线程池来并发处理每个分片
-        (context.trigger as BaseTrigger).executeOtherWork {
-            method.invoke(bean, *shardingArgses[i]) // 调用bean方法
+        // 2 使用线程池来并发处理每个分片
+        CommonThreadPool.execute{
+            try{
+                method.invoke(bean, *shardingArgses[i]) // 调用bean方法
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
         }
     }
 

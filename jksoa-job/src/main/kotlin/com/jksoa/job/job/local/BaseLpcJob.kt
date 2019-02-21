@@ -4,7 +4,7 @@ import com.jkmvc.singleton.BeanSingletons
 import com.jkmvc.common.getMethodBySignature
 import com.jksoa.common.invocation.IInvocationMethod
 import com.jksoa.job.JobException
-import com.jksoa.job.job.BasicJob
+import com.jksoa.job.job.BaseJob
 import java.lang.reflect.Method
 
 /**
@@ -12,7 +12,7 @@ import java.lang.reflect.Method
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-23 8:41 PM
  */
-abstract class BasicLpcJob() : BasicJob(), IInvocationMethod {
+abstract class BaseLpcJob() : BaseJob(), IInvocationMethod {
 
     /**
      * 被调用的bean

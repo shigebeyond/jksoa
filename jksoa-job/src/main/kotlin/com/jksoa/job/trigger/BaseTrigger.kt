@@ -1,6 +1,7 @@
 package com.jksoa.job.trigger
 
 import com.jkmvc.common.*
+import com.jksoa.common.CommonThreadPool
 import com.jksoa.job.IJob
 import com.jksoa.job.ITrigger
 import com.jksoa.job.jobLogger
@@ -8,7 +9,6 @@ import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import java.util.*
-import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
@@ -32,11 +32,6 @@ abstract class BaseTrigger : ITrigger {
         internal val timer: HashedWheelTimer by lazy{
             HashedWheelTimer(config["tickDurationMillis"]!!, TimeUnit.MILLISECONDS, config["ticksPerWheel"]!!)
         }
-
-        /**
-         * 执行作业的工作线程池
-         */
-        internal val workerThreadPool: ForkJoinPool = ForkJoinPool.commonPool()
 
     }
 
@@ -92,27 +87,11 @@ abstract class BaseTrigger : ITrigger {
     protected abstract fun getNextDelayMillis(): Long?
 
     /**
-     * 执行其他工作
-     *   对外分享内部线程池, 但要处理好异常
-     * @param work
-     */
-    internal inline fun executeOtherWork(crossinline work: () -> Unit){
-        workerThreadPool.execute{
-            // 执行工作, 要处理好异常
-            try{
-                work()
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
-        }
-    }
-
-    /**
      * 执行作业
      */
     protected fun executeJob() {
-        // 执行作业
-        workerThreadPool.execute {
+        // 线程池中执行作业
+        CommonThreadPool.execute {
             for(job in jobs){
                 // 获得作业属性
                 val attr = getJobAttr(job.id)
@@ -164,14 +143,5 @@ abstract class BaseTrigger : ITrigger {
     public override fun shutdown(waitForJobsToComplete: Boolean){
         // 停止定时器
         timer.stop()
-
-        // 等待作业完成
-        if(waitForJobsToComplete && !workerThreadPool.isQuiescent) {
-            val delaySeconds: Long = getNextDelayMillis() ?: config["ticksPerWheel"]!!
-            workerThreadPool.awaitQuiescence(delaySeconds, TimeUnit.SECONDS)
-        }
-
-        // 停止工作线程
-        workerThreadPool.shutdown()
     }
 }
