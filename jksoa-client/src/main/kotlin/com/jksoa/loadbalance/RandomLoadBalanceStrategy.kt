@@ -15,10 +15,9 @@ class RandomLoadBalanceStrategy : ILoadBalanceStrategy {
      * 选择连接
      *
      * @param conn
-     * @param req
      * @return 选中的连接序号
      */
-    public override fun select(conns: Collection<IConnection>, req: IRpcRequest): Int {
+    public override fun select(conns: Collection<IConnection>): Int {
         if(conns.isEmpty())
             return -1
 

@@ -26,8 +26,7 @@ interface ILoadBalanceStrategy {
      * 选择连接
      *
      * @param conns
-     * @param req
      * @return 选中的连接序号
      */
-    fun select(conns: Collection<IConnection>, req: IRpcRequest): Int
+    fun select(conns: Collection<IConnection>): Int
 }

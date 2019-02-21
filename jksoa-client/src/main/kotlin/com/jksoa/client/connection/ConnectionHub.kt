@@ -124,7 +124,7 @@ object ConnectionHub: IConnectionHub {
         val conns = selectAll(req.serviceId)
 
         // 2 按均衡负载策略，来选择连接
-        val i = loadBalanceStrategy.select(conns, req)
+        val i = loadBalanceStrategy.select(conns)
         if(i == -1)
             throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
 
