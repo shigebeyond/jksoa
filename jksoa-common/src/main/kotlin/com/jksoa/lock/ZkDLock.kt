@@ -46,7 +46,7 @@ class ZkDLock(public override val name: String /* 锁标识 */,
     protected val path: String = "$RootPath/$name"
 
     /**
-     * 定时任务
+     * 过期的定时任务
      */
     protected var expireTimeout: Timeout? = null
 
