@@ -14,12 +14,12 @@ class MqProducer : IMqProducer {
 
     /**
      * 生产消息
-     * @param message 消息
+     * @param msg 消息
      */
-    public override fun produce(message: Message){
+    public override fun produce(msg: Message){
         // 通过中转者来分发消息
         val broker = Referer.getRefer<IMqBroker>()
-        broker.addMessage(message)
+        broker.addMessage(msg)
     }
 
 }

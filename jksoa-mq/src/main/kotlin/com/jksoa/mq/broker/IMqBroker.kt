@@ -13,12 +13,22 @@ interface IMqBroker : IService {
     /**
      * 订阅主题
      * @param topic 主题
+     * @param group 分组
      */
-    fun subscribeTopic(topic: String)
+    fun subscribeTopic(topic: String, group: String)
 
     /**
      * 新增消息
-     * @param message 消息
+     * @param msg 消息
      */
-    fun addMessage(message: Message)
+    fun addMessage(msg: Message)
+
+    /**
+     * 拉取消息
+     * @param topic 主题
+     * @param group 分组
+     * @param pageSize 每页记录数
+     * @return
+     */
+    fun pullMessage(topic: String, group: String, pageSize: Int): List<Message>
 }

@@ -30,19 +30,11 @@ class MqConsumer : IMqConsumer {
 
     /**
      * 推送消息
-     * @param message 消息
+     * @param msg 消息
      */
-    public override fun pushMessage(message: Message){
-        for(l in listeners.get(message.topic)!!)
-            l.handleMessage(message)
+    public override fun pushMessage(msg: Message){
+        for(l in listeners.get(msg.topic)!!)
+            l.handleMessage(msg)
     }
 
-    /**
-     * 拉取消息
-     * @param topic 主题
-     * @return
-     */
-    public override fun pullMessage(topic: String): List<Message> {
-        throw Exception("todo")
-    }
 }

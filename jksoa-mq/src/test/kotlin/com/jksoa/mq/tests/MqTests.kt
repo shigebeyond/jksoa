@@ -29,8 +29,8 @@ class MqTests {
     fun testConsumer(){
         // 监听消息
         MqConsumer().addEventListener("myEvent", object: IMessageListener {
-            override fun handleMessage(message: Message) {
-                println("收到消息: $message")
+            override fun handleMessage(msg: Message) {
+                println("收到消息: $msg")
             }
         })
     }

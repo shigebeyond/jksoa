@@ -1,18 +1,12 @@
 package com.jksoa.mq.broker.handler
 
-import com.jkmvc.common.drainTo
-import com.jksoa.common.CommonTimer
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
 import com.jksoa.mq.common.Message
 import com.jksoa.mq.common.QueueFlusher
 import com.jksoa.server.IRpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
-import io.netty.util.Timeout
-import io.netty.util.TimerTask
 import java.util.*
-import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.TimeUnit
 
 /**
  * 请求 + 上下文
@@ -21,7 +15,7 @@ typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
 
 /**
  * 新增消息的请求处理者
- *   处理 IMqBroker::addMessage(message: Message) 请求
+ *   处理 IMqBroker::addMessage(msg: Message) 请求
  *   扔到队列来异步批量处理: 定时刷盘 + 超量刷盘
  *
  * @Description:
@@ -44,7 +38,7 @@ object AddMessageRequestHandler : IRpcRequestHandler {
     }
 
     /**
-     * 存储临时参数
+     * 全局共享的可复用的用于存储临时参数的 List 对象
      */
     private val tmpParams:ThreadLocal<ArrayList<Any?>> = ThreadLocal.withInitial {
         ArrayList<Any?>()
@@ -68,7 +62,7 @@ object AddMessageRequestHandler : IRpcRequestHandler {
         val params = tmpParams.get()
         var ex: Exception? = null
         try {
-            // 保存到db
+            // 1 保存到db
             // 构建参数
             for ((req, ctx) in reqs) {
                 val msg = req.args.first() as Message
@@ -83,12 +77,18 @@ object AddMessageRequestHandler : IRpcRequestHandler {
         }finally {
             params.clear()
 
-            // 返回响应
+            // 2 返回响应
             for ((req, ctx) in reqs) {
                 // 构建响应对象
                 val res = RpcResponse(req.id, ex)
                 // 返回响应
                 ctx.writeAndFlush(res)
+            }
+
+            // 3 给消费者推送消息
+            for ((req, ctx) in reqs) {
+                val msg = req.args.first() as Message
+                SubscribeTopicRequestHandler.pushMessageToConsumers(msg)
             }
         }
     }

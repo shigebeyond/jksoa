@@ -11,7 +11,7 @@ interface IMessageListener {
 
     /**
      * 处理消息
-     * @param message 消息
+     * @param msg 消息
      */
-    fun handleMessage(message: Message)
+    fun handleMessage(msg: Message)
 }

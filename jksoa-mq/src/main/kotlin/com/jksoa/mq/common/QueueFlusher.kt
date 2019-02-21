@@ -26,7 +26,7 @@ abstract class QueueFlusher<E> (protected val flushTimeoutMillis: Long /* 触发
     private val queue: ConcurrentLinkedQueue<E> = ConcurrentLinkedQueue()
 
     /**
-     * 存储临时元素
+     * 全局共享的可复用的用于存储临时元素的 List 对象
      */
     private val tmpItems:ThreadLocal<ArrayList<E>> = ThreadLocal.withInitial {
         ArrayList<E>()

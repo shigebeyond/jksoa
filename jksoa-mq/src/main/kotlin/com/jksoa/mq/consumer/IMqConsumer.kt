@@ -13,14 +13,8 @@ interface IMqConsumer : IService  {
 
     /**
      * 推送消息
-     * @param message 消息
+     * @param msg 消息
      */
-    fun pushMessage(message: Message)
+    fun pushMessage(msg: Message)
 
-    /**
-     * 拉取消息
-     * @param topic 主题
-     * @return
-     */
-    fun pullMessage(topic: String): List<Message>
 }
