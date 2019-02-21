@@ -1,5 +1,6 @@
 package com.jksoa.loadbalance
 
+import com.jkmvc.common.get
 import com.jkmvc.common.randomInt
 import com.jksoa.common.IRpcRequest
 import com.jksoa.client.IConnection
@@ -15,13 +16,14 @@ class RandomLoadBalanceStrategy : ILoadBalanceStrategy {
      * 选择连接
      *
      * @param conn
-     * @return 选中的连接序号
+     * @return
      */
-    public override fun select(conns: Collection<IConnection>): Int {
+    public override fun select(conns: Collection<IConnection>): IConnection? {
         if(conns.isEmpty())
-            return -1
+            return null
 
         // 随机选个连接
-        return randomInt(conns.size)
+        val i = randomInt(conns.size)
+        return conns[i]
     }
 }
