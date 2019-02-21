@@ -21,7 +21,7 @@ data class RpcResponse(public override val requestId: Long, /* 请求标识 */
      * @param requestId 请求标识
      * @param cause 异常
      */
-    public constructor(requestId: Long, exception: Exception?):this(requestId, null, exception){}
+    public constructor(requestId: Long, exception: Exception):this(requestId, null, exception){}
 
     /**
      * 获得结果值或抛出异常

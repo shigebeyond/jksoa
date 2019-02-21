@@ -21,7 +21,7 @@ typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
 
 /**
  * 新增消息的请求处理者
- *   处理 IMqBroker::addMessage(Message) 请求
+ *   处理 IMqBroker::addMessage(message: Message) 请求
  *   扔到队列来异步批量处理: 定时刷盘 + 超量刷盘
  *
  * @Description:
@@ -65,11 +65,11 @@ object AddMessageRequestHandler : IRpcRequestHandler {
      * @param
      */
     private fun flushRequests(reqs: List<RequestContext>){
+        val params = tmpParams.get()
         var ex: Exception? = null
         try {
             // 保存到db
             // 构建参数
-            val params = tmpParams.get()
             for ((req, ctx) in reqs) {
                 val msg = req.args.first() as Message
                 params.add(msg.topic)

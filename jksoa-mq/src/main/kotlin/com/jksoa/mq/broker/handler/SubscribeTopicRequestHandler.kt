@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 订阅主题的请求处理者
- *   处理 IMqBroker::subscribeTopic(String) 请求
+ *   处理 IMqBroker::subscribeTopic(topic: String) 请求
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -42,6 +42,7 @@ object SubscribeTopicRequestHandler : IRpcRequestHandler {
      * @param req
      */
     public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
+        // 1 记录连接
         val channel = ctx.channel()
         // 构建连接
         val addr = channel.remoteAddress() as InetSocketAddress
@@ -54,9 +55,8 @@ object SubscribeTopicRequestHandler : IRpcRequestHandler {
         }
         conns.add(conn)
 
-        // 构建响应对象
+        // 2 返回响应
         val res = RpcResponse(req.id)
-        // 返回响应
         ctx.writeAndFlush(res)
     }
 
