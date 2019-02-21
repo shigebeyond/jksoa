@@ -55,7 +55,7 @@ object SubscribeTopicRequestHandler : IRpcRequestHandler {
         conns.add(conn)
 
         // 构建响应对象
-        val res = RpcResponse(req.id, null)
+        val res = RpcResponse(req.id)
         // 返回响应
         ctx.writeAndFlush(res)
     }

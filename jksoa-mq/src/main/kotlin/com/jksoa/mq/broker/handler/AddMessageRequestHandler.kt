@@ -4,6 +4,8 @@ import com.jkmvc.common.drainTo
 import com.jksoa.common.CommonTimer
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
+import com.jksoa.mq.common.Message
+import com.jksoa.mq.common.QueueFlusher
 import com.jksoa.server.IRpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.util.Timeout
@@ -31,13 +33,14 @@ object AddMessageRequestHandler : IRpcRequestHandler {
     /**
      * 请求队列
      */
-    private val reqQueue: ConcurrentLinkedQueue<RequestContext> = ConcurrentLinkedQueue()
-
-    /**
-     * 存储临时请求
-     */
-    private val tmpReqs:ThreadLocal<ArrayList<RequestContext>> = ThreadLocal.withInitial {
-        ArrayList<RequestContext>()
+    private val reqQueue: QueueFlusher<RequestContext> = object: QueueFlusher<RequestContext>(100, 100){
+        /**
+         * 处理刷盘的元素
+         * @param items
+         */
+        override fun handleFlush(reqs: List<RequestContext>) {
+            flushRequests(reqs)
+        }
     }
 
     /**
@@ -48,40 +51,26 @@ object AddMessageRequestHandler : IRpcRequestHandler {
     }
 
     /**
-     * 刷盘的定时任务
-     */
-    private var flushTimeout: Timeout = CommonTimer.newTimeout(object : TimerTask {
-        override fun run(timeout: Timeout) {
-            flush()
-        }
-    }, 200, TimeUnit.MILLISECONDS)
-
-    /**
      * 处理请求: 调用Provider来处理
      *
      * @param req
      */
     public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
         // 请求入队
-        reqQueue.offer(req to ctx)
-
-        // 超量刷盘
-        if(reqQueue.size >= 1000)
-            flush()
+        reqQueue.add(req to ctx)
     }
 
     /**
      * 将队列中的消息刷到db
+     * @param
      */
-    private fun flush(){
-        val reqs = tmpReqs.get()
-        while(reqQueue.isNotEmpty()) {
-            reqQueue.drainTo(reqs, 1000)
-            // TODO: 保存到db
-            /*
+    private fun flushRequests(reqs: List<RequestContext>){
+        var ex: Exception? = null
+        try {
+            // 保存到db
             // 构建参数
             val params = tmpParams.get()
-            for((req, ctx) in list) {
+            for ((req, ctx) in reqs) {
                 val msg = req.args.first() as Message
                 params.add(msg.topic)
                 params.add(msg.data)
@@ -89,16 +78,19 @@ object AddMessageRequestHandler : IRpcRequestHandler {
 
             // 批量插入
             DbQueryBuilder().table("user").insertColumns("topic", "data").value(DbExpr.question, DbExpr.question).batchInsert(params, 2)// 每次只处理2个参数
-            */
+        }catch (e: Exception){
+            ex = e
+        }finally {
+            params.clear()
+
             // 返回响应
-            for((req, ctx) in reqs) {
+            for ((req, ctx) in reqs) {
                 // 构建响应对象
-                val res = RpcResponse(req.id, null)
+                val res = RpcResponse(req.id, ex)
                 // 返回响应
                 ctx.writeAndFlush(res)
             }
         }
-        reqs.clear()
     }
 
 }
