@@ -1,11 +1,11 @@
 package com.jksoa.mq.common
 
 import com.jkmvc.common.drainTo
+import com.jksoa.common.CommonThreadPool
 import com.jksoa.common.CommonTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import java.util.*
-import java.util.Collection
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
 
@@ -69,17 +69,21 @@ abstract class QueueFlusher<E> (protected val flushTimeoutMillis: Long /* 触发
      * 将队列中的元素刷到db
      */
     protected fun flush(){
-        val items = tmpItems.get()
-        try {
-            while (queue.isNotEmpty()) {
-                // 取出元素
-                queue.drainTo(items, flushSize)
+        CommonThreadPool.execute{
+            val items = tmpItems.get()
+            try {
+                while (queue.isNotEmpty()) {
+                    // 取出元素
+                    queue.drainTo(items, flushSize)
 
-                // 处理刷盘
-                handleFlush(items)
+                    // 处理刷盘
+                    handleFlush(items)
+                }
+            }catch (e: Exception){
+                e.printStackTrace()
+            }finally {
+                items.clear()
             }
-        }finally {
-            items.clear()
         }
     }
 
