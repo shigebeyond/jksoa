@@ -12,6 +12,12 @@ import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNodeExistsException
 import java.util.concurrent.TimeUnit
 
+/**
+ * 分布式锁实现: zk临时节点
+ *
+ * @author shijianhang<772910474@qq.com>
+ * @date 2019-01-11 12:24 PM
+ */
 class ZkDLock(public override val name: String /* 锁标识 */,
               public override val data: String = Application.fullWorkerId /* 数据 */
 ) : IDLock() {
