@@ -1,4 +1,4 @@
-package com.jksoa.server
+package com.jksoa.server.handler
 
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse

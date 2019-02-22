@@ -1,19 +1,15 @@
 package com.jksoa.mq.broker.server
 
 import com.jksoa.common.IRpcRequest
-import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.common.serverLogger
 import com.jksoa.mq.broker.IMqBroker
-import com.jksoa.mq.broker.handler.AddMessageRequestHandler
-import com.jksoa.mq.broker.handler.SubscribeTopicRequestHandler
-import com.jksoa.server.IRpcRequestHandler
-import com.jksoa.server.RpcRequestHandler
+import com.jksoa.mq.broker.server.handler.AddMessageRequestHandler
+import com.jksoa.mq.broker.server.handler.SubscribeTopicRequestHandler
+import com.jksoa.server.handler.IRpcRequestHandler
+import com.jksoa.server.handler.RpcRequestHandler
 import com.jksoa.server.protocol.netty.NettyRequestHandler
 import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.SimpleChannelInboundHandler
-import io.netty.handler.timeout.IdleState
-import io.netty.handler.timeout.IdleStateEvent
 
 /**
  * broker中的mq服务端请求处理器
@@ -51,11 +47,10 @@ class MqNettyRequestHandler : NettyRequestHandler() {
         // 1 IMqBroker接口的请求单独处理
         if(req.serviceId == IMqBroker::class.qualifiedName){
             val handler = handlers[req.methodSignature]
-            if(handler == null)
-                throw RpcServerException("class [IMqBroker] has no method [${req.methodSignature}]")
-
-            handler.handle(req, ctx)
-            return
+            if(handler != null){
+                handler.handle(req, ctx)
+                return
+            }
         }
 
         // 2 其他请求

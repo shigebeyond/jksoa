@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `message` (
   `group` varchar(255) NOT NULL COMMENT '分组',
   `data` text DEFAULT NULL COMMENT '数据',
   `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '状态：0 未处理 1 锁定 2 完成 3 失败(超过时间或超过重试次数)',
-  `retryTimes` int(11) NOT NULL DEFAULT '0' COMMENT '重试次数',
+  `tryTimes` int(11) NOT NULL DEFAULT '0' COMMENT '尝试次数',
   `created` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `idx_pull` (`topic`,`group`,`status`, `created`)

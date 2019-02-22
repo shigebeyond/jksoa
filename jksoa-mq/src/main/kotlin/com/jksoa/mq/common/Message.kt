@@ -1,6 +1,7 @@
 package com.jksoa.mq.common
 
 import com.jkmvc.common.generateId
+import java.util.*
 
 /**
  * 消息
@@ -9,7 +10,7 @@ import com.jkmvc.common.generateId
  */
 data class Message(public val topic: String /* 主题 */,
                    public val data: Any? /* 数据 */,
-                   public val group: String? = null /* 分组 */,
+                   public val group: String = UUID.randomUUID().toString() /* 分组 */,
                    val id: Long = generateId() /* 消息标识，全局唯一 */
 ) {
 }

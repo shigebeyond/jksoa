@@ -3,8 +3,7 @@ package com.jksoa.server.protocol.netty
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.clientLogger
 import com.jksoa.common.serverLogger
-import com.jksoa.server.IRpcRequestHandler
-import com.jksoa.server.RpcRequestHandler
+import com.jksoa.server.handler.RpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleState

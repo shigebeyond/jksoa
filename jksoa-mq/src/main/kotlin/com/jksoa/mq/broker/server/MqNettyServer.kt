@@ -14,9 +14,6 @@ import io.netty.channel.ChannelHandler
  */
 class MqNettyServer: NettyServer() {
 
-    init {
-    }
-
     /**
      * 自定义子channel处理器
      */

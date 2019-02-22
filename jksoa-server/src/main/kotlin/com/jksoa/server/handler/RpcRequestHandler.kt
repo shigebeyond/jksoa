@@ -1,4 +1,4 @@
-package com.jksoa.server
+package com.jksoa.server.handler
 
 import com.jkmvc.closing.ClosingOnRequestEnd
 import com.jksoa.common.IRpcRequest

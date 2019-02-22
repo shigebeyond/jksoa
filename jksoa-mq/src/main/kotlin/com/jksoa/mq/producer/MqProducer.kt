@@ -22,4 +22,12 @@ class MqProducer : IMqProducer {
         broker.addMessage(msg)
     }
 
+    /**
+     * 广播消息
+     * @param msg 消息
+     */
+    public fun broadcast(msg: Message){
+
+    }
+
 }

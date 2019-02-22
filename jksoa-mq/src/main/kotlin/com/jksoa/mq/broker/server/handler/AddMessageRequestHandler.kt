@@ -1,17 +1,17 @@
-package com.jksoa.mq.broker.handler
+package com.jksoa.mq.broker.server.handler
 
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
 import com.jksoa.mq.common.Message
 import com.jksoa.mq.common.QueueFlusher
-import com.jksoa.server.IRpcRequestHandler
+import com.jksoa.server.handler.IRpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
 import java.util.*
 
 /**
  * 请求 + 上下文
  */
-typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
+private typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
 
 /**
  * 新增消息的请求处理者
@@ -28,10 +28,7 @@ object AddMessageRequestHandler : IRpcRequestHandler {
      * 请求队列
      */
     private val reqQueue: QueueFlusher<RequestContext> = object: QueueFlusher<RequestContext>(100, 100){
-        /**
-         * 处理刷盘的元素
-         * @param items
-         */
+        // 处理刷盘的元素
         override fun handleFlush(reqs: List<RequestContext>) {
             flushRequests(reqs)
         }

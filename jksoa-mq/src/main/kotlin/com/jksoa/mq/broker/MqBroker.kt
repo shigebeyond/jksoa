@@ -1,6 +1,5 @@
 package com.jksoa.mq.broker
 
-import com.jksoa.common.IService
 import com.jksoa.mq.common.Message
 
 /**
@@ -16,7 +15,7 @@ class MqBroker : IMqBroker {
      * @param group 分组
      */
     public override fun subscribeTopic(topic: String, group: String){
-        throw IllegalAccessException("不能直接调用, 实现详见[SubscribeTopicRequestHandler]")
+        throw UnsupportedOperationException("not implemented")
     }
 
     /**
@@ -24,7 +23,7 @@ class MqBroker : IMqBroker {
      * @param msg 消息
      */
     public override fun addMessage(msg: Message){
-        throw IllegalAccessException("不能直接调用, 实现详见[AddMessageRequestHandler]")
+        throw UnsupportedOperationException("not implemented")
     }
 
     /**
