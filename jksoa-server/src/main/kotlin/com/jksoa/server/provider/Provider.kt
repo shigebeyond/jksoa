@@ -4,10 +4,10 @@ import com.jkmvc.singleton.BeanSingletons
 import com.jkmvc.common.Config
 import com.jkmvc.common.isSuperClass
 import com.jksoa.client.referer.RefererLoader
-import com.jksoa.common.ILeaderService
 import com.jksoa.common.IService
 import com.jksoa.common.Url
 import com.jksoa.common.serverLogger
+import com.jksoa.common.serviceMeta
 import com.jksoa.leader.ZkLeaderElection
 import com.jksoa.registry.IRegistry
 import com.jksoa.registry.zk.ZkRegistry
@@ -59,7 +59,7 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
     public override val service: IService = BeanSingletons.instance(clazz) as IService
 
     init{
-        if(ILeaderService::class.java.isSuperClass(`interface`)){ // 要选举leader的服务接口
+        if(`interface`.serviceMeta.leader){ // 要选举leader
             // 先选举leader才注册服务
             val election = ZkLeaderElection(serviceId)
             election.run(){

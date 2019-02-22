@@ -21,6 +21,6 @@ interface IRpcRequest: Serializable, IInvocation {
     /**
      * 版本
      */
-    val version: String
+    val version: Int
 
 }

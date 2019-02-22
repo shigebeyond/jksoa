@@ -1,5 +1,6 @@
 package com.jksoa.common
 
+import com.jkmvc.common.ServiceMeta
 import com.jkmvc.common.isSubClass
 import com.jkmvc.common.isSuperClass
 import com.jksoa.common.exception.RpcClientException
@@ -16,3 +17,9 @@ public fun Method.getServiceClass(): Class<out IService> {
 
     throw RpcClientException("[$this]的类没有继承IService")
 }
+
+/**
+ * 服务元数据
+ */
+public val Class<out IService>.serviceMeta: ServiceMeta
+    get() = getAnnotation(ServiceMeta::class.java)

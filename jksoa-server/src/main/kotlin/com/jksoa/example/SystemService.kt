@@ -1,8 +1,10 @@
 package com.jksoa.example
 
 import com.jkmvc.common.Config
+import com.jkmvc.common.ServiceMeta
 import com.jkmvc.common.format
 import com.jkmvc.common.randomLong
+import com.jksoa.common.RpcRequest
 import com.jksoa.common.serverLogger
 import java.rmi.RemoteException
 import java.util.*
@@ -13,6 +15,7 @@ import java.util.*
  * @author shijianhang
  * @create 2017-12-15 下午7:39
  **/
+@ServiceMeta(leader = true)
 class SystemService : ISystemService /*, UnicastRemoteObject() // rmi协议服务实现*/{
 
     @Throws(RemoteException::class) // rim异常
@@ -34,5 +37,14 @@ class SystemService : ISystemService /*, UnicastRemoteObject() // rmi协议服�
         serverLogger.debug("睡 $millis ms")
         Thread.sleep(millis)
         return millis
+    }
+
+    /**
+     * 检查客户端的接口版本, 用于版本兼容
+     */
+    @Throws(RemoteException::class) // rim异常
+    public override fun checkVersion(){
+        val v = RpcRequest.current().version
+        println("version=$v")
     }
 }

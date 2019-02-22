@@ -1,6 +1,7 @@
 package com.jksoa.common
 
 import com.jkmvc.closing.ClosingOnShutdown
+import com.jkmvc.common.ServiceMeta
 import com.jkmvc.common.getMethodBySignature
 import java.lang.reflect.Method
 
