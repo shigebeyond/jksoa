@@ -1,7 +1,7 @@
 package com.jksoa.common
 
-import com.jkmvc.common.getSignature
 import com.jkmvc.common.generateId
+import com.jkmvc.common.getSignature
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -38,6 +38,11 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
      * 请求标识，全局唯一
      */
     public override val id: Long = generateId()
+
+    /**
+     * 版本
+     */
+    public override val version: String = ""
 
     /**
      * 构造函数

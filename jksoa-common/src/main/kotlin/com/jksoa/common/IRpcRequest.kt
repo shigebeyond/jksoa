@@ -18,4 +18,9 @@ interface IRpcRequest: Serializable, IInvocation {
     val serviceId: String
         get() = clazz
 
+    /**
+     * 版本
+     */
+    val version: String
+
 }
