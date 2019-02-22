@@ -5,7 +5,7 @@ import com.jkmvc.common.IConfig
 import com.jkmvc.common.getConstructorOrNull
 import com.jkmvc.common.isAbstract
 import com.jksoa.common.IService
-import com.jksoa.common.ServiceClassLoader
+import com.jksoa.common.loader.ServiceClassLoader
 import com.jksoa.common.exception.RpcServerException
 import com.jksoa.server.IProvider
 

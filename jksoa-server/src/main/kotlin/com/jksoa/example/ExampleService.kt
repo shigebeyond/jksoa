@@ -1,10 +1,7 @@
 package com.jksoa.example
 
-import com.jkmvc.common.ServiceMeta
-import com.jkmvc.common.format
-import com.jksoa.common.serverLogger
+import com.jksoa.common.annotation.ServiceMeta
 import java.rmi.RemoteException
-import java.util.*
 
 /**
  * 示例服务实现

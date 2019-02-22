@@ -1,8 +1,7 @@
 package com.jksoa.common
 
-import com.jkmvc.common.ServiceMeta
-import com.jkmvc.common.isSubClass
 import com.jkmvc.common.isSuperClass
+import com.jksoa.common.annotation.ServiceMeta
 import com.jksoa.common.exception.RpcClientException
 import java.lang.reflect.Method
 

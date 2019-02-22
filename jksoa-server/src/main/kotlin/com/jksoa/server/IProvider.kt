@@ -1,9 +1,8 @@
 package com.jksoa.server
 
 import com.jksoa.common.IService
-import com.jksoa.common.IServiceClass
+import com.jksoa.common.loader.IServiceClass
 import com.jksoa.common.Url
-import java.io.Closeable
 
 /**
  * 服务提供者

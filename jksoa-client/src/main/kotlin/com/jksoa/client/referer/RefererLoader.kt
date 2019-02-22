@@ -4,7 +4,7 @@ import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jksoa.client.IReferer
 import com.jksoa.common.IService
-import com.jksoa.common.ServiceClassLoader
+import com.jksoa.common.loader.ServiceClassLoader
 
 /**
  * 加载服务引用者
