@@ -1,7 +1,5 @@
 package com.jksoa.common
 
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.RpcRequest
 import com.jksoa.common.invocation.IShardingInvocation
 
 /**
@@ -10,7 +8,7 @@ import com.jksoa.common.invocation.IShardingInvocation
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:03 AM
  */
-interface IShardingRpcRequest : IShardingInvocation, IRpcInvocationMeta {
+interface IShardingRpcRequest : IShardingInvocation, IRpcRequestMeta {
 
     /**
      * 要调用的服务标识，即接口类全名
@@ -23,6 +21,8 @@ interface IShardingRpcRequest : IShardingInvocation, IRpcInvocationMeta {
      * @param 分片序号
      * @return
      */
-    fun buildRpcRequest(iSharding: Int): IRpcRequest
+    fun buildRpcRequest(iSharding: Int): IRpcRequest {
+        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding] as Array<Any?>, version, requestTimeoutMillis)
+    }
 
 }

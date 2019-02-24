@@ -5,7 +5,7 @@ package com.jksoa.common
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-24 4:03 PM
  */
-interface IRpcInvocationMeta {
+interface IRpcRequestMeta {
 
     /**
      * 版本

@@ -49,15 +49,6 @@ class ShardingRpcRequest(public override val clazz: String, /* 服务接口类�
      */
     public constructor(func: KFunction<*>, shardingArgses: Array<Array<*>>) : this(func.javaMethod!!, shardingArgses)
 
-    /**
-     * 构建rpc请求
-     * @param 分片序号
-     * @return
-     */
-    public override fun buildRpcRequest(iSharding: Int): IRpcRequest {
-        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding] as Array<Any?>, version, requestTimeoutMillis)
-    }
-
     public override fun toString(): String {
         return "ShardingRpcRequest: " + toDesc()
     }
