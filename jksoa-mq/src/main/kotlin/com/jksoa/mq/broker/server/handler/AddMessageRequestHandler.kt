@@ -4,7 +4,7 @@ import com.jkmvc.common.Config
 import com.jkmvc.common.isNullOrEmpty
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
-import com.jksoa.mq.broker.consumer.MessagePusher
+import com.jksoa.mq.broker.pusher.MessagePusher
 import com.jksoa.mq.common.Message
 import com.jksoa.mq.common.MqException
 import com.jksoa.mq.common.QueueFlusher

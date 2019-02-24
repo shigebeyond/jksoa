@@ -1,4 +1,4 @@
-package com.jksoa.mq.broker.consumer
+package com.jksoa.mq.broker.pusher
 
 import com.jksoa.mq.common.Message
 

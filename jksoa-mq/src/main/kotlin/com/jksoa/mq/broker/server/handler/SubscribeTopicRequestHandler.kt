@@ -2,8 +2,8 @@ package com.jksoa.mq.broker.server.handler
 
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
-import com.jksoa.mq.broker.consumer.ConsumerConnectionHub
-import com.jksoa.mq.broker.consumer.IConsumerConnectionHub
+import com.jksoa.mq.broker.server.connection.ConsumerConnectionHub
+import com.jksoa.mq.broker.server.connection.IConsumerConnectionHub
 import com.jksoa.server.handler.IRpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
 

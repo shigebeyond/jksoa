@@ -1,4 +1,4 @@
-package com.jksoa.mq.broker.consumer
+package com.jksoa.mq.broker.server.connection
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.getOrPutOnce

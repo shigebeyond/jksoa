@@ -1,4 +1,4 @@
-package com.jksoa.mq.broker.consumer
+package com.jksoa.mq.broker.server.connection
 
 import com.jksoa.client.IConnection
 import com.jksoa.client.protocol.netty.NettyConnection

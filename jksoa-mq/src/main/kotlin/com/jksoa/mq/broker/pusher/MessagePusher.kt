@@ -1,16 +1,18 @@
-package com.jksoa.mq.broker.consumer
+package com.jksoa.mq.broker.pusher
 
 import com.jkmvc.future.IFutureCallback
 import com.jksoa.common.RpcRequest
+import com.jksoa.mq.broker.server.connection.ConsumerConnectionHub
+import com.jksoa.mq.broker.server.connection.IConsumerConnectionHub
 import com.jksoa.mq.common.Message
 import com.jksoa.mq.common.QueueFlusher
 import com.jksoa.mq.consumer.IMqConsumer
 import java.lang.Exception
 
 /**
- * 消息消费结果: 消息 + 异常(无异常表示成功, 否则表示失败)
+ * 消息消费结果: 消息 + 结果(true表示处理完成, false表示未处理, Exception对象表示处理异常)
  */
-private typealias ConsumeResult = Pair<Message, Exception?>
+private typealias ConsumeResult = Pair<Message, Any>
 
 /**
  * 消费推送者
@@ -49,16 +51,16 @@ object MessagePusher : IMessagePusher {
         val resFuture = conn.send(req)
 
         // 处理响应
-        val callback = object : IFutureCallback<Any?> {
-            public override fun completed(result: Any?) {
-                resultQueue.add(msg to null)
+        val callback = object : IFutureCallback<Boolean> {
+            public override fun completed(result: Boolean) {
+                resultQueue.add(msg to result)
             }
 
             public override fun failed(ex: Exception) {
                 resultQueue.add(msg to ex)
             }
         }
-        resFuture.addCallback(callback)
+        resFuture.addCallback(callback as IFutureCallback<Any?>)
     }
 
     /**
@@ -68,9 +70,20 @@ object MessagePusher : IMessagePusher {
     private fun flushResult(results: List<ConsumeResult>){
         // 构建参数
         val params: ArrayList<Any?> = ArrayList()
-        for((msg, ex) in results){
-            val status: Int = if(ex == null) 2 else 0
+        for((msg, result) in results){
+            // false表示未处理
+            if(result is Boolean && result == false)
+                continue;
+
+            var status: Int = 0
+            var remark: String? = null
+            if(result is Exception){ // Exception对象表示处理异常
+                remark = "Exception: " + result.getStackTrace()
+            }else{ // true表示处理完成
+                status = 2
+            }
             params.add(status)
+            params.add(remark)
             params.add(msg.id)
         }
 
@@ -78,6 +91,7 @@ object MessagePusher : IMessagePusher {
         DbQueryBuilder().table("message")
                 .set("tryTimes", DbExpr("tryTimes + 1", false))
                 .set("status", DbExpr.question)
+                .set("remark", DbExpr.question)
                 .where("id", "=", DbExpr.question)
                 .batchUpdate(params, 2)// 每次只处理2个参数
     }

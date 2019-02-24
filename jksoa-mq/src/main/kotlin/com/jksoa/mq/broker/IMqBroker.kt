@@ -34,5 +34,15 @@ interface IMqBroker : IService {
      * @param pageSize 每页记录数
      * @return
      */
-    fun pullMessage(topic: String, group: String, pageSize: Int): List<Message>
+    fun pullMessages(topic: String, group: String, pageSize: Int): List<Message>
+
+    /**
+     * 更新消息
+     * @param id 消息标识
+     * @param status 状态: 0 未处理 1 锁定 2 完成 3 失败(超过时间或超过重试次数)
+     * @param remark 备注
+     * @return
+     */
+    fun updateMessage(id: Long, status: Int, remark: String): Boolean
+
 }
