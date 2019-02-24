@@ -19,12 +19,15 @@ interface IShardingRpcRequest : IShardingInvocation {
         get() = clazz
 
     /**
+     * 版本
+     */
+    val version: Int
+
+    /**
      * 构建rpc请求
      * @param 分片序号
      * @return
      */
-    public fun buildRpcRequest(iSharding: Int): IRpcRequest {
-        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding] as Array<Any?>)
-    }
+    fun buildRpcRequest(iSharding: Int): IRpcRequest
 
 }

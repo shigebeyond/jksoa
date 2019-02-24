@@ -12,9 +12,11 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:03 AM
  */
-class ShardingRpcRequest(override val clazz: String, /* 服务接口类全名 */
-                         override val methodSignature: String, /* 要调用的方法签名：包含方法名+参数类型 */
-                         override val shardingArgses: Array<Array<*>> /* 分片要调用的实参 */
+class ShardingRpcRequest(public override val clazz: String, /* 服务接口类全名 */
+                         public override val methodSignature: String, /* 要调用的方法签名：包含方法名+参数类型 */
+                         public override val shardingArgses: Array<Array<*>> /* 分片要调用的实参 */,
+                         public override val version: Int = 0 /* 版本 */,
+                         @Transient /* 不序列化 */ public val requestTimeoutMillis: Long = 0 /* 请求超时，Long类型，单位毫秒, 如果为0则使用client.yaml中定义的配置项 requestTimeoutMillis */
 ) : IShardingRpcRequest {
 
     /**
@@ -46,6 +48,15 @@ class ShardingRpcRequest(override val clazz: String, /* 服务接口类全名 */
      * @param shardingArgses 分片要调用的实参
      */
     public constructor(func: KFunction<*>, shardingArgses: Array<Array<*>>) : this(func.javaMethod!!, shardingArgses)
+
+    /**
+     * 构建rpc请求
+     * @param 分片序号
+     * @return
+     */
+    public override fun buildRpcRequest(iSharding: Int): IRpcRequest {
+        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding] as Array<Any?>, version, requestTimeoutMillis)
+    }
 
     public override fun toString(): String {
         return "ShardingRpcRequest: " + toDesc()

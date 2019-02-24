@@ -21,9 +21,9 @@ public fun Method.getServiceClass(): Class<out IService> {
 /**
  * 服务元数据
  */
-public val Class<out IService>.serviceMeta: ServiceMeta
+public val Class<out IService>.serviceMeta: ServiceMeta?
     get(){
-        return getAnnotation(ServiceMeta::class.java) ?: IService::class.java.serviceMeta
+        return getAnnotation(ServiceMeta::class.java)
     }
 
 /**

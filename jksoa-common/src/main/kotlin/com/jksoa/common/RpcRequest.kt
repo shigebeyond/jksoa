@@ -17,7 +17,7 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
                       public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
                       public override val args: Array<Any?> = emptyArray() /* 实参 */,
                       public override val version: Int = 0 /* 版本 */,
-                      @Transient public val requestTimeoutMillis: Long = 0 /* 请求超时，Long类型，单位毫秒, 如果为0则使用client.yaml中定义的配置项 requestTimeoutMillis */
+                      @Transient /* 不序列化 */ public val requestTimeoutMillis: Long = 0 /* 请求超时，Long类型，单位毫秒, 如果为0则使用client.yaml中定义的配置项 requestTimeoutMillis */
 ): IRpcRequest {
 
     companion object {
@@ -47,7 +47,7 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
      * @param method 方法
      * @param args 实参
      */
-    public constructor(method: Method, args: Array<Any?> = emptyArray()) : this(method.getServiceClass().name, method.getSignature(), args, method.getServiceClass().serviceMeta.version)
+    public constructor(method: Method, args: Array<Any?> = emptyArray()) : this(method.getServiceClass().name, method.getSignature(), args, method.getServiceClass().serviceMeta?.version ?: 0, method.serviceMethodMeta?.requestTimeoutMillis ?: 0)
 
     /**
      * 构造函数
