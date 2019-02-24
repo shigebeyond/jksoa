@@ -1,12 +1,11 @@
 package com.jksoa.client.protocol.netty
 
-import com.jkmvc.closing.ClosingOnShutdown
+import com.jksoa.common.CommonTimer
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.IRpcResponse
 import com.jksoa.common.clientLogger
 import com.jksoa.common.future.RpcResponseFuture
 import io.netty.channel.Channel
-import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import java.util.concurrent.TimeUnit
@@ -27,25 +26,10 @@ class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
                              public val channel: Channel /* netty channel, 仅用于在[NettyResponseHandler.channelInactive()]中删掉该channel对应的异步响应记录 */
 ) : RpcResponseFuture(req.id) {
 
-    companion object: ClosingOnShutdown() {
-
-        /**
-         * 异步超时定时器
-         */
-        val timer = HashedWheelTimer(200, TimeUnit.MILLISECONDS, 64 /* 2的次幂 */)
-
-        /**
-         * 关闭定时器
-         */
-        public override fun close() {
-            timer.stop()
-        }
-    }
-
     /**
      * 超时定时器
      */
-    protected var timeout: Timeout = timer.newTimeout(object : TimerTask {
+    protected var timeout: Timeout = CommonTimer.newTimeout(object : TimerTask {
         override fun run(timeout: Timeout) {
             handleExpired()
         }
