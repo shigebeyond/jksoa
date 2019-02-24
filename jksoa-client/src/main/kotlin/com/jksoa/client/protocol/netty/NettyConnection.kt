@@ -1,14 +1,12 @@
 package com.jksoa.client.protocol.netty
 
 import com.jkmvc.common.Application
-import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
+import com.jksoa.client.connection.BasicConnection
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
 import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.future.IRpcResponseFuture
-import com.jksoa.client.connection.BasicConnection
 import io.netty.channel.Channel
 import io.netty.util.AttributeKey
 import java.util.concurrent.TimeUnit
@@ -23,10 +21,6 @@ import java.util.concurrent.TimeUnit
 class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1) : BasicConnection(url, weight) {
 
     companion object{
-        /**
-         * 客户端配置
-         */
-        public val config: IConfig = Config.instance("client", "yaml")
 
         /**
          * 在Channel中引用NettyConnection的属性名
@@ -67,14 +61,14 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
         // 2 在debug环境下提前创建好异步响应
         // 当client调用本机server时, client很快收到响应
         // 而在debug环境下, 在代码 writeFuture.awaitUninterruptibly() 执行之前就收到响应了, 如果在该代码之后才创建并记录异步响应, 则无法识别并处理早已收到的响应
-        val resFuture: NettyRpcResponseFuture? = if(Application.isDebug) NettyRpcResponseFuture(req.id, channel) else null
+        val resFuture: NettyRpcResponseFuture? = if(Application.isDebug) NettyRpcResponseFuture(req, channel) else null
 
         // 3 阻塞等待发送完成，有超时
-        val result = writeFuture.awaitUninterruptibly(config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
+        val result = writeFuture.awaitUninterruptibly(req.requestTimeoutMillis, TimeUnit.MILLISECONDS)
 
         // 3.1 发送成功
         if (result && writeFuture.isSuccess())
-            return if(resFuture != null) resFuture else NettyRpcResponseFuture(req.id, channel) // 返回异步响应
+            return if(resFuture != null) resFuture else NettyRpcResponseFuture(req, channel) // 返回异步响应
 
         // 3.2 超时
         if (writeFuture.cause() == null){

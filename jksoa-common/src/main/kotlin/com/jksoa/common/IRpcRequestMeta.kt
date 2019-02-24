@@ -1,5 +1,12 @@
 package com.jksoa.common
 
+import com.jkmvc.common.Config
+
+/**
+ * 默认的请求超时
+ */
+public val DefaultRequestTimeoutMillis:Long = Config.instance("client", "yaml")["requestTimeoutMillis"]!!
+
 /**
  * rpc调用的元数据
  * @author shijianhang<772910474@qq.com>

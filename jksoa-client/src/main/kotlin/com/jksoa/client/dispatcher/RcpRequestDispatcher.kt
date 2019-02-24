@@ -55,7 +55,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
      * @return 响应结果
      */
     public override fun dispatch(req: IRpcRequest): IRpcResponse {
-        val resFuture = FailoveRpcResponseFuture(config["maxTryTimes"]!!){
+        val resFuture = FailoveRpcResponseFuture(config["maxTryTimes"]!!, req.requestTimeoutMillis){
             // 1 选择连接
             val conn = connHub.select(req)
 
@@ -64,8 +64,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
         }
 
         // 3 返回结果
-        val timeout = if(req.requestTimeoutMillis == 0L) config["requestTimeoutMillis"]!! else req.requestTimeoutMillis
-        return resFuture.get(timeout, TimeUnit.MILLISECONDS)
+        return resFuture.get(req.requestTimeoutMillis, TimeUnit.MILLISECONDS)
     }
 
     /**

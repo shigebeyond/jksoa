@@ -1,7 +1,7 @@
 package com.jksoa.client.protocol.netty
 
 import com.jkmvc.closing.ClosingOnShutdown
-import com.jkmvc.common.Config
+import com.jksoa.common.IRpcRequest
 import com.jksoa.common.IRpcResponse
 import com.jksoa.common.clientLogger
 import com.jksoa.common.future.RpcResponseFuture
@@ -23,16 +23,11 @@ import java.util.concurrent.TimeoutException
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-14 6:11 PM
  */
-class NettyRpcResponseFuture(reqId: Long /* 请求标识 */,
+class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
                              public val channel: Channel /* netty channel, 仅用于在[NettyResponseHandler.channelInactive()]中删掉该channel对应的异步响应记录 */
-) : RpcResponseFuture(reqId) {
+) : RpcResponseFuture(req.id) {
 
     companion object: ClosingOnShutdown() {
-
-        /**
-         * 客户端配置
-         */
-        public val config = Config.instance("client", "yaml")
 
         /**
          * 异步超时定时器
@@ -54,7 +49,7 @@ class NettyRpcResponseFuture(reqId: Long /* 请求标识 */,
         override fun run(timeout: Timeout) {
             handleExpired()
         }
-    }, config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
+    }, req.requestTimeoutMillis, TimeUnit.MILLISECONDS)
 
     init{
         // 记录异步响应，以便响应到来时设置结果
