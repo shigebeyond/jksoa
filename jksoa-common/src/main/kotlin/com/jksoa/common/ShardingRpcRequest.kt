@@ -23,7 +23,7 @@ class ShardingRpcRequest(public override val clazz: String, /* 服务接口类�
     /**
      * 请求标识，全局唯一
      */
-    public override val id: Long = generateId()
+    public override val id: Long = generateId("shardingRpc")
 
     /**
      * 构造函数

@@ -64,7 +64,7 @@ class MyTests {
 
     @Test
     fun testLeaderElection(){
-        val id = generateId()
+        val id = generateId("leader")
         println("当前候选人: $id")
         val election = ZkLeaderElection("test", id.toString())
         election.listen {

@@ -40,7 +40,7 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
     /**
      * 请求标识，全局唯一
      */
-    public override val id: Long = generateId()
+    public override val id: Long = generateId("rpc")
 
     /**
      * 构造函数
