@@ -10,17 +10,12 @@ import java.io.Serializable
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IRpcRequest: Serializable, IInvocation {
+interface IRpcRequest: Serializable, IInvocation, IRpcInvocationMeta {
 
     /**
      * 服务标识，即接口类全名
      */
     val serviceId: String
         get() = clazz
-
-    /**
-     * 版本
-     */
-    val version: Int
 
 }

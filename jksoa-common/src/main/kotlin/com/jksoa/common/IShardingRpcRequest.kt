@@ -10,18 +10,13 @@ import com.jksoa.common.invocation.IShardingInvocation
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:03 AM
  */
-interface IShardingRpcRequest : IShardingInvocation {
+interface IShardingRpcRequest : IShardingInvocation, IRpcInvocationMeta {
 
     /**
      * 要调用的服务标识，即接口类全名
      */
     val serviceId: String
         get() = clazz
-
-    /**
-     * 版本
-     */
-    val version: Int
 
     /**
      * 构建rpc请求

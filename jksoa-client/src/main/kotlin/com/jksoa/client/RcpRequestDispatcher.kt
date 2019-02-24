@@ -62,7 +62,8 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
         }
 
         // 3 返回结果
-        return resFuture.get(config["requestTimeoutMillis"]!!, TimeUnit.MILLISECONDS)
+        val timeout = if(req.requestTimeoutMillis == 0L) config["requestTimeoutMillis"]!! else req.requestTimeoutMillis
+        return resFuture.get(timeout, TimeUnit.MILLISECONDS)
     }
 
     /**
