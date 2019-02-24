@@ -1,5 +1,6 @@
-package com.jksoa.client
+package com.jksoa.client.connection
 
+import com.jksoa.client.IConnection
 import com.jksoa.common.IRpcRequest
 import com.jksoa.registry.IDiscoveryListener
 

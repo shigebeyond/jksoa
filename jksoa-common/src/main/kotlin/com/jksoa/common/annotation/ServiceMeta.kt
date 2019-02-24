@@ -7,5 +7,5 @@ package com.jksoa.common.annotation
  */
 @Target(AnnotationTarget.CLASS)
 annotation class ServiceMeta(public val version: Int = 0 /* 接口版本 */,
-                             public val leader: Boolean = false /* 是否选举leader, 该服务接口只暴露唯一一个选为leader的server */
+                             public val onlyLeader: Boolean = false /* 是否选举leader, 该服务接口只暴露唯一一个选为leader的server */
 )

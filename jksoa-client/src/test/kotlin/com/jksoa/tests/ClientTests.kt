@@ -1,7 +1,7 @@
 package com.jksoa.tests
 
 import com.jkmvc.common.getRootResource
-import com.jksoa.client.RcpRequestDispatcher
+import com.jksoa.client.dispatcher.RcpRequestDispatcher
 import com.jksoa.client.referer.Referer
 import com.jksoa.common.ShardingRpcRequest
 import com.jksoa.common.Url

@@ -10,7 +10,7 @@ import java.util.*
  */
 data class Message(public val topic: String /* 主题 */,
                    public val data: Any? /* 数据 */,
-                   public val group: String = "*" /* 分组 */,
+                   public val group: String = "*" /* 分组, 如果是*, 则标识广播所有分组 */,
                    public val id: Long = generateId() /* 消息标识，全局唯一 */
 ) {
 }

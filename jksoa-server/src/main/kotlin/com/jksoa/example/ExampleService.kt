@@ -1,6 +1,5 @@
 package com.jksoa.example
 
-import com.jksoa.common.annotation.ServiceMeta
 import java.rmi.RemoteException
 
 /**
@@ -9,7 +8,6 @@ import java.rmi.RemoteException
  * @author shijianhang
  * @create 2017-12-15 下午7:39
  **/
-@ServiceMeta(version = 1)
 class ExampleService : IExampleService /*, UnicastRemoteObject() // rmi协议服务实现*/{
 
     @Throws(RemoteException::class) // rim异常

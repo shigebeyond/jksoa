@@ -4,7 +4,6 @@ import com.jksoa.mq.MqProducer
 import com.jksoa.mq.common.Message
 import com.jksoa.mq.consumer.IMqHandler
 import com.jksoa.mq.consumer.MqConsumer
-import com.jksoa.mq.producer.MqProducer
 import org.junit.Test
 
 /**
@@ -19,7 +18,8 @@ class MqTests {
      */
     @Test
     fun testProductor(){
-        MqProducer().produce(Message("topic1", "xxx"))
+        // 生产消息
+        MqProducer.produce(Message("topic1", "xxx", "*"))
     }
 
     /**

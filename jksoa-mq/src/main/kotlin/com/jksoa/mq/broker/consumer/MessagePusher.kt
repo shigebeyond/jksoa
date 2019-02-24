@@ -17,7 +17,7 @@ private typealias ConsumeResult = Pair<Message, Exception?>
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:41 PM
  */
-class MessagePusher : IMessagePusher {
+object MessagePusher : IMessagePusher {
 
     /**
      * 消费者连接集中器

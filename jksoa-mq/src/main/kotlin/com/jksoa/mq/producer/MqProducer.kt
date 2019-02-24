@@ -10,12 +10,12 @@ import com.jksoa.mq.producer.IMqProducer
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
-class MqProducer : IMqProducer {
+object MqProducer : IMqProducer {
 
     /**
      * 消息中转者
      */
-    protected val broker = Referer.getRefer<IMqBroker>()
+    private val broker = Referer.getRefer<IMqBroker>()
 
     /**
      * 生产消息

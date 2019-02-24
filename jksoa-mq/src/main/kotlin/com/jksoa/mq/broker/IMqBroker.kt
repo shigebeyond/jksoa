@@ -1,6 +1,7 @@
 package com.jksoa.mq.broker
 
 import com.jksoa.common.IService
+import com.jksoa.common.annotation.ServiceMethodMeta
 import com.jksoa.mq.common.Message
 
 /**
@@ -15,6 +16,7 @@ interface IMqBroker : IService {
      * 新增消息
      * @param msg 消息
      */
+    @ServiceMethodMeta(requestTimeoutMillis = 300)
     fun addMessage(msg: Message)
 
     /****************** 消费者调用 *****************/

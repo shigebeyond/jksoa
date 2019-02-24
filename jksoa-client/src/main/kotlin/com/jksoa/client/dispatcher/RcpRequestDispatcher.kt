@@ -1,9 +1,11 @@
-package com.jksoa.client
+package com.jksoa.client.dispatcher
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.get
 import com.jkmvc.future.IFutureCallback
+import com.jksoa.client.IConnection
 import com.jksoa.client.connection.ConnectionHub
+import com.jksoa.client.connection.IConnectionHub
 import com.jksoa.client.referer.RefererLoader
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.IRpcResponse

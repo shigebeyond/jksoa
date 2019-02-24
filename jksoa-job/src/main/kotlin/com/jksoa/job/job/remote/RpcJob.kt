@@ -1,7 +1,7 @@
 package com.jksoa.job.job.remote
 
-import com.jksoa.client.IRpcRequestDispatcher
-import com.jksoa.client.RcpRequestDispatcher
+import com.jksoa.client.dispatcher.IRpcRequestDispatcher
+import com.jksoa.client.dispatcher.RcpRequestDispatcher
 import com.jksoa.common.RpcRequest
 import com.jksoa.common.invocation.IInvocation
 import com.jksoa.job.IJob

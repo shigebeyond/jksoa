@@ -4,6 +4,7 @@ import com.jkmvc.common.Config
 import com.jkmvc.common.isNullOrEmpty
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
+import com.jksoa.mq.broker.consumer.MessagePusher
 import com.jksoa.mq.common.Message
 import com.jksoa.mq.common.MqException
 import com.jksoa.mq.common.QueueFlusher
@@ -97,7 +98,7 @@ object AddMessageRequestHandler : IRpcRequestHandler {
             // 3 给消费者推送消息
             for ((req, ctx) in reqs) {
                 val msg = req.args.first() as Message
-                SubscribeTopicRequestHandler.pushMessageToConsumers(msg)
+                MessagePusher.push(msg)
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.jksoa.example
 
 import com.jkmvc.common.Config
-import com.jksoa.common.annotation.ServiceMeta
 import com.jkmvc.common.randomLong
 import com.jksoa.common.RpcRequest
 import com.jksoa.common.serverLogger
@@ -13,7 +12,6 @@ import java.rmi.RemoteException
  * @author shijianhang
  * @create 2017-12-15 下午7:39
  **/
-@ServiceMeta(version = 1, leader = true)
 class SystemService : ISystemService /*, UnicastRemoteObject() // rmi协议服务实现*/{
 
     @Throws(RemoteException::class) // rim异常

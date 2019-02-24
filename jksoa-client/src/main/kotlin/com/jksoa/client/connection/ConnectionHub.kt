@@ -1,10 +1,8 @@
 package com.jksoa.client.connection
 
 import com.jkmvc.common.Config
-import com.jkmvc.common.get
 import com.jkmvc.common.getOrPutOnce
 import com.jksoa.client.IConnection
-import com.jksoa.client.IConnectionHub
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger

@@ -59,7 +59,7 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
     public override val service: IService = BeanSingletons.instance(clazz) as IService
 
     init{
-        if(`interface`.serviceMeta?.leader ?: false){ // 要选举leader
+        if(`interface`.serviceMeta?.onlyLeader ?: false){ // 要选举leader
             // 先选举leader才注册服务
             val election = ZkLeaderElection(serviceId)
             election.run(){

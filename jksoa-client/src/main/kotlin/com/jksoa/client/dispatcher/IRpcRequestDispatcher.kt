@@ -1,4 +1,4 @@
-package com.jksoa.client
+package com.jksoa.client.dispatcher
 
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.IRpcResponse
