@@ -10,18 +10,20 @@ import com.jksoa.mq.common.Message
  */
 interface IMqBroker : IService {
 
+    /****************** 生产者调用 *****************/
+    /**
+     * 新增消息
+     * @param msg 消息
+     */
+    fun addMessage(msg: Message)
+
+    /****************** 消费者调用 *****************/
     /**
      * 订阅主题
      * @param topic 主题
      * @param group 分组
      */
     fun subscribeTopic(topic: String, group: String)
-
-    /**
-     * 新增消息
-     * @param msg 消息
-     */
-    fun addMessage(msg: Message)
 
     /**
      * 拉取消息

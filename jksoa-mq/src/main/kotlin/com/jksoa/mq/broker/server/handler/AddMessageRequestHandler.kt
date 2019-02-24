@@ -16,7 +16,7 @@ private typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
 /**
  * 新增消息的请求处理者
  *   处理 IMqBroker::addMessage(msg: Message) 请求
- *   扔到队列来异步批量处理: 定时刷盘 + 超量刷盘
+ *   扔到队列来异步批量处理: 定时刷盘 + 定量刷盘
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

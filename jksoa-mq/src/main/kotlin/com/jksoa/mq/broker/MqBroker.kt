@@ -9,20 +9,22 @@ import com.jksoa.mq.common.Message
  */
 class MqBroker : IMqBroker {
 
+    /****************** 生产者调用 *****************/
+    /**
+     * 新增消息
+     * @param msg 消息
+     */
+    public override fun addMessage(msg: Message){
+        throw UnsupportedOperationException("not implemented")
+    }
+
+    /****************** 消费者调用 *****************/
     /**
      * 订阅主题
      * @param topic 主题
      * @param group 分组
      */
     public override fun subscribeTopic(topic: String, group: String){
-        throw UnsupportedOperationException("not implemented")
-    }
-
-    /**
-     * 新增消息
-     * @param msg 消息
-     */
-    public override fun addMessage(msg: Message){
         throw UnsupportedOperationException("not implemented")
     }
 

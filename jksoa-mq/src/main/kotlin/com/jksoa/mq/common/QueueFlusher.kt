@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * 队列刷盘器
- *    定时刷盘 + 超量刷盘
+ *    定时刷盘 + 定量刷盘
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -48,7 +48,7 @@ abstract class QueueFlusher<E> (protected val flushTimeoutMillis: Long /* 触发
      */
     public fun add(e: E): Boolean {
         val result = queue.offer(e)
-        if(queue.size >= flushSize) // 超量刷盘
+        if(queue.size >= flushSize) // 定量刷盘
             flush()
         return result
     }
@@ -60,7 +60,7 @@ abstract class QueueFlusher<E> (protected val flushTimeoutMillis: Long /* 触发
      */
     public fun addAll(c: Collection<out E>): Boolean {
         val result = queue.addAll(c)
-        if(queue.size >= flushSize) // 超量刷盘
+        if(queue.size >= flushSize) // 定量刷盘
             flush()
         return result
     }
