@@ -1,2 +1,3 @@
 # 消息消费者配置
 group: "test" # 消费者分组
+pullPageSize: 100 # 每次拉取的消息数

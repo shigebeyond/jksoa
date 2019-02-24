@@ -2,7 +2,7 @@ package com.jksoa.mq.consumer.client
 
 import com.jksoa.client.protocol.netty.NettyClient
 import com.jksoa.client.protocol.netty.NettyResponseHandler
-import com.jksoa.mq.consumer.IMqConsumer
+import com.jksoa.mq.consumer.MqConsumer
 import com.jksoa.server.protocol.netty.NettyRequestHandler
 import com.jksoa.server.provider.ProviderLoader
 import io.netty.channel.ChannelHandler
@@ -18,7 +18,7 @@ class MqNettyClient: NettyClient() {
 
     init {
         // 提供消费者服务, 但不用注册到注册中心
-        ProviderLoader.addClass(IMqConsumer::class.java, false)
+        ProviderLoader.addClass(MqConsumer::class.java, false)
     }
 
     /**

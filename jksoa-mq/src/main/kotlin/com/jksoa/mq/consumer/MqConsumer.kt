@@ -5,6 +5,7 @@ import com.jksoa.client.referer.Referer
 import com.jksoa.mq.broker.IMqBroker
 import com.jksoa.mq.common.Message
 import com.jksoa.mq.common.MqException
+import com.jksoa.mq.consumer.puller.MessagePuller
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -41,20 +42,24 @@ class MqConsumer : IMqConsumer {
             if(handlers.contains(topic))
                 throw MqException("Duplicate subcribe to the same topic")
 
-            // 向中转者订阅主题
-            broker.subscribeTopic(topic, config["group"]!!)
             // 添加处理器
             handlers[topic] = handler
+            // 向中转者订阅主题
+            broker.subscribeTopic(topic, config["group"]!!)
+            // 启动拉取定时器
+            MessagePuller.startPull(topic)
         }
 
         /**
          * 订阅主题
          * @param topic 主题
-         * @param handler
+         * @param lambda
          */
-        public fun subscribeTopic(topic: String, lambda: (Message) -> Unit){
+        public fun subscribeTopic(topic: String, lambda: (Message) -> Boolean){
             subscribeTopic(topic, LambdaMqHandler(lambda))
         }
+
+
     }
 
     /**
@@ -64,8 +69,7 @@ class MqConsumer : IMqConsumer {
      */
     public override fun pushMessage(msg: Message): Boolean{
         // 获得处理器,并调用
-        handlers[msg.topic]!!.handleMessage(msg)
-        return true
+        return handlers[msg.topic]!!.handleMessage(msg)
     }
 
 }

@@ -66,7 +66,7 @@ abstract class QueueFlusher<E> (protected val flushTimeoutMillis: Long /* 触发
     }
 
     /**
-     * 将队列中的元素刷到db
+     * 将队列中的元素刷掉
      */
     protected fun flush(){
         CommonThreadPool.execute{

@@ -12,6 +12,7 @@ interface IMqHandler {
     /**
      * 处理消息
      * @param msg 消息
+     * @return 是否处理完成, 某些业务中不需或不能马上处理消息, 如短信平台处理繁忙不能马上处理
      */
-    fun handleMessage(msg: Message)
+    fun handleMessage(msg: Message): Boolean
 }
