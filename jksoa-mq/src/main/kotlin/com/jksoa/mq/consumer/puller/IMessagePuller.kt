@@ -11,7 +11,6 @@ interface IMessagePuller {
 
     /**
      * 消费者拉取消息
-     * @param topic
      */
-    fun startPull(topic: String)
+    fun startPull()
 }

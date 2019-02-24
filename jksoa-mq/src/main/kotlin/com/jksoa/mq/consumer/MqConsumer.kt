@@ -1,12 +1,9 @@
 package com.jksoa.mq.consumer
 
-import com.jkmvc.common.Config
-import com.jksoa.client.referer.Referer
-import com.jksoa.mq.broker.IMqBroker
+import com.jksoa.mq.broker.server.MqNettyRequestHandler.Companion.handlers
 import com.jksoa.mq.common.Message
-import com.jksoa.mq.common.MqException
 import com.jksoa.mq.consumer.puller.MessagePuller
-import java.util.concurrent.ConcurrentHashMap
+import com.jksoa.mq.consumer.subscriber.IMqSubscriber
 
 /**
  * 消息消费者
@@ -16,51 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
  **/
 class MqConsumer : IMqConsumer {
 
-    companion object {
-
-        /**
-         * 消费者配置
-         */
-        public val config = Config.instance("consumer", "yaml")
-
-        /**
-         * 消息中转者
-         */
-        protected val broker = Referer.getRefer<IMqBroker>()
-
-        /**
-         * 消息处理器: <主题 to 处理器>
-         */
-        protected val handlers: ConcurrentHashMap<String, IMqHandler> = ConcurrentHashMap();
-
-        /**
-         * 订阅主题
-         * @param topic 主题
-         * @param handler
-         */
-        public fun subscribeTopic(topic: String, handler: IMqHandler){
-            if(handlers.contains(topic))
-                throw MqException("Duplicate subcribe to the same topic")
-
-            // 添加处理器
-            handlers[topic] = handler
-            // 向中转者订阅主题
-            broker.subscribeTopic(topic, config["group"]!!)
-            // 启动拉取定时器
-            MessagePuller.startPull(topic)
-        }
-
-        /**
-         * 订阅主题
-         * @param topic 主题
-         * @param lambda
-         */
-        public fun subscribeTopic(topic: String, lambda: (Message) -> Boolean){
-            subscribeTopic(topic, LambdaMqHandler(lambda))
-        }
-
-
-    }
+    companion object: IMqSubscriber by MessagePuller
 
     /**
      * 收到推送的消息
@@ -68,8 +21,7 @@ class MqConsumer : IMqConsumer {
      * @return
      */
     public override fun pushMessage(msg: Message): Boolean{
-        // 获得处理器,并调用
-        return handlers[msg.topic]!!.handleMessage(msg)
+        return handleMessage(msg)
     }
 
 }

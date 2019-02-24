@@ -1,32 +1,31 @@
 package com.jksoa.mq.consumer.puller
 
-import com.jkmvc.common.Config
-import com.jksoa.client.referer.Referer
-import com.jksoa.mq.broker.IMqBroker
-import com.jksoa.mq.common.Message
+import com.jksoa.mq.consumer.subscriber.MqSubscriber
 
 /**
  * 消费拉取者
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:41 PM
  */
-class MessagePuller: IMessagePuller {
+object MessagePuller: IMessagePuller, MqSubscriber() {
 
     /**
-     * 消费者配置
+     * 开始定时拉取消息
      */
-    public val config = Config.instance("consumer", "yaml")
+    public override fun startPull(){
+        for(topic in subscribedTopics)
+            pull(topic)
+    }
 
     /**
-     * 消息中转者
-     */
-    protected val broker = Referer.getRefer<IMqBroker>()
-
-    /**
-     * 消费者拉取消息
+     * 拉取消息
      * @param topic
      */
-    public override fun startPull(topic: String){
-        val msg = broker.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!)
+    private fun pull(topic: String) {
+        // 拉取消息
+        val msgs = broker.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!)
+        // 处理消息
+        for (msg in msgs)
+            handleMessage(msg)
     }
 }
