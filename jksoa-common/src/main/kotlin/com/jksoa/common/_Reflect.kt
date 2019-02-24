@@ -2,6 +2,7 @@ package com.jksoa.common
 
 import com.jkmvc.common.isSuperClass
 import com.jksoa.common.annotation.ServiceMeta
+import com.jksoa.common.annotation.ServiceMethodMeta
 import com.jksoa.common.exception.RpcClientException
 import java.lang.reflect.Method
 
@@ -21,4 +22,14 @@ public fun Method.getServiceClass(): Class<out IService> {
  * 服务元数据
  */
 public val Class<out IService>.serviceMeta: ServiceMeta
-    get() = getAnnotation(ServiceMeta::class.java)
+    get(){
+        return getAnnotation(ServiceMeta::class.java) ?: IService::class.java.serviceMeta
+    }
+
+/**
+ * 服务方法的元数据
+ */
+public val Method.serviceMethodMeta: ServiceMethodMeta?
+    get(){
+        return getAnnotation(ServiceMethodMeta::class.java)
+    }
