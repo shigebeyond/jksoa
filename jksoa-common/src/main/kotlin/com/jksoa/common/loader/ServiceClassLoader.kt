@@ -88,7 +88,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
     /**
      * 创建服务类元数据
      *
-     * @param clazz
+     * @param clazz 对ProviderLoader是实现类, 对RefererLoader是接口类
      * @param registerable 是否注册
      * @return
      */

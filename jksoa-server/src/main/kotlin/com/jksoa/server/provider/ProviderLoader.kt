@@ -26,14 +26,13 @@ object ProviderLoader: ServiceClassLoader<IProvider>() {
     /**
      * 创建service类
      *
-     * @param clazz
+     * @param clazz 实现类
      * @param registerable 是否注册
      * @return
      */
     public override fun createServiceClass(clazz: Class<out IService>, registerable: Boolean): Provider? {
-        if (clazz.isAbstract /* 抽象类 */ || clazz.isInterface /* 接口 */) {
+        if (clazz.isAbstract /* 抽象类 */ || clazz.isInterface /* 接口 */)
             return null
-        }
 
         // 检查 service 类的默认构造函数
         if(clazz.getConstructorOrNull() == null)

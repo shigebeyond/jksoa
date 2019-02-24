@@ -39,7 +39,7 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
      * 创建service类
      *   不重复添加
      *
-     * @param clazz
+     * @param clazz 接口类
      * @param registerable 是否注册, 引用者不关心这个
      */
     public override fun createServiceClass(clazz: Class<out IService>, registerable: Boolean): Referer? {
