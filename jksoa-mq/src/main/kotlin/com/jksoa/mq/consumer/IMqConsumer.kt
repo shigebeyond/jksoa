@@ -12,9 +12,10 @@ import com.jksoa.mq.common.Message
 interface IMqConsumer : IService  {
 
     /**
-     * 推送消息
+     * 收到推送的消息
      * @param msg 消息
+     * @return
      */
-    fun pushMessage(msg: Message)
+    fun pushMessage(msg: Message): Boolean
 
 }

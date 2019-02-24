@@ -13,21 +13,17 @@ import com.jksoa.mq.producer.IMqProducer
 class MqProducer : IMqProducer {
 
     /**
+     * 消息中转者
+     */
+    protected val broker = Referer.getRefer<IMqBroker>()
+
+    /**
      * 生产消息
      * @param msg 消息
      */
     public override fun produce(msg: Message){
         // 通过中转者来分发消息
-        val broker = Referer.getRefer<IMqBroker>()
         broker.addMessage(msg)
-    }
-
-    /**
-     * 广播消息
-     * @param msg 消息
-     */
-    public fun broadcast(msg: Message){
-
     }
 
 }

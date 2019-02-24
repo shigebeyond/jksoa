@@ -1,0 +1,8 @@
+# 消息中转者配置
+topic2group: # 主题对分组的映射
+  topic1:
+      - group1
+      - group2
+  topic2:
+      - group1
+      - group2

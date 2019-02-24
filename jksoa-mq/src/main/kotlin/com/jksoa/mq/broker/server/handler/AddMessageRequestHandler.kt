@@ -1,8 +1,11 @@
 package com.jksoa.mq.broker.server.handler
 
+import com.jkmvc.common.Config
+import com.jkmvc.common.isNullOrEmpty
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.RpcResponse
 import com.jksoa.mq.common.Message
+import com.jksoa.mq.common.MqException
 import com.jksoa.mq.common.QueueFlusher
 import com.jksoa.server.handler.IRpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
@@ -23,6 +26,16 @@ private typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
  * @date 2017-12-12 5:52 PM
  */
 object AddMessageRequestHandler : IRpcRequestHandler {
+
+    /**
+     * 中转者者配置
+     */
+    public val config = Config.instance("broker", "yaml")
+
+    /**
+     * 主题对分组的映射
+     */
+    public val topic2group: Map<String, List<String>> = config["topic2group"]!!
 
     /**
      * 请求队列
@@ -63,12 +76,11 @@ object AddMessageRequestHandler : IRpcRequestHandler {
             // 构建参数
             for ((req, ctx) in reqs) {
                 val msg = req.args.first() as Message
-                params.add(msg.topic)
-                params.add(msg.data)
+                addMessageParams(msg, params)
             }
 
             // 批量插入
-            DbQueryBuilder().table("user").insertColumns("topic", "data").value(DbExpr.question, DbExpr.question).batchInsert(params, 2)// 每次只处理2个参数
+            DbQueryBuilder().table("message").insertColumns("topic", "data", "group").value(DbExpr.question, DbExpr.question, DbExpr.question).batchInsert(params, 3)// 每次只处理3个参数
         }catch (e: Exception){
             ex = e
         }finally {
@@ -88,6 +100,28 @@ object AddMessageRequestHandler : IRpcRequestHandler {
                 SubscribeTopicRequestHandler.pushMessageToConsumers(msg)
             }
         }
+    }
+
+    private fun addMessageParams(msg: Message, params: MutableList<Any?>){
+        // 单播
+        if(msg.group != "*"){
+            addMessageParams(params, msg, msg.group)
+            return
+        }
+
+        // 广播
+        val groups = topic2group[msg.topic] // 获得当前主题对应的分组
+        if(groups.isNullOrEmpty())
+            throw MqException("当前主题[${msg.topic}]没有对应的分组, 广播失败")
+
+        for(group in groups!!)
+            addMessageParams(params, msg, group)
+    }
+
+    private fun addMessageParams(params: MutableList<Any?>, msg: Message, group: String) {
+        params.add(msg.topic)
+        params.add(msg.data)
+        params.add(group)
     }
 
 }

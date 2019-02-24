@@ -2,7 +2,7 @@ package com.jksoa.mq.tests
 
 import com.jksoa.mq.MqProducer
 import com.jksoa.mq.common.Message
-import com.jksoa.mq.consumer.IMessageListener
+import com.jksoa.mq.consumer.IMqHandler
 import com.jksoa.mq.consumer.MqConsumer
 import com.jksoa.mq.producer.MqProducer
 import org.junit.Test
@@ -19,7 +19,7 @@ class MqTests {
      */
     @Test
     fun testProductor(){
-        MqProducer().produce(Message("myEvent", "xxx"))
+        MqProducer().produce(Message("topic1", "xxx"))
     }
 
     /**
@@ -27,8 +27,8 @@ class MqTests {
      */
     @Test
     fun testConsumer(){
-        // 监听消息
-        MqConsumer().addEventListener("myEvent", object: IMessageListener {
+        // 订阅主题
+        MqConsumer.subscribeTopic("topic1", object: IMqHandler {
             override fun handleMessage(msg: Message) {
                 println("收到消息: $msg")
             }
