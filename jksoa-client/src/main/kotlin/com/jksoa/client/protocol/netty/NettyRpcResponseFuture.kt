@@ -1,6 +1,6 @@
 package com.jksoa.client.protocol.netty
 
-import com.jksoa.common.CommonTimer
+import com.jksoa.common.CommonMilliTimer
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.IRpcResponse
 import com.jksoa.common.clientLogger
@@ -29,7 +29,7 @@ class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
     /**
      * 超时定时器
      */
-    protected var timeout: Timeout = CommonTimer.newTimeout(object : TimerTask {
+    protected var timeout: Timeout = CommonMilliTimer.newTimeout(object : TimerTask {
         override fun run(timeout: Timeout) {
             handleExpired()
         }

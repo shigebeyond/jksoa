@@ -2,7 +2,7 @@ package com.jksoa.mq.common
 
 import com.jkmvc.common.drainTo
 import com.jksoa.common.CommonThreadPool
-import com.jksoa.common.CommonTimer
+import com.jksoa.common.CommonMilliTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import java.util.*
@@ -35,7 +35,7 @@ abstract class QueueFlusher<E> (protected val flushTimeoutMillis: Long /* 触发
     /**
      * 刷盘的定时任务
      */
-    private var flushTimeout: Timeout = CommonTimer.newTimeout(object : TimerTask {
+    private var flushTimeout: Timeout = CommonMilliTimer.newTimeout(object : TimerTask {
         override fun run(timeout: Timeout) {
             flush()
         }

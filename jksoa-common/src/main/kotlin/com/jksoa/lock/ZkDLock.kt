@@ -4,7 +4,7 @@ package com.jksoa.lock
 import com.jkmvc.common.Application
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jksoa.common.CommonTimer
+import com.jksoa.common.CommonMilliTimer
 import com.jksoa.common.zk.ZkClientFactory
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
@@ -92,7 +92,7 @@ class ZkDLock(public override val name: String /* 锁标识 */,
         // 取消旧的过期任务
         expireTimeout?.cancel()
         // 创建新的过期任务
-        expireTimeout = CommonTimer.newTimeout(object : TimerTask {
+        expireTimeout = CommonMilliTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
                 // 清空定时任务
                 expireTimeout = null

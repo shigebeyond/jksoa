@@ -1,11 +1,13 @@
 package com.jksoa.job.trigger
 
-import com.jkmvc.common.*
+import com.jkmvc.common.DirtyFlagMap
+import com.jkmvc.common.add
+import com.jkmvc.common.format
+import com.jksoa.common.CommonSecondTimer
 import com.jksoa.common.CommonThreadPool
 import com.jksoa.job.IJob
 import com.jksoa.job.ITrigger
 import com.jksoa.job.jobLogger
-import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import java.util.*
@@ -18,22 +20,6 @@ import kotlin.collections.HashMap
  * @date 2019-01-21 2:58 PM
  */
 abstract class BaseTrigger : ITrigger {
-
-    companion object {
-
-        /**
-         * 作业触发配置
-         */
-        public val config: IConfig = Config.instance("job", "yaml")
-
-        /**
-         * 定时器
-         */
-        internal val timer: HashedWheelTimer by lazy{
-            HashedWheelTimer(config["tickDurationMillis"]!!, TimeUnit.MILLISECONDS, config["ticksPerWheel"]!!)
-        }
-
-    }
 
     /**
      * 当前触发次数
@@ -50,6 +36,11 @@ abstract class BaseTrigger : ITrigger {
      * 作业属性
      */
     protected val jobAttrs: MutableMap<Long, DirtyFlagMap<String, Any?>> = HashMap()
+
+    /**
+     * 定时任务
+     */
+    protected var timeout: Timeout? = null
 
     /**
      * 添加作业
@@ -69,7 +60,7 @@ abstract class BaseTrigger : ITrigger {
 
         jobLogger.debug("下一轮的等待毫秒数: $delayMillis, 当前时间 = " + Date().format() + ", 下一轮时间 = " + Date().add(Calendar.MILLISECOND, delayMillis.toInt()).format())
         // 添加定时器
-        timer.newTimeout(object : TimerTask {
+        CommonSecondTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
                 // 执行作业
                 executeJob()
@@ -141,7 +132,7 @@ abstract class BaseTrigger : ITrigger {
      * @param 是否等待作业完成
      */
     public override fun shutdown(waitForJobsToComplete: Boolean){
-        // 停止定时器
-        timer.stop()
+        // 删掉定时任务
+        timeout?.cancel()
     }
 }
