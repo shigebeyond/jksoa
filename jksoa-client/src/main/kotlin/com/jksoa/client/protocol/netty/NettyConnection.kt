@@ -1,7 +1,7 @@
 package com.jksoa.client.protocol.netty
 
 import com.jkmvc.common.Application
-import com.jksoa.client.connection.BasicConnection
+import com.jksoa.client.connection.BaseConnection
 import com.jksoa.common.IRpcRequest
 import com.jksoa.common.Url
 import com.jksoa.common.clientLogger
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1) : BasicConnection(url, weight) {
+class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1) : BaseConnection(url, weight) {
 
     companion object{
 

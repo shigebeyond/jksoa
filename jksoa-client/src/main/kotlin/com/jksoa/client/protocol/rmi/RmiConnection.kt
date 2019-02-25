@@ -7,7 +7,7 @@ import com.jksoa.common.Url
 import com.jksoa.common.exception.RpcClientException
 import com.jksoa.common.future.CompletedRpcResponseFuture
 import com.jksoa.common.future.IRpcResponseFuture
-import com.jksoa.client.connection.BasicConnection
+import com.jksoa.client.connection.BaseConnection
 import javax.naming.InitialContext
 
 /**
@@ -17,7 +17,7 @@ import javax.naming.InitialContext
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  */
-class RmiConnection(url: Url): BasicConnection(url){
+class RmiConnection(url: Url): BaseConnection(url){
 
     /**
      * 命名空间
