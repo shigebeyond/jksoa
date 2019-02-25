@@ -16,7 +16,7 @@ import com.jksoa.common.future.IRpcResponseFuture
  * @author shijianhang
  * @create 2017-12-15 下午9:25
  **/
-class LocalConnection(url: Url): BasicConnection(url){
+class LocalConnection(url: Url): BaseConnection(url){
 
     /**
      * 客户端发送请求

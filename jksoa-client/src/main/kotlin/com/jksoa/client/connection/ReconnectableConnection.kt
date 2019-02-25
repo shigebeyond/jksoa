@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-14 12:48 PM
  */
-class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : BasicConnection(url, weight) {
+class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
 
     companion object{
         /**
@@ -45,7 +45,7 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
     /**
      * 被代理的连接
      */
-    protected var conn: BasicConnection? = null
+    protected var conn: BaseConnection? = null
 
     /**
      * 引用数
@@ -79,14 +79,14 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
      * 获得连接或重新连接
      * @return
      */
-    protected fun getOrReConnect(): BasicConnection {
+    protected fun getOrReConnect(): BaseConnection {
         if(conn == null){
             synchronized(this){
                 if(conn == null) {
                     // 根据rpc协议获得对应的client
                     val client = IRpcClient.instance(url.protocol)
                     // 连接server
-                    conn = client.connect(url) as BasicConnection
+                    conn = client.connect(url) as BaseConnection
                     // 连接关闭回调
                     conn!!.closeCallback = {
                         onConnectionClosed()
