@@ -1,8 +1,8 @@
-package com.jksoa.client.connection
+package net.jkcode.jksoa.client.connection
 
-import com.jksoa.client.IConnection
-import com.jksoa.common.IRpcRequest
-import com.jksoa.registry.IDiscoveryListener
+import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.registry.IDiscoveryListener
 
 /**
  * rpc连接集中器

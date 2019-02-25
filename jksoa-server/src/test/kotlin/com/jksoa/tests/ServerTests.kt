@@ -1,9 +1,9 @@
-package com.jksoa.tests
+package net.jkcode.jksoa.tests
 
 import com.jkmvc.common.Config
-import com.jksoa.common.Url
-import com.jksoa.server.protocol.netty.NettyServer
-import com.jksoa.server.protocol.rmi.RmiServer
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.server.protocol.netty.NettyServer
+import net.jkcode.jksoa.server.protocol.rmi.RmiServer
 import getIntranetHost
 import org.junit.Test
 
@@ -19,7 +19,7 @@ class ServerTests {
     @Test
     fun testUrl(){
         val config = Config.instance("server", "yaml")
-        val url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!, "com.jksoa.example.IExampleService", config.getMap("parameters", emptyMap<String, Any?>())!!)
+        val url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!, "net.jkcode.jksoa.example.IExampleService", config.getMap("parameters", emptyMap<String, Any?>())!!)
         println(url)
     }
 

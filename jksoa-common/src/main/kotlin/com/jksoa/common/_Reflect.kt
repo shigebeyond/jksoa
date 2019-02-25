@@ -1,9 +1,9 @@
-package com.jksoa.common
+package net.jkcode.jksoa.common
 
 import com.jkmvc.common.isSuperClass
-import com.jksoa.common.annotation.ServiceMeta
-import com.jksoa.common.annotation.ServiceMethodMeta
-import com.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.annotation.ServiceMeta
+import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
+import net.jkcode.jksoa.common.exception.RpcClientException
 import java.lang.reflect.Method
 
 /**

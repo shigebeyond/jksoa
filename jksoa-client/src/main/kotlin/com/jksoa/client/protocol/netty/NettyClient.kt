@@ -1,15 +1,15 @@
-package com.jksoa.client.protocol.netty
+package net.jkcode.jksoa.client.protocol.netty
 
 import com.jkmvc.closing.ClosingOnShutdown
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jksoa.client.IConnection
-import com.jksoa.client.IRpcClient
-import com.jksoa.client.protocol.netty.codec.NettyMessageDecoder
-import com.jksoa.client.protocol.netty.codec.NettyMessageEncoder
-import com.jksoa.common.Url
-import com.jksoa.common.clientLogger
-import com.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.client.IRpcClient
+import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageDecoder
+import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageEncoder
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.exception.RpcClientException
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup

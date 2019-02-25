@@ -1,7 +1,7 @@
-package com.jksoa.common.loader
+package net.jkcode.jksoa.common.loader
 
 import com.jkmvc.common.*
-import com.jksoa.common.IService
+import net.jkcode.jksoa.common.IService
 
 /**
  * 加载服务类
@@ -31,7 +31,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      */
     public fun load(){
         // 系统的service包
-        addPackage("com.jksoa.service")
+        addPackage("net.jkcode.jksoa.service")
         // 用户定义的service包
         addPackages(config["servicePackages"]!!)
     }

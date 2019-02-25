@@ -1,6 +1,6 @@
-package com.jksoa.job
+package net.jkcode.jksoa.job
 
-import com.jksoa.common.serverLogger
+import net.jkcode.jksoa.common.serverLogger
 
 /**
  * 测试的bean类

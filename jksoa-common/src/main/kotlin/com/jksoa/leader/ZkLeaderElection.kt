@@ -1,11 +1,11 @@
-package com.jksoa.leader
+package net.jkcode.jksoa.leader
 
 import com.jkmvc.closing.ClosingOnShutdown
 import com.jkmvc.common.Application
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jksoa.common.commonLogger
-import com.jksoa.common.zk.ZkClientFactory
+import net.jkcode.jksoa.common.commonLogger
+import net.jkcode.jksoa.common.zk.ZkClientFactory
 import org.I0Itec.zkclient.IZkDataListener
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNoNodeException

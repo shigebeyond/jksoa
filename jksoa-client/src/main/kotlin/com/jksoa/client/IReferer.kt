@@ -1,6 +1,6 @@
-package com.jksoa.client
+package net.jkcode.jksoa.client
 
-import com.jksoa.common.loader.IServiceClass
+import net.jkcode.jksoa.common.loader.IServiceClass
 import java.io.Closeable
 
 /**

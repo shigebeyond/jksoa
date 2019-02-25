@@ -1,8 +1,8 @@
-package com.jksoa.server
+package net.jkcode.jksoa.server
 
-import com.jksoa.common.IService
-import com.jksoa.common.loader.IServiceClass
-import com.jksoa.common.Url
+import net.jkcode.jksoa.common.IService
+import net.jkcode.jksoa.common.loader.IServiceClass
+import net.jkcode.jksoa.common.Url
 
 /**
  * 服务提供者

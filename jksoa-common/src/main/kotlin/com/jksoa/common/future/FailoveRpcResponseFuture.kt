@@ -1,10 +1,10 @@
-package com.jksoa.common.future
+package net.jkcode.jksoa.common.future
 
 import com.jkmvc.future.Callbackable
 import com.jkmvc.future.IFutureCallback
-import com.jksoa.common.IRpcResponse
-import com.jksoa.common.clientLogger
-import com.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.IRpcResponse
+import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.exception.RpcClientException
 import java.util.concurrent.TimeUnit
 
 /**

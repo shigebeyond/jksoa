@@ -1,10 +1,10 @@
-package com.jksoa.mq.consumer.client
+package net.jkcode.jksoa.mq.consumer.client
 
-import com.jksoa.client.protocol.netty.NettyClient
-import com.jksoa.client.protocol.netty.NettyResponseHandler
-import com.jksoa.mq.consumer.MqConsumer
-import com.jksoa.server.protocol.netty.NettyRequestHandler
-import com.jksoa.server.provider.ProviderLoader
+import net.jkcode.jksoa.client.protocol.netty.NettyClient
+import net.jkcode.jksoa.client.protocol.netty.NettyResponseHandler
+import net.jkcode.jksoa.mq.consumer.MqConsumer
+import net.jkcode.jksoa.server.protocol.netty.NettyRequestHandler
+import net.jkcode.jksoa.server.provider.ProviderLoader
 import io.netty.channel.ChannelHandler
 
 /**

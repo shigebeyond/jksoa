@@ -1,13 +1,13 @@
-package com.jksoa.tests
+package net.jkcode.jksoa.tests
 
 import com.jkmvc.common.getRootResource
-import com.jksoa.client.dispatcher.RcpRequestDispatcher
-import com.jksoa.client.referer.Referer
-import com.jksoa.common.ShardingRpcRequest
-import com.jksoa.common.Url
-import com.jksoa.example.IExampleService
-import com.jksoa.example.ISystemService
-import com.jksoa.client.protocol.netty.NettyClient
+import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
+import net.jkcode.jksoa.client.referer.Referer
+import net.jkcode.jksoa.common.ShardingRpcRequest
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.example.IExampleService
+import net.jkcode.jksoa.example.ISystemService
+import net.jkcode.jksoa.client.protocol.netty.NettyClient
 import org.junit.Test
 
 /**
@@ -19,7 +19,7 @@ class ClientTests {
 
     @Test
     fun testScanClass(){
-        val pck = "com.jksoa.example";
+        val pck = "net.jkcode.jksoa.example";
         val cld = Thread.currentThread().contextClassLoader
         println("classLoader根目录: " + cld.getRootResource().path)
         // 获得该包的所有资源
@@ -31,7 +31,7 @@ class ClientTests {
         /*
         输出结果:
         classLoader根目录: /oldhome/shi/code/java/jksoa/jksoa-client/out/test/classes/
-        包com.jksoa.example下的文件:
+        包net.jkcode.jksoa.example下的文件:
             file:/oldhome/shi/code/java/jksoa/jksoa-client/out/production/classes/com/jksoa/example
         */
     }
@@ -39,12 +39,12 @@ class ClientTests {
     @Test
     fun testClient(){
         val client = NettyClient()
-        val url1 = Url("netty://192.168.61.200:9080/com.jksoa.example.IEchoService?weight=1")
+        val url1 = Url("netty://192.168.61.200:9080/net.jkcode.jksoa.example.IEchoService?weight=1")
         val conn1 = client.connect(url1)
         println(conn1)
         Thread(object: Runnable{
             override fun run() {
-                val url2 = Url("netty://192.168.61.200:9080/com.jksoa.example.IEchoService?weight=1")
+                val url2 = Url("netty://192.168.61.200:9080/net.jkcode.jksoa.example.IEchoService?weight=1")
                 val conn2 = client.connect(url2)
                 println(conn2)
             }

@@ -1,4 +1,4 @@
-package com.jksoa.common.annotation
+package net.jkcode.jksoa.common.annotation
 
 /**
  * 服务元数据的注解

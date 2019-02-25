@@ -1,7 +1,7 @@
-package com.jksoa.client.connection
+package net.jkcode.jksoa.client.connection
 
-import com.jksoa.client.IConnection
-import com.jksoa.common.*
+import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.common.*
 
 /**
  * 可复用的rpc连接

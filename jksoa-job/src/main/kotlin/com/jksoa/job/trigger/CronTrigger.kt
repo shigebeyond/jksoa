@@ -1,4 +1,4 @@
-package com.jksoa.job.trigger
+package net.jkcode.jksoa.job.trigger
 
 import java.util.*
 

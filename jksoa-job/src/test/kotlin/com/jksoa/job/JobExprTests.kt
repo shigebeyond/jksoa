@@ -1,10 +1,10 @@
-package com.jksoa.job
+package net.jkcode.jksoa.job
 
-import com.jksoa.example.ISystemService
-import com.jksoa.job.job.local.LpcJob
-import com.jksoa.job.job.local.ShardingLpcJob
-import com.jksoa.job.job.remote.RpcJob
-import com.jksoa.job.job.remote.ShardingRpcJob
+import net.jkcode.jksoa.example.ISystemService
+import net.jkcode.jksoa.job.job.local.LpcJob
+import net.jkcode.jksoa.job.job.local.ShardingLpcJob
+import net.jkcode.jksoa.job.job.remote.RpcJob
+import net.jkcode.jksoa.job.job.remote.ShardingRpcJob
 import org.junit.Test
 
 /**

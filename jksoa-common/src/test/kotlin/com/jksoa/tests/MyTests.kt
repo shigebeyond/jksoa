@@ -1,10 +1,10 @@
-package com.jksoa.tests
+package net.jkcode.jksoa.tests
 
 import com.jkmvc.common.format
 import com.jkmvc.common.generateId
-import com.jksoa.common.Url
-import com.jksoa.example.ISystemService
-import com.jksoa.leader.ZkLeaderElection
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.example.ISystemService
+import net.jkcode.jksoa.leader.ZkLeaderElection
 import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
@@ -23,7 +23,7 @@ class MyTests {
 
     @Test
     fun testUrl(){
-        val url = Url("http", "localhost", 8080, "com.jksoa.example.IExampleService", mapOf("name" to "shi", "age" to 1))
+        val url = Url("http", "localhost", 8080, "net.jkcode.jksoa.example.IExampleService", mapOf("name" to "shi", "age" to 1))
         println(url)
     }
 

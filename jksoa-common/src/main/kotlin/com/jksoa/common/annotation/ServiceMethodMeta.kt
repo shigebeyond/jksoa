@@ -1,6 +1,6 @@
-package com.jksoa.common.annotation
+package net.jkcode.jksoa.common.annotation
 
-import com.jksoa.common.DefaultRequestTimeoutMillis
+import net.jkcode.jksoa.common.DefaultRequestTimeoutMillis
 
 /**
  * 服务方法的元数据的注解

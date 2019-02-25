@@ -1,12 +1,12 @@
-package com.jksoa.common
+package net.jkcode.jksoa.common
 
 import org.slf4j.LoggerFactory
 
 // 公用的日志
-val commonLogger = LoggerFactory.getLogger("com.jksoa.common")
+val commonLogger = LoggerFactory.getLogger("net.jkcode.jksoa.common")
 // 注册中心的日志
-val registerLogger = LoggerFactory.getLogger("com.jksoa.registry")
+val registerLogger = LoggerFactory.getLogger("net.jkcode.jksoa.registry")
 // 客户端的日志
-val clientLogger = LoggerFactory.getLogger("com.jksoa.client")
+val clientLogger = LoggerFactory.getLogger("net.jkcode.jksoa.client")
 // 服务端的日志
-val serverLogger = LoggerFactory.getLogger("com.jksoa.server")
+val serverLogger = LoggerFactory.getLogger("net.jkcode.jksoa.server")

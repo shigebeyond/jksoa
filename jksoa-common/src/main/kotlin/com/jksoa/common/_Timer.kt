@@ -1,4 +1,4 @@
-package com.jksoa.common
+package net.jkcode.jksoa.common
 
 import com.jkmvc.closing.ClosingOnShutdown
 import io.netty.util.HashedWheelTimer

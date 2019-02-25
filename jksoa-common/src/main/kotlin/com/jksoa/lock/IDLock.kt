@@ -1,4 +1,4 @@
-package com.jksoa.lock
+package net.jkcode.jksoa.lock
 
 import com.jkmvc.common.time
 

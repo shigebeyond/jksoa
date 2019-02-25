@@ -1,4 +1,4 @@
-package com.jksoa.mq.common
+package net.jkcode.jksoa.mq.common
 
 /**
  * 消息异常

@@ -1,8 +1,8 @@
-package com.jksoa.job
+package net.jkcode.jksoa.job
 
 import com.jkmvc.common.format
-import com.jksoa.job.trigger.CronTrigger
-import com.jksoa.job.trigger.PeriodicTrigger
+import net.jkcode.jksoa.job.trigger.CronTrigger
+import net.jkcode.jksoa.job.trigger.PeriodicTrigger
 import org.junit.After
 import org.junit.Before
 import java.util.*

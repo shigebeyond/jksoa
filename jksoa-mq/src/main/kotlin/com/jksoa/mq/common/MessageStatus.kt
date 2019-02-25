@@ -1,4 +1,4 @@
-package com.jksoa.mq.common
+package net.jkcode.jksoa.mq.common
 
 /**
  * 消息状态：0 未处理 1 锁定 2 完成 3 失败(超过时间或超过重试次数)

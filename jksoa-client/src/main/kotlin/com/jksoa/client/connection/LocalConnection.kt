@@ -1,12 +1,12 @@
-package com.jksoa.client.connection
+package net.jkcode.jksoa.client.connection
 
-import com.jksoa.client.referer.Referer
-import com.jksoa.client.referer.RefererLoader
-import com.jksoa.common.*
-import com.jksoa.common.exception.RpcClientException
-import com.jksoa.common.exception.RpcServerException
-import com.jksoa.common.future.CompletedRpcResponseFuture
-import com.jksoa.common.future.IRpcResponseFuture
+import net.jkcode.jksoa.client.referer.Referer
+import net.jkcode.jksoa.client.referer.RefererLoader
+import net.jkcode.jksoa.common.*
+import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.exception.RpcServerException
+import net.jkcode.jksoa.common.future.CompletedRpcResponseFuture
+import net.jkcode.jksoa.common.future.IRpcResponseFuture
 
 /**
  * 本地的rpc连接

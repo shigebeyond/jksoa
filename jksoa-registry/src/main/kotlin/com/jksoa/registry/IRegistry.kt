@@ -1,7 +1,7 @@
-package com.jksoa.registry
+package net.jkcode.jksoa.registry
 
-import com.jksoa.registry.IDiscovery
-import com.jksoa.common.Url
+import net.jkcode.jksoa.registry.IDiscovery
+import net.jkcode.jksoa.common.Url
 
 
 /**

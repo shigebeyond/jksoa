@@ -1,8 +1,8 @@
-package com.jksoa.registry.zk.listener
+package net.jkcode.jksoa.registry.zk.listener
 
-import com.jksoa.common.Url
-import com.jksoa.common.registerLogger
-import com.jksoa.registry.IDiscoveryListener
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.registerLogger
+import net.jkcode.jksoa.registry.IDiscoveryListener
 import org.I0Itec.zkclient.IZkDataListener
 
 /**

@@ -1,13 +1,13 @@
-package com.jksoa.client.protocol.rmi
+package net.jkcode.jksoa.client.protocol.rmi
 
-import com.jksoa.client.referer.RefererLoader
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.RpcResponse
-import com.jksoa.common.Url
-import com.jksoa.common.exception.RpcClientException
-import com.jksoa.common.future.CompletedRpcResponseFuture
-import com.jksoa.common.future.IRpcResponseFuture
-import com.jksoa.client.connection.BaseConnection
+import net.jkcode.jksoa.client.referer.RefererLoader
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.RpcResponse
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.future.CompletedRpcResponseFuture
+import net.jkcode.jksoa.common.future.IRpcResponseFuture
+import net.jkcode.jksoa.client.connection.BaseConnection
 import javax.naming.InitialContext
 
 /**

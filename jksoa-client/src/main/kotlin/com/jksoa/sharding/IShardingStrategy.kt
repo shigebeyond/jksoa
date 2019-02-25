@@ -1,4 +1,4 @@
-package com.jksoa.sharding
+package net.jkcode.jksoa.sharding
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig

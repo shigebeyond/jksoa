@@ -1,14 +1,14 @@
-package com.jksoa.client.connection
+package net.jkcode.jksoa.client.connection
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jkmvc.common.getOrPutOnce
 import com.jkmvc.common.time
-import com.jksoa.client.IRpcClient
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.IUrl
-import com.jksoa.common.Url
-import com.jksoa.common.future.IRpcResponseFuture
+import net.jkcode.jksoa.client.IRpcClient
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.IUrl
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 

@@ -1,6 +1,6 @@
-package com.jksoa.common
+package net.jkcode.jksoa.common
 
-import com.jksoa.common.invocation.IInvocation
+import net.jkcode.jksoa.common.invocation.IInvocation
 import java.io.Serializable
 
 /**

@@ -17,7 +17,7 @@ buildscript {
 
 // 所有工程
 allprojects{
-    group 'com.jksoa'
+    group 'net.jkcode.jksoa'
     version '1.0-SNAPSHOT'
 }
 

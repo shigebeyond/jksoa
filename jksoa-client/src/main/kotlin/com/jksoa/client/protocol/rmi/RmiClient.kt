@@ -1,9 +1,9 @@
-package com.jksoa.client.protocol.rmi
+package net.jkcode.jksoa.client.protocol.rmi
 
-import com.jksoa.common.Url
-import com.jksoa.common.exception.RpcClientException
-import com.jksoa.client.IConnection
-import com.jksoa.client.IRpcClient
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.client.IRpcClient
 
 /**
  * rmi协议-客户端

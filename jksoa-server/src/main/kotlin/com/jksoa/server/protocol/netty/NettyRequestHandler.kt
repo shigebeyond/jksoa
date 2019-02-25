@@ -1,9 +1,9 @@
-package com.jksoa.server.protocol.netty
+package net.jkcode.jksoa.server.protocol.netty
 
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.clientLogger
-import com.jksoa.common.serverLogger
-import com.jksoa.server.handler.RpcRequestHandler
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.serverLogger
+import net.jkcode.jksoa.server.handler.RpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleState

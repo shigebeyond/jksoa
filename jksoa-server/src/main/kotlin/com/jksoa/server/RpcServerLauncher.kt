@@ -1,4 +1,4 @@
-package com.jksoa.server
+package net.jkcode.jksoa.server
 
 import com.jkmvc.common.Config
 

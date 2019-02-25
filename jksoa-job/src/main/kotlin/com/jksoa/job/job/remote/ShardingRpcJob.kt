@@ -1,11 +1,11 @@
-package com.jksoa.job.job.remote
+package net.jkcode.jksoa.job.job.remote
 
-import com.jksoa.client.dispatcher.IRpcRequestDispatcher
-import com.jksoa.client.dispatcher.RcpRequestDispatcher
-import com.jksoa.common.ShardingRpcRequest
-import com.jksoa.common.invocation.IShardingInvocation
-import com.jksoa.job.IJob
-import com.jksoa.job.IJobExecutionContext
+import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
+import net.jkcode.jksoa.common.ShardingRpcRequest
+import net.jkcode.jksoa.common.invocation.IShardingInvocation
+import net.jkcode.jksoa.job.IJob
+import net.jkcode.jksoa.job.IJobExecutionContext
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod

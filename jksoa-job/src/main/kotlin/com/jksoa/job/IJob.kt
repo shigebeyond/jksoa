@@ -1,4 +1,4 @@
-package com.jksoa.job
+package net.jkcode.jksoa.job
 
 /**
  * 作业

@@ -1,13 +1,13 @@
-package com.jksoa.client.connection
+package net.jkcode.jksoa.client.connection
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.getOrPutOnce
-import com.jksoa.client.IConnection
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.Url
-import com.jksoa.common.clientLogger
-import com.jksoa.common.exception.RpcClientException
-import com.jksoa.loadbalance.ILoadBalanceStrategy
+import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.loadbalance.ILoadBalanceStrategy
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.HashMap

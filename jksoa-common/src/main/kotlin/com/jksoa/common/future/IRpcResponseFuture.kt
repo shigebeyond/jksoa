@@ -1,7 +1,7 @@
-package com.jksoa.common.future
+package net.jkcode.jksoa.common.future
 
 import com.jkmvc.future.ICallbackable
-import com.jksoa.common.IRpcResponse
+import net.jkcode.jksoa.common.IRpcResponse
 import java.util.concurrent.Future
 
 /**

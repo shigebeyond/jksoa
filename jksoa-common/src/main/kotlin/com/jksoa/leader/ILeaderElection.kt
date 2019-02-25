@@ -1,4 +1,4 @@
-package com.jksoa.leader
+package net.jkcode.jksoa.leader
 
 /**
  * 选举领导者接口

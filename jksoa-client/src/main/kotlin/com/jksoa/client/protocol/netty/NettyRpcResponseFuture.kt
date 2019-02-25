@@ -1,10 +1,10 @@
-package com.jksoa.client.protocol.netty
+package net.jkcode.jksoa.client.protocol.netty
 
-import com.jksoa.common.CommonMilliTimer
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.IRpcResponse
-import com.jksoa.common.clientLogger
-import com.jksoa.common.future.RpcResponseFuture
+import net.jkcode.jksoa.common.CommonMilliTimer
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.IRpcResponse
+import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.future.RpcResponseFuture
 import io.netty.channel.Channel
 import io.netty.util.Timeout
 import io.netty.util.TimerTask

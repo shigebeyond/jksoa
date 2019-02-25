@@ -1,8 +1,8 @@
-package com.jksoa.client.dispatcher
+package net.jkcode.jksoa.client.dispatcher
 
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.IRpcResponse
-import com.jksoa.common.IShardingRpcRequest
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.IRpcResponse
+import net.jkcode.jksoa.common.IShardingRpcRequest
 
 /**
  * 请求分发者

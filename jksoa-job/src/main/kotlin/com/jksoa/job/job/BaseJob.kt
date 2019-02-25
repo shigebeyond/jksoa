@@ -1,7 +1,7 @@
-package com.jksoa.job.job
+package net.jkcode.jksoa.job.job
 
 import com.jkmvc.common.generateId
-import com.jksoa.job.IJob
+import net.jkcode.jksoa.job.IJob
 
 /**
  * 基础作业

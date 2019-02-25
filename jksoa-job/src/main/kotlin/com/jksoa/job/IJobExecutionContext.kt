@@ -1,4 +1,4 @@
-package com.jksoa.job
+package net.jkcode.jksoa.job
 
 import com.jkmvc.common.DirtyFlagMap
 import java.util.*

@@ -1,14 +1,14 @@
-package com.jksoa.mq.broker.server
+package net.jkcode.jksoa.mq.broker.server
 
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.exception.RpcServerException
-import com.jksoa.common.serverLogger
-import com.jksoa.mq.broker.IMqBroker
-import com.jksoa.mq.broker.server.handler.AddMessageRequestHandler
-import com.jksoa.mq.broker.server.handler.SubscribeTopicRequestHandler
-import com.jksoa.server.handler.IRpcRequestHandler
-import com.jksoa.server.handler.RpcRequestHandler
-import com.jksoa.server.protocol.netty.NettyRequestHandler
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.exception.RpcServerException
+import net.jkcode.jksoa.common.serverLogger
+import net.jkcode.jksoa.mq.broker.IMqBroker
+import net.jkcode.jksoa.mq.broker.server.handler.AddMessageRequestHandler
+import net.jkcode.jksoa.mq.broker.server.handler.SubscribeTopicRequestHandler
+import net.jkcode.jksoa.server.handler.IRpcRequestHandler
+import net.jkcode.jksoa.server.handler.RpcRequestHandler
+import net.jkcode.jksoa.server.protocol.netty.NettyRequestHandler
 import io.netty.channel.ChannelHandlerContext
 
 /**
@@ -27,7 +27,7 @@ class MqNettyRequestHandler : NettyRequestHandler() {
          */
         public val handlers: Map<String, IRpcRequestHandler> = mapOf(
               "subscribeTopic(String)" to SubscribeTopicRequestHandler,
-              "addMessage(com.jksoa.mq.common.Message)" to AddMessageRequestHandler
+              "addMessage(net.jkcode.jksoa.mq.common.Message)" to AddMessageRequestHandler
         )
     }
 

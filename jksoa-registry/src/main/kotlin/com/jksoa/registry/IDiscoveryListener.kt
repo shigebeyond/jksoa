@@ -1,6 +1,6 @@
-package com.jksoa.registry
+package net.jkcode.jksoa.registry
 
-import com.jksoa.common.Url
+import net.jkcode.jksoa.common.Url
 
 /**
  * 服务发现的监听器：监听服务地址变化

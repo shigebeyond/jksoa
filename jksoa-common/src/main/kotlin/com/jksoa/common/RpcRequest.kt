@@ -1,8 +1,8 @@
-package com.jksoa.common
+package net.jkcode.jksoa.common
 
 import com.jkmvc.common.generateId
 import com.jkmvc.common.getSignature
-import com.jksoa.common.annotation.realRequestTimeoutMillis
+import net.jkcode.jksoa.common.annotation.realRequestTimeoutMillis
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod

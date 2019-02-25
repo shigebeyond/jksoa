@@ -1,7 +1,7 @@
-package com.jksoa.common
+package net.jkcode.jksoa.common
 
-import com.jksoa.common.exception.RpcBusinessException
-import com.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.exception.RpcBusinessException
+import net.jkcode.jksoa.common.exception.RpcClientException
 
 /**
  * rpc响应

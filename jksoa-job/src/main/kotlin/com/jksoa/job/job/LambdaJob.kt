@@ -1,6 +1,6 @@
-package com.jksoa.job.job
+package net.jkcode.jksoa.job.job
 
-import com.jksoa.job.IJobExecutionContext
+import net.jkcode.jksoa.job.IJobExecutionContext
 
 /**
  * 用lambda封装内容的作业

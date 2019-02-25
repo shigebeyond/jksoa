@@ -1,6 +1,6 @@
-package com.jksoa.mq.broker.pusher
+package net.jkcode.jksoa.mq.broker.pusher
 
-import com.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.Message
 
 /**
  * 消费推送者

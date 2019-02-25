@@ -1,7 +1,7 @@
 # 协议类型
 client: # 客户端的实现类
-    rmi: com.jksoa.protocol.rmi.RmiClient
-    netty: com.jksoa.mq.consumer.client.MqClient
+    rmi: net.jkcode.jksoa.protocol.rmi.RmiClient
+    netty: net.jkcode.jksoa.mq.consumer.client.MqClient
 server: # 服务端的实现类
-    rmi: com.jksoa.protocol.rmi.RmiServer
-    netty: com.jksoa.protocol.netty.NettyServer
+    rmi: net.jkcode.jksoa.protocol.rmi.RmiServer
+    netty: net.jkcode.jksoa.protocol.netty.NettyServer

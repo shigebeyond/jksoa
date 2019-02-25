@@ -1,8 +1,8 @@
-package com.jksoa.mq.common
+package net.jkcode.jksoa.mq.common
 
 import com.jkmvc.common.drainTo
-import com.jksoa.common.CommonThreadPool
-import com.jksoa.common.CommonMilliTimer
+import net.jkcode.jksoa.common.CommonThreadPool
+import net.jkcode.jksoa.common.CommonMilliTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import java.util.*

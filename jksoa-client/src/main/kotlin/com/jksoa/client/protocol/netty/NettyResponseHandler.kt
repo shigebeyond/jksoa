@@ -1,9 +1,9 @@
-package com.jksoa.client.protocol.netty
+package net.jkcode.jksoa.client.protocol.netty
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jksoa.common.RpcResponse
-import com.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.RpcResponse
+import net.jkcode.jksoa.common.clientLogger
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import java.nio.channels.ClosedChannelException

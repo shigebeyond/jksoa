@@ -1,11 +1,11 @@
-package com.jksoa.server.protocol.netty
+package net.jkcode.jksoa.server.protocol.netty
 
 import com.jkmvc.common.Config
-import com.jksoa.common.serverLogger
-import com.jksoa.server.IRpcServer
-import com.jksoa.client.protocol.netty.codec.NettyMessageDecoder
-import com.jksoa.client.protocol.netty.codec.NettyMessageEncoder
-import com.jksoa.server.provider.ProviderLoader
+import net.jkcode.jksoa.common.serverLogger
+import net.jkcode.jksoa.server.IRpcServer
+import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageDecoder
+import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageEncoder
+import net.jkcode.jksoa.server.provider.ProviderLoader
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup

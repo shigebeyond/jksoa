@@ -1,8 +1,8 @@
-package com.jksoa.job.trigger
+package net.jkcode.jksoa.job.trigger
 
 import com.jkmvc.common.format
-import com.jksoa.job.IJobExecutionContext
-import com.jksoa.job.ITrigger
+import net.jkcode.jksoa.job.IJobExecutionContext
+import net.jkcode.jksoa.job.ITrigger
 import java.util.*
 
 /**

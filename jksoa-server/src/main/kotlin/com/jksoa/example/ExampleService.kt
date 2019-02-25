@@ -1,4 +1,4 @@
-package com.jksoa.example
+package net.jkcode.jksoa.example
 
 import java.rmi.RemoteException
 

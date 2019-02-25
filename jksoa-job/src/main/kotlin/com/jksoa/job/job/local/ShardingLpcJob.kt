@@ -1,11 +1,11 @@
-package com.jksoa.job.job.local
+package net.jkcode.jksoa.job.job.local
 
 import com.jkmvc.common.getSignature
 import com.jkmvc.common.toExpr
-import com.jksoa.common.CommonThreadPool
-import com.jksoa.common.invocation.IShardingInvocation
-import com.jksoa.job.IJobExecutionContext
-import com.jksoa.job.trigger.BaseTrigger
+import net.jkcode.jksoa.common.CommonThreadPool
+import net.jkcode.jksoa.common.invocation.IShardingInvocation
+import net.jkcode.jksoa.job.IJobExecutionContext
+import net.jkcode.jksoa.job.trigger.BaseTrigger
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod

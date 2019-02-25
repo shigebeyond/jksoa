@@ -1,8 +1,8 @@
-package com.jksoa.mq.broker.server.connection
+package net.jkcode.jksoa.mq.broker.server.connection
 
-import com.jksoa.client.IConnection
-import com.jksoa.client.protocol.netty.NettyConnection
-import com.jksoa.mq.common.Message
+import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.client.protocol.netty.NettyConnection
+import net.jkcode.jksoa.mq.common.Message
 import io.netty.channel.Channel
 
 interface IConsumerConnectionHub {

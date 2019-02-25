@@ -1,8 +1,8 @@
-package com.jksoa.mq.broker.server
+package net.jkcode.jksoa.mq.broker.server
 
-import com.jksoa.client.protocol.netty.NettyResponseHandler
-import com.jksoa.server.protocol.netty.NettyRequestHandler
-import com.jksoa.server.protocol.netty.NettyServer
+import net.jkcode.jksoa.client.protocol.netty.NettyResponseHandler
+import net.jkcode.jksoa.server.protocol.netty.NettyRequestHandler
+import net.jkcode.jksoa.server.protocol.netty.NettyServer
 import io.netty.channel.ChannelHandler
 
 /**

@@ -1,7 +1,7 @@
-package com.jksoa.server.protocol.rmi
+package net.jkcode.jksoa.server.protocol.rmi
 
-import com.jksoa.server.IRpcServer
-import com.jksoa.server.provider.ProviderLoader
+import net.jkcode.jksoa.server.IRpcServer
+import net.jkcode.jksoa.server.provider.ProviderLoader
 import java.rmi.registry.LocateRegistry
 import javax.naming.InitialContext
 
@@ -26,7 +26,7 @@ class RmiServer : IRpcServer() {
         val namingContext = InitialContext()
         // 向命名空间注册远程服务实例 => 不需要RpcHandler作为中间转发，直接由rmi自行处理
         for (provider in ProviderLoader.getAll()){
-            // 注册url： rmi://192.168.0.106:8081/com.jksoa.example.IEchoService
+            // 注册url： rmi://192.168.0.106:8081/net.jkcode.jksoa.example.IEchoService
             namingContext.rebind(provider.serviceUrl.toString(), provider.service)
         }
 

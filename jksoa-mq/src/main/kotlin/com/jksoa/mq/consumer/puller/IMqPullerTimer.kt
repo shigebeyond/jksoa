@@ -1,6 +1,6 @@
-package com.jksoa.mq.consumer.puller
+package net.jkcode.jksoa.mq.consumer.puller
 
-import com.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.Message
 
 /**
  * 消费拉取者

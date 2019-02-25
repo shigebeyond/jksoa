@@ -1,7 +1,7 @@
-package com.jksoa.example
+package net.jkcode.jksoa.example
 
-import com.jksoa.common.IService
-import com.jksoa.common.annotation.ServiceMeta
+import net.jkcode.jksoa.common.IService
+import net.jkcode.jksoa.common.annotation.ServiceMeta
 import java.rmi.Remote
 import java.rmi.RemoteException
 import java.util.concurrent.Future

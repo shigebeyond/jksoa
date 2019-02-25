@@ -1,4 +1,4 @@
-package com.jksoa.common.exception
+package net.jkcode.jksoa.common.exception
 
 /**
  * rpc服务端异常

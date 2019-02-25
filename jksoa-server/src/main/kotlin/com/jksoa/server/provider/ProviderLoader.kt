@@ -1,13 +1,13 @@
-package com.jksoa.server.provider
+package net.jkcode.jksoa.server.provider
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jkmvc.common.getConstructorOrNull
 import com.jkmvc.common.isAbstract
-import com.jksoa.common.IService
-import com.jksoa.common.loader.ServiceClassLoader
-import com.jksoa.common.exception.RpcServerException
-import com.jksoa.server.IProvider
+import net.jkcode.jksoa.common.IService
+import net.jkcode.jksoa.common.loader.ServiceClassLoader
+import net.jkcode.jksoa.common.exception.RpcServerException
+import net.jkcode.jksoa.server.IProvider
 
 /**
  * 加载服务提供者

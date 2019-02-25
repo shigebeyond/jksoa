@@ -1,7 +1,7 @@
-package com.jksoa.job
+package net.jkcode.jksoa.job
 
 import com.jkmvc.common.DirtyFlagMap
-import com.jksoa.job.job.LambdaJob
+import net.jkcode.jksoa.job.job.LambdaJob
 
 /**
  * 作业的定时触发器

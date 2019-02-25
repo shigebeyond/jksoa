@@ -1,9 +1,9 @@
-package com.jksoa.common.future
+package net.jkcode.jksoa.common.future
 
 import com.jkmvc.common.Config
 import com.jkmvc.future.Callbackable
-import com.jksoa.common.IRpcResponse
-import com.jksoa.common.RpcResponse
+import net.jkcode.jksoa.common.IRpcResponse
+import net.jkcode.jksoa.common.RpcResponse
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException

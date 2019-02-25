@@ -1,11 +1,11 @@
-package com.jksoa.mq.consumer.subscriber
+package net.jkcode.jksoa.mq.consumer.subscriber
 
 import com.jkmvc.common.Config
-import com.jksoa.client.referer.Referer
-import com.jksoa.mq.broker.IMqBroker
-import com.jksoa.mq.common.Message
-import com.jksoa.mq.common.MqException
-import com.jksoa.mq.consumer.IMqHandler
+import net.jkcode.jksoa.client.referer.Referer
+import net.jkcode.jksoa.mq.broker.IMqBroker
+import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.MqException
+import net.jkcode.jksoa.mq.consumer.IMqHandler
 import java.util.concurrent.ConcurrentHashMap
 
 /**

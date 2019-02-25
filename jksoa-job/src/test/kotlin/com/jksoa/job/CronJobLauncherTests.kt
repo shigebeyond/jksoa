@@ -1,6 +1,6 @@
-package com.jksoa.job
+package net.jkcode.jksoa.job
 
-import com.jksoa.job.cronjob.CronJobLaucher
+import net.jkcode.jksoa.job.cronjob.CronJobLaucher
 import org.junit.Test
 
 /**
@@ -13,8 +13,8 @@ class CronJobLauncherTests: BaseTests() {
     @Test
     fun testLaunch(){
         try {
-            val cronJobExpr = "0/10 * * * * ? :lpc com.jksoa.job.LocalBean echo(String) (\\\"测试消息\\\")"
-            //val cronJobExpr = "0/10 * * * * ? :rpc com.jksoa.example.ISystemService echo(String) (\"测试消息\")"
+            val cronJobExpr = "0/10 * * * * ? :lpc net.jkcode.jksoa.job.LocalBean echo(String) (\\\"测试消息\\\")"
+            //val cronJobExpr = "0/10 * * * * ? :rpc net.jkcode.jksoa.example.ISystemService echo(String) (\"测试消息\")"
             trigger = CronJobLaucher.lauch(cronJobExpr)
         }catch (e: Exception){
             e.printStackTrace()

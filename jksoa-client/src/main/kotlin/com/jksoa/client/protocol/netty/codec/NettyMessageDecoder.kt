@@ -1,8 +1,8 @@
-package com.jksoa.client.protocol.netty.codec
+package net.jkcode.jksoa.client.protocol.netty.codec
 
 import com.jkmvc.common.Config
 import com.jkmvc.serialize.ISerializer
-import com.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.clientLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
 import io.netty.channel.ChannelHandlerContext

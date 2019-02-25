@@ -1,8 +1,8 @@
-package com.jksoa.mq.consumer
+package net.jkcode.jksoa.mq.consumer
 
-import com.jksoa.mq.common.Message
-import com.jksoa.mq.consumer.puller.MqPullerTimer
-import com.jksoa.mq.consumer.subscriber.IMqSubscriber
+import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.consumer.puller.MqPullerTimer
+import net.jkcode.jksoa.mq.consumer.subscriber.IMqSubscriber
 
 /**
  * 消息消费者

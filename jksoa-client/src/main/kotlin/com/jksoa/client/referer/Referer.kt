@@ -1,12 +1,12 @@
-package com.jksoa.client.referer
+package net.jkcode.jksoa.client.referer
 
-import com.jksoa.client.IReferer
-import com.jksoa.client.connection.ConnectionHub
-import com.jksoa.common.IService
-import com.jksoa.common.clientLogger
-import com.jksoa.common.exception.RpcClientException
-import com.jksoa.registry.IRegistry
-import com.jksoa.registry.zk.ZkRegistry
+import net.jkcode.jksoa.client.IReferer
+import net.jkcode.jksoa.client.connection.ConnectionHub
+import net.jkcode.jksoa.common.IService
+import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.registry.IRegistry
+import net.jkcode.jksoa.registry.zk.ZkRegistry
 
 /**
  * 服务的引用（代理）

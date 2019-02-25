@@ -1,13 +1,13 @@
-package com.jksoa.job
+package net.jkcode.jksoa.job
 
 import com.jkmvc.common.getMethodBySignature
 import com.jkmvc.common.mapToArray
 import com.jkmvc.common.trim
 import com.jkmvc.validator.ArgsParser
-import com.jksoa.job.job.local.LpcJob
-import com.jksoa.job.job.local.ShardingLpcJob
-import com.jksoa.job.job.remote.RpcJob
-import com.jksoa.job.job.remote.ShardingRpcJob
+import net.jkcode.jksoa.job.job.local.LpcJob
+import net.jkcode.jksoa.job.job.local.ShardingLpcJob
+import net.jkcode.jksoa.job.job.remote.RpcJob
+import net.jkcode.jksoa.job.job.remote.ShardingRpcJob
 import java.lang.reflect.Method
 
 /**
@@ -22,9 +22,9 @@ object JobExprParser: IJobParser {
      *     作业表达式是由4个元素组成, 4个元素之间以空格分隔: 1 作业类型 2 类名 3 方法签名 4 方法实参列表
      *     当作业类型是custom, 则后面两个元素为空
      *     方法实参列表, 是以()包围多个参数, 参数之间用`,`分隔
-     *     格式为: lpc com.jksoa.example.SystemService echo(String) ("hello")
+     *     格式为: lpc net.jkcode.jksoa.example.SystemService echo(String) ("hello")
      * <code>
-     *     val job = IJobFactory::parseJob("lpc com.jksoa.example.SystemService echo(String) ("hello")");
+     *     val job = IJobFactory::parseJob("lpc net.jkcode.jksoa.example.SystemService echo(String) ("hello")");
      * </code>
      *
      * @param expr 作业表达式

@@ -1,9 +1,9 @@
-package com.jksoa.registry.zk
+package net.jkcode.jksoa.registry.zk
 
-import com.jksoa.common.Url
-import com.jksoa.common.registerLogger
-import com.jksoa.registry.IRegistry
-import com.jksoa.registry.RegistryException
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.registerLogger
+import net.jkcode.jksoa.registry.IRegistry
+import net.jkcode.jksoa.registry.RegistryException
 import org.I0Itec.zkclient.IZkStateListener
 import org.apache.zookeeper.Watcher
 

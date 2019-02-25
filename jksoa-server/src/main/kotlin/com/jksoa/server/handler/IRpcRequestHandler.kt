@@ -1,7 +1,7 @@
-package com.jksoa.server.handler
+package net.jkcode.jksoa.server.handler
 
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.RpcResponse
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.RpcResponse
 import io.netty.channel.ChannelHandlerContext
 
 /**

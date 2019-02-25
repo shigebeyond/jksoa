@@ -1,6 +1,6 @@
-package com.jksoa.registry.zk
+package net.jkcode.jksoa.registry.zk
 
-import com.jksoa.common.Url
+import net.jkcode.jksoa.common.Url
 import org.I0Itec.zkclient.ZkClient
 import java.util.*
 

@@ -1,11 +1,11 @@
-package com.jksoa.mq.broker.server.connection
+package net.jkcode.jksoa.mq.broker.server.connection
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.getOrPutOnce
-import com.jksoa.client.IConnection
-import com.jksoa.client.protocol.netty.NettyConnection
-import com.jksoa.common.Url
-import com.jksoa.loadbalance.ILoadBalanceStrategy
+import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.client.protocol.netty.NettyConnection
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.loadbalance.ILoadBalanceStrategy
 import io.netty.channel.Channel
 import java.net.InetSocketAddress
 import java.util.*

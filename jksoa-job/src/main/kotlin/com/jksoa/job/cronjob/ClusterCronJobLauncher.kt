@@ -1,6 +1,6 @@
-package com.jksoa.job.cronjob
+package net.jkcode.jksoa.job.cronjob
 
-import com.jksoa.leader.ZkLeaderElection
+import net.jkcode.jksoa.leader.ZkLeaderElection
 
 /**
  * 集群实现的作业启动器

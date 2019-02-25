@@ -1,6 +1,6 @@
-package com.jksoa.mq.consumer
+package net.jkcode.jksoa.mq.consumer
 
-import com.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.Message
 
 /**
  * 消息处理器

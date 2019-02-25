@@ -1,8 +1,8 @@
-package com.jksoa.mq.consumer.subscriber
+package net.jkcode.jksoa.mq.consumer.subscriber
 
-import com.jksoa.mq.common.Message
-import com.jksoa.mq.consumer.IMqHandler
-import com.jksoa.mq.consumer.LambdaMqHandler
+import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.consumer.IMqHandler
+import net.jkcode.jksoa.mq.consumer.LambdaMqHandler
 
 /**
  * 消息订阅者

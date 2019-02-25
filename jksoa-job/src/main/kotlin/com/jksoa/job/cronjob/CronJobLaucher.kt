@@ -1,8 +1,8 @@
-package com.jksoa.job.cronjob
+package net.jkcode.jksoa.job.cronjob
 
-import com.jksoa.job.JobExprParser
-import com.jksoa.job.jobLogger
-import com.jksoa.job.trigger.CronTrigger
+import net.jkcode.jksoa.job.JobExprParser
+import net.jkcode.jksoa.job.jobLogger
+import net.jkcode.jksoa.job.trigger.CronTrigger
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -20,7 +20,7 @@ object CronJobLaucher {
     /**
      * 启动
      * @param cronJobExpr cron与作业的复合表达式, 由cron表达式 + 作业表达式组成, 其中作业表达式前面加`:`, 标识触发的内容是作业
-     *                    如 "0/10 * * * * ? :lpc com.jksoa.example.SystemService ping() ()"
+     *                    如 "0/10 * * * * ? :lpc net.jkcode.jksoa.example.SystemService ping() ()"
      */
     public fun lauch(cronJobExpr: String): CronTrigger {
         // 分隔cron表达式 + 作业表达式

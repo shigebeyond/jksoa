@@ -1,9 +1,9 @@
-package com.jksoa.example
+package net.jkcode.jksoa.example
 
 import com.jkmvc.common.randomLong
-import com.jksoa.common.DefaultRequestTimeoutMillis
-import com.jksoa.common.RpcRequest
-import com.jksoa.common.serverLogger
+import net.jkcode.jksoa.common.DefaultRequestTimeoutMillis
+import net.jkcode.jksoa.common.RpcRequest
+import net.jkcode.jksoa.common.serverLogger
 import java.rmi.RemoteException
 
 /**

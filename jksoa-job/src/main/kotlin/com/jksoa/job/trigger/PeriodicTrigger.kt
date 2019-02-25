@@ -1,4 +1,4 @@
-package com.jksoa.job.trigger
+package net.jkcode.jksoa.job.trigger
 
 /**
  * 周期性重复的触发器

@@ -1,18 +1,18 @@
-package com.jksoa.server.provider
+package net.jkcode.jksoa.server.provider
 
 import com.jkmvc.singleton.BeanSingletons
 import com.jkmvc.common.Config
 import com.jkmvc.common.isSuperClass
-import com.jksoa.client.referer.RefererLoader
-import com.jksoa.common.IService
-import com.jksoa.common.Url
-import com.jksoa.common.serverLogger
-import com.jksoa.common.serviceMeta
-import com.jksoa.leader.ZkLeaderElection
-import com.jksoa.registry.IRegistry
-import com.jksoa.registry.zk.ZkRegistry
-import com.jksoa.server.IProvider
-import com.jksoa.server.IRpcServer
+import net.jkcode.jksoa.client.referer.RefererLoader
+import net.jkcode.jksoa.common.IService
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.serverLogger
+import net.jkcode.jksoa.common.serviceMeta
+import net.jkcode.jksoa.leader.ZkLeaderElection
+import net.jkcode.jksoa.registry.IRegistry
+import net.jkcode.jksoa.registry.zk.ZkRegistry
+import net.jkcode.jksoa.server.IProvider
+import net.jkcode.jksoa.server.IRpcServer
 
 /**
  * 服务提供者

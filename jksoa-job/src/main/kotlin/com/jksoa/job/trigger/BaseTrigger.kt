@@ -1,13 +1,13 @@
-package com.jksoa.job.trigger
+package net.jkcode.jksoa.job.trigger
 
 import com.jkmvc.common.DirtyFlagMap
 import com.jkmvc.common.add
 import com.jkmvc.common.format
-import com.jksoa.common.CommonSecondTimer
-import com.jksoa.common.CommonThreadPool
-import com.jksoa.job.IJob
-import com.jksoa.job.ITrigger
-import com.jksoa.job.jobLogger
+import net.jkcode.jksoa.common.CommonSecondTimer
+import net.jkcode.jksoa.common.CommonThreadPool
+import net.jkcode.jksoa.job.IJob
+import net.jkcode.jksoa.job.ITrigger
+import net.jkcode.jksoa.job.jobLogger
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import java.util.*

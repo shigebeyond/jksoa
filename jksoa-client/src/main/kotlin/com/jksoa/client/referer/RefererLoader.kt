@@ -1,10 +1,10 @@
-package com.jksoa.client.referer
+package net.jkcode.jksoa.client.referer
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jksoa.client.IReferer
-import com.jksoa.common.IService
-import com.jksoa.common.loader.ServiceClassLoader
+import net.jkcode.jksoa.client.IReferer
+import net.jkcode.jksoa.common.IService
+import net.jkcode.jksoa.common.loader.ServiceClassLoader
 
 /**
  * 加载服务引用者

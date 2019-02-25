@@ -1,12 +1,12 @@
-package com.jksoa.client.protocol.netty
+package net.jkcode.jksoa.client.protocol.netty
 
 import com.jkmvc.common.Application
-import com.jksoa.client.connection.BaseConnection
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.Url
-import com.jksoa.common.clientLogger
-import com.jksoa.common.exception.RpcClientException
-import com.jksoa.common.future.IRpcResponseFuture
+import net.jkcode.jksoa.client.connection.BaseConnection
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import io.netty.channel.Channel
 import io.netty.util.AttributeKey
 import java.util.concurrent.TimeUnit

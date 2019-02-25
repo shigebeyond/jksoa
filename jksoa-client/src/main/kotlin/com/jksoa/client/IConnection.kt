@@ -1,8 +1,8 @@
-package com.jksoa.client
+package net.jkcode.jksoa.client
 
-import com.jksoa.common.IRpcRequest
-import com.jksoa.common.Url
-import com.jksoa.common.future.IRpcResponseFuture
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import java.io.Closeable
 
 /**

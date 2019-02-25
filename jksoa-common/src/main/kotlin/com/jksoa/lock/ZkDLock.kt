@@ -1,11 +1,11 @@
-package com.jksoa.lock
+package net.jkcode.jksoa.lock
 
 
 import com.jkmvc.common.Application
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jksoa.common.CommonSecondTimer
-import com.jksoa.common.zk.ZkClientFactory
+import net.jkcode.jksoa.common.CommonSecondTimer
+import net.jkcode.jksoa.common.zk.ZkClientFactory
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import org.I0Itec.zkclient.ZkClient

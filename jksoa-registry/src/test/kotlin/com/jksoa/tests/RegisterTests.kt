@@ -1,8 +1,8 @@
-package com.jksoa.tests
+package net.jkcode.jksoa.tests
 
-import com.jksoa.common.Url
-import com.jksoa.registry.IDiscoveryListener
-import com.jksoa.registry.zk.ZkRegistry
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.registry.IDiscoveryListener
+import net.jkcode.jksoa.registry.zk.ZkRegistry
 import org.junit.Test
 
 /**
@@ -14,7 +14,7 @@ class RegisterTests {
 
     val registry = ZkRegistry
 
-    val serviceId = "com.jksoa.example.IEchoService"
+    val serviceId = "net.jkcode.jksoa.example.IEchoService"
 
     val url = Url("rmi://localhost:8081/$serviceId?weight=1")
 

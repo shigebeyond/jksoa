@@ -1,10 +1,10 @@
-package com.jksoa.job.job.local
+package net.jkcode.jksoa.job.job.local
 
 import com.jkmvc.singleton.BeanSingletons
 import com.jkmvc.common.getMethodBySignature
-import com.jksoa.common.invocation.IInvocationMethod
-import com.jksoa.job.JobException
-import com.jksoa.job.job.BaseJob
+import net.jkcode.jksoa.common.invocation.IInvocationMethod
+import net.jkcode.jksoa.job.JobException
+import net.jkcode.jksoa.job.job.BaseJob
 import java.lang.reflect.Method
 
 /**

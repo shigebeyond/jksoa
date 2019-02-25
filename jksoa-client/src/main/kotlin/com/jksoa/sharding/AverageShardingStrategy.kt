@@ -1,4 +1,4 @@
-package com.jksoa.sharding
+package net.jkcode.jksoa.sharding
 
 import com.jkmvc.common.randomBoolean
 import com.jkmvc.common.randomInt

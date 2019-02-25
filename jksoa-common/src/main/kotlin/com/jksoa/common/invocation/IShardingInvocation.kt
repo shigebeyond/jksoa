@@ -1,4 +1,4 @@
-package com.jksoa.common.invocation
+package net.jkcode.jksoa.common.invocation
 
 import com.jkmvc.common.toExpr
 

@@ -1,15 +1,15 @@
-package com.jksoa.registry.zk
+package net.jkcode.jksoa.registry.zk
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
-import com.jksoa.common.Url
-import com.jksoa.common.clientLogger
-import com.jksoa.registry.IDiscovery
-import com.jksoa.registry.IDiscoveryListener
-import com.jksoa.registry.RegistryException
-import com.jksoa.common.zk.ZkClientFactory
-import com.jksoa.registry.zk.listener.ZkChildListener
-import com.jksoa.registry.zk.listener.ZkDataListener
+import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.registry.IDiscovery
+import net.jkcode.jksoa.registry.IDiscoveryListener
+import net.jkcode.jksoa.registry.RegistryException
+import net.jkcode.jksoa.common.zk.ZkClientFactory
+import net.jkcode.jksoa.registry.zk.listener.ZkChildListener
+import net.jkcode.jksoa.registry.zk.listener.ZkDataListener
 import org.I0Itec.zkclient.ZkClient
 import java.util.concurrent.ConcurrentHashMap
 

@@ -1,7 +1,7 @@
-package com.jksoa.mq.broker
+package net.jkcode.jksoa.mq.broker
 
-import com.jksoa.mq.common.Message
-import com.jksoa.mq.common.MessageStatus
+import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.MessageStatus
 
 /**
  * 消息中转者

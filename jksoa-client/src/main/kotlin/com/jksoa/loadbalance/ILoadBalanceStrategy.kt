@@ -1,10 +1,10 @@
-package com.jksoa.loadbalance
+package net.jkcode.jksoa.loadbalance
 
 import com.jkmvc.common.Config
 import com.jkmvc.common.IConfig
 import com.jkmvc.singleton.NamedConfiguredSingletons
-import com.jksoa.common.IRpcRequest
-import com.jksoa.client.IConnection
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.client.IConnection
 
 /**
  * 选择连接的均衡负载算法

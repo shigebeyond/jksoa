@@ -1,4 +1,4 @@
-package com.jksoa.common.invocation
+package net.jkcode.jksoa.common.invocation
 
 /**
  * 方法调用的描述: 方法
