@@ -7,10 +7,16 @@ import com.jksoa.mq.common.Message
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:41 PM
  */
-interface IMqPuller {
+interface IMqPullerTimer {
 
     /**
-     * 消费者拉取消息
+     * 启动定时器
      */
-    fun startPull()
+    fun start()
+
+    /**
+     * 拉取消息
+     * @param topic
+     */
+    fun pull(topic: String)
 }

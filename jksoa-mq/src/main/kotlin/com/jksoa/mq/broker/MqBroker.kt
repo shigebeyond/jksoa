@@ -56,7 +56,7 @@ class MqBroker : IMqBroker {
      * @param remark 备注
      * @return
      */
-    public override fun updateMessage(id: Long, status: MessageStatus, remark: String): Boolean {
+    public override fun updateMessage(id: Long, status: MessageStatus, remark: String?): Boolean {
         return DbQueryBuilder().table("message")
                 .where("id", id)
                 .set("status", status)

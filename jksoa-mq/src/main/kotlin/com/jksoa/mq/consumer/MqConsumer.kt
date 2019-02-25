@@ -1,7 +1,7 @@
 package com.jksoa.mq.consumer
 
 import com.jksoa.mq.common.Message
-import com.jksoa.mq.consumer.puller.MqPuller
+import com.jksoa.mq.consumer.puller.MqPullerTimer
 import com.jksoa.mq.consumer.subscriber.IMqSubscriber
 
 /**
@@ -12,7 +12,7 @@ import com.jksoa.mq.consumer.subscriber.IMqSubscriber
  **/
 class MqConsumer : IMqConsumer {
 
-    companion object: IMqSubscriber by MqPuller
+    companion object: IMqSubscriber by MqPullerTimer
 
     /**
      * 收到推送的消息

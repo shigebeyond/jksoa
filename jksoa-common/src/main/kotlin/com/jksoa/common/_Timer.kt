@@ -37,6 +37,7 @@ public val closer = object: ClosingOnShutdown(){
         CommonSecondTimer.stop()
 
         // 2 关闭线程池
+        println("-- 等待作业完成 --")
         // 等待作业完成
         if(!CommonThreadPool.isQuiescent)
             CommonThreadPool.awaitQuiescence(1, TimeUnit.DAYS) // 等长一点 = 死等

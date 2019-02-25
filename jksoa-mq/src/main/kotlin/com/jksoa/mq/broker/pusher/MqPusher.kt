@@ -1,5 +1,6 @@
 package com.jksoa.mq.broker.pusher
 
+import com.jkmvc.common.stringifyStackTrace
 import com.jkmvc.future.IFutureCallback
 import com.jksoa.common.RpcRequest
 import com.jksoa.mq.broker.server.connection.ConsumerConnectionHub
@@ -80,7 +81,7 @@ object MqPusher : IMqPusher {
             var remark: String? = null
             if(result is Exception){ // Exception对象表示处理异常
                 status = MessageStatus.FAIL
-                remark = "Exception: " + result.getStackTrace()
+                remark = "Exception: " + result.stringifyStackTrace()
             }else{ // true表示处理完成
                 status = MessageStatus.DONE
             }

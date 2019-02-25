@@ -44,6 +44,6 @@ interface IMqBroker : IService {
      * @param remark 备注
      * @return
      */
-    fun updateMessage(id: Long, status: MessageStatus, remark: String): Boolean
+    fun updateMessage(id: Long, status: MessageStatus, remark: String? = null): Boolean
 
 }
