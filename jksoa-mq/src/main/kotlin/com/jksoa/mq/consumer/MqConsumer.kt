@@ -1,8 +1,7 @@
 package com.jksoa.mq.consumer
 
-import com.jksoa.mq.broker.server.MqNettyRequestHandler.Companion.handlers
 import com.jksoa.mq.common.Message
-import com.jksoa.mq.consumer.puller.MessagePuller
+import com.jksoa.mq.consumer.puller.MqPuller
 import com.jksoa.mq.consumer.subscriber.IMqSubscriber
 
 /**
@@ -13,7 +12,7 @@ import com.jksoa.mq.consumer.subscriber.IMqSubscriber
  **/
 class MqConsumer : IMqConsumer {
 
-    companion object: IMqSubscriber by MessagePuller
+    companion object: IMqSubscriber by MqPuller
 
     /**
      * 收到推送的消息
