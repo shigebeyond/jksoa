@@ -7,7 +7,7 @@ import com.jksoa.mq.common.Message
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:41 PM
  */
-interface IMessagePusher {
+interface IMqPusher {
     /**
      * 给消费者推送消息
      * @param msg

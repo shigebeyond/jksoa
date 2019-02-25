@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:41 PM
  */
-object MessagePuller: IMessagePuller, MqSubscriber() {
+object MqPuller: IMqPuller, MqSubscriber() {
 
     /**
      * 开始定时拉取消息

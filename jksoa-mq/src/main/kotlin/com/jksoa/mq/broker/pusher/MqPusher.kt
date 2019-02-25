@@ -5,6 +5,7 @@ import com.jksoa.common.RpcRequest
 import com.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import com.jksoa.mq.broker.server.connection.IConsumerConnectionHub
 import com.jksoa.mq.common.Message
+import com.jksoa.mq.common.MessageStatus
 import com.jksoa.mq.common.QueueFlusher
 import com.jksoa.mq.consumer.IMqConsumer
 import java.lang.Exception
@@ -19,7 +20,7 @@ private typealias ConsumeResult = Pair<Message, Any>
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:41 PM
  */
-object MessagePusher : IMessagePusher {
+object MqPusher : IMqPusher {
 
     /**
      * 消费者连接集中器
@@ -75,12 +76,13 @@ object MessagePusher : IMessagePusher {
             if(result is Boolean && result == false)
                 continue;
 
-            var status: Int = 0
+            var status: MessageStatus
             var remark: String? = null
             if(result is Exception){ // Exception对象表示处理异常
+                status = MessageStatus.FAIL
                 remark = "Exception: " + result.getStackTrace()
             }else{ // true表示处理完成
-                status = 2
+                status = MessageStatus.DONE
             }
             params.add(status)
             params.add(remark)

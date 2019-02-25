@@ -7,7 +7,7 @@ import com.jksoa.mq.common.Message
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:41 PM
  */
-interface IMessagePuller {
+interface IMqPuller {
 
     /**
      * 消费者拉取消息
