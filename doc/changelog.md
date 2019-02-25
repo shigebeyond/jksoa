@@ -44,3 +44,5 @@
 # 1.4
 1. mq
 
+# 1.5
+将包`com.jksoa`重命名为`net.jkcode.jksoa`
