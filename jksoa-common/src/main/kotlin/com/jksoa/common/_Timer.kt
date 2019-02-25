@@ -1,11 +1,8 @@
 package com.jksoa.common
 
-import com.jkmvc.closing.ClosingOnRequestEnd
+import com.jkmvc.closing.ClosingOnShutdown
 import io.netty.util.HashedWheelTimer
-import io.netty.util.Timeout
-import io.netty.util.TimerTask
 import java.util.concurrent.ForkJoinPool
-import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 
 /**
@@ -33,7 +30,7 @@ public val CommonThreadPool: ForkJoinPool = ForkJoinPool.commonPool()
 /**
  * 关闭定时器与线程池
  */
-public val closer = object: ClosingOnRequestEnd(){
+public val closer = object: ClosingOnShutdown(){
     override fun close() {
         // 1 关闭定时器
         CommonMilliTimer.stop()
