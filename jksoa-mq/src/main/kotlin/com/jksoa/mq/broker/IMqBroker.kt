@@ -3,6 +3,7 @@ package com.jksoa.mq.broker
 import com.jksoa.common.IService
 import com.jksoa.common.annotation.ServiceMethodMeta
 import com.jksoa.mq.common.Message
+import com.jksoa.mq.common.MessageStatus
 
 /**
  * 消息中转者
@@ -43,6 +44,6 @@ interface IMqBroker : IService {
      * @param remark 备注
      * @return
      */
-    fun updateMessage(id: Long, status: Int, remark: String): Boolean
+    fun updateMessage(id: Long, status: MessageStatus, remark: String): Boolean
 
 }

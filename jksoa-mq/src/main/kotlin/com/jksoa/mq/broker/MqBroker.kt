@@ -1,6 +1,7 @@
 package com.jksoa.mq.broker
 
 import com.jksoa.mq.common.Message
+import com.jksoa.mq.common.MessageStatus
 
 /**
  * 消息中转者
@@ -39,7 +40,7 @@ class MqBroker : IMqBroker {
         val msgs = DbQueryBuilder().table("message")
                 .where("topic", topic)
                 .where("group", group)
-                .where("status", 0)
+                .where("status", MessageStatus.UNDO)
                 .limit(pageSize)
                 .findAll(){
                     Message(it["topic"], it["group"], it["data"], it["id"])
@@ -51,11 +52,11 @@ class MqBroker : IMqBroker {
     /**
      * 更新消息
      * @param id 消息标识
-     * @param status 状态: 0 未处理 1 锁定 2 完成 3 失败(超过时间或超过重试次数)
+     * @param status 消息状态: 0 未处理 1 锁定 2 完成 3 失败(超过时间或超过重试次数)
      * @param remark 备注
      * @return
      */
-    public override fun updateMessage(id: Long, status: Int, remark: String): Boolean {
+    public override fun updateMessage(id: Long, status: MessageStatus, remark: String): Boolean {
         return DbQueryBuilder().table("message")
                 .where("id", id)
                 .set("status", status)
