@@ -1,5 +1,6 @@
 package com.jksoa.common
 
+import com.jkmvc.closing.ClosingOnRequestEnd
 import io.netty.util.HashedWheelTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
@@ -28,3 +29,23 @@ public val CommonSecondTimer by lazy{
  *   执行任务时要处理好异常
  */
 public val CommonThreadPool: ForkJoinPool = ForkJoinPool.commonPool()
+
+/**
+ * 关闭定时器与线程池
+ */
+public val closer = object: ClosingOnRequestEnd(){
+    override fun close() {
+        // 1 关闭定时器
+        CommonMilliTimer.stop()
+        CommonSecondTimer.stop()
+
+        // 2 关闭线程池
+        // 等待作业完成
+        if(!CommonThreadPool.isQuiescent)
+            CommonThreadPool.awaitQuiescence(1, TimeUnit.DAYS) // 等长一点 = 死等
+
+        // 停止工作线程
+        CommonThreadPool.shutdown()
+    }
+
+}

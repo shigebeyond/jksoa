@@ -37,7 +37,7 @@ abstract class BaseTests {
         }
 
         println("--- Shutting Down ---")
-        trigger.shutdown(true)
+        trigger.shutdown()
     }
 
     protected fun buildTrigger(trigger: ITrigger, job: IJob) {

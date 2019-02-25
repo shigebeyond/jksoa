@@ -129,9 +129,8 @@ abstract class BaseTrigger : ITrigger {
 
     /**
      * 停止定时器
-     * @param 是否等待作业完成
      */
-    public override fun shutdown(waitForJobsToComplete: Boolean){
+    public override fun shutdown(){
         // 删掉定时任务
         timeout?.cancel()
     }

@@ -48,7 +48,6 @@ interface ITrigger {
 
     /**
      * 停止定时器
-     * @param 是否等待作业完成
      */
-    fun shutdown(waitForJobsToComplete: Boolean)
+    fun shutdown()
 }
