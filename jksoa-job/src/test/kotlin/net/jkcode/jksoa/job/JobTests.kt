@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job
 
-import com.jkmvc.common.getMethodBySignature
+import net.jkcode.jkmvc.common.getMethodBySignature
 import net.jkcode.jksoa.example.ISystemService
 import net.jkcode.jksoa.job.job.local.LpcJob
 import net.jkcode.jksoa.job.job.local.ShardingLpcJob

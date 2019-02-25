@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.job.job.local
 
-import com.jkmvc.common.getSignature
-import com.jkmvc.common.toExpr
+import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkmvc.common.toExpr
 import net.jkcode.jksoa.common.CommonThreadPool
 import net.jkcode.jksoa.common.invocation.IShardingInvocation
 import net.jkcode.jksoa.job.IJobExecutionContext

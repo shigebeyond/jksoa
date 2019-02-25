@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.common.zk
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.getOrPutOnce
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.getOrPutOnce
 import org.I0Itec.zkclient.ZkClient
 import java.util.concurrent.ConcurrentHashMap
 

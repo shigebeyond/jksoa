@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.client.connection
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
-import com.jkmvc.common.getOrPutOnce
-import com.jkmvc.common.time
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.common.getOrPutOnce
+import net.jkcode.jkmvc.common.time
 import net.jkcode.jksoa.client.IRpcClient
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl

@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.server.provider
 
-import com.jkmvc.singleton.BeanSingletons
-import com.jkmvc.common.Config
-import com.jkmvc.common.isSuperClass
+import net.jkcode.jkmvc.singleton.BeanSingletons
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.isSuperClass
 import net.jkcode.jksoa.client.referer.RefererLoader
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.Url

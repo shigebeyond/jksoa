@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.client.protocol.netty
 
-import com.jkmvc.closing.ClosingOnShutdown
-import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
+import net.jkcode.jkmvc.closing.ClosingOnShutdown
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.IRpcClient
 import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageDecoder

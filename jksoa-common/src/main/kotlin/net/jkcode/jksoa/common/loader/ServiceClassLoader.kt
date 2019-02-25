@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common.loader
 
-import com.jkmvc.common.*
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.common.IService
 
 /**

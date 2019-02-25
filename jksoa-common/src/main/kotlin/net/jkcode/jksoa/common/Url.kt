@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common
 
-import com.jkmvc.common.getAndConvert
+import net.jkcode.jkmvc.common.getAndConvert
 
 /**
  * url与字符串互转的工具类

@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.client.connection
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.getOrPutOnce
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url

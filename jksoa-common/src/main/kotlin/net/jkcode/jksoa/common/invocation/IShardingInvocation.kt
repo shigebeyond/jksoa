@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common.invocation
 
-import com.jkmvc.common.toExpr
+import net.jkcode.jkmvc.common.toExpr
 
 /**
  * 分片方法调用的描述

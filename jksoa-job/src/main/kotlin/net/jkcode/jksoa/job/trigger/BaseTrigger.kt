@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.job.trigger
 
-import com.jkmvc.common.DirtyFlagMap
-import com.jkmvc.common.add
-import com.jkmvc.common.format
+import net.jkcode.jkmvc.common.DirtyFlagMap
+import net.jkcode.jkmvc.common.add
+import net.jkcode.jkmvc.common.format
 import net.jkcode.jksoa.common.CommonSecondTimer
 import net.jkcode.jksoa.common.CommonThreadPool
 import net.jkcode.jksoa.job.IJob

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.client.protocol.netty
 
-import com.jkmvc.common.Application
+import net.jkcode.jkmvc.common.Application
 import net.jkcode.jksoa.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.common
 
-import com.jkmvc.common.generateId
+import net.jkcode.jkmvc.common.generateId
 import java.util.*
 
 /**

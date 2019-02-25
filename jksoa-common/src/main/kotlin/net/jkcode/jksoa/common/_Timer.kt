@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common
 
-import com.jkmvc.closing.ClosingOnShutdown
+import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import io.netty.util.HashedWheelTimer
 import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.TimeUnit

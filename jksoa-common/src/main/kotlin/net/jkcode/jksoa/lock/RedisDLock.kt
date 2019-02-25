@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.lock
 
-import com.jkmvc.common.Application
-import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
-import com.jkmvc.redis.JedisFactory
+import net.jkcode.jkmvc.common.Application
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.redis.JedisFactory
 import redis.clients.jedis.Jedis
 
 /**

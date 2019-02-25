@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.server
 
-import com.jkmvc.common.Config
+import net.jkcode.jkmvc.common.Config
 
 /**
  * 服务器启动

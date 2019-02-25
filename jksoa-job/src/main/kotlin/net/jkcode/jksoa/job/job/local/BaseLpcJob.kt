@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.job.job.local
 
-import com.jkmvc.singleton.BeanSingletons
-import com.jkmvc.common.getMethodBySignature
+import net.jkcode.jkmvc.singleton.BeanSingletons
+import net.jkcode.jkmvc.common.getMethodBySignature
 import net.jkcode.jksoa.common.invocation.IInvocationMethod
 import net.jkcode.jksoa.job.JobException
 import net.jkcode.jksoa.job.job.BaseJob

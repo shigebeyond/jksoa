@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.sharding
 
-import com.jkmvc.common.randomBoolean
-import com.jkmvc.common.randomInt
+import net.jkcode.jkmvc.common.randomBoolean
+import net.jkcode.jkmvc.common.randomInt
 
 /**
  * 分片策略: 平均分

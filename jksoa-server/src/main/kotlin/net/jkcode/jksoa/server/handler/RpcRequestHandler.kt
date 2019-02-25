@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.server.handler
 
-import com.jkmvc.closing.ClosingOnRequestEnd
+import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.exception.RpcBusinessException

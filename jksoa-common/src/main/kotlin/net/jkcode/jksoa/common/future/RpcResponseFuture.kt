@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.common.future
 
-import com.jkmvc.common.Config
-import com.jkmvc.future.Callbackable
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.future.Callbackable
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcResponse
 import java.util.concurrent.CountDownLatch

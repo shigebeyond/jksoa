@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.example
 
-import com.jkmvc.common.randomLong
+import net.jkcode.jkmvc.common.randomLong
 import net.jkcode.jksoa.common.DefaultRequestTimeoutMillis
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.serverLogger

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.lock
 
-import com.jkmvc.common.time
+import net.jkcode.jkmvc.common.time
 
 /**
  * 分布式锁接口

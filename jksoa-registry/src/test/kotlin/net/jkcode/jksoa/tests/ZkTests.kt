@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.tests
 
-import com.jkmvc.common.randomLong
-import com.jkmvc.common.randomString
+import net.jkcode.jkmvc.common.randomLong
+import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.common.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNodeExistsException

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tests
 
-import com.jkmvc.common.getRootResource
+import net.jkcode.jkmvc.common.getRootResource
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.common.ShardingRpcRequest

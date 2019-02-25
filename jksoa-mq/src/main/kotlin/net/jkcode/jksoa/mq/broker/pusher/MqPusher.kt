@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.broker.pusher
 
-import com.jkmvc.common.stringifyStackTrace
-import com.jkmvc.future.IFutureCallback
+import net.jkcode.jkmvc.common.stringifyStackTrace
+import net.jkcode.jkmvc.future.IFutureCallback
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub

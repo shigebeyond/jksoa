@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tests
 
-import com.jkmvc.common.Config
+import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.server.protocol.netty.NettyServer
 import net.jkcode.jksoa.server.protocol.rmi.RmiServer

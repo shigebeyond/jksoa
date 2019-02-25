@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.common
 
-import com.jkmvc.common.drainTo
+import net.jkcode.jkmvc.common.drainTo
 import net.jkcode.jksoa.common.CommonThreadPool
 import net.jkcode.jksoa.common.CommonMilliTimer
 import io.netty.util.Timeout

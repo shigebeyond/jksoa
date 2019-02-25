@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common
 
-import com.jkmvc.common.Config
+import net.jkcode.jkmvc.common.Config
 
 /**
  * 默认的请求超时

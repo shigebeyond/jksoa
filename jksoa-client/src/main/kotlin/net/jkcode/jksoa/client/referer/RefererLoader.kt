@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.client.referer
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.client.IReferer
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.loader.ServiceClassLoader

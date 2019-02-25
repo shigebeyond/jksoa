@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.consumer.puller
 
-import com.jkmvc.common.getStackTrace
-import com.jkmvc.common.stringifyStackTrace
+import net.jkcode.jkmvc.common.getStackTrace
+import net.jkcode.jkmvc.common.stringifyStackTrace
 import net.jkcode.jksoa.common.CommonSecondTimer
 import net.jkcode.jksoa.common.CommonThreadPool
 import net.jkcode.jksoa.mq.common.MessageStatus

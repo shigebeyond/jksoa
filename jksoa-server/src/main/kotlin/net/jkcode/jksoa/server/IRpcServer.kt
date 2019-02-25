@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.server
 
-import com.jkmvc.closing.ClosingOnShutdown
-import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
-import com.jkmvc.singleton.NamedConfiguredSingletons
+import net.jkcode.jkmvc.closing.ClosingOnShutdown
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger

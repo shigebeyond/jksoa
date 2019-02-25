@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.job
 
-import com.jkmvc.common.getMethodBySignature
-import com.jkmvc.common.mapToArray
-import com.jkmvc.common.trim
-import com.jkmvc.validator.ArgsParser
+import net.jkcode.jkmvc.common.getMethodBySignature
+import net.jkcode.jkmvc.common.mapToArray
+import net.jkcode.jkmvc.common.trim
+import net.jkcode.jkmvc.validator.ArgsParser
 import net.jkcode.jksoa.job.job.local.LpcJob
 import net.jkcode.jksoa.job.job.local.ShardingLpcJob
 import net.jkcode.jksoa.job.job.remote.RpcJob

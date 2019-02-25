@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job.job.local
 
-import com.jkmvc.common.getSignature
+import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.job.IJobExecutionContext
 import java.lang.reflect.Method

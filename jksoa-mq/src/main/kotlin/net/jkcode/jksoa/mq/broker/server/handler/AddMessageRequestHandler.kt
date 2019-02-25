@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.broker.server.handler
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.isNullOrEmpty
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.isNullOrEmpty
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher

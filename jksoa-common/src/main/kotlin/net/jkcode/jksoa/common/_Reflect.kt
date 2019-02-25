@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common
 
-import com.jkmvc.common.isSuperClass
+import net.jkcode.jkmvc.common.isSuperClass
 import net.jkcode.jksoa.common.annotation.ServiceMeta
 import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
 import net.jkcode.jksoa.common.exception.RpcClientException

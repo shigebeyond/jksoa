@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.client.dispatcher
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.get
-import com.jkmvc.future.IFutureCallback
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.get
+import net.jkcode.jkmvc.future.IFutureCallback
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.client.connection.IConnectionHub

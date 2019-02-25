@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job
 
-import com.jkmvc.common.DirtyFlagMap
+import net.jkcode.jkmvc.common.DirtyFlagMap
 import java.util.*
 
 /**

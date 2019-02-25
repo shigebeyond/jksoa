@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.common.future
 
-import com.jkmvc.future.CompletedFuture
-import com.jkmvc.future.IFutureCallback
+import net.jkcode.jkmvc.future.CompletedFuture
+import net.jkcode.jkmvc.future.IFutureCallback
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcResponse
 import org.apache.http.concurrent.FutureCallback

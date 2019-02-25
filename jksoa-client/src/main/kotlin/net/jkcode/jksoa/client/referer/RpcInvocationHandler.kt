@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.client.referer
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.toExpr
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.toExpr
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher

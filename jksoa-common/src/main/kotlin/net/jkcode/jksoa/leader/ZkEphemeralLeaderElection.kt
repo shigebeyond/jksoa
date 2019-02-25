@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.leader
 
-import com.jkmvc.closing.ClosingOnShutdown
-import com.jkmvc.common.Application
-import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
+import net.jkcode.jkmvc.closing.ClosingOnShutdown
+import net.jkcode.jkmvc.common.Application
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.commonLogger
 import net.jkcode.jksoa.common.zk.ZkClientFactory
 import org.I0Itec.zkclient.IZkChildListener

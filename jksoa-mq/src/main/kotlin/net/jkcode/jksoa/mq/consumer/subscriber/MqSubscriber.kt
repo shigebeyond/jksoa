@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.consumer.subscriber
 
-import com.jkmvc.common.Config
+import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.IMqBroker
 import net.jkcode.jksoa.mq.common.Message

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job.trigger
 
-import com.jkmvc.common.format
+import net.jkcode.jkmvc.common.format
 import net.jkcode.jksoa.job.IJobExecutionContext
 import net.jkcode.jksoa.job.ITrigger
 import java.util.*

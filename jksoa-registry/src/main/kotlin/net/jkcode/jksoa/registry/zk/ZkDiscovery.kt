@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.registry.zk
 
-import com.jkmvc.common.Config
-import com.jkmvc.common.IConfig
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.registry.IDiscovery

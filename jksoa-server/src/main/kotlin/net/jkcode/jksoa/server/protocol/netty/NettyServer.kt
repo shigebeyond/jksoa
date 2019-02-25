@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.server.protocol.netty
 
-import com.jkmvc.common.Config
+import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.IRpcServer
 import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageDecoder
