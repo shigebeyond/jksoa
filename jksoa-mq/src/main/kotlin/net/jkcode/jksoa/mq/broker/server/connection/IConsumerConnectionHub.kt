@@ -4,6 +4,7 @@ import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.mq.common.Message
 import io.netty.channel.Channel
+import net.jkcode.jksoa.common.IRpcRequest
 
 interface IConsumerConnectionHub {
     /**
@@ -27,19 +28,8 @@ interface IConsumerConnectionHub {
     /**
      * 选择一个连接
      *
-     * @param msg
+     * @param req
      * @return
      */
-    fun select(msg: Message): IConnection?{
-        return select(msg.topic, msg.group)
-    }
-
-    /**
-     * 选择一个连接
-     *
-     * @param topic
-     * @param group
-     * @return
-     */
-    fun select(topic: String, group: String): IConnection?
+    fun select(req: IRpcRequest): IConnection?
 }

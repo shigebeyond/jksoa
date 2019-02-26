@@ -31,17 +31,17 @@ open class NettyServer : IRpcServer() {
     /**
      * 老板线程池：接收连接
      */
-    private val bossGroup: EventLoopGroup = NioEventLoopGroup(1)
+    protected val bossGroup: EventLoopGroup = NioEventLoopGroup(1)
 
     /**
      * 工作线程池：处理io
      */
-    private val workerGroup: EventLoopGroup = NioEventLoopGroup(0) // 使用默认的线程数
+    protected val workerGroup: EventLoopGroup = NioEventLoopGroup(0) // 使用默认的线程数
 
     /**
      * 业务线程池：处理业务
      */
-    val businessGroup = DefaultEventExecutor()
+    protected val businessGroup = DefaultEventExecutor()
 
     /**
      * 启动server
@@ -67,6 +67,9 @@ open class NettyServer : IRpcServer() {
        }
     }
 
+    /**
+     * 构建启动选项
+     */
     protected fun buildBootstrap(): ServerBootstrap {
         val bootstrap = ServerBootstrap()
                 .group(bossGroup, workerGroup)

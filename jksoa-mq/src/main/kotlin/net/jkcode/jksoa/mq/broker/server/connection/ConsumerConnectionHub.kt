@@ -1,12 +1,13 @@
 package net.jkcode.jksoa.mq.broker.server.connection
 
-import net.jkcode.jkmvc.common.Config
+import io.netty.channel.Channel
 import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
+import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.loadbalance.ILoadBalanceStrategy
-import io.netty.channel.Channel
+import net.jkcode.jksoa.mq.common.Message
 import java.net.InetSocketAddress
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -21,14 +22,9 @@ import java.util.concurrent.ConcurrentHashMap
 object ConsumerConnectionHub : IConsumerConnectionHub {
 
     /**
-     * 客户端配置
-     */
-    public val config = Config.instance("client", "yaml")
-
-    /**
      * 均衡负载算法
      */
-    private val loadBalanceStrategy: ILoadBalanceStrategy = ILoadBalanceStrategy.instance(config["loadbalanceStrategy"]!!)
+    private val loadBalanceStrategy: ILoadBalanceStrategy = ILoadBalanceStrategy.instance("mq")
 
     /**
      * 消费者的连接池: <主题 to <分组 to 连接>>
@@ -74,17 +70,18 @@ object ConsumerConnectionHub : IConsumerConnectionHub {
     /**
      * 选择一个连接
      *
-     * @param topic
-     * @param group
+     * @param req
      * @return
      */
-    override fun select(topic: String, group: String): IConnection? {
+    public override fun select(req: IRpcRequest): IConnection?{
+        val msg = req.args.first() as Message
+
         // 找到该主题+分组绑定的连接
-        val conns = connections.get(topic)?.get(group) // <主题 to <分组 to 连接>>
+        val conns = connections.get(msg.topic)?.get(msg.group) // <主题 to <分组 to 连接>>
         if(conns == null || conns.isEmpty())
             return null
 
         // 选一个连接
-        return loadBalanceStrategy.select(conns)
+        return loadBalanceStrategy.select(conns, req)
     }
 }

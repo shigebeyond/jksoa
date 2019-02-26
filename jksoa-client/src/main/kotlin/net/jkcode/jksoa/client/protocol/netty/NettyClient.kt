@@ -41,6 +41,9 @@ open class NettyClient: IRpcClient, ClosingOnShutdown() {
      */
     protected val bootstrap: Bootstrap = buildBootstrap()
 
+    /**
+     * 构建启动选项
+     */
     protected fun buildBootstrap(): Bootstrap {
         // 通用启动选项
         val bootstrap = Bootstrap()

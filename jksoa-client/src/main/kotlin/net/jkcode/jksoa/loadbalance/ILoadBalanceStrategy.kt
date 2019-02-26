@@ -26,7 +26,8 @@ interface ILoadBalanceStrategy {
      * 选择连接
      *
      * @param conns
+     * @param req
      * @return
      */
-    fun select(conns: Collection<IConnection>): IConnection?
+    fun select(conns: Collection<IConnection>, req: IRpcRequest): IConnection?
 }

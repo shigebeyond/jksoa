@@ -44,12 +44,12 @@ object MqPusher : IMqPusher {
      */
     public override fun push(msg: Message){
         // 1 找到订阅过该主题的连接
-        val conn = connHub.select(msg)
+        val req = RpcRequest(IMqConsumer::pushMessage, arrayOf<Any?>(msg))
+        val conn = connHub.select(req)
         if(conn == null)
             return
 
         // 2 发请求: 推送消息
-        val req = RpcRequest(IMqConsumer::pushMessage, arrayOf<Any?>(msg))
         val resFuture = conn.send(req)
 
         // 处理响应
@@ -92,7 +92,7 @@ object MqPusher : IMqPusher {
 
         // 批量插入
         DbQueryBuilder().table("message")
-                .set("tryTimes", DbExpr("tryTimes + 1", false))
+                .set("try_times", DbExpr("try_times + 1", false))
                 .set("status", DbExpr.question)
                 .set("remark", DbExpr.question)
                 .where("id", "=", DbExpr.question)

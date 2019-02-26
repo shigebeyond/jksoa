@@ -43,7 +43,7 @@ class MqBroker : IMqBroker {
                 .where("status", MessageStatus.UNDO)
                 .limit(pageSize)
                 .findAll(){
-                    Message(it["topic"], it["group"], it["data"], it["id"])
+                    Message(it["topic"], it["group"], it["data"], it["order_id"], it["id"])
                 }
 
         return msgs
