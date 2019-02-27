@@ -1,11 +1,14 @@
 package net.jkcode.jksoa.job.job.remote
 
+import net.jkcode.jkmvc.future.IFutureCallback
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
 import net.jkcode.jksoa.common.RpcRequest
+import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.job.IJob
 import net.jkcode.jksoa.job.IJobExecutionContext
+import java.lang.Exception
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -47,7 +50,9 @@ class RpcJob(protected val req: RpcRequest) : IJob, IInvocation by req {
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        dispatcher.dispatch(req)
+        val resFuture = dispatcher.dispatch(req) as IRpcResponseFuture
+        // 记录执行异常
+        logExecutionExceptionInCallback(resFuture)
     }
 
     /**

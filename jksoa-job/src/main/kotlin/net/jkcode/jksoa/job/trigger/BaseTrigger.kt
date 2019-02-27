@@ -85,9 +85,11 @@ abstract class BaseTrigger : ITrigger {
         CommonThreadPool.execute {
             for(job in jobs){
                 // 获得作业属性
-                val attr = getJobAttr(job.id)
+                val attr = jobAttrs.getOrPut(job.id){
+                    DirtyFlagMap()
+                }!!
                 // 构建执行上下文
-                val context = JobExecutionContext(job.id, this)
+                val context = JobExecutionContext(job.id, this, attr)
                 // 执行作业, 要处理好异常
                 var ex: Exception? = null
                 try {
@@ -101,22 +103,14 @@ abstract class BaseTrigger : ITrigger {
                 if(attr.dirty)
                     jobAttrs.put(job.id, attr)
 
-                // TODO: 记录作业执行结果
+                // 记录作业执行异常, 对rpc作业由其自己作业来记录
+                if(ex != null)
+                    job.logExecutionException(ex)
             }
 
             // 重复次数+1
             triggerCount++
         }
-    }
-
-    /**
-     * 获得作业的属性
-     * @param jobId
-     */
-    public override fun getJobAttr(jobId: Long): DirtyFlagMap<String, Any?>{
-        return jobAttrs.getOrPut(jobId){
-            DirtyFlagMap()
-        }!!
     }
 
     /**
