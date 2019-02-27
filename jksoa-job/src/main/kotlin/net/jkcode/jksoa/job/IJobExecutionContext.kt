@@ -35,5 +35,4 @@ interface IJobExecutionContext {
      * 作业的属性
      */
     val jobAttr: DirtyFlagMap<String, Any?>
-        get() = trigger.getJobAttr(jobId)
 }

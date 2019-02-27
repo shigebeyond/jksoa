@@ -36,12 +36,6 @@ interface ITrigger {
     }
 
     /**
-     * 获得作业的属性
-     * @param jobId
-     */
-    fun getJobAttr(jobId: Long): DirtyFlagMap<String, Any?>
-
-    /**
      * 启动定时器
      */
     fun start()
