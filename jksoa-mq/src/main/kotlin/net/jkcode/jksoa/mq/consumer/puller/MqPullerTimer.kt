@@ -9,6 +9,8 @@ import net.jkcode.jksoa.mq.consumer.IMqHandler
 import net.jkcode.jksoa.mq.consumer.subscriber.MqSubscriber
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jksoa.leader.ZkLeaderElection
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -32,8 +34,13 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
     public override fun subscribeTopic(topic: String, handler: IMqHandler){
         super.subscribeTopic(topic, handler)
 
-        if(started.compareAndSet(false, true))
-            start()
+        if(started.compareAndSet(false, true)) {
+            // 选举领导者: 一个组内只有一个拉取者
+            val election = ZkLeaderElection("mqPuller/" + config["group"]!!)
+            election.run() {
+                start()
+            }
+        }
     }
 
     /**
@@ -48,7 +55,7 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
 
                 start()
             }
-        }, 60, TimeUnit.SECONDS)
+        }, 600, TimeUnit.SECONDS)
     }
 
     /**
