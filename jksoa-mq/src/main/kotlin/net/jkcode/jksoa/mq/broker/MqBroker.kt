@@ -12,10 +12,10 @@ class MqBroker : IMqBroker {
 
     /****************** 生产者调用 *****************/
     /**
-     * 新增消息
+     * 发送消息
      * @param msg 消息
      */
-    public override fun addMessage(msg: Message){
+    public override fun postMessage(msg: Message){
         throw UnsupportedOperationException("not implemented")
     }
 

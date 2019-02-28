@@ -23,7 +23,7 @@ object MqProducer : IMqProducer {
      */
     public override fun produce(msg: Message){
         // 通过中转者来分发消息
-        broker.addMessage(msg)
+        broker.postMessage(msg)
     }
 
 }

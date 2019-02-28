@@ -1,10 +1,9 @@
 package net.jkcode.jksoa.mq.broker.server
 
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.mq.broker.IMqBroker
-import net.jkcode.jksoa.mq.broker.server.handler.AddMessageRequestHandler
+import net.jkcode.jksoa.mq.broker.server.handler.PostMessageRequestHandler
 import net.jkcode.jksoa.mq.broker.server.handler.SubscribeTopicRequestHandler
 import net.jkcode.jksoa.server.handler.IRpcRequestHandler
 import net.jkcode.jksoa.server.handler.RpcRequestHandler
@@ -27,7 +26,7 @@ class MqNettyRequestHandler : NettyRequestHandler() {
          */
         public val handlers: Map<String, IRpcRequestHandler> = mapOf(
               "subscribeTopic(String)" to SubscribeTopicRequestHandler,
-              "addMessage(net.jkcode.jksoa.mq.common.Message)" to AddMessageRequestHandler
+              "postMessage(net.jkcode.jksoa.mq.common.Message)" to PostMessageRequestHandler
         )
     }
 

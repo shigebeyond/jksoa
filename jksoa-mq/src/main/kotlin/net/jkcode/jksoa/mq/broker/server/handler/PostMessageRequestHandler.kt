@@ -10,23 +10,19 @@ import net.jkcode.jksoa.mq.common.MqException
 import net.jkcode.jksoa.mq.common.QueueFlusher
 import net.jkcode.jksoa.server.handler.IRpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
+import net.jkcode.jksoa.mq.common.RequestContext
 import java.util.*
 
 /**
- * 请求 + 上下文
- */
-private typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
-
-/**
- * 新增消息的请求处理者
- *   处理 IMqBroker::addMessage(msg: Message) 请求
+ * 发送消息的请求处理者
+ *   处理 IMqBroker::postMessage(msg: Message) 请求
  *   扔到队列来异步批量处理: 定时刷盘 + 定量刷盘
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-object AddMessageRequestHandler : IRpcRequestHandler {
+object PostMessageRequestHandler : IRpcRequestHandler {
 
     /**
      * 中转者者配置
@@ -104,13 +100,13 @@ object AddMessageRequestHandler : IRpcRequestHandler {
     }
 
     private fun addMessageParams(msg: Message, params: MutableList<Any?>){
-        // 单播
+        // 1 单播
         if(msg.group != "*"){
             addMessageParams(params, msg, msg.group)
             return
         }
 
-        // 广播
+        // 2 广播
         val groups = topic2group[msg.topic] // 获得当前主题对应的分组
         if(groups.isNullOrEmpty())
             throw MqException("当前主题[${msg.topic}]没有对应的分组, 广播失败")
