@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.broker
 
 import net.jkcode.jksoa.common.IService
+import net.jkcode.jksoa.common.annotation.ServiceMeta
 import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MessageStatus
@@ -10,15 +11,16 @@ import net.jkcode.jksoa.mq.common.MessageStatus
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
+@ServiceMeta(onlyLeader = true)
 interface IMqBroker : IService {
 
     /****************** 生产者调用 *****************/
     /**
-     * 新增消息
+     * 发送消息
      * @param msg 消息
      */
     @ServiceMethodMeta(requestTimeoutMillis = 300)
-    fun addMessage(msg: Message)
+    fun postMessage(msg: Message)
 
     /****************** 消费者调用 *****************/
     /**
