@@ -1,13 +1,20 @@
 package net.jkcode.jksoa.mq.common
 
+import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jkmvc.common.drainTo
 import net.jkcode.jksoa.common.CommonThreadPool
 import net.jkcode.jksoa.common.CommonMilliTimer
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
+import net.jkcode.jksoa.common.IRpcRequest
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.TimeUnit
+
+/**
+ * 请求 + 上下文
+ */
+public typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
 
 /**
  * 队列刷盘器
