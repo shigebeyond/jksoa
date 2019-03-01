@@ -8,6 +8,7 @@ import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.provider.ProviderLoader
 import io.netty.channel.ChannelHandlerContext
+import net.jkcode.jksoa.common.interceptor.Interceptor
 
 /**
  * Rpc请求处理者
@@ -16,14 +17,14 @@ import io.netty.channel.ChannelHandlerContext
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-object RpcRequestHandler : IRpcRequestHandler {
+object RpcRequestHandler : IRpcRequestHandler() {
 
     /**
      * 处理请求: 调用Provider来处理
      *
      * @param req
      */
-    public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
+    public override fun doHandle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
         var res: RpcResponse? = null
         try{
             // 1 获得provider

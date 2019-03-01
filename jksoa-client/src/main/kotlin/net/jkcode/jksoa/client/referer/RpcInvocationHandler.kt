@@ -1,14 +1,15 @@
 package net.jkcode.jksoa.client.referer
 
-import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.toExpr
+import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
-import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.interceptor.Interceptor
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -44,9 +45,9 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
     }
 
     /**
-     * 客户端配置
+     * 拦截器
      */
-    public val config = Config.instance("client", "yaml")
+    protected val interceptors: List<Interceptor> = emptyList()
 
     /**
      * 处理方法调用: 调用 ConnectionHub
@@ -64,10 +65,15 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
         // 1 封装请求
         val req = RpcRequest(method, args)
 
-        // 2 分发请求, 获得响应
+        // 2 调用拦截器
+        for(i in interceptors)
+            if(!i.preHandleRequest(req))
+                throw RpcClientException("Interceptor [${i.javaClass.name}] handle request fail");
+
+        // 3 分发请求, 获得响应
         val res = dispatcher.dispatch(req)
 
-        // 3 获得值
+        // 4 获得值
         return res.getOrThrow()
     }
 

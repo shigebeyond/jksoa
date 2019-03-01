@@ -47,13 +47,13 @@ class MqNettyRequestHandler : NettyRequestHandler() {
         if(req.serviceId == IMqBroker::class.qualifiedName){
             val handler = handlers[req.methodSignature]
             if(handler != null){
-                handler.handle(req, ctx)
+                handler.doHandle(req, ctx)
                 return
             }
         }
 
         // 2 其他请求
-        RpcRequestHandler.handle(req, ctx)
+        RpcRequestHandler.doHandle(req, ctx)
     }
 
 }

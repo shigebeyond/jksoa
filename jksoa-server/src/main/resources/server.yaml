@@ -10,3 +10,5 @@ servicePackages: # service类所在的包路径
 readerIdleTimeSecond: 600
 writerIdleTimeSeconds: 600
 allIdleTimeSeconds: 600
+# 限流数
+# rateLimit: 1000

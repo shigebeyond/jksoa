@@ -56,7 +56,7 @@ object PostMessageRequestHandler : IRpcRequestHandler {
      *
      * @param req
      */
-    public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
+    public override fun doHandle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
         // 请求入队
         reqQueue.add(req to ctx)
     }

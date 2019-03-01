@@ -27,7 +27,7 @@ object SubscribeTopicRequestHandler : IRpcRequestHandler {
      *
      * @param req
      */
-    public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
+    public override fun doHandle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
         // 1 记录连接
         val (topic, group) = req.args
         connHub.add(topic as String, group as String, ctx.channel())

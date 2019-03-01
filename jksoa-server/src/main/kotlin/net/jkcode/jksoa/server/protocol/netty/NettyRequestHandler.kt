@@ -30,7 +30,7 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
 
         // 处理请求
         serverLogger.debug("NettyRequestHandler收到请求: " + req)
-        RpcRequestHandler.handle(req, ctx)
+        RpcRequestHandler.doHandle(req, ctx)
     }
 
     /**
