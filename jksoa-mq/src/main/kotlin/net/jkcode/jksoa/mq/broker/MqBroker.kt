@@ -41,6 +41,7 @@ class MqBroker : IMqBroker {
                 .where("topic", topic)
                 .where("group", group)
                 .where("status", MessageStatus.UNDO)
+                .orderBy("order_id") // 针对有序消息
                 .limit(pageSize)
                 .findAll(){
                     Message(it["topic"], it["group"], it["data"], it["order_id"], it["id"])
