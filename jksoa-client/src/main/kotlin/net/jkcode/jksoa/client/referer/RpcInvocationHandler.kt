@@ -10,6 +10,7 @@ import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.interceptor.Interceptor
+import net.jkcode.jksoa.common.interceptor.RateLimitInterceptor
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -47,7 +48,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
     /**
      * 拦截器
      */
-    protected val interceptors: List<Interceptor> = emptyList()
+    protected val interceptors: List<Interceptor> = listOf(RateLimitInterceptor(false))
 
     /**
      * 处理方法调用: 调用 ConnectionHub

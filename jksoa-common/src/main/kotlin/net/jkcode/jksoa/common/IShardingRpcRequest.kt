@@ -22,7 +22,7 @@ interface IShardingRpcRequest : IShardingInvocation, IRpcRequestMeta {
      * @return
      */
     fun buildRpcRequest(iSharding: Int): IRpcRequest {
-        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding] as Array<Any?>, version, requestTimeoutMillis)
+        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding] as Array<Any?>, version)
     }
 
 }

@@ -2,7 +2,6 @@ package net.jkcode.jksoa.common
 
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jksoa.common.annotation.realRequestTimeoutMillis
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -17,8 +16,7 @@ import kotlin.reflect.jvm.javaMethod
 data class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
                       public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
                       public override val args: Array<Any?> = emptyArray() /* 实参 */,
-                      public override val version: Int = 0 /* 版本 */,
-                      @Transient /* 不序列化 */ public override val requestTimeoutMillis: Long = DefaultRequestTimeoutMillis /* 请求超时，Long类型，单位毫秒, 如果为0则使用client.yaml中定义的配置项 requestTimeoutMillis */
+                      public override val version: Int = 0 /* 版本 */
 ): IRpcRequest {
 
     companion object {
@@ -48,7 +46,7 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
      * @param method 方法
      * @param args 实参
      */
-    public constructor(method: Method, args: Array<Any?> = emptyArray()) : this(method.getServiceClass().name, method.getSignature(), args, method.getServiceClass().serviceMeta?.version ?: 0, method.serviceMethodMeta?.realRequestTimeoutMillis ?: DefaultRequestTimeoutMillis)
+    public constructor(method: Method, args: Array<Any?> = emptyArray()) : this(method.getServiceClass().name, method.getSignature(), args, method.getServiceClass().serviceMeta?.version ?: 0)
 
     /**
      * 构造函数

@@ -27,7 +27,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
     /**
      * 扫描加载服务
      *   如果是ProviderLoader, 则在server启动时调用
-     *   如果是RefererLoader, 则初始化时就调用
+     *   如果是RefererLoader, 则初始化RcpRequestDispatcher时才调用
      */
     public fun load(){
         // 系统的service包

@@ -2,7 +2,6 @@ package net.jkcode.jksoa.common
 
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jksoa.common.annotation.realRequestTimeoutMillis
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -16,8 +15,7 @@ import kotlin.reflect.jvm.javaMethod
 class ShardingRpcRequest(public override val clazz: String, /* 服务接口类全名 */
                          public override val methodSignature: String, /* 要调用的方法签名：包含方法名+参数类型 */
                          public override val shardingArgses: Array<Array<*>> /* 分片要调用的实参 */,
-                         public override val version: Int = 0 /* 版本 */,
-                         @Transient /* 不序列化 */ public override val requestTimeoutMillis: Long = DefaultRequestTimeoutMillis /* 请求超时，Long类型，单位毫秒, 如果为0则使用client.yaml中定义的配置项 requestTimeoutMillis */
+                         public override val version: Int = 0 /* 版本 */
 ) : IShardingRpcRequest {
 
     /**
@@ -31,7 +29,7 @@ class ShardingRpcRequest(public override val clazz: String, /* 服务接口类�
      * @param method 方法
      * @param shardingArgses 分片要调用的实参
      */
-    public constructor(method: Method, shardingArgses: Array<Array<*>>) : this(method.getServiceClass().name, method.getSignature(), shardingArgses, method.getServiceClass().serviceMeta?.version ?: 0, method.serviceMethodMeta?.realRequestTimeoutMillis ?: DefaultRequestTimeoutMillis)
+    public constructor(method: Method, shardingArgses: Array<Array<*>>) : this(method.getServiceClass().name, method.getSignature(), shardingArgses, method.getServiceClass().serviceMeta?.version ?: 0)
 
     /**
      * 构造函数

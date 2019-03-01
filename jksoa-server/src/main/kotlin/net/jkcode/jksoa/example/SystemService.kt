@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.example
 
 import net.jkcode.jkmvc.common.randomLong
-import net.jkcode.jksoa.common.DefaultRequestTimeoutMillis
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.serverLogger
 import java.rmi.RemoteException
@@ -28,7 +27,7 @@ class SystemService : ISystemService /*, UnicastRemoteObject() // rmi协议服�
 
     @Throws(RemoteException::class) // rim异常
     public override fun sleep(): Long {
-        val millis: Long = randomLong(DefaultRequestTimeoutMillis) * 2
+        val millis: Long = randomLong(500) * 2
         serverLogger.debug("睡 $millis ms")
         Thread.sleep(millis)
         return millis

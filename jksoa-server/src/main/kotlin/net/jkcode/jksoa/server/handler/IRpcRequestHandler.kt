@@ -17,24 +17,10 @@ import java.util.*
  */
 abstract class IRpcRequestHandler {
 
-    companion object {
-
-        /**
-         * 服务端配置
-         */
-        public val config = Config.instance("server", "yaml")
-    }
-
     /**
      * 拦截器
      */
-    protected val interceptors: List<Interceptor> by lazy{
-        val rateLimit:Int? = config["rateLimit"]
-        if(rateLimit == null)
-            emptyList<Interceptor>()
-        else
-            listOf(RateLimitInterceptor(rateLimit))
-    }
+    protected val interceptors: List<Interceptor> = listOf(RateLimitInterceptor(true))
 
     /**
      * 处理请求
