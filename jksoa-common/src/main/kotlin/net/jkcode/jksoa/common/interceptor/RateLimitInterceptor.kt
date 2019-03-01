@@ -5,7 +5,6 @@ import net.jkcode.jkmvc.ratelimit.IRateLimiter
 import net.jkcode.jkmvc.ratelimit.LambdaRateLimiter
 import net.jkcode.jkmvc.ratelimit.TokenBucketRateLimiter
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.IRpcResponse
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -21,6 +20,12 @@ class RateLimitInterceptor(protected val serverSide: Boolean): Interceptor {
     protected val limiters: ConcurrentHashMap<String, IRateLimiter> = ConcurrentHashMap();
 
     /**
+     * 默认的限流器
+     *   就是不限流
+     */
+    protected val defaultRateLimiter = LambdaRateLimiter { true }
+
+    /**
      * 前置处理请求
      * @param
      * @return
@@ -30,8 +35,8 @@ class RateLimitInterceptor(protected val serverSide: Boolean): Interceptor {
         val limiter = limiters.getOrPutOnce(req.clazz + '.' + req.methodSignature){
             // 获得配置限流数
             val limit = if(serverSide) req.serverRateLimit else req.clientRateLimit
-            if(limit == null) // 无配置, 直接通过
-                LambdaRateLimiter{ true }
+            if(limit == null) // 无配置, 则使用默认的限流器
+                defaultRateLimiter
             else // 有配置, 则使用令牌桶限流器
                 TokenBucketRateLimiter(limit)
         }
