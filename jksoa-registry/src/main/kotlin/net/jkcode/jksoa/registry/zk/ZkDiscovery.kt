@@ -7,7 +7,7 @@ import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.registry.IDiscovery
 import net.jkcode.jksoa.registry.IDiscoveryListener
 import net.jkcode.jksoa.registry.RegistryException
-import net.jkcode.jksoa.common.zk.ZkClientFactory
+import net.jkcode.jksoa.zk.ZkClientFactory
 import net.jkcode.jksoa.registry.zk.listener.ZkChildListener
 import net.jkcode.jksoa.registry.zk.listener.ZkDataListener
 import org.I0Itec.zkclient.ZkClient

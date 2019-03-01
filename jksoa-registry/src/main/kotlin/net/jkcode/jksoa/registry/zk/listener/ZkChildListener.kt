@@ -5,7 +5,7 @@ import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.registerLogger
 import net.jkcode.jksoa.registry.IDiscoveryListener
-import net.jkcode.jksoa.common.zk.ZkClientFactory
+import net.jkcode.jksoa.zk.ZkClientFactory
 import net.jkcode.jksoa.registry.zk.nodeChilds2Urls
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient

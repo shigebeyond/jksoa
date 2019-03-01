@@ -5,7 +5,7 @@ import net.jkcode.jkmvc.common.Application
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.CommonSecondTimer
-import net.jkcode.jksoa.common.zk.ZkClientFactory
+import net.jkcode.jksoa.zk.ZkClientFactory
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import org.I0Itec.zkclient.ZkClient

@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.common.zk
+package net.jkcode.jksoa.zk
 
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.getOrPutOnce
