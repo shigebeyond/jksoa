@@ -6,7 +6,7 @@ import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.loadbalance.ILoadBalanceStrategy
+import net.jkcode.jksoa.loadbalance.ILoadBalancer
 import net.jkcode.jksoa.mq.common.Message
 import java.net.InetSocketAddress
 import java.util.*
@@ -24,7 +24,7 @@ object ConsumerConnectionHub : IConsumerConnectionHub {
     /**
      * 均衡负载算法
      */
-    private val loadBalanceStrategy: ILoadBalanceStrategy = ILoadBalanceStrategy.instance("mq")
+    private val balancer: ILoadBalancer = ILoadBalancer.instance("mq")
 
     /**
      * 消费者的连接池: <主题 to <分组 to 连接>>
@@ -82,6 +82,6 @@ object ConsumerConnectionHub : IConsumerConnectionHub {
             return null
 
         // 选一个连接
-        return loadBalanceStrategy.select(conns, req)
+        return balancer.select(conns, req)
     }
 }

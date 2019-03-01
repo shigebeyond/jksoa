@@ -11,7 +11,7 @@ import net.jkcode.jksoa.client.IConnection
  * @author shijianhang
  * @create 2017-12-18 下午9:21
  **/
-class RandomLoadBalanceStrategy : ILoadBalanceStrategy {
+class RandomLoadBalancer : ILoadBalancer {
     /**
      * 选择连接
      *

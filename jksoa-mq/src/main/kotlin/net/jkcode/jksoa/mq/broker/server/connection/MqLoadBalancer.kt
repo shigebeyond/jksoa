@@ -4,7 +4,7 @@ import net.jkcode.jkmvc.common.get
 import net.jkcode.jkmvc.common.randomInt
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.client.IConnection
-import net.jkcode.jksoa.loadbalance.ILoadBalanceStrategy
+import net.jkcode.jksoa.loadbalance.ILoadBalancer
 import net.jkcode.jksoa.mq.common.Message
 
 /**
@@ -14,7 +14,7 @@ import net.jkcode.jksoa.mq.common.Message
  * @author shijianhang
  * @create 2019-02-18 下午9:21
  **/
-class MqLoadBalanceStrategy : ILoadBalanceStrategy {
+class MqLoadBalancer : ILoadBalancer {
 
     /**
      * 选择连接

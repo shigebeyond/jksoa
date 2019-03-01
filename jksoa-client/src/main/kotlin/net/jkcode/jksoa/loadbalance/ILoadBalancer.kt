@@ -12,10 +12,10 @@ import net.jkcode.jksoa.client.IConnection
  * @author shijianhang
  * @create 2017-12-18 下午9:04
  **/
-interface ILoadBalanceStrategy {
+interface ILoadBalancer {
 
     // 可配置的单例
-    companion object: NamedConfiguredSingletons<ILoadBalanceStrategy>() {
+    companion object: NamedConfiguredSingletons<ILoadBalancer>() {
         /**
          * 单例类的配置，内容是哈希 <单例名 to 单例类>
          */
