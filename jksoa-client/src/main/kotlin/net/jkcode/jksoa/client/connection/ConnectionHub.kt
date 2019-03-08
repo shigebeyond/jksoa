@@ -86,8 +86,9 @@ object ConnectionHub: IConnectionHub {
 
         // 6 删除的地址
         for(key in removeKeys){
-            clientLogger.debug("ConnectionHub处理服务[$serviceId]删除地址: " + oldUrls[key])
-            oldUrls[key]!!.close() // 关闭连接
+            val url = oldUrls.remove(key)!!
+            clientLogger.debug("ConnectionHub处理服务[$serviceId]删除地址: " + url)
+            url.close() // 关闭连接
         }
 
         // 7 更新的地址
