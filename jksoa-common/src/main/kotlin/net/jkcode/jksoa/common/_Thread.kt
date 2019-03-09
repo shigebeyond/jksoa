@@ -37,13 +37,12 @@ public val closer = object: ClosingOnShutdown(){
         CommonSecondTimer.stop()
 
         // 2 关闭线程池
-        println("-- 等待作业完成 --")
-        // 等待作业完成
-        if(!CommonThreadPool.isQuiescent)
-            CommonThreadPool.awaitQuiescence(1, TimeUnit.DAYS) // 等长一点 = 死等
-
-        // 停止工作线程
+        println("-- 关闭线程池, 并等待任务完成 --")
+        // 停止工作线程: 不接收新任务
         CommonThreadPool.shutdown()
+
+        // 等待任务完成
+        CommonThreadPool.awaitTermination(1, TimeUnit.DAYS) // 等长一点 = 死等
     }
 
 }
