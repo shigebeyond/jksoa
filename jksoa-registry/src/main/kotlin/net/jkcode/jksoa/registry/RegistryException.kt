@@ -1,9 +1,11 @@
 package net.jkcode.jksoa.registry
 
+import net.jkcode.jkmvc.common.JkException
+
 /**
  * 注册异常
  */
-class RegistryException : RuntimeException {
+class RegistryException : JkException {
     public constructor(message: String) : super(message) {
     }
 

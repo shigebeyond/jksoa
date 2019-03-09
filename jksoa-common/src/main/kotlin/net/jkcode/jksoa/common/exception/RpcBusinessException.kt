@@ -1,9 +1,11 @@
 package net.jkcode.jksoa.common.exception
 
+import net.jkcode.jkmvc.common.JkException
+
 /**
  * rpc业务异常
  */
-class RpcBusinessException : RuntimeException {
+class RpcBusinessException : JkException {
     public constructor(message: String) : super(message) {
     }
 

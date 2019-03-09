@@ -1,9 +1,11 @@
 package net.jkcode.jksoa.common.exception
 
+import net.jkcode.jkmvc.common.JkException
+
 /**
  * rpc客户端异常
  */
-class RpcClientException : RuntimeException {
+class RpcClientException : JkException {
     public constructor(message: String) : super(message) {
     }
 

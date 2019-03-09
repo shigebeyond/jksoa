@@ -1,9 +1,11 @@
 package net.jkcode.jksoa.job
 
+import net.jkcode.jkmvc.common.JkException
+
 /**
  * 作业异常
  */
-class JobException : RuntimeException {
+class JobException : JkException {
     public constructor(message: String) : super(message) {
     }
 

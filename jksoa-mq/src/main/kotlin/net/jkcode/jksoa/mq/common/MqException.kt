@@ -1,9 +1,11 @@
 package net.jkcode.jksoa.mq.common
 
+import net.jkcode.jkmvc.common.JkException
+
 /**
  * 消息异常
  */
-class MqException : RuntimeException {
+class MqException : JkException {
     public constructor(message: String) : super(message) {
     }
 
