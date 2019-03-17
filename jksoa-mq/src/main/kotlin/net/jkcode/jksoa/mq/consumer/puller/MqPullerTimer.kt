@@ -11,6 +11,7 @@ import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.leader.ZkLeaderElection
+import net.jkcode.jksoa.mq.common.Message
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -64,19 +65,22 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
      */
     public override fun pull(topic: String) {
         CommonThreadPool.execute() {
-            // 拉取消息
-            val msgs = broker.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!)
-            // 处理消息 + 主动更新消息状态
-            for (msg in msgs) {
-                try {
-                    // true表示处理完成, false表示未处理
-                    if(handleMessage(msg))
-                        broker.updateMessage(msg.id, MessageStatus.DONE)
-                }catch (e: Exception){
-                    // Exception对象表示处理异常
-                    broker.updateMessage(msg.id, MessageStatus.FAIL, "Exception: " + e.stringifyStackTrace())
+            var msgs: List<Message>
+            do {
+                // 拉取消息
+                msgs = broker.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!)
+                // 处理消息 + 主动更新消息状态
+                for (msg in msgs) {
+                    try {
+                        // true表示处理完成, false表示未处理
+                        if (handleMessage(msg))
+                            broker.updateMessage(msg.id, MessageStatus.DONE)
+                    } catch (e: Exception) {
+                        // Exception对象表示处理异常
+                        broker.updateMessage(msg.id, MessageStatus.FAIL, "Exception: " + e.stringifyStackTrace())
+                    }
                 }
-            }
+            }while(msgs.isNotEmpty())
         }
     }
 }

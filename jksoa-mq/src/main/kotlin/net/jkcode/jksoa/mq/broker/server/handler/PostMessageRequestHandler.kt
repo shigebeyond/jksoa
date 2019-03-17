@@ -22,7 +22,7 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-object PostMessageRequestHandler : IRpcRequestHandler {
+object PostMessageRequestHandler : IRpcRequestHandler() {
 
     /**
      * 中转者者配置

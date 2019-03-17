@@ -15,7 +15,7 @@ import io.netty.channel.ChannelHandlerContext
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-object SubscribeTopicRequestHandler : IRpcRequestHandler {
+object SubscribeTopicRequestHandler : IRpcRequestHandler() {
 
     /**
      * 消费者连接集中器
