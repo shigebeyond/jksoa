@@ -26,4 +26,11 @@ interface ISystemService : IService /*, Remote // rmi协议服务接口 */ {
 
     @Throws(RemoteException::class) // rim异常
     fun checkVersion()
+
+    @Throws(RemoteException::class) // rim异常
+    @JvmDefault
+    fun defaultMethod(msg:String){
+        println("call default method, with parameter: $msg")
+    }
+
 }

@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
+import net.jkcode.jksoa.common.CommonThreadPool
 
 /**
  * netty服务端请求处理器
@@ -30,7 +31,10 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
 
         // 处理请求
         serverLogger.debug("NettyRequestHandler收到请求: " + req)
-        RpcRequestHandler.doHandle(req, ctx)
+        // 异步处理, 不阻塞io线程
+        CommonThreadPool.execute {
+            RpcRequestHandler.doHandle(req, ctx)
+        }
     }
 
     /**

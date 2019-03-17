@@ -5,6 +5,7 @@ import net.jkcode.jkmvc.serialize.ISerializer
 import net.jkcode.jksoa.common.clientLogger
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
+import io.netty.handler.codec.MessageToByteEncoder
 
 /**
  * 编码
@@ -13,7 +14,7 @@ import io.netty.channel.ChannelHandlerContext
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyMessageEncoder : io.netty.handler.codec.MessageToByteEncoder<Any>() {
+class NettyMessageEncoder : MessageToByteEncoder<Any>() {
 
     /**
      * 客户端配置
