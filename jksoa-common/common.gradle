@@ -2,7 +2,8 @@ dependencies{
     // other project
     compile project(':jkmvc-common')
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    compile 'org.jetbrains.kotlin:kotlin-reflect'
 
     // zookeeper
     compile "org.apache.zookeeper:zookeeper:$zk_version"
