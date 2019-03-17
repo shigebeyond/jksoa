@@ -3,6 +3,7 @@ package net.jkcode.jksoa.client.dispatcher
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.IShardingRpcRequest
+import net.jkcode.jksoa.common.future.IRpcResponseFuture
 
 /**
  * 请求分发者
@@ -16,9 +17,9 @@ interface IRpcRequestDispatcher {
      *   将该请求发给任一节点
      *
      * @param req 请求
-     * @return 响应结果
+     * @return 异步响应结果
      */
-    fun dispatch(req: IRpcRequest): IRpcResponse
+    fun dispatch(req: IRpcRequest): IRpcResponseFuture
 
     /**
      * 分发一个分片的请求

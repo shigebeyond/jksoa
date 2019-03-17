@@ -52,19 +52,16 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
      *   将该请求发给任一节点
      *
      * @param req 请求
-     * @return 响应结果
+     * @return 异步响应结果
      */
-    public override fun dispatch(req: IRpcRequest): IRpcResponse {
-        val resFuture = FailoveRpcResponseFuture(config["maxTryTimes"]!!, req.requestTimeoutMillis){
+    public override fun dispatch(req: IRpcRequest): IRpcResponseFuture {
+        return FailoveRpcResponseFuture(config["maxTryTimes"]!!, req.requestTimeoutMillis){
             // 1 选择连接
             val conn = connHub.select(req)
 
             // 2 发送请求，并获得异步响应
             conn.send(req)
         }
-
-        // 3 返回结果
-        return resFuture.get(req.requestTimeoutMillis, TimeUnit.MILLISECONDS)
     }
 
     /**
@@ -72,7 +69,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
      *    将请求分成多片, 然后逐片分发给对应的节点
      *
      * @param shdReq 分片的rpc请求
-     * @return
+     * @return 多个响应结果
      */
     public override fun dispatchSharding(shdReq: IShardingRpcRequest): Array<IRpcResponse> {
         // 1 分片

@@ -10,12 +10,14 @@ import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.future.ValueFuture
 import net.jkcode.jksoa.common.interceptor.Interceptor
 import net.jkcode.jksoa.common.interceptor.RateLimitInterceptor
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
+import java.util.concurrent.Future
 
 
 /**
@@ -81,13 +83,15 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
                 throw RpcClientException("Interceptor [${i.javaClass.name}] handle request fail");
 
         // 3 分发请求, 获得响应
-        val res = dispatcher.dispatch(req)
+        val resFuture = dispatcher.dispatch(req)
 
-        // todo: 返回 Future
-        //method.returnType == Future::class.java
+        // 4 获得结果
+        // 4.1 返回异步Future
+        if(method.returnType == Future::class.java)
+            return ValueFuture(resFuture)
 
-        // 4 获得值
-        return res.getOrThrow()
+        // 4 同步返回值
+        return resFuture.get().getOrThrow()
     }
 
 

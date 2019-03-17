@@ -50,7 +50,7 @@ class RpcJob(protected val req: RpcRequest) : IJob, IInvocation by req {
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        val resFuture = dispatcher.dispatch(req) as IRpcResponseFuture
+        val resFuture = dispatcher.dispatch(req)
         // 记录执行异常
         logExecutionExceptionInCallback(resFuture)
     }
