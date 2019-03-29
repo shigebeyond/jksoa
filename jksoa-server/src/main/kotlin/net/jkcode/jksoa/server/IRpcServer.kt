@@ -1,13 +1,12 @@
 package net.jkcode.jksoa.server
 
-import net.jkcode.jkmvc.closing.ClosingOnShutdown
+import getIntranetHost
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
-import getIntranetHost
 
 /**
  * rpc协议-服务器端
@@ -16,7 +15,7 @@ import getIntranetHost
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  **/
-abstract class IRpcServer : ClosingOnShutdown() {
+abstract class IRpcServer {
 
     // 可配置的单例
     companion object mxx: NamedConfiguredSingletons<IRpcServer>() {

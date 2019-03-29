@@ -34,7 +34,4 @@ class RmiServer : IRpcServer() {
         ProviderLoader.load()
     }
 
-    public override fun close() {
-    }
-
 }

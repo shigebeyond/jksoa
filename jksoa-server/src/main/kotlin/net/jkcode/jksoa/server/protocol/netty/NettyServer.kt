@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.server.protocol.netty
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.IRpcServer
@@ -7,12 +8,20 @@ import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageDecoder
 import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageEncoder
 import net.jkcode.jksoa.server.provider.ProviderLoader
 import io.netty.bootstrap.ServerBootstrap
+import io.netty.buffer.ByteBufAllocator
+import io.netty.buffer.PooledByteBufAllocator
 import io.netty.channel.*
+import io.netty.channel.epoll.*
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
+import io.netty.handler.codec.http.HttpObjectAggregator
+import io.netty.handler.codec.http.HttpServerCodec
 import io.netty.handler.timeout.IdleStateHandler
 import io.netty.util.concurrent.DefaultEventExecutor
+import io.netty.util.concurrent.DefaultThreadFactory
+import net.jkcode.jkmvc.closing.ClosingOnShutdown
+import java.io.Closeable
 
 /**
  * netty服务端
@@ -21,71 +30,61 @@ import io.netty.util.concurrent.DefaultEventExecutor
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-open class NettyServer : IRpcServer() {
+open class NettyServer : IRpcServer(), Closeable {
 
     /**
      * 服务端配置
      */
-    val config = Config.instance("server", "yaml")
+    public val config = Config.instance("server", "yaml")
+
+    /**
+     * 是否用epoll
+     */
+    protected val epolling: Boolean = Epoll.isAvailable()
+
+    /**
+     * 启动选项
+     */
+    protected lateinit var bootstrap: ServerBootstrap
 
     /**
      * 老板线程池：接收连接
      */
-    protected val bossGroup: EventLoopGroup = NioEventLoopGroup(1)
+    protected lateinit var bossGroup: EventLoopGroup
 
     /**
      * 工作线程池：处理io
      */
-    protected val workerGroup: EventLoopGroup = NioEventLoopGroup(0) // 使用默认的线程数
+    protected lateinit var workerGroup: EventLoopGroup
 
-    /**
-     * 业务线程池：处理业务
-     */
-    protected val businessGroup = DefaultEventExecutor()
+    init{
+        if(Epoll.isAvailable()){
+            bossGroup = EpollEventLoopGroup(config["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
+            workerGroup = EpollEventLoopGroup(config["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
+            (bossGroup as EpollEventLoopGroup).setIoRatio(100)
+            (workerGroup as EpollEventLoopGroup).setIoRatio(100)
 
-    /**
-     * 启动server
-     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载服务
-     */
-    public override fun doStart(): Unit{
-       try {
-           // Create ServerBootstrap
-           val b = buildBootstrap()
-           // Bind and start to accept incoming connections.
-           val f: ChannelFuture = b.bind(serverUrl.port).sync()
+            bootstrap.channel(EpollServerSocketChannel::class.java)
+            bootstrap.option(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED)
+            bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED)
+        }else{
+            bossGroup = NioEventLoopGroup(config["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
+            workerGroup = NioEventLoopGroup(config["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
 
-           // 扫描加载服务
-           ProviderLoader.load()
+            bootstrap.channel(NioServerSocketChannel::class.java)
+        }
 
-           // Wait until the server socket is closed.
-           // In this example, this does not happen, but you can do that to gracefully
-           // shut down your server.
-           f.channel().closeFuture().sync()
-       }catch(e: Exception) {
-           serverLogger.error("NettyServer运行异常", e)
-           e.printStackTrace()
-       }
-    }
+        // 启动选项
+        bootstrap.option(ChannelOption.SO_BACKLOG, config["backlog"]!!) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
+                .childOption(ChannelOption.SO_KEEPALIVE, config["keepAlive"]!!) // 保持心跳
+                .childOption(ChannelOption.SO_REUSEADDR, config["reuseAddress"]!!) // 重用端口
+                .childOption(ChannelOption.TCP_NODELAY, config["tcpNoDelay"]!!) // 禁用了Nagle算法,允许小包的发送
+                .childOption(ChannelOption.SO_LINGER, config["soLinger"]!!) //
+                .childOption(ChannelOption.SO_SNDBUF, config["sendBufferSize"]!!) // 发送的缓冲大小
+                .childOption(ChannelOption.SO_RCVBUF, config["receiveBufferSize"]!!) // 接收的缓冲大小
+                .childOption<ByteBufAllocator>(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 
-    /**
-     * 构建启动选项
-     */
-    protected fun buildBootstrap(): ServerBootstrap {
-        val bootstrap = ServerBootstrap()
-                .group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel::class.java)
-                .option(ChannelOption.SO_BACKLOG, 128 * 8) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
-                .childOption(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
-                .childOption(ChannelOption.SO_REUSEADDR, true) // 重用端口
-
-        // 自定义启动选项
-        for((k, v) in customBootstrapOptions())
-            bootstrap.option(k, v)
-        // 自定义子channel启动选项
-        for((k, v) in customBootstrapChildOptions())
-            bootstrap.childOption(k, v)
-
-        return bootstrap // 复用端口
+        bootstrap.group(bossGroup, workerGroup)
                 .childHandler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
                         serverLogger.info("NettyServer收到client连接: $channel")
@@ -98,23 +97,34 @@ open class NettyServer : IRpcServer() {
 
                         // 自定义子channel处理器
                         for(h in customChildChannelHandlers())
-                            pipeline.addLast(businessGroup, h)
+                            pipeline.addLast(h)
                     }
                 })
     }
 
     /**
-     * 自定义启动选项
+     * 启动server
+     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载服务
      */
-    protected open fun customBootstrapOptions(): Map<ChannelOption<Any>, Any>{
-        return emptyMap()
-    }
+    public override fun doStart(): Unit{
+        // 关机时要关闭
+        ClosingOnShutdown.addClosing(this)
 
-    /**
-     * 自定义子channel启动选项
-     */
-    protected open fun customBootstrapChildOptions(): Map<ChannelOption<Any>, Any>{
-        return emptyMap()
+       try {
+           // Bind and start to accept incoming connections.
+           val f: ChannelFuture = bootstrap.bind(serverUrl.port).sync()
+
+           // 扫描加载服务
+           ProviderLoader.load()
+
+           // Wait until the server socket is closed.
+           // In this example, this does not happen, but you can do that to gracefully
+           // shut down your server.
+           f.channel().closeFuture().sync()
+       }catch(e: Exception) {
+           serverLogger.error("NettyServer运行异常", e)
+           e.printStackTrace()
+       }
     }
 
     /**
