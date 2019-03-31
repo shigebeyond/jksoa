@@ -100,8 +100,10 @@ abstract class BaseTrigger : ITrigger {
                     ex = e
                 }
                 // 更新作业属性
-                if(attr.dirty)
+                if(attr.dirty) {
                     jobAttrs.put(job.id, attr)
+                    attr.cleanDirty()
+                }
 
                 // 记录作业执行异常, 对rpc作业由其自己作业来记录
                 if(ex != null)
