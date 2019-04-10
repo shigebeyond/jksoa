@@ -7,6 +7,7 @@ import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.referer.RefererLoader
 import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.IShardingRpcRequest
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.future.FailoveRpcResponseFuture
@@ -38,7 +39,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
     public val shardingStrategy: IShardingStrategy = IShardingStrategy.instance(config["shardingStrategy"]!!)
 
     init {
-        // 扫描加载服务
+        // 延迟扫描加载Referer服务
         RefererLoader.load()
     }
 
@@ -56,9 +57,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
 
             // 2 发送请求，并获得异步响应
             conn.send(req)
-        }.thenApply {
-            it.getOrThrow()
-        }
+        }.thenApply(IRpcResponse::getOrThrow)
     }
 
     /**
@@ -89,9 +88,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
             val req = shdReq.buildRpcRequest(iSharding)
 
             // 发送请求，并获得异步响应
-            conns[iConn].send(req).thenApply {
-                it.getOrThrow()
-            }
+            conns[iConn].send(req).thenApply(IRpcResponse::getOrThrow)
         }
 
         // 3 等待全部分片请求的响应结果

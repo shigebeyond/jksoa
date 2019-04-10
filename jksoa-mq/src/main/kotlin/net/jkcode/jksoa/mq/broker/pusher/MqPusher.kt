@@ -2,6 +2,7 @@ package net.jkcode.jksoa.mq.broker.pusher
 
 import net.jkcode.jkmvc.common.stringifyStackTrace
 import net.jkcode.jkmvc.future.IFutureCallback
+import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
@@ -50,19 +51,15 @@ object MqPusher : IMqPusher {
             return
 
         // 2 发请求: 推送消息
-        val resFuture = conn.send(req)
+        val resFuture = conn.send(req).thenApply(IRpcResponse::getOrThrow)
 
         // 处理响应
-        val callback = object : IFutureCallback<Boolean> {
-            public override fun completed(result: Boolean) {
-                resultQueue.add(msg to result)
-            }
-
-            public override fun failed(ex: Exception) {
-                resultQueue.add(msg to ex)
-            }
+        resFuture.thenAccept {
+            resultQueue.add(msg to (it as Boolean))
         }
-        resFuture.addCallback(callback as IFutureCallback<Any?>)
+        resFuture.exceptionally {
+            resultQueue.add(msg to it)
+        }
     }
 
     /**
