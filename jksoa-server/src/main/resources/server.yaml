@@ -12,8 +12,8 @@ reuseAddress: true # 重用端口
 tcpNoDelay: true # 禁用了Nagle算法,允许小包的发送
 soLinger: 5 # 当网卡收到关闭连接请求后，等待 soLinger 秒, 如果期间发送完毕，正常四次挥手关闭连接，否则发送RST包关闭连接
 backlog: 1024 # TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128*8
-sendBufferSize: 1024*64 # 发送的缓存大小, 默认64K
-receiveBufferSize: 1024*64 # 接收的缓冲大小, 默认64K
+sendBufferSize: 65536 # 发送的缓存大小, 默认64K=1024*64
+receiveBufferSize: 65536 # 接收的缓冲大小, 默认64K=1024*64
 acceptorThreadNum: 1 # acceptor线程数
 ioThreadNum: 0 # IO线程数, 如为0, 则为Runtime.getRuntime().availableProcessors()
 # IdleStateHandler 中channel空闲检查的时间配置
