@@ -43,31 +43,7 @@ open class RpcResponseFuture(public val req: IRpcRequest /* 请求 */): BaseRpcR
     protected val latch: CountDownLatch = CountDownLatch(1)
 
     /**
-     * 任务是否完成
-     * @return
-     */
-    public override fun isDone(): Boolean {
-        return result != null
-    }
-
-    /**
-     * 尝试取消任务
-     * @return 是否取消成功
-     */
-    public override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
-        return false
-    }
-
-    /**
-     * 任务是否被取消
-     * @return
-     */
-    public override fun isCancelled(): Boolean {
-        return false
-    }
-
-    /**
-     * 完成
+     * 完成: 包含成功 + 业务异常(RpcBusinessException) 的情况
      *
      * @param result
      * @return
@@ -88,7 +64,7 @@ open class RpcResponseFuture(public val req: IRpcRequest /* 请求 */): BaseRpcR
     }
 
     /**
-     * 失败
+     * 失败: 只包含网络异常(RpcClientException)的情况
      *
      * @param ex
      * @return

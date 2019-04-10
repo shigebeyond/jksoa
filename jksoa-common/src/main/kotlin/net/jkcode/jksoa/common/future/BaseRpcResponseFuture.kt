@@ -12,4 +12,27 @@ import net.jkcode.jksoa.common.IRpcResponse
  */
 abstract class BaseRpcResponseFuture: IRpcResponseFuture, CallbackableFuture<IRpcResponse>() {
 
+    /**
+     * 任务是否完成
+     * @return
+     */
+    public override fun isDone(): Boolean {
+        return result != null
+    }
+
+    /**
+     * 尝试取消任务
+     * @return 是否取消成功
+     */
+    public override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
+        return false
+    }
+
+    /**
+     * 任务是否被取消
+     * @return
+     */
+    public override fun isCancelled(): Boolean {
+        return false
+    }
 }

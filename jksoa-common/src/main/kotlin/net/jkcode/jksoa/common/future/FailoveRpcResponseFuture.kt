@@ -4,6 +4,7 @@ import net.jkcode.jkmvc.future.CallbackableFuture
 import net.jkcode.jkmvc.future.IFutureCallback
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcClientException
 import java.util.concurrent.TimeUnit
 
@@ -27,7 +28,6 @@ class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次
     /**
      * 被代理的目标异步响应对象
      */
-    @Volatile
     protected var targetResFuture: IRpcResponseFuture = buildResponseFuture()
 
     /**
@@ -55,9 +55,8 @@ class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次
         val resFuture = responseFactory(tryTimes)
 
         // 3 代理回调
-        // 3.1 在debug环境下处理早已收到的响应
-        // 当client调用本机server时, client很快收到响应
-        // 而在debug环境下, 在代码 res.callback = xxx 执行之前就收到响应了, 则设置了回调也无法触发
+        // 3.1 在debug环境下处理早已收到的响应的情况
+        // 当client调用本机server时, client很快收到响应, 在 addCallback()之前就收到了, 因此不能被动等待调用 callback, 只能主动调用 callback
         if(resFuture.isDone){
             val res = resFuture.result!!
             if (res.exception != null){
@@ -106,14 +105,7 @@ class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次
      */
     public override fun isDone(): Boolean {
         return targetResFuture.isDone
-    }
-
-    /**
-     * 判断任务是否取消
-     * @return
-     */
-    public override fun isCancelled(): Boolean {
-        return targetResFuture.isCancelled
+                && (targetResFuture.result!!.exception !is RpcClientException || tryTimes >= maxTryTimes)
     }
 
     /**
@@ -143,15 +135,6 @@ class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次
             clientLogger.error("[FailoveRpcResponseFuture.get()]发生异常, 已重试 $tryTimes 次", ex)
         }while(tryTimes < maxTryTimes) // [tryTimes++] is done in [buildResponseFuture()]
         throw ex!!
-    }
-
-    /**
-     * 取消任务
-     * @param mayInterruptIfRunning
-     * @return
-     */
-    public override fun cancel(mayInterruptIfRunning: Boolean): Boolean {
-        return targetResFuture.cancel(mayInterruptIfRunning)
     }
 
 }
