@@ -57,12 +57,12 @@ class ZkDLock(public override val name: String /* 锁标识 */,
     protected var expireTimeout: Timeout? = null
 
     /**
-    * 尝试加锁
+    * 快速加锁, 锁不住不等待, 有过期时间
     *
     * @param expireSeconds 锁的过期时间, 单位秒
     * @return
     */
-    public override fun attemptLock(expireSeconds: Int): Boolean{
+    public override fun quickLock(expireSeconds: Int): Boolean{
         if(locked) {
             // 更新过期任务
             refreshExpireTimeout(expireSeconds)
