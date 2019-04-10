@@ -1,12 +1,7 @@
 package net.jkcode.jksoa.common.future
 
-import net.jkcode.jkmvc.future.CallbackableFuture
-import net.jkcode.jkmvc.future.IFutureCallback
-import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.clientLogger
-import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcClientException
-import java.util.concurrent.TimeUnit
 
 /**
  * 失败重试的异步响应
@@ -16,9 +11,8 @@ import java.util.concurrent.TimeUnit
  * @date 2017-12-30 6:43 PM
  */
 class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次数 */,
-                               protected val requestTimeoutMillis: Long, /* 请求超时, 用在get()中的默认超时 */
                                protected val responseFactory: (tryTimes: Int) -> IRpcResponseFuture /* 响应工厂方法, 参数是当前尝试次数, 用于发送发送请求 */
-): BaseRpcResponseFuture()  {
+): IRpcResponseFuture(){
 
     /**
      * 异步更新的已尝试次数
@@ -29,12 +23,6 @@ class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次
      * 被代理的目标异步响应对象
      */
     protected var targetResFuture: IRpcResponseFuture = buildResponseFuture()
-
-    /**
-     * 响应结果
-     */
-    public override val result: IRpcResponse?
-        get() = targetResFuture.result
 
 
     init{
@@ -55,86 +43,22 @@ class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次
         val resFuture = responseFactory(tryTimes)
 
         // 3 代理回调
-        // 3.1 在debug环境下处理早已收到的响应的情况
-        // 当client调用本机server时, client很快收到响应, 在 addCallback()之前就收到了, 因此不能被动等待调用 callback, 只能主动调用 callback
-        if(resFuture.isDone){
-            val res = resFuture.result!!
-            if (res.exception != null){
-                if(tryTimes < maxTryTimes)
-                    targetResFuture = buildResponseFuture()
-                else
-                    callbacks?.forEach {
-                        it.failed(res.exception!!)
-                    }
-            }else {
-                callbacks?.forEach {
-                    it.completed(res)
-                }
+        resFuture.exceptionally {
+            if(tryTimes < maxTryTimes) {
+                clientLogger.debug("失败重试")
+                targetResFuture = buildResponseFuture()
+            }else{
+                this.completeExceptionally(it)
             }
-            return resFuture
+            null
         }
 
-        // 3.2 非debug环境, 正常设置回调
-        val callback = object : IFutureCallback<IRpcResponse> {
-            override fun completed(result: IRpcResponse) {
-                clientLogger.debug("完成")
-                callbacks?.forEach {
-                    it.completed(result)
-                }
-            }
-
-            // 出错重试
-            override fun failed(ex: Exception) {
-                if(tryTimes < maxTryTimes) {
-                    clientLogger.debug("失败重试")
-                    targetResFuture = buildResponseFuture()
-                }else {
-                    clientLogger.debug("失败,并超过重试次数 : $tryTimes")
-                    callbacks?.forEach {
-                        it.failed(ex)
-                    }
-                }
-            }
+        resFuture.thenAccept {
+            clientLogger.debug("完成")
+            this.complete(it)
         }
-        resFuture.addCallback(callback)
+
         return resFuture
-    }
-
-    /**
-     * 判断任务是否完成
-     */
-    public override fun isDone(): Boolean {
-        return targetResFuture.isDone
-                && (targetResFuture.result!!.exception !is RpcClientException || tryTimes >= maxTryTimes)
-    }
-
-    /**
-     * 同步获得任务结果, 有默认超时
-     */
-    public override fun get(): IRpcResponse {
-        return get(requestTimeoutMillis, TimeUnit.MILLISECONDS)
-    }
-
-    /**
-     * 同步获得结果，有超时
-     *
-     * @param timeout
-     * @param unit
-     * @return
-     */
-    public override fun get(timeout: Long, unit: TimeUnit): IRpcResponse {
-        var ex: Exception? = null
-        do{
-            val res = targetResFuture.get(timeout, unit)
-            // 完成
-            if(res.exception == null)
-                return res
-
-            // 异常
-            ex = res.exception!!
-            clientLogger.error("[FailoveRpcResponseFuture.get()]发生异常, 已重试 $tryTimes 次", ex)
-        }while(tryTimes < maxTryTimes) // [tryTimes++] is done in [buildResponseFuture()]
-        throw ex!!
     }
 
 }

@@ -48,7 +48,7 @@ class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
         // 1 删除异步响应的记录
         NettyResponseHandler.removeResponseFuture(reqId)
         // 2 设置响应结果: 超时异常
-        super.failed(RpcClientException("请求[$reqId]超时: ${req.requestTimeoutMillis} MILLISECONDS"))
+        super.completeExceptionally(RpcClientException("请求[$reqId]超时: ${req.requestTimeoutMillis} MILLISECONDS"))
     }
 
     /**
@@ -71,9 +71,9 @@ class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
      * @param result
      * @return
      */
-    public override fun completed(result: IRpcResponse): Boolean {
+    public override fun complete(result: IRpcResponse): Boolean {
         timeout.cancel()
-        return super.completed(result)
+        return super.complete(result)
     }
 
     /**
@@ -83,9 +83,9 @@ class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
      * @param ex
      * @return
      */
-    public override fun failed(ex: Exception): Boolean {
+    public override fun completeExceptionally(ex: Throwable): Boolean {
         timeout.cancel()
-        return super.failed(ex)
+        return super.completeExceptionally(ex)
     }
 
 }

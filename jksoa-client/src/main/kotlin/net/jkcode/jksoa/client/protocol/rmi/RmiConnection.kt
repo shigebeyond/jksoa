@@ -1,13 +1,12 @@
 package net.jkcode.jksoa.client.protocol.rmi
 
+import net.jkcode.jksoa.client.connection.BaseConnection
 import net.jkcode.jksoa.client.referer.RefererLoader
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcClientException
-import net.jkcode.jksoa.common.future.CompletedRpcResponseFuture
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
-import net.jkcode.jksoa.client.connection.BaseConnection
 import javax.naming.InitialContext
 
 /**
@@ -50,10 +49,10 @@ class RmiConnection(url: Url): BaseConnection(url){
             // 3 调用远程对象的方法
             val value = method.invoke(remoteObject, *req.args)
             val res = RpcResponse(req.id, value)
-            return CompletedRpcResponseFuture(res)
+            return IRpcResponseFuture.completedFuture(res)
         }catch (e:Exception){
             val res = RpcResponse(req.id, e)
-            return CompletedRpcResponseFuture(res)
+            return IRpcResponseFuture.completedFuture(res)
         }
     }
 

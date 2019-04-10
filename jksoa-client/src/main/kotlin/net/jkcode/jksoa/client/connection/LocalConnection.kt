@@ -2,11 +2,13 @@ package net.jkcode.jksoa.client.connection
 
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.client.referer.RefererLoader
-import net.jkcode.jksoa.common.*
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.RpcResponse
+import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.exception.RpcServerException
-import net.jkcode.jksoa.common.future.CompletedRpcResponseFuture
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
+import net.jkcode.jksoa.common.serverLogger
 
 /**
  * 本地的rpc连接
@@ -43,10 +45,10 @@ class LocalConnection(url: Url): BaseConnection(url){
             val value = method.invoke(referer.service, *req.args)
             serverLogger.debug("Server处理请求：$req，结果: $value")
             val res = RpcResponse(req.id, value)
-            return CompletedRpcResponseFuture(res)
+            return IRpcResponseFuture.completedFuture(res)
         }catch (e:Exception){
             val res = RpcResponse(req.id, e)
-            return CompletedRpcResponseFuture(res)
+            return IRpcResponseFuture.completedFuture(res)
         }
     }
 

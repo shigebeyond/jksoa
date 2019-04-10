@@ -47,3 +47,6 @@
 # 1.5
 1. 将包`com.jksoa`重命名为`net.jkcode.jksoa`
 2. 支持限流: 支持令牌桶/计数器限流算法, 支持客户端与服务端双向限流, 支持在方法级注解配置
+
+# 1.6
+1. 将自研的 Future 类体系, 换为 CompletableFuture

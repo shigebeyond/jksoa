@@ -2,23 +2,17 @@ package net.jkcode.jksoa.client.dispatcher
 
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.get
-import net.jkcode.jkmvc.future.IFutureCallback
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.referer.RefererLoader
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.IShardingRpcRequest
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.future.FailoveRpcResponseFuture
-import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.sharding.IShardingStrategy
-import java.lang.Exception
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 /**
  * 请求分发者
@@ -53,15 +47,17 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
      *   将该请求发给任一节点
      *
      * @param req 请求
-     * @return 异步响应结果
+     * @return 异步结果
      */
-    public override fun dispatch(req: IRpcRequest): IRpcResponseFuture {
-        return FailoveRpcResponseFuture(config["maxTryTimes"]!!, req.requestTimeoutMillis){
+    public override fun dispatch(req: IRpcRequest): CompletableFuture<Any?> {
+        return FailoveRpcResponseFuture(config["maxTryTimes"]!!){
             // 1 选择连接
             val conn = connHub.select(req)
 
             // 2 发送请求，并获得异步响应
             conn.send(req)
+        }.thenApply {
+            it.getOrThrow()
         }
     }
 
@@ -70,9 +66,9 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
      *    将请求分成多片, 然后逐片分发给对应的节点
      *
      * @param shdReq 分片的rpc请求
-     * @return 多个响应结果
+     * @return 多个结果
      */
-    public override fun dispatchSharding(shdReq: IShardingRpcRequest): Array<IRpcResponse> {
+    public override fun dispatchSharding(shdReq: IShardingRpcRequest): Array<CompletableFuture<Any?>> {
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(shdReq.serviceId)
@@ -93,12 +89,13 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
             val req = shdReq.buildRpcRequest(iSharding)
 
             // 发送请求，并获得异步响应
-            conns[iConn].send(req)
+            conns[iConn].send(req).thenApply {
+                it.getOrThrow()
+            }
         }
 
         // 3 等待全部分片请求的响应结果
-        CompletableFuture.allOf(*resFutures.toTypedArray()).join();
-        return joinResults(resFutures)
+        return resFutures.toTypedArray()
     }
 
     /**

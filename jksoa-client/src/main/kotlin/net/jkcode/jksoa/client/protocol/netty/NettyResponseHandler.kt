@@ -74,7 +74,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         }
 
         // 2 设置响应结果
-        future.completed(res)
+        future.complete(res)
     }
 
     /**
@@ -107,7 +107,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
             // 2 删除异步响应的记录
             futures.remove(future.reqId)
             // 3 设置结果: channel关闭的异常
-            future.failed(RpcClientException("channel已关闭"))
+            future.completeExceptionally(RpcClientException("channel已关闭"))
         }
     }
 
