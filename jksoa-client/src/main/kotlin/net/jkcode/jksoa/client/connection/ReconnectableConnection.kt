@@ -3,7 +3,7 @@ package net.jkcode.jksoa.client.connection
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.common.getOrPutOnce
-import net.jkcode.jkmvc.common.time
+import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jksoa.client.IRpcClient
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
@@ -104,7 +104,7 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
      * @return
      */
     public override fun send(req: IRpcRequest): IRpcResponseFuture {
-        lastSendTime = time()
+        lastSendTime = currMillis()
 
         // 发送请求
         return getOrReConnect().send(req)

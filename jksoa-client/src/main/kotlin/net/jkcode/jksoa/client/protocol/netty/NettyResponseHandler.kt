@@ -1,12 +1,12 @@
 package net.jkcode.jksoa.client.protocol.netty
 
+import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.SimpleChannelInboundHandler
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.clientLogger
-import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.SimpleChannelInboundHandler
-import java.nio.channels.ClosedChannelException
+import net.jkcode.jksoa.common.exception.RpcClientException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -107,7 +107,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
             // 2 删除异步响应的记录
             futures.remove(future.reqId)
             // 3 设置结果: channel关闭的异常
-            future.failed(ClosedChannelException())
+            future.failed(RpcClientException("channel已关闭"))
         }
     }
 

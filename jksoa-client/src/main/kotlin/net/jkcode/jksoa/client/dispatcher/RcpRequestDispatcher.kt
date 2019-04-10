@@ -16,6 +16,7 @@ import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.sharding.IShardingStrategy
 import java.lang.Exception
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -96,6 +97,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
         }
 
         // 3 等待全部分片请求的响应结果
+        CompletableFuture.allOf(*resFutures.toTypedArray()).join();
         return joinResults(resFutures)
     }
 
@@ -117,40 +119,5 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
         }
         return conn2Shds
     }
-
-    /**
-     * 等待多个响应结果
-     * @param resFutures
-     * @return
-     */
-    private fun joinResults(resFutures: List<IRpcResponseFuture>): Array<IRpcResponse> {
-        val latch = CountDownLatch(resFutures.size)
-        val callback = object : IFutureCallback<Any?> {
-            public override fun completed(result: Any?) {
-                latch.countDown()
-            }
-
-            public override fun failed(ex: Exception) {
-                latch.countDown()
-            }
-        }
-        for (resFuture in resFutures)
-            resFuture.addCallback(callback)
-
-        try {
-            latch.await()
-        } catch (ex: InterruptedException) {
-            Thread.currentThread().interrupt()
-        }
-
-        // 收集结果
-        val results = arrayOfNulls<IRpcResponse>(resFutures.size)
-        results.forEachIndexed { i, _ ->
-            results[i] = resFutures[i].get()
-        }
-
-        return results as Array<IRpcResponse>
-    }
-
 
 }

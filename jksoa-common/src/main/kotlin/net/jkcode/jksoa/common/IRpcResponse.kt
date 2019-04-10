@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.common
 
+import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.invocation.IInvocationResult
 import java.io.Serializable
 
@@ -26,4 +27,10 @@ interface IRpcResponse: Serializable, IInvocationResult {
      * 异常
      */
     val exception: Exception?
+
+    /**
+     *
+     */
+    val failed: Boolean
+        get() = exception is RpcClientException
 }

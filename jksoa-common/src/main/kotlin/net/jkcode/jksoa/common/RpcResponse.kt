@@ -25,18 +25,15 @@ data class RpcResponse(public override val requestId: Long, /* 请求标识 */
 
     /**
      * 获得结果值或抛出异常
+     *   区分异常: RpcBusinessException 为业务异常
+     *            RpcClientException 为超时或网络异常
      * @return
      */
     public override fun getOrThrow(): Any?{
         if(exception == null)
             return value
 
-        // 1 业务异常：直接抛出
-        if(exception.cause is RpcBusinessException)
-            throw exception.cause!!
-
-        // 2 其他异常
-        throw RpcClientException("调用过程异常", exception)
+        throw exception
     }
 
     /**
