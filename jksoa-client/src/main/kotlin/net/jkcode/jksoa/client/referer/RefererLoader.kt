@@ -54,4 +54,17 @@ object RefererLoader : ServiceClassLoader<IReferer>() {
         return null
     }
 
+    /**
+     * 根据服务标识来获得服务类元数据
+     *
+     * @param name
+     * @return
+     */
+    override fun get(name: String): IReferer? {
+        // 延迟扫描加载Referer服务
+        load()
+
+        return super.get(name)
+    }
+
 }
