@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common.future
 
-import net.jkcode.jkmvc.future.ICallbackable
+import net.jkcode.jkmvc.future.ICallbackableFuture
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-class ValueFuture(protected val resFuture: IRpcResponseFuture) : Future<Any?> by (resFuture as Future<Any?>), ICallbackable<Any?> by resFuture {
+class ValueFuture(protected val resFuture: IRpcResponseFuture) : ICallbackableFuture<Any?> by (resFuture as ICallbackableFuture<Any?>) {
 
     /**
      * 同步获得结果，无超时

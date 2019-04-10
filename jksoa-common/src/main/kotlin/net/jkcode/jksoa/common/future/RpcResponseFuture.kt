@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.common.future
 
 import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.future.Callbackable
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcResponse
 import java.util.concurrent.CountDownLatch
@@ -16,7 +15,7 @@ import java.util.concurrent.TimeoutException
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): IRpcResponseFuture, Callbackable<Any?>() {
+open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): BaseRpcResponseFuture() {
 
     companion object {
 

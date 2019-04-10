@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common.future
 
-import net.jkcode.jkmvc.future.ICallbackableFuture
+import net.jkcode.jkmvc.future.CallbackableFuture
 import net.jkcode.jksoa.common.IRpcResponse
 
 /**
@@ -10,11 +10,6 @@ import net.jkcode.jksoa.common.IRpcResponse
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-interface IRpcResponseFuture : ICallbackableFuture<IRpcResponse> {
-
-    /**
-     * 响应结果
-     */
-    val result: IRpcResponse?
+abstract class BaseRpcResponseFuture: IRpcResponseFuture, CallbackableFuture<IRpcResponse>() {
 
 }

@@ -21,13 +21,4 @@ class CompletedRpcResponseFuture(res: RpcResponse): IRpcResponseFuture, Complete
     public override val result: IRpcResponse
         get() = super<CompletedFuture>.result
 
-    /**
-     * 添加回调
-     *   立即执行
-     * @param
-     */
-    public override fun addCallback(callback: IFutureCallback<Any?>) {
-        callback.completed(result)
-    }
-
 }
