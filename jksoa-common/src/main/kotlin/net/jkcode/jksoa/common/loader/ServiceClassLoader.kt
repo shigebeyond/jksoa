@@ -2,6 +2,7 @@ package net.jkcode.jksoa.common.loader
 
 import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.common.IService
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * 加载服务类
@@ -11,6 +12,11 @@ import net.jkcode.jksoa.common.IService
  * @date 2017-12-12 10:27 AM
  */
 abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
+
+    /**
+     * 是否已加载
+     */
+    private val loaded: AtomicBoolean = AtomicBoolean(false)
 
     /**
      * 服务类缓存
@@ -25,15 +31,18 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
     protected abstract val config: IConfig
 
     /**
-     * 扫描加载服务
+     * 扫描加载服务, 可多次调用, 只有第一次有效
      *   如果是ProviderLoader, 则在server启动时调用
-     *   如果是RefererLoader, 则初始化RcpRequestDispatcher时才调用
+     *   如果是RefererLoader, 则要延迟到 RcpRequestDispatcher初始化/RefererLoader.get() 时才调用
+     *      主要是为了先调用 ProviderLoader.load() 调用, 以便能添加本地服务, 因此要延迟调用
      */
     public fun load(){
-        // 系统的service包
-        addPackage("net.jkcode.jksoa.service")
-        // 用户定义的service包
-        addPackages(config["servicePackages"]!!)
+        if(loaded.compareAndSet(false, true)) {
+            // 系统的service包
+            addPackage("net.jkcode.jksoa.service")
+            // 用户定义的service包
+            addPackages(config["servicePackages"]!!)
+        }
     }
 
     /**
