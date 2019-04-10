@@ -75,7 +75,7 @@ abstract class IRpcServer {
 
     /**
      * 启动服务器
-     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载服务
+     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载Provider服务
      */
     abstract fun doStart()
 }

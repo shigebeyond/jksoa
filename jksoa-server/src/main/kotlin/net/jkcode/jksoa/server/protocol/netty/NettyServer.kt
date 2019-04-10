@@ -58,6 +58,8 @@ open class NettyServer : IRpcServer(), Closeable {
     protected lateinit var workerGroup: EventLoopGroup
 
     init{
+        bootstrap = ServerBootstrap()
+
         if(Epoll.isAvailable()){
             bossGroup = EpollEventLoopGroup(config["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
             workerGroup = EpollEventLoopGroup(config["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
@@ -104,7 +106,7 @@ open class NettyServer : IRpcServer(), Closeable {
 
     /**
      * 启动server
-     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载服务
+     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载Provider服务
      */
     public override fun doStart(): Unit{
         // 关机时要关闭
@@ -114,7 +116,7 @@ open class NettyServer : IRpcServer(), Closeable {
            // Bind and start to accept incoming connections.
            val f: ChannelFuture = bootstrap.bind(serverUrl.port).sync()
 
-           // 扫描加载服务
+           // 扫描加载Provider服务
            ProviderLoader.load()
 
            // Wait until the server socket is closed.
