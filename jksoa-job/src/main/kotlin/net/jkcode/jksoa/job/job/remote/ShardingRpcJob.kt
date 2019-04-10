@@ -50,7 +50,9 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : IJob, IShardingInv
         val resFutures = distr.dispatchSharding(req)
         // 记录执行异常
         for(resFuture in resFutures)
-            logExecutionExceptionInCallback(resFuture as IRpcResponseFuture)
+            resFuture.exceptionally{
+                this.logExecutionException(it)
+            }
     }
 
     /**

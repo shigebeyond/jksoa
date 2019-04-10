@@ -1,8 +1,5 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jkmvc.future.IFutureCallback
-import net.jkcode.jksoa.common.future.IRpcResponseFuture
-
 /**
  * 作业
  * @author shijianhang<772910474@qq.com>
@@ -31,28 +28,12 @@ interface IJob {
     }
 
     /**
-     * TODO:
      * 记录作业执行异常
+     *   可记录到磁盘中,以便稍后重试
      * @param e
      */
-    fun logExecutionException(e: Exception){
+    fun logExecutionException(e: Throwable){
 
-    }
-
-    /**
-     * 在异步响应的异常回调中, 记录异常
-     * @param resFuture
-     */
-    fun logExecutionExceptionInCallback(resFuture: IRpcResponseFuture) {
-        val callback = object : IFutureCallback<Any?> {
-            public override fun completed(result: Any?) {
-            }
-
-            public override fun failed(ex: java.lang.Exception) {
-                logExecutionException(ex)
-            }
-        }
-        resFuture.addCallback(callback)
     }
 
 }
