@@ -1,15 +1,15 @@
 package net.jkcode.jksoa.client.protocol.netty
 
+import io.netty.channel.Channel
+import io.netty.util.Timeout
+import io.netty.util.TimerTask
 import net.jkcode.jksoa.common.CommonMilliTimer
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.future.RpcResponseFuture
-import io.netty.channel.Channel
-import io.netty.util.Timeout
-import io.netty.util.TimerTask
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 /**
  * netty的异步响应
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeoutException
  */
 class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
                              public val channel: Channel /* netty channel, 仅用于在[NettyResponseHandler.channelInactive()]中删掉该channel对应的异步响应记录 */
-) : RpcResponseFuture(req.id) {
+) : RpcResponseFuture(req) {
 
     /**
      * 超时定时器
@@ -48,7 +48,7 @@ class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
         // 1 删除异步响应的记录
         NettyResponseHandler.removeResponseFuture(reqId)
         // 2 设置响应结果: 超时异常
-        super.failed(TimeoutException("请求[$reqId]超时"))
+        super.failed(RpcClientException("请求[$reqId]超时: ${req.requestTimeoutMillis} MILLISECONDS"))
     }
 
     /**

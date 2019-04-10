@@ -1,11 +1,12 @@
 package net.jkcode.jksoa.common.future
 
 import net.jkcode.jkmvc.common.Config
+import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcResponse
+import net.jkcode.jksoa.common.exception.RpcClientException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 /**
  * 异步响应
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeoutException
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 6:43 PM
  */
-open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): BaseRpcResponseFuture() {
+open class RpcResponseFuture(public val req: IRpcRequest /* 请求 */): BaseRpcResponseFuture() {
 
     companion object {
 
@@ -24,6 +25,12 @@ open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): BaseRpc
          */
         public val config = Config.instance("client", "yaml")
     }
+
+    /**
+     * 请求标识
+     */
+    public val reqId: Long
+        get() = req.id
 
     /**
      * 响应结果
@@ -124,7 +131,7 @@ open class RpcResponseFuture(public val reqId: Long /* 请求标识 */): BaseRpc
                 return result!!
 
             // 超时
-            failed(TimeoutException("请求[$reqId]超时: $timeout $unit")) // TODO 多一次无所谓无影响的 countDown()
+            failed(RpcClientException("请求[$reqId]超时: $timeout $unit")) // TODO 多一次无所谓无影响的 countDown()
             return result!!
         } catch (e: InterruptedException) {
             return RpcResponse(reqId, e)
