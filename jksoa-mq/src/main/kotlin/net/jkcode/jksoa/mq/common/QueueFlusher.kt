@@ -19,6 +19,7 @@ public typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
 /**
  * 队列刷盘器
  *    定时刷盘 + 定量刷盘
+ *    注意: 使用 ConcurrentLinkedQueue 来做队列, 其 size() 是遍历性能慢, 尽量使用 isEmpty()
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
