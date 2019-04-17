@@ -1,9 +1,12 @@
 package net.jkcode.jksoa.client.combiner
 
 import net.jkcode.jkmvc.combiner.GroupFutureSupplierCombiner
+import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkmvc.common.isSuperClass
 import net.jkcode.jksoa.client.combiner.annotation.GroupCombine
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
+import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.getServiceClass
 import net.jkcode.jksoa.common.groupCombine
 import java.lang.reflect.Method
@@ -55,7 +58,19 @@ class GroupRpcRequestCombiner<RequestArgumentType /* 请求参数类型 */, Resp
         public fun instance(method: Method): GroupRpcRequestCombiner<Any, Any?, Any> {
             return groupCombiners.getOrPut(method){
                 val annotation = method.groupCombine!!
+                // 找到批量操作的方法
                 val batchMethod = method.declaringClass.methods.first { it.name == annotation.batchMethod }
+                val msg = "方法[${method.getSignature()}]的注解@GroupCombine中声明的batchMethod=[${annotation.batchMethod}]"
+                if(batchMethod == null)
+                    throw RpcClientException("${msg}不存在")
+                // 检查方法参数
+                val pt = batchMethod.parameterTypes
+                if(pt.isEmpty() || List::class.java.isSuperClass(pt.first()))
+                    throw RpcClientException("${msg}必须有唯一的List类型的参数")
+                // 检查方法返回值
+                if(List::class.java.isSuperClass(batchMethod.returnType))
+                    throw RpcClientException("${msg}必须有的List类型的返回值")
+                // 创建请求合并器
                 GroupRpcRequestCombiner(batchMethod, annotation)
             }
         }

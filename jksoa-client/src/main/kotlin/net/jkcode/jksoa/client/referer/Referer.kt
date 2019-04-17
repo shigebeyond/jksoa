@@ -1,10 +1,14 @@
 package net.jkcode.jksoa.client.referer
 
 import net.jkcode.jksoa.client.IReferer
+import net.jkcode.jksoa.client.combiner.GroupRpcRequestCombiner
+import net.jkcode.jksoa.client.combiner.KeyRpcRequestCombiner
 import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.groupCombine
+import net.jkcode.jksoa.common.keyCombine
 import net.jkcode.jksoa.registry.IRegistry
 import net.jkcode.jksoa.registry.zk.ZkRegistry
 
@@ -70,6 +74,17 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
 
     init {
         if(!local) {
+            // 检查方法的合并请求的注解
+            for(method in `interface`.methods){
+                // 1 根据key来合并请求
+                if (method.keyCombine != null)
+                    KeyRpcRequestCombiner.instance(method)
+
+                // 2 根据group来合并请求
+                if (method.groupCombine != null)
+                    GroupRpcRequestCombiner.instance(method)
+            }
+
             // 监听服务变化
             clientLogger.debug("Referer监听服务[$serviceId]变化")
             registry.subscribe(serviceId, ConnectionHub)
