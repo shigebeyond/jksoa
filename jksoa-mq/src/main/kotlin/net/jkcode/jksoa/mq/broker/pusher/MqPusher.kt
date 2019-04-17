@@ -1,16 +1,15 @@
 package net.jkcode.jksoa.mq.broker.pusher
 
+import net.jkcode.jkmvc.combiner.RequestQueueFlusher
 import net.jkcode.jkmvc.common.stringifyStackTrace
-import net.jkcode.jkmvc.future.IFutureCallback
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MessageStatus
-import net.jkcode.jksoa.mq.common.QueueFlusher
 import net.jkcode.jksoa.mq.consumer.IMqConsumer
-import java.lang.Exception
+import java.util.concurrent.CompletableFuture
 
 /**
  * 消息消费结果: 消息 + 结果(true表示处理完成, false表示未处理, Exception对象表示处理异常)
@@ -32,10 +31,11 @@ object MqPusher : IMqPusher {
     /**
      * 结果队列
      */
-    private val resultQueue: QueueFlusher<ConsumeResult> = object: QueueFlusher<ConsumeResult>(100, 100){
+    private val resultQueue: RequestQueueFlusher<ConsumeResult, Void> = object: RequestQueueFlusher<ConsumeResult, Void>(100, 100){
         // 处理刷盘的元素
-        override fun handleFlush(results: List<ConsumeResult>) {
+        override fun handleFlush(results: List<ConsumeResult>, reqs: java.util.ArrayList<Pair<ConsumeResult, CompletableFuture<Void>>>): Boolean {
             flushResult(results)
+            return true
         }
     }
 
@@ -51,7 +51,7 @@ object MqPusher : IMqPusher {
             return
 
         // 2 发请求: 推送消息
-        val resFuture = conn.send(req).thenApply(IRpcResponse::getOrThrow)
+        val resFuture = conn.send(req).thenApplyAsync(IRpcResponse::getOrThrow)
 
         // 处理响应
         resFuture.thenAccept {

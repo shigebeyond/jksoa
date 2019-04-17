@@ -1,17 +1,22 @@
 package net.jkcode.jksoa.mq.broker.server.handler
 
+import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.combiner.RequestQueueFlusher
 import net.jkcode.jkmvc.common.isNullOrEmpty
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
-import net.jkcode.jksoa.mq.common.QueueFlusher
 import net.jkcode.jksoa.server.handler.IRpcRequestHandler
-import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jksoa.mq.common.RequestContext
 import java.util.*
+import java.util.concurrent.CompletableFuture
+
+/**
+ * 请求 + 上下文
+ */
+public typealias RequestContext = Pair<IRpcRequest, ChannelHandlerContext>
 
 /**
  * 发送消息的请求处理者
@@ -37,10 +42,11 @@ object PostMessageRequestHandler : IRpcRequestHandler() {
     /**
      * 请求队列
      */
-    private val reqQueue: QueueFlusher<RequestContext> = object: QueueFlusher<RequestContext>(100, 100){
+    private val reqQueue: RequestQueueFlusher<RequestContext, Void> = object: RequestQueueFlusher<RequestContext, Void>(100, 100){
         // 处理刷盘的元素
-        override fun handleFlush(reqs: List<RequestContext>) {
-            flushRequests(reqs)
+        override fun handleFlush(args: List<RequestContext>, reqs: ArrayList<Pair<RequestContext, CompletableFuture<Void>>>): Boolean {
+            flushRequests(args)
+            return true
         }
     }
 
