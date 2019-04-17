@@ -26,7 +26,8 @@ object RpcRequestHandler : IRpcRequestHandler() {
      * @param req
      */
     public override fun doHandle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
-        var res: RpcResponse? = null
+        var value:Any? = null
+        var ex: Exception? = null
         try{
             // 1 获得provider
             val provider = ProviderLoader.get(req.serviceId)
@@ -40,23 +41,40 @@ object RpcRequestHandler : IRpcRequestHandler() {
 
             // 3 调用方法, 构建响应对象
             try {
-                var value = method.invoke(provider.service, *req.args)
-                if(value is CompletableFuture<*>) // 处理 CompletableFuture 类型的返回值形式
-                    value = value.get()
-                serverLogger.debug("Server处理请求：$req，结果: $value")
-                res = RpcResponse(req.id, value)
+                value = method.invoke(provider.service, *req.args)
+                // 3.1 异步结果: 处理 CompletableFuture 类型的返回值形式
+                if(value is CompletableFuture<*>)
+                    value.whenComplete { value, ex ->
+                        endResponse(req, value, ex as Exception, ctx)
+                    }
             }catch (t: Throwable){
                 throw RpcBusinessException(t) // 业务异常
             }
-        }catch (t: Throwable){
-            res = RpcResponse(req.id, t)
+        }catch (e: Exception){
+            ex = e
         }finally {
-            // 4 返回响应
-            ctx.writeAndFlush(res)
-
-            // 请求处理后，关闭资源
-            ClosingOnRequestEnd.triggerClosings()
+            // 3.2 同步结果
+            if(value !is CompletableFuture<*>)
+                endResponse(req, value, ex, ctx)
         }
+    }
+
+    /**
+     * 返回响应
+     *
+     * @param req
+     * @param value 结果值
+     * @param ex 异常
+     * @param ctx
+     */
+    private fun endResponse(req: IRpcRequest, value: Any?, ex: Exception?, ctx: ChannelHandlerContext) {
+        serverLogger.debug("Server处理请求：$req，结果: $value, 异常: $ex")
+        // 返回响应
+        var res: RpcResponse = RpcResponse(req.id, value, ex)
+        ctx.writeAndFlush(res)
+
+        // 请求处理后，关闭资源
+        ClosingOnRequestEnd.triggerClosings()
     }
 
 }
