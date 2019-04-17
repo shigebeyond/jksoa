@@ -64,12 +64,12 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         if(res !is RpcResponse)
             return
 
-        clientLogger.debug("NettyResponseHandler获得响应: $res")
+        clientLogger.debug("NettyResponseHandler获得响应: {}", res)
 
         // 1 删除异步响应的记录
         val future = removeResponseFuture(res.requestId)
         if(future == null){
-            clientLogger.warn("NettyResponseHandler无法处理响应，没有找到requestId=${res.requestId}}的异步响应");
+            clientLogger.warn("NettyResponseHandler无法处理响应，没有找到requestId={}的异步响应", res.requestId);
             return
         }
 
@@ -81,7 +81,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      * 处理channel可用事件
      */
     public override fun channelActive(ctx: ChannelHandlerContext) {
-        clientLogger.debug("NettyResponseHandler检查channel可用: ${ctx.channel()}")
+        clientLogger.debug("NettyResponseHandler检查channel可用: {}", ctx.channel())
         super.channelActive(ctx)
     }
 
@@ -93,7 +93,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      */
     public override fun channelInactive(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
-        clientLogger.debug("NettyResponseHandler检测到channel关闭: $channel")
+        clientLogger.debug("NettyResponseHandler检测到channel关闭: {}", channel)
 
         if(futures.isEmpty())
             return
@@ -115,7 +115,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      * 处理channel发生异常事件
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        clientLogger.error("NettyResponseHandler捕获 channel ${ctx.channel()} 异常", cause)
+        clientLogger.error("NettyRequestHandler捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
         cause.printStackTrace()
         super.exceptionCaught(ctx, cause)
     }

@@ -10,7 +10,7 @@ import net.jkcode.jksoa.common.serverLogger
 class LocalBean {
 
     public fun echo(msg: String): String{
-        jobLogger.debug("调用本地bean的方法: echo(\"$msg\")")
+        jobLogger.debug("调用本地bean的方法: echo(\"{}\")", msg)
         return msg
     }
 

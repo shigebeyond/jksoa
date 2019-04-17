@@ -60,7 +60,7 @@ open class NettyClient: IRpcClient, ClosingOnShutdown() {
         return bootstrap
                 .handler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
-                        clientLogger.debug("NettyClient连接server: $channel")
+                        clientLogger.debug("NettyClient连接server: {}", channel)
                         // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
                         val pipeline = channel.pipeline()
                         pipeline.addLast(NettyMessageDecoder(1024 * 1024)) // 解码
@@ -101,7 +101,7 @@ open class NettyClient: IRpcClient, ClosingOnShutdown() {
         f.addListener(object: ChannelFutureListener{
             override fun operationComplete(f: ChannelFuture) {
                 val msg = if (f.isSuccess) "成功" else "失败: " + f.cause().message
-                clientLogger.debug("ChannelFutureListener连接 server[$url] $msg")
+                clientLogger.debug("ChannelFutureListener连接 server[{}] {}", url, msg)
             }
 
         })

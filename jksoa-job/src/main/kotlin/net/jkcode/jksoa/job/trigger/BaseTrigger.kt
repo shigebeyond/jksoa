@@ -58,7 +58,7 @@ abstract class BaseTrigger : ITrigger {
         if(delayMillis == null)
             return
 
-        jobLogger.debug("下一轮的等待毫秒数: $delayMillis, 当前时间 = " + Date().format() + ", 下一轮时间 = " + Date().add(Calendar.MILLISECOND, delayMillis.toInt()).format())
+        jobLogger.debug("下一轮的等待毫秒数: {}, 当前时间 = {}, 下一轮时间 = {}", delayMillis, Date().format(), Date().add(Calendar.MILLISECOND, delayMillis.toInt()).format())
         // 添加定时器
         CommonSecondTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
@@ -93,7 +93,7 @@ abstract class BaseTrigger : ITrigger {
                 // 执行作业, 要处理好异常
                 var ex: Exception? = null
                 try {
-                    jobLogger.debug("${this.javaClass.simpleName}执行作业: $context")
+                    jobLogger.debug("{}执行作业: {}", this.javaClass.simpleName, context)
                     job.execute(context)
                 }catch (e: Exception){
                     e.printStackTrace()

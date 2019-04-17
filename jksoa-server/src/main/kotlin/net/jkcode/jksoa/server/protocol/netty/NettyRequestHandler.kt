@@ -30,7 +30,7 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
             return
 
         // 处理请求
-        serverLogger.debug("NettyRequestHandler收到请求: " + req)
+        serverLogger.debug("NettyRequestHandler收到请求: {}", req)
         // 异步处理, 不阻塞io线程
         CommonThreadPool.execute {
             RpcRequestHandler.doHandle(req, ctx)
@@ -47,7 +47,7 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
         if (event is IdleStateEvent)
             if (event.state() == IdleState.ALL_IDLE) { // 指定时间内没有读写, 则关掉该channel
                 val channel = ctx.channel()
-                serverLogger.debug("Close idle channel = [$channel], ip = [${channel.remoteAddress()}]")
+                serverLogger.debug("Close idle channel = [{}], ip = [{}]", channel, channel.remoteAddress())
                 ctx.close()
             }
 
@@ -58,7 +58,7 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
      * 处理channel可用事件
      */
     public override fun channelActive(ctx: ChannelHandlerContext) {
-        clientLogger.debug("NettyRequestHandler检查channel可用: ${ctx.channel()}")
+        clientLogger.debug("NettyRequestHandler检查channel可用: {}", ctx.channel())
         super.channelActive(ctx)
     }
 
@@ -68,7 +68,7 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
      * @param ctx
      */
     public override fun channelInactive(ctx: ChannelHandlerContext) {
-        clientLogger.debug("NettyRequestHandler检测到channel关闭: ${ctx.channel()}")
+        clientLogger.debug("NettyRequestHandler检测到channel关闭: {}", ctx.channel())
         super.channelInactive(ctx)
     }
 
@@ -76,7 +76,8 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
      * 处理channel发生异常事件
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        clientLogger.error("NettyRequestHandler捕获 channel ${ctx.channel()}", cause)
+        // 当连接关闭时报错异常: io.netty.channel.unix.Errors$NativeIoException: epoll_ctl(..) failed: No such file or directory
+        clientLogger.error("NettyRequestHandler捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
         //cause.printStackTrace()
         super.exceptionCaught(ctx, cause)
     }

@@ -68,7 +68,7 @@ object RpcRequestHandler : IRpcRequestHandler() {
      * @param ctx
      */
     private fun endResponse(req: IRpcRequest, value: Any?, ex: Exception?, ctx: ChannelHandlerContext) {
-        serverLogger.debug("Server处理请求：$req，结果: $value, 异常: $ex")
+        serverLogger.debug("Server处理请求：{}，结果: {}, 异常: {}", req, value, ex)
         // 返回响应
         var res: RpcResponse = RpcResponse(req.id, value, ex)
         ctx.writeAndFlush(res)

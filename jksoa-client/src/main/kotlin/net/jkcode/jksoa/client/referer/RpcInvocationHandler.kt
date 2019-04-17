@@ -89,9 +89,9 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
      * @return 返回异步响应
      */
     protected fun doInvoke(method: Method, args: Array<Any?>): CompletableFuture<Any?> {
-        clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: ${`interface`.name}.${method.name}(", ")") {
+        clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: {}.{}(", ")") {
             it.toExpr()
-        })
+        }, `interface`.name, method.name)
 
         // 1 根据key来合并请求
         if (method.keyCombine != null)

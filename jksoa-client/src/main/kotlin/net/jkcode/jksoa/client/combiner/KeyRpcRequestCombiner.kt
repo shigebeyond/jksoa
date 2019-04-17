@@ -1,8 +1,10 @@
 package net.jkcode.jksoa.client.combiner
 
 import net.jkcode.jkmvc.combiner.KeyFutureSupplierCombiner
+import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
+import net.jkcode.jksoa.common.exception.RpcClientException
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -40,6 +42,11 @@ class KeyRpcRequestCombiner<RequestArgumentType /* 请求参数类型 */, Respon
          */
         public fun instance(method: Method): KeyRpcRequestCombiner<Any, Any?> {
             return keyCombiners.getOrPut(method){
+                val msg = "方法[${method.getSignature()}]声明了注解@GroupCombine"
+                // 检查方法参数
+                if(method.parameterTypes.size != 1)
+                    throw RpcClientException("${msg}必须有唯一的参数")
+                // 创建请求合并器
                 KeyRpcRequestCombiner(method)
             }
         }

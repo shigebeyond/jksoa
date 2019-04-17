@@ -29,10 +29,10 @@ object CronJobLaucher {
         val trigger = triggers.getOrPut(cronExpr){
             CronTrigger(cronExpr)
         }
-        jobLogger.debug("由cron表达式[$cronExpr]构建触发器触发器: $trigger")
+        jobLogger.debug("由cron表达式[{}]构建触发器触发器: {}", cronExpr, trigger)
         // 由作业表达式解析作业
         val job = JobExprParser.parse(jobExpr)
-        jobLogger.debug("由作业表达式[$jobExpr]解析作业: $job")
+        jobLogger.debug("由作业表达式[{}]解析作业: {}", jobExpr, job)
         // 添加作业
         trigger.addJob(job)
         // 启动触发器

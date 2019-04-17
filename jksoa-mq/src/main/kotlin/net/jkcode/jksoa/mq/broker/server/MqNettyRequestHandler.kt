@@ -41,7 +41,7 @@ class MqNettyRequestHandler : NettyRequestHandler() {
             return
 
         // 处理请求
-        serverLogger.debug("NettyRequestHandler收到请求: " + req)
+        serverLogger.debug("NettyRequestHandler收到请求: {}", req)
 
         // 1 IMqBroker接口的请求单独处理
         if(req.serviceId == IMqBroker::class.qualifiedName){

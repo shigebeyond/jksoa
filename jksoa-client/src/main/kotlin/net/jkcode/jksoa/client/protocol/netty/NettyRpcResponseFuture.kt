@@ -44,7 +44,7 @@ class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
      * 处理超时
      */
     protected fun handleExpired() {
-        clientLogger.error("请求[$reqId]超时")
+        clientLogger.error("请求[{}]超时", reqId)
         // 1 删除异步响应的记录
         NettyResponseHandler.removeResponseFuture(reqId)
         // 2 设置响应结果: 超时异常

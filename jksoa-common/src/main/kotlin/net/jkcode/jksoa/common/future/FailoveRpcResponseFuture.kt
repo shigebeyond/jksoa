@@ -37,7 +37,7 @@ class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次
     protected fun buildResponseFuture(): IRpcResponseFuture {
         // １ 更新 tryTimes: 串行重试, tryTimes++ 线程安全
         tryTimes++
-        clientLogger.debug("重试第 $tryTimes 次")
+        clientLogger.debug("重试第 {} 次", tryTimes)
 
         // 2 构建异步响应
         val resFuture = responseFactory(tryTimes)

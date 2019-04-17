@@ -79,7 +79,7 @@ object ConnectionHub: IConnectionHub {
 
         // 5 新加的地址
         for (key in addKeys){
-            clientLogger.debug("ConnectionHub处理服务[$serviceId]新加地址: " + newUrls[key])
+            clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, newUrls[key])
             val url = newUrls[key]!!
             oldUrls[key] = ReusableConnection(url, url.getParameter("weight", 1)!!) // 创建连接
         }
@@ -87,13 +87,13 @@ object ConnectionHub: IConnectionHub {
         // 6 删除的地址
         for(key in removeKeys){
             val url = oldUrls.remove(key)!!
-            clientLogger.debug("ConnectionHub处理服务[$serviceId]删除地址: " + url)
+            clientLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
             url.close() // 关闭连接
         }
 
         // 7 更新的地址
         for(url in updateUrls) {
-            clientLogger.debug("ConnectionHub处理服务[$serviceId]更新地址: " + url)
+            clientLogger.debug("ConnectionHub处理服务[{}]更新地址: {}", serviceId, url)
             handleParametersChange(url)
         }
     }
@@ -105,7 +105,7 @@ object ConnectionHub: IConnectionHub {
      */
     public override fun handleParametersChange(url: Url): Unit{
         val serviceId = url.path
-        clientLogger.debug("ConnectionHub处理服务[$serviceId]参数变化: " + url.getQueryString())
+        clientLogger.debug("ConnectionHub处理服务[{}]参数变化: {}", serviceId, url.getQueryString())
         //重整负载参数
         connections[url.serverName]?.forEach { key, conn ->
             conn.weight = url.getParameter("weight", 1)!!
@@ -127,7 +127,7 @@ object ConnectionHub: IConnectionHub {
         if(conn == null)
             throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
 
-        clientLogger.debug("ConnectionHub选择远程服务[${req.serviceId}]的一个连接${conn}来发送rpc请求")
+        clientLogger.debug("ConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
         return conn
     }
 

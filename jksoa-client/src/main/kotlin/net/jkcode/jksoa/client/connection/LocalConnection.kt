@@ -43,7 +43,7 @@ class LocalConnection(url: Url): BaseConnection(url){
         // 3 调用方法
         try {
             val value = method.invoke(referer.service, *req.args)
-            serverLogger.debug("Server处理请求：$req，结果: $value")
+            serverLogger.debug("Server处理请求：{}，结果: {}", req, value)
             val res = RpcResponse(req.id, value)
             return IRpcResponseFuture.completedFuture(res)
         }catch (e:Exception){

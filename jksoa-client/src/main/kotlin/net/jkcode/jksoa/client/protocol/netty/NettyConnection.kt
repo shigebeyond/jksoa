@@ -41,7 +41,7 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
      * @return
      */
     public override fun send(req: IRpcRequest): IRpcResponseFuture {
-        clientLogger.debug("NettyConnection发送请求: " + req)
+        clientLogger.debug("NettyConnection发送请求: {}", req)
 
         // 1 发送请求
         val writeFuture = channel.writeAndFlush(req)

@@ -109,7 +109,7 @@ class ZkLeaderElection(public override val teamName: String /* 团队名 */,
         try {
             // 创建临时节点
             zkClient.createEphemeral(path, data)
-            commonLogger.debug("团队[$teamName]的当选数据为[$data]")
+            commonLogger.debug("团队[{}]的当选数据为[{}]", teamName, data)
             // 成功回调
             callback()
         } catch (e: ZkNodeExistsException) {

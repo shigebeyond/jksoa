@@ -112,7 +112,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
 
         // 创建顺序节点
         val path = zkClient.createEphemeralSequential(parentPath + "/", data)
-        commonLogger.debug("团队[$teamName]的竞选节点[$data]的路径: $path")
+        commonLogger.debug("团队[{}]的竞选节点[{}]的路径: {}", teamName, data, path)
 
         // 识别领导者
         identifyLeaderNode(path, callback)
@@ -135,7 +135,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
         // 检查本机是否是最小的
         val i = childrenNos.indexOf(no)
         if (i == 0) {
-            commonLogger.debug("团队[$teamName]的节点[$data]被选为领导者")
+            commonLogger.debug("团队[{}]的节点[{}]被选为领导者", teamName, data)
             // 成功回调
             callback()
             return true
@@ -159,7 +159,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
         }
         val preChildNo = childrenNos.get(i - 1)
         prePath = "$parentPath/$preChildNo"
-        commonLogger.debug("团队[$teamName]的落选节点[$data]订阅前一个节点: $prePath")
+        commonLogger.debug("团队[{}]的落选节点[{}]订阅前一个节点: {}", teamName, data, prePath)
         zkClient.subscribeDataChanges(prePath, preDataListener)
         return false
     }

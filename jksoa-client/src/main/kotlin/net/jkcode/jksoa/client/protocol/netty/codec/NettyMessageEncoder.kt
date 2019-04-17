@@ -48,7 +48,7 @@ class NettyMessageEncoder : MessageToByteEncoder<Any>() {
 
             // 2 写数据
             out.writeBytes(bytes)
-            clientLogger.debug("NettyMessageEncoder编码要发送的消息: $msg")
+            clientLogger.debug("NettyMessageEncoder编码要发送的消息: {}", msg)
         }catch (e: Exception){
             clientLogger.error("NettyMessageEncoder编码要发送的消息失败", e)
             throw e

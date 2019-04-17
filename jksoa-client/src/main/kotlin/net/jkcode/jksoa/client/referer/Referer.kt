@@ -86,7 +86,7 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
             }
 
             // 监听服务变化
-            clientLogger.debug("Referer监听服务[$serviceId]变化")
+            clientLogger.debug("Referer监听服务[{}]变化", serviceId)
             registry.subscribe(serviceId, ConnectionHub)
         }
     }
