@@ -8,7 +8,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
-import net.jkcode.jksoa.common.CommonThreadPool
+import net.jkcode.jkmvc.common.CommonThreadPool
 
 /**
  * netty服务端请求处理器
@@ -77,7 +77,7 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
         clientLogger.error("NettyRequestHandler捕获 channel ${ctx.channel()}", cause)
-        cause.printStackTrace()
+        //cause.printStackTrace()
         super.exceptionCaught(ctx, cause)
     }
 
