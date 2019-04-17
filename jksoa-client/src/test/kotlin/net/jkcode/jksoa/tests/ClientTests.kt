@@ -1,8 +1,6 @@
 package net.jkcode.jksoa.tests
 
-import net.jkcode.jkmvc.common.getMethodHandle
-import net.jkcode.jkmvc.common.getRootResource
-import net.jkcode.jkmvc.common.newInstance
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
 import net.jkcode.jksoa.client.protocol.netty.NettyClient
 import net.jkcode.jksoa.client.referer.Referer
@@ -14,6 +12,7 @@ import org.junit.Test
 import java.lang.reflect.Proxy
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.Method
+import java.util.concurrent.CompletableFuture
 import kotlin.reflect.jvm.javaMethod
 
 
@@ -98,8 +97,7 @@ class ClientTests {
                 val conn2 = client.connect(url2)
                 println(conn2)
             }
-        }, "t1").start()
-        Thread.sleep(10000)
+        }, "t1").startAndJoin()
 
     }
 
@@ -131,8 +129,7 @@ class ClientTests {
                     println("结果$i： $content")
                 }
             }, "thread_$i")
-            thread.start()
-            thread.join()
+            thread.startAndJoin()
         }
     }
 
@@ -142,6 +139,15 @@ class ClientTests {
             arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
         }
         val job = ShardingRpcRequest(IExampleService::sayHi, args)
-        RcpRequestDispatcher.dispatchSharding(job)
+        val futures = RcpRequestDispatcher.dispatchSharding(job)
+        futures.print()
+    }
+
+    fun waitPrintFutures(futures: Array<CompletableFuture<Any?>>) {
+        val f: CompletableFuture<Void> = CompletableFuture.allOf(*futures)
+        f.get() // 等待
+        println(futures.joinToString(", ", "结果: [", "]") {
+            it.get().toString()
+        })
     }
 }
