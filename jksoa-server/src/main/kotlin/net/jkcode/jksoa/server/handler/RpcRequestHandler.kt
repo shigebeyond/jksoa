@@ -9,6 +9,7 @@ import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.provider.ProviderLoader
 import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jksoa.common.interceptor.Interceptor
+import java.util.concurrent.CompletableFuture
 
 /**
  * Rpc请求处理者
@@ -39,7 +40,9 @@ object RpcRequestHandler : IRpcRequestHandler() {
 
             // 3 调用方法, 构建响应对象
             try {
-                val value = method.invoke(provider.service, *req.args)
+                var value = method.invoke(provider.service, *req.args)
+                if(value is CompletableFuture<*>) // 处理 CompletableFuture 类型的返回值形式
+                    value = value.get()
                 serverLogger.debug("Server处理请求：$req，结果: $value")
                 res = RpcResponse(req.id, value)
             }catch (t: Throwable){
