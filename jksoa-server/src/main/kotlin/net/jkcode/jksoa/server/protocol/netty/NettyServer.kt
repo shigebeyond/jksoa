@@ -89,7 +89,7 @@ open class NettyServer : IRpcServer(), Closeable {
         bootstrap.group(bossGroup, workerGroup)
                 .childHandler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
-                        serverLogger.info("NettyServer收到client连接: $channel")
+                        serverLogger.info("NettyServer收到client连接: {}", channel)
                         // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
                         val pipeline = channel.pipeline()
                         pipeline

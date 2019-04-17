@@ -49,7 +49,7 @@ open class ZkDiscovery: IDiscovery {
      */
     public override fun subscribe(serviceId: String, listener: IDiscoveryListener){
         try{
-            clientLogger.info("ZkDiscovery监听服务[$serviceId]变化")
+            clientLogger.info("ZkDiscovery监听服务[{}]变化", serviceId)
             val rootPath = Url.serviceId2serviceRegistryPath(serviceId)
             // 1 监听子节点
             val childListener = ZkChildListener(listener)
@@ -89,7 +89,7 @@ open class ZkDiscovery: IDiscovery {
      */
     public override fun unsubscribe(serviceId: String, listener: IDiscoveryListener){
         try{
-            clientLogger.info("ZkDiscovery取消监听服务[$serviceId]变化")
+            clientLogger.info("ZkDiscovery取消监听服务[{}]变化", serviceId)
             val rootPath = Url.serviceId2serviceRegistryPath(serviceId)
             // 1 取消监听子节点
             zkClient.unsubscribeChildChanges(rootPath, childListeners[serviceId]!![listener]!!)

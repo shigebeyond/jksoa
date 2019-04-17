@@ -74,7 +74,7 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
      */
     protected fun registerService() {
         if (registerable) {
-            serverLogger.info("Provider注册服务: " + serviceUrl)
+            serverLogger.info("Provider注册服务: {}", serviceUrl)
             // 1 注册注册中心的服务
             registry.register(serviceUrl)
 

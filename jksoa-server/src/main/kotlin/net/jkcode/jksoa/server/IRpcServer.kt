@@ -64,7 +64,7 @@ abstract class IRpcServer {
     fun start(){
         // 启动服务器
         try{
-            serverLogger.info("${name}在地址[$serverUrl]上启动")
+            serverLogger.info("{}在地址[{}]上启动", name, serverUrl)
             server = this
             doStart() // 可能阻塞，只能在最后一句执行
         }catch(e: Exception){
