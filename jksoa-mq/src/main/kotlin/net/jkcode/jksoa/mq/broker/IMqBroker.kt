@@ -5,6 +5,7 @@ import net.jkcode.jksoa.common.annotation.ServiceMeta
 import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MessageStatus
+import java.util.concurrent.CompletableFuture
 
 /**
  * 消息中转者
@@ -18,17 +19,19 @@ interface IMqBroker : IService {
     /**
      * 发送消息
      * @param msg 消息
+     * @return
      */
     @ServiceMethodMeta(requestTimeoutMillis = 300)
-    fun postMessage(msg: Message)
+    fun postMessage(msg: Message): CompletableFuture<Void>
 
     /****************** 消费者调用 *****************/
     /**
      * 订阅主题
      * @param topic 主题
      * @param group 分组
+     * @return
      */
-    fun subscribeTopic(topic: String, group: String)
+    fun subscribeTopic(topic: String, group: String): CompletableFuture<Void>
 
     /**
      * 拉取消息
@@ -37,7 +40,7 @@ interface IMqBroker : IService {
      * @param pageSize 每页记录数
      * @return
      */
-    fun pullMessages(topic: String, group: String, pageSize: Int): List<Message>
+    fun pullMessages(topic: String, group: String, pageSize: Int): CompletableFuture<List<Message>>
 
     /**
      * 更新消息
@@ -46,6 +49,6 @@ interface IMqBroker : IService {
      * @param remark 备注
      * @return
      */
-    fun updateMessage(id: Long, status: MessageStatus, remark: String? = null): Boolean
+    fun updateMessage(id: Long, status: MessageStatus, remark: String? = null): CompletableFuture<Boolean>
 
 }

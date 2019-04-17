@@ -19,7 +19,7 @@ class MqNettyServer: NettyServer() {
      */
     protected override fun customChildChannelHandlers(): Array<ChannelHandler>{
         return arrayOf(
-                MqNettyRequestHandler(), // 处理请求, IMqBroker接口的请求单独处理
+                NettyRequestHandler(), // 处理请求
                 NettyResponseHandler() // 处理响应, 让能处理对 IMqConsumer 的rpc响应
         )
     }
