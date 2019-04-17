@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.server.handler
 
+import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
@@ -7,8 +8,6 @@ import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.provider.ProviderLoader
-import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jksoa.common.interceptor.Interceptor
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -44,8 +43,9 @@ object RpcRequestHandler : IRpcRequestHandler() {
                 value = method.invoke(provider.service, *req.args)
                 // 3.1 异步结果: 处理 CompletableFuture 类型的返回值形式
                 if(value is CompletableFuture<*>)
-                    value.whenComplete { value, ex ->
-                        endResponse(req, value, ex as Exception, ctx)
+                    value.whenComplete { value, t ->
+                        val ex: Exception? = if(t == null) null else RpcBusinessException(t)
+                        endResponse(req, value, ex, ctx)
                     }
             }catch (t: Throwable){
                 throw RpcBusinessException(t) // 业务异常
