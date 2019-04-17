@@ -33,8 +33,7 @@ object SubscribeTopicRequestHandler : IRpcRequestHandler() {
         connHub.add(topic as String, group as String, ctx.channel())
 
         // 2 返回响应
-        val res = RpcResponse(req.id)
-        ctx.writeAndFlush(res)
+        endResponse(req, null, null, ctx)
     }
 
 }
