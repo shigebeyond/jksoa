@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
+import net.jkcode.jksoa.server.RpcContext
 import net.jkcode.jksoa.server.provider.ProviderLoader
 import java.util.concurrent.CompletableFuture
 
@@ -35,10 +36,13 @@ object RpcRequestHandler : IRpcRequestHandler() {
             if(method == null)
                 throw RpcServerException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
-            // 3 调用方法, 构建响应对象
+            // 3 初始化rpc上下文: 因为rpc的方法可能有异步执行, 因此在方法体的开头就要获得并持有当前的rpc上下文
+            RpcContext(req, ctx)
+
+            // 4 调用方法, 构建响应对象
             try {
                 value = method.invoke(provider.service, *req.args)
-                // 3.1 异步结果: 处理 CompletableFuture 类型的返回值形式
+                // 4.1 异步结果: 处理 CompletableFuture 类型的返回值形式
                 if(value is CompletableFuture<*>)
                     value.whenComplete { value, t ->
                         val ex: Exception? = if(t == null) null else RpcBusinessException(t)
@@ -50,7 +54,7 @@ object RpcRequestHandler : IRpcRequestHandler() {
         }catch (e: Exception){
             ex = e
         }finally {
-            // 3.2 同步结果
+            // 4.2 同步结果
             if(value !is CompletableFuture<*>)
                 endResponse(req, value, ex, ctx)
         }
