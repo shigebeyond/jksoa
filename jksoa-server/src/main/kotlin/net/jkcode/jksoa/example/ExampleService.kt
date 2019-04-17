@@ -1,6 +1,9 @@
 package net.jkcode.jksoa.example
 
+import net.jkcode.jkmvc.common.randomString
 import java.rmi.RemoteException
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * 示例服务实现
@@ -10,17 +13,55 @@ import java.rmi.RemoteException
  **/
 class ExampleService : IExampleService /*, UnicastRemoteObject() // rmi协议服务实现*/{
 
+    private val userCounter = AtomicInteger(0)
+
     @Throws(RemoteException::class) // rim异常
     public override fun sayHi(name: String): String {
         return "Hi, $name"
     }
 
-    @Throws(RemoteException::class) // rim异常
-    public override fun sumRange(start: Int, endInclusive: Int): Int {
-        var s = 0
-        for(i in (start until endInclusive))
-            s += i
-        return s
+    /**
+     * 根据id获得user
+     *   单个参数的处理方法
+     */
+    public override fun getUserById(id: Int): User {
+        println("测试调用 CombineService.getUserById($id) 实现, 只执行一次")
+        return User(id, randomString(7))
     }
+
+    /**
+     * 根据id获得user
+     *   单个参数的处理方法
+     */
+    public override fun getUserByIdAsync(id: Int): CompletableFuture<User> {
+        return CompletableFuture.completedFuture(getUserById(id))
+    }
+
+    /**
+     * 根据name获得user
+     */
+    public override fun getUserByName(name: String): User {
+        return User(userCounter.incrementAndGet(), name)
+    }
+
+    /**
+     * 根据name获得user
+     */
+    public override fun getUserByNameAsync(name: String): CompletableFuture<User> {
+        return CompletableFuture.completedFuture(getUserByName(name))
+    }
+
+    /**
+     * 根据一组name获得user
+     *    一组参数的批量处理方法
+     */
+    public override fun listUsersByName(names: List<String>): List<User>{
+        println("测试调用 CombineService.listUsersByName(" + names.joinToString() + ") 实现, 只执行一次")
+        var i = 0
+        return names.map {name ->
+            getUserByName(name)
+        }
+    }
+
 
 }
