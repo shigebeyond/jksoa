@@ -40,5 +40,10 @@ interface IExampleService : IService /*, Remote // rmi协议服务接口 */ {
     @GroupCombine("listUsersByName", "name", "", true, 100, 100)
     fun getUserByNameAsync(name: String): CompletableFuture<User>
 
-    fun listUsersByName(names: List<String>): List<User>
+    @JvmDefault
+    fun listUsersByName(names: List<String>): List<User>{
+        return listUsersByNameAsync(names).get()
+    }
+
+    fun listUsersByNameAsync(names: List<String>): CompletableFuture<List<User>>
 }

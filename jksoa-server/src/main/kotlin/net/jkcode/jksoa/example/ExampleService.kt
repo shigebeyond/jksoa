@@ -42,12 +42,13 @@ class ExampleService : IExampleService /*, UnicastRemoteObject() // rmi协议服
      * 根据一组name获得user
      *    一组参数的批量处理方法
      */
-    public override fun listUsersByName(names: List<String>): List<User>{
+    public override fun listUsersByNameAsync(names: List<String>): CompletableFuture<List<User>>{
         println("测试调用 CombineService.listUsersByName() 实现, 只执行一次")
         var i = 0
-        return names.map {name ->
+        val us = names.map {name ->
             getUserByName(name)
         }
+        return CompletableFuture.completedFuture(us)
     }
 
 
