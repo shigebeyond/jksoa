@@ -1,12 +1,9 @@
 package net.jkcode.jksoa.server.handler
 
 import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
-import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.provider.ProviderLoader
 import java.util.concurrent.CompletableFuture
 
@@ -57,24 +54,6 @@ object RpcRequestHandler : IRpcRequestHandler() {
             if(value !is CompletableFuture<*>)
                 endResponse(req, value, ex, ctx)
         }
-    }
-
-    /**
-     * 返回响应
-     *
-     * @param req
-     * @param value 结果值
-     * @param ex 异常
-     * @param ctx
-     */
-    private fun endResponse(req: IRpcRequest, value: Any?, ex: Exception?, ctx: ChannelHandlerContext) {
-        serverLogger.debug("Server处理请求：{}，结果: {}, 异常: {}", req, value, ex)
-        // 返回响应
-        var res: RpcResponse = RpcResponse(req.id, value, ex)
-        ctx.writeAndFlush(res)
-
-        // 请求处理后，关闭资源
-        ClosingOnRequestEnd.triggerClosings()
     }
 
 }
