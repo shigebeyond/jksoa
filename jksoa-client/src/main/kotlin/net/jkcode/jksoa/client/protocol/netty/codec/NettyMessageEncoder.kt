@@ -38,7 +38,6 @@ class NettyMessageEncoder : MessageToByteEncoder<Any>() {
             throw IllegalArgumentException("The encode message is null")
 
         try {
-            clientLogger.debug("NettyMessageEncoder编码要发送的消息: $msg")
             // 序列化
             val bytes = serializer.serialize(msg)
             if (bytes == null)
@@ -49,6 +48,7 @@ class NettyMessageEncoder : MessageToByteEncoder<Any>() {
 
             // 2 写数据
             out.writeBytes(bytes)
+            clientLogger.debug("NettyMessageEncoder编码要发送的消息: $msg")
         }catch (e: Exception){
             clientLogger.error("NettyMessageEncoder编码要发送的消息失败", e)
             throw e

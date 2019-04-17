@@ -45,7 +45,7 @@ class FailoveRpcResponseFuture(protected val maxTryTimes: Int /* 最大尝试次
         // 3 代理回调
         resFuture.exceptionally {
             if(tryTimes < maxTryTimes) {
-                clientLogger.debug("失败重试")
+                clientLogger.debug("失败重试: {}", it.message)
                 targetResFuture = buildResponseFuture()
             }else{
                 this.completeExceptionally(it)

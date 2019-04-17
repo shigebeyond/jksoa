@@ -65,11 +65,11 @@ class GroupRpcRequestCombiner<RequestArgumentType /* 请求参数类型 */, Resp
                     throw RpcClientException("${msg}不存在")
                 // 检查方法参数
                 val pt = batchMethod.parameterTypes
-                if(pt.isEmpty() || List::class.java.isSuperClass(pt.first()))
+                if(pt.size != 1 || !List::class.java.isAssignableFrom(pt.first()))
                     throw RpcClientException("${msg}必须有唯一的List类型的参数")
                 // 检查方法返回值
-                if(List::class.java.isSuperClass(batchMethod.returnType))
-                    throw RpcClientException("${msg}必须有的List类型的返回值")
+                if(!List::class.java.isAssignableFrom(batchMethod.returnType) && !CompletableFuture::class.java.isAssignableFrom(batchMethod.returnType))
+                    throw RpcClientException("${msg}必须有的List或CompletableFuture<List>类型的返回值")
                 // 创建请求合并器
                 GroupRpcRequestCombiner(batchMethod, annotation)
             }

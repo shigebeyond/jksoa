@@ -74,7 +74,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
 
         // 3 处理结果
         // 3.1 返回异步Future
-        if(Future::class.java.isSuperClass(method.returnType))
+        if(Future::class.java.isAssignableFrom(method.returnType))
             return resFuture
 
         // 3.2 同步返回值
