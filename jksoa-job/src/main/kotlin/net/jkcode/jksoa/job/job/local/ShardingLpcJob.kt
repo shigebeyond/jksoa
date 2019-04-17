@@ -2,10 +2,9 @@ package net.jkcode.jksoa.job.job.local
 
 import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jkmvc.common.toExpr
-import net.jkcode.jksoa.common.CommonThreadPool
+import net.jkcode.jkmvc.common.CommonThreadPool
 import net.jkcode.jksoa.common.invocation.IShardingInvocation
 import net.jkcode.jksoa.job.IJobExecutionContext
-import net.jkcode.jksoa.job.trigger.BaseTrigger
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod

@@ -38,23 +38,6 @@ class MyTests {
     }
 
     @Test
-    fun testTimer(){
-        val timer = HashedWheelTimer(1, TimeUnit.SECONDS, 3 /* 内部会调用normalizeTicksPerWheel()转为2的次幂, 如3转为4 */)
-        timer.newTimeout(object : TimerTask {
-            override fun run(timeout: Timeout) {
-                println("定时处理: " + Date().format())
-                timer.newTimeout(this, 3, TimeUnit.SECONDS)
-            }
-        }, 3, TimeUnit.SECONDS)
-
-        // HashedWheelTimer 是独立的线程, 需要在当前线程中等待他执行
-        try {
-            Thread.sleep(300L * 1000L)
-        } catch (e: Exception) {
-        }
-    }
-
-    @Test
     fun testKotlinFuction2JavaMethod(){
         // 有默认参数的kotlin方法
         val func = ISystemService::echo
