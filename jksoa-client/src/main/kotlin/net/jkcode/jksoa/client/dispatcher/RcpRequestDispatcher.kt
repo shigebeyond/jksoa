@@ -57,7 +57,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
 
             // 2 发送请求，并获得异步响应
             conn.send(req)
-        }.thenApply(IRpcResponse::getOrThrow)
+        }.thenApplyAsync(IRpcResponse::getOrThrow)
     }
 
     /**
@@ -67,7 +67,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
      * @param shdReq 分片的rpc请求
      * @return 多个结果
      */
-    public override fun dispatchSharding(shdReq: IShardingRpcRequest): Array<CompletableFuture<Any?>> {
+    public override fun dispatchSharding(shdReq: IShardingRpcRequest): List<CompletableFuture<Any?>> {
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(shdReq.serviceId)
@@ -88,11 +88,11 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
             val req = shdReq.buildRpcRequest(iSharding)
 
             // 发送请求，并获得异步响应
-            conns[iConn].send(req).thenApply(IRpcResponse::getOrThrow)
+            conns[iConn].send(req).thenApplyAsync(IRpcResponse::getOrThrow)
         }
 
         // 3 等待全部分片请求的响应结果
-        return resFutures.toTypedArray()
+        return resFutures
     }
 
     /**
