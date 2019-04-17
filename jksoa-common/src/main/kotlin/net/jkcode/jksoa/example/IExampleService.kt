@@ -24,14 +24,18 @@ interface IExampleService : IService /*, Remote // rmi协议服务接口 */ {
     @Throws(RemoteException::class) // rmi异常
     fun sayHi(name: String): String
 
-    @KeyCombine
-    fun getUserById(id: Int): User
+    @JvmDefault
+    fun getUserById(id: Int): User{
+        return getUserByIdAsync(id).get()
+    }
 
     @KeyCombine
     fun getUserByIdAsync(id: Int): CompletableFuture<User>
 
-    @GroupCombine("listUsersByName", "name", "", true, 100, 100)
-    fun getUserByName(name: String): User
+    @JvmDefault
+    fun getUserByName(name: String): User{
+        return getUserByNameAsync(name).get()
+    }
 
     @GroupCombine("listUsersByName", "name", "", true, 100, 100)
     fun getUserByNameAsync(name: String): CompletableFuture<User>

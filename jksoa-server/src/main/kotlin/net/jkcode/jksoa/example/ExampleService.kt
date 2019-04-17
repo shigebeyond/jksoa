@@ -24,31 +24,18 @@ class ExampleService : IExampleService /*, UnicastRemoteObject() // rmi协议服
      * 根据id获得user
      *   单个参数的处理方法
      */
-    public override fun getUserById(id: Int): User {
-        println("测试调用 CombineService.getUserById($id) 实现, 只执行一次")
-        return User(id, randomString(7))
-    }
-
-    /**
-     * 根据id获得user
-     *   单个参数的处理方法
-     */
     public override fun getUserByIdAsync(id: Int): CompletableFuture<User> {
-        return CompletableFuture.completedFuture(getUserById(id))
-    }
-
-    /**
-     * 根据name获得user
-     */
-    public override fun getUserByName(name: String): User {
-        return User(userCounter.incrementAndGet(), name)
+        println("测试调用 CombineService.getUserById() 实现, 只执行一次")
+        val u = User(id, randomString(7))
+        return CompletableFuture.completedFuture(u)
     }
 
     /**
      * 根据name获得user
      */
     public override fun getUserByNameAsync(name: String): CompletableFuture<User> {
-        return CompletableFuture.completedFuture(getUserByName(name))
+        val u = User(userCounter.incrementAndGet(), name)
+        return CompletableFuture.completedFuture(u)
     }
 
     /**
@@ -56,7 +43,7 @@ class ExampleService : IExampleService /*, UnicastRemoteObject() // rmi协议服
      *    一组参数的批量处理方法
      */
     public override fun listUsersByName(names: List<String>): List<User>{
-        println("测试调用 CombineService.listUsersByName(" + names.joinToString() + ") 实现, 只执行一次")
+        println("测试调用 CombineService.listUsersByName() 实现, 只执行一次")
         var i = 0
         return names.map {name ->
             getUserByName(name)
