@@ -1,6 +1,8 @@
 package net.jkcode.jksoa.common
 
 import net.jkcode.jkmvc.common.isSuperClass
+import net.jkcode.jksoa.client.combiner.annotation.GroupCombine
+import net.jkcode.jksoa.client.combiner.annotation.KeyCombine
 import net.jkcode.jksoa.common.annotation.ServiceMeta
 import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
 import net.jkcode.jksoa.common.exception.RpcClientException
@@ -32,4 +34,20 @@ public val Class<out IService>.serviceMeta: ServiceMeta?
 public val Method.serviceMethodMeta: ServiceMethodMeta?
     get(){
         return getAnnotation(ServiceMethodMeta::class.java)
+    }
+
+/**
+ * 根据key来合并的注解
+ */
+public val Method.keyCombine: KeyCombine?
+    get(){
+        return getAnnotation(KeyCombine::class.java)
+    }
+
+/**
+ * 根据group来合并的注解
+ */
+public val Method.groupCombine: GroupCombine?
+    get(){
+        return getAnnotation(GroupCombine::class.java)
     }
