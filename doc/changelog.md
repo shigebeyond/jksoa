@@ -50,5 +50,10 @@
 
 # 1.6
 1. 将自研的 Future 类体系, 换为 CompletableFuture
+
 2. 支持请求合并: 可根据key或group来合并请求, 可用于合并cache/rpc请求
+
+3. 完善日志
+
+4. 
 
