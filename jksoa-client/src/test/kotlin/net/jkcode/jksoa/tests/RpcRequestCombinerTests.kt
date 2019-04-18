@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.tests
 
+import net.jkcode.jkmvc.common.makeThreads
 import net.jkcode.jkmvc.common.print
 import net.jkcode.jkmvc.common.randomString
-import net.jkcode.jkmvc.common.startAndJoin
 import net.jkcode.jksoa.client.combiner.GroupRpcRequestCombiner
 import net.jkcode.jksoa.client.combiner.KeyRpcRequestCombiner
 import net.jkcode.jksoa.client.referer.Referer
@@ -22,7 +22,7 @@ class RpcRequestCombinerTests {
 
     /************************* 测试 KeyRpcRequestCombiner **************************/
     /**
-     * 测试 KeyRpcRequestCombiner -- 手动调用 -- 能合并
+     * 测试 KeyRpcRequestCombiner -- 手动调用
      */
     @Test
     fun testKeyRpcRequestCombiner() {
@@ -35,7 +35,7 @@ class RpcRequestCombinerTests {
     }
 
     /**
-     * 测试 GroupRpcRequestCombiner -- 通过调用目标方法来调用 -- 同步调用不能合并
+     * 测试 GroupRpcRequestCombiner -- 通过调用目标方法来 同步调用
      */
     @Test
     fun testKeyRpcRequestCombiner2() {
@@ -45,14 +45,12 @@ class RpcRequestCombinerTests {
             val u = combinerService.getUserById(id)
             println("调用服务[IExampleService.getUserById($id)]结果： $u")
         }
-        for (i in (0..2)) {
-            Thread(run).startAndJoin()
-        }
+        makeThreads(3, run)
     }
 
 
     /**
-     * 测试 testKeyRpcRequestCombiner -- 通过调用目标方法来调用 -- 异步调用能合并
+     * 测试 testKeyRpcRequestCombiner -- 通过调用目标方法来 异步调用
      */
     @Test
     fun testKeyRpcRequestCombiner3() {
@@ -69,7 +67,7 @@ class RpcRequestCombinerTests {
 
     /************************* 测试 GroupRpcRequestCombiner **************************/
     /**
-     * 测试 GroupRpcRequestCombiner -- 手动调用 -- 能合并
+     * 测试 GroupRpcRequestCombiner -- 手动调用
      */
     @Test
     fun testGroupRpcRequestCombiner() {
@@ -82,7 +80,7 @@ class RpcRequestCombinerTests {
     }
 
     /**
-     * 测试 GroupRpcRequestCombiner -- 通过调用目标方法来调用 -- 同步调用不能合并
+     * 测试 GroupRpcRequestCombiner -- 通过调用目标方法来 同步调用
      */
     @Test
     fun testGroupRpcRequestCombiner2() {
@@ -92,13 +90,11 @@ class RpcRequestCombinerTests {
             val u = combinerService.getUserByName(name)
             println("调用服务[IExampleService.getUserByName($name)]结果： $u")
         }
-        for (i in (0..2)) {
-            Thread(run).startAndJoin()
-        }
+        makeThreads(3, run)
     }
 
     /**
-     * 测试 GroupRpcRequestCombiner -- 通过调用目标方法来调用 -- 异步调用能合并
+     * 测试 GroupRpcRequestCombiner -- 通过调用目标方法来 异步调用
      */
     @Test
     fun testGroupRpcRequestCombiner3() {
