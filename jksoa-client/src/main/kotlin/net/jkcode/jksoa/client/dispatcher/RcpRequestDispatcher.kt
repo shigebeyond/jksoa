@@ -57,7 +57,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
 
             // 2 发送请求，并获得异步响应
             conn.send(req)
-        }.thenApplyAsync(IRpcResponse::getOrThrow)
+        }.thenApply(IRpcResponse::getOrThrow)
     }
 
     /**
@@ -88,7 +88,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
             val req = shdReq.buildRpcRequest(iSharding)
 
             // 发送请求，并获得异步响应
-            conns[iConn].send(req).thenApplyAsync(IRpcResponse::getOrThrow)
+            conns[iConn].send(req).thenApply(IRpcResponse::getOrThrow)
         }
 
         // 3 等待全部分片请求的响应结果

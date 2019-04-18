@@ -51,7 +51,7 @@ object MqPusher : IMqPusher {
             return
 
         // 2 发请求: 推送消息
-        val resFuture = conn.send(req).thenApplyAsync(IRpcResponse::getOrThrow)
+        val resFuture = conn.send(req).thenApply(IRpcResponse::getOrThrow)
 
         // 处理响应
         resFuture.thenAccept {
