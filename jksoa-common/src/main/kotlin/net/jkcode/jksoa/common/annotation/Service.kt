@@ -12,6 +12,6 @@ import kotlin.reflect.KClass
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ServiceMeta(public val version: Int = 0 /* 接口版本 */,
-                             public val onlyLeader: Boolean = false /* 是否选举leader, 该服务接口只暴露唯一一个选为leader的server */
+annotation class Service(public val version: Int = 0 /* 接口版本 */,
+                         public val onlyLeader: Boolean = false /* 是否选举leader, 该服务接口只暴露唯一一个选为leader的server */
 )

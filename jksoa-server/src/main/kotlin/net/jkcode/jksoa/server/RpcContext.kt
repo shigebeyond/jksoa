@@ -15,10 +15,6 @@ data class RpcContext(public val req: IRpcRequest /* 请求 */,
                       public val ctx: ChannelHandlerContext /* netty channel上下文 */
 ){
 
-    init {
-        ctxs.set(this)
-    }
-
     companion object {
         /**
          * 线程安全的rpc上下文对象缓存
@@ -32,6 +28,10 @@ data class RpcContext(public val req: IRpcRequest /* 请求 */,
         public fun current(): RpcContext {
             return ctxs.get()!!;
         }
+    }
+
+    init {
+        ctxs.set(this)
     }
 
 }

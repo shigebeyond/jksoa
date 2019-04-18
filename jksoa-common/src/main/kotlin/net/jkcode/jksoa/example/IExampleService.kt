@@ -3,12 +3,10 @@ package net.jkcode.jksoa.example
 import net.jkcode.jksoa.client.combiner.annotation.GroupCombine
 import net.jkcode.jksoa.client.combiner.annotation.KeyCombine
 import net.jkcode.jksoa.common.IService
-import net.jkcode.jksoa.common.annotation.ServiceMeta
+import net.jkcode.jksoa.common.annotation.Service
 import java.io.Serializable
-import java.rmi.Remote
 import java.rmi.RemoteException
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
 
 data class User(public val id: Int, public val name: String): Serializable {}
 
@@ -18,7 +16,7 @@ data class User(public val id: Int, public val name: String): Serializable {}
  * @author shijianhang
  * @create 2017-12-15 下午7:37
  **/
-@ServiceMeta(version = 1)
+@Service(version = 1)
 interface IExampleService : IService /*, Remote // rmi协议服务接口 */ {
 
     @Throws(RemoteException::class) // rmi异常

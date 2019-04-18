@@ -1,6 +1,9 @@
 package net.jkcode.jksoa.tests
 
-import net.jkcode.jkmvc.common.*
+import net.jkcode.jkmvc.common.getMethodHandle
+import net.jkcode.jkmvc.common.getRootResource
+import net.jkcode.jkmvc.common.makeThreads
+import net.jkcode.jkmvc.common.print
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
 import net.jkcode.jksoa.client.protocol.netty.NettyClient
 import net.jkcode.jksoa.client.referer.Referer
@@ -9,9 +12,8 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.example.IExampleService
 import net.jkcode.jksoa.example.ISystemService
 import org.junit.Test
-import java.lang.reflect.Proxy
-import java.lang.invoke.MethodHandles
 import java.lang.reflect.Method
+import java.lang.reflect.Proxy
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.jvm.javaMethod
 
@@ -91,14 +93,11 @@ class ClientTests {
         val url1 = Url("netty://192.168.61.200:9080/net.jkcode.jksoa.example.IEchoService?weight=1")
         val conn1 = client.connect(url1)
         println(conn1)
-        Thread(object: Runnable{
-            override fun run() {
-                val url2 = Url("netty://192.168.61.200:9080/net.jkcode.jksoa.example.IEchoService?weight=1")
-                val conn2 = client.connect(url2)
-                println(conn2)
-            }
-        }, "t1").startAndJoin()
-
+        makeThreads(1){
+            val url2 = Url("netty://192.168.61.200:9080/net.jkcode.jksoa.example.IEchoService?weight=1")
+            val conn2 = client.connect(url2)
+            println(conn2)
+        }
     }
 
     @Test
@@ -121,16 +120,13 @@ class ClientTests {
 
     @Test
     fun testConcurrent(){
-        for(i in 0..20){
-            val thread = Thread(object : Runnable {
-                override fun run() {
-                    val exampleService = Referer.getRefer<IExampleService>()
-                    val content = exampleService.sayHi("Man $i")
-                    println("结果$i： $content")
-                }
-            }, "thread_$i")
-            thread.startAndJoin()
+        val run = {
+            val tname = Thread.currentThread().name
+            val exampleService = Referer.getRefer<IExampleService>()
+            val content = exampleService.sayHi("Man $tname")
+            println("结果$tname： $content")
         }
+        makeThreads(3, run)
     }
 
     @Test

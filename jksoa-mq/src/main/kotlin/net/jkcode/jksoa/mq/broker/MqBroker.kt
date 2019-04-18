@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.broker
 
-import net.jkcode.jkmvc.combiner.GroupApplierCombiner
+import net.jkcode.jkmvc.combiner.GroupRunCombiner
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.isNullOrEmpty
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
@@ -33,7 +33,7 @@ class MqBroker : IMqBroker {
     /**
      * 请求合并器
      */
-    protected val combiner = GroupApplierCombiner(100, 100, this::saveMessages)
+    protected val combiner = GroupRunCombiner(100, 100, this::saveMessages)
 
     /**
      * 全局共享的可复用的用于存储临时参数的 List 对象

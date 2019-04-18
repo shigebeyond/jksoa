@@ -5,8 +5,7 @@ import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.exception.RpcServerException
-import net.jkcode.jksoa.common.interceptor.Interceptor
-import net.jkcode.jksoa.common.interceptor.RateLimitInterceptor
+import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
 import net.jkcode.jksoa.common.serverLogger
 
 /**
@@ -21,7 +20,7 @@ abstract class IRpcRequestHandler {
     /**
      * 拦截器
      */
-    protected val interceptors: List<Interceptor> = listOf(RateLimitInterceptor(true))
+    protected val interceptors: List<IRpcInterceptor> = listOf()
 
     /**
      * 处理请求

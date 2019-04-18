@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.broker
 
 import net.jkcode.jksoa.common.IService
-import net.jkcode.jksoa.common.annotation.ServiceMeta
+import net.jkcode.jksoa.common.annotation.Service
 import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MessageStatus
@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
-@ServiceMeta(onlyLeader = true)
+@Service(onlyLeader = true)
 interface IMqBroker : IService {
 
     /****************** 生产者调用 *****************/
@@ -21,7 +21,6 @@ interface IMqBroker : IService {
      * @param msg 消息
      * @return
      */
-    @ServiceMethodMeta(requestTimeoutMillis = 300)
     fun postMessage(msg: Message): CompletableFuture<Void>
 
     /****************** 消费者调用 *****************/

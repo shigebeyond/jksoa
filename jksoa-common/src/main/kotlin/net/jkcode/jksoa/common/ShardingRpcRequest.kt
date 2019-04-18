@@ -29,7 +29,7 @@ class ShardingRpcRequest(public override val clazz: String, /* 服务接口类�
      * @param method 方法
      * @param shardingArgses 分片要调用的实参
      */
-    public constructor(method: Method, shardingArgses: Array<Array<*>>) : this(method.getServiceClass().name, method.getSignature(), shardingArgses, method.getServiceClass().serviceMeta?.version ?: 0)
+    public constructor(method: Method, shardingArgses: Array<Array<*>>) : this(method.getServiceClass().name, method.getSignature(), shardingArgses, method.getServiceClass().service?.version ?: 0)
 
     /**
      * 构造函数

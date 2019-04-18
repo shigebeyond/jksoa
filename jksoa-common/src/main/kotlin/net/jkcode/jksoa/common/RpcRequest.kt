@@ -46,7 +46,7 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
      * @param method 方法
      * @param args 实参
      */
-    public constructor(method: Method, args: Array<Any?> = emptyArray()) : this(method.getServiceClass().name, method.getSignature(), args, method.getServiceClass().serviceMeta?.version ?: 0)
+    public constructor(method: Method, args: Array<Any?> = emptyArray()) : this(method.getServiceClass().name, method.getSignature(), args, method.getServiceClass().service?.version ?: 0)
 
     /**
      * 构造函数

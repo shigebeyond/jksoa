@@ -3,7 +3,7 @@ package net.jkcode.jksoa.common
 import net.jkcode.jkmvc.common.isSuperClass
 import net.jkcode.jksoa.client.combiner.annotation.GroupCombine
 import net.jkcode.jksoa.client.combiner.annotation.KeyCombine
-import net.jkcode.jksoa.common.annotation.ServiceMeta
+import net.jkcode.jksoa.common.annotation.Service
 import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
 import net.jkcode.jksoa.common.exception.RpcClientException
 import java.lang.reflect.Method
@@ -23,9 +23,9 @@ public fun Method.getServiceClass(): Class<out IService> {
 /**
  * 服务元数据
  */
-public val Class<out IService>.serviceMeta: ServiceMeta?
+public val Class<out IService>.service: Service?
     get(){
-        return getAnnotation(ServiceMeta::class.java)
+        return getAnnotation(Service::class.java)
     }
 
 /**
