@@ -2,7 +2,7 @@ package net.jkcode.jksoa.server.handler
 
 import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
-import net.jkcode.jkmvc.common.trySupplier
+import net.jkcode.jkmvc.common.trySupplierFinally
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.exception.RpcBusinessException
@@ -26,7 +26,7 @@ object RpcRequestHandler : IRpcRequestHandler() {
      * @param req
      */
     public override fun doHandle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
-        trySupplier({callProvider(req, ctx)} /* 调用provider方法 */){ v, r ->
+        trySupplierFinally({callProvider(req, ctx)} /* 调用provider方法 */){ v, r ->
             endResponse(req, v, r, ctx) // 返回响应
         }
     }
