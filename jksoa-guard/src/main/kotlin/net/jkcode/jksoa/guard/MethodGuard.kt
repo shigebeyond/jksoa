@@ -8,6 +8,7 @@ import net.jkcode.jksoa.guard.combiner.GroupFutureSupplierCombiner
 import net.jkcode.jksoa.guard.combiner.KeyFutureSupplierCombiner
 import net.jkcode.jksoa.guard.degrade.IDegradeHandler
 import java.lang.reflect.Method
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -35,7 +36,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
         if(annotation == null)
             null
         else {
-            val msg = "方法[${method.getSignature()}]声明了注解@GroupCombine"
+            val msg = "方法[${method.getSignature(true)}]声明了注解@KeyCombine"
             // 检查方法参数
             if (method.parameterTypes.size != 1)
                 throw GuardException("${msg}必须有唯一的参数")
@@ -56,7 +57,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
         else {
             // 找到批量操作的方法
             val batchMethod = method.declaringClass.methods.first { it.name == annotation.batchMethod }
-            val msg = "方法[${method.getSignature()}]的注解@GroupCombine中声明的batchMethod=[${annotation.batchMethod}]"
+            val msg = "方法[${method.getSignature(true)}]的注解@GroupCombine中声明的batchMethod=[${annotation.batchMethod}]"
             if (batchMethod == null)
                 throw GuardException("${msg}不存在")
             // 检查方法参数
@@ -101,13 +102,16 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
             null
         else {
             // 获得回退方法
-            val fallbackMethod = method.declaringClass.getMethod(annotation.fallbackMethod)
-            // 检查参数类型
-            if (method.parameterTypes != fallbackMethod.parameterTypes)
-                throw GuardException("源方法 ${method.getSignature()} 与回退方法 ${fallbackMethod.getSignature()} 的参数类型不一致")
+            val fallbackMethod = method.declaringClass.methods.first { it.name == annotation.fallbackMethod }
+            val msg = "源方法 ${method.getSignature(true)}的注解@Degrade声明了fallbackMethod=[${annotation.fallbackMethod}]"
+            if(fallbackMethod == null)
+                throw GuardException("${msg}不存在")
+            // 检查参数类型: 注 != 不好使
+            if (!Arrays.equals(method.parameterTypes, fallbackMethod.parameterTypes))
+                throw GuardException("$msg 与回退方法 ${fallbackMethod.getSignature(true)} 的参数类型不一致")
             // 检查返回类型
             if (method.returnType != fallbackMethod.returnType)
-                throw GuardException("源方法 ${method.getSignature()} 与回退方法 ${fallbackMethod.getSignature()} 的返回值类型不一致")
+                throw GuardException("$msg 与回退方法 ${fallbackMethod.getSignature(true)} 的返回值类型不一致")
 
             object : IDegradeHandler {
                 override fun handleFallback(t: Throwable, obj: Any, args: Array<Any?>): Any? {

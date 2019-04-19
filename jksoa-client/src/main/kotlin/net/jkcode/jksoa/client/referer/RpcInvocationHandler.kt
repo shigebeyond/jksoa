@@ -3,6 +3,7 @@ package net.jkcode.jksoa.client.referer
 import net.jkcode.jkmvc.common.getMethodHandle
 import net.jkcode.jkmvc.common.toExpr
 import net.jkcode.jkmvc.common.trySupplierCatch
+import net.jkcode.jksoa.client.combiner.annotation.degrade
 import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
@@ -110,9 +111,12 @@ object RpcInvocationHandler: InvocationHandler {
         val resFuture = trySupplierCatch({ dispatcher.dispatch(req) }) {
             // 4 回退处理
             val methodGuard = RpcMethodGuard.instance(method) // 获得方法守护者
-            if (methodGuard.degradeHandler != null)
+            if (methodGuard.degradeHandler != null) {
+                clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: {}.{}(", "), 发生异常{}, 进而调用回退方法 {}") {
+                    it.toExpr()
+                }, method.getServiceClass().name, method.name, it.message, method.degrade?.fallbackMethod)
                 methodGuard.degradeHandler!!.handleFallback(it, obj, args)
-            else
+            }else
                 throw it
         }
 
