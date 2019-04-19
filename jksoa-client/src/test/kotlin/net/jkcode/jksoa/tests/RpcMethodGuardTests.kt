@@ -17,9 +17,9 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM
  */
-class RpcRequestCombinerTests {
+class RpcMethodGuardTests {
 
-    val combinerService = Referer.getRefer<IExampleService>()
+    val exampleService = Referer.getRefer<IExampleService>()
 
     /************************* 测试 KeyRpcRequestCombiner **************************/
     /**
@@ -44,7 +44,7 @@ class RpcRequestCombinerTests {
         // 同步调用
         val run = {
             val id = 1
-            val u = combinerService.getUserById(id)
+            val u = exampleService.getUserById(id)
             println("调用服务[IExampleService.getUserById($id)]结果： $u")
         }
         makeThreads(3, run)
@@ -59,7 +59,7 @@ class RpcRequestCombinerTests {
         // 异步调用
         (0..2).forEach {
             val id = 1
-            val f = combinerService.getUserByIdAsync(id)
+            val f = exampleService.getUserByIdAsync(id)
             f.thenAccept{
                 println("调用服务[IExampleService.getUserById($id)]结果： $it")
             }
@@ -90,7 +90,7 @@ class RpcRequestCombinerTests {
         // 同步调用
         val run = {
             val name = randomString(7)
-            val u = combinerService.getUserByName(name)
+            val u = exampleService.getUserByName(name)
             println("调用服务[IExampleService.getUserByName($name)]结果： $u")
         }
         makeThreads(3, run)
@@ -104,7 +104,7 @@ class RpcRequestCombinerTests {
         // 异步调用
         for (i in (0..2)) {
             val name = randomString(7)
-            val f = combinerService.getUserByNameAsync(name)
+            val f = exampleService.getUserByNameAsync(name)
             f.thenAccept {
                 println("调用服务[IExampleService.getUserByName($name)]结果： $it")
             }
