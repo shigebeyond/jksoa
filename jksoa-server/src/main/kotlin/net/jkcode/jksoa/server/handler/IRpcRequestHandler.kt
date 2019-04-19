@@ -1,12 +1,9 @@
 package net.jkcode.jksoa.server.handler
 
 import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
-import net.jkcode.jksoa.common.serverLogger
 
 /**
  * Rpc请求处理者
@@ -37,30 +34,10 @@ abstract class IRpcRequestHandler {
         doHandle(req, ctx)
     }
 
-
     /**
      * 处理请求
      *
      * @param req
      */
     public abstract fun doHandle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit
-
-
-    /**
-     * 返回响应, 在处理完请求后调用
-     *
-     * @param req
-     * @param value 结果值
-     * @param ex 异常
-     * @param ctx
-     */
-    protected fun endResponse(req: IRpcRequest, value: Any?, ex: Exception?, ctx: ChannelHandlerContext) {
-        serverLogger.debug("Server处理请求：{}，结果: {}, 异常: {}", req, value, ex)
-        // 返回响应
-        var res: RpcResponse = RpcResponse(req.id, value, ex)
-        ctx.writeAndFlush(res)
-
-        // 请求处理后，关闭资源
-        ClosingOnRequestEnd.triggerClosings()
-    }
 }
