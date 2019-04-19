@@ -36,7 +36,7 @@ class KeyRpcRequestCombiner<RequestArgumentType /* 请求参数类型 */, Respon
         protected val keyCombiners: ConcurrentHashMap<Method, KeyRpcRequestCombiner<Any, Any?>> = ConcurrentHashMap();
 
         /**
-         * 获得方法对应的MethodHandle对象
+         * 获得方法对应的合并器
          * @param method
          * @return
          */

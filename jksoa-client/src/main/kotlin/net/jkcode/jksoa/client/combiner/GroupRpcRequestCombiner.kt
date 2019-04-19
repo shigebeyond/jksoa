@@ -51,7 +51,7 @@ class GroupRpcRequestCombiner<RequestArgumentType /* 请求参数类型 */, Resp
         protected val groupCombiners: ConcurrentHashMap<Method, GroupRpcRequestCombiner<Any, Any?, Any>> = ConcurrentHashMap();
 
         /**
-         * 获得方法对应的MethodHandle对象
+         * 获得方法对应的合并器
          * @param method
          * @return
          */
