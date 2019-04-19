@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.broker
 
-import net.jkcode.jkmvc.combiner.GroupRunCombiner
+import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.isNullOrEmpty
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher

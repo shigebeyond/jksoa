@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.common.annotation
 
 import java.lang.annotation.RetentionPolicy
+import java.lang.reflect.Method
 
 /**
  * 服务方法的元数据的注解
@@ -16,3 +17,12 @@ annotation class ServiceMethodMeta(
         public val serverRateLimit: Int = 0 /* 服务端的限流数, 如果为0则实际的超时使用server.yaml中定义的配置项 rateLimit */
 ){
 }
+
+
+/**
+ * 服务方法的元数据
+ */
+public val Method.serviceMethodMeta: ServiceMethodMeta?
+    get(){
+        return getAnnotation(ServiceMethodMeta::class.java)
+    }

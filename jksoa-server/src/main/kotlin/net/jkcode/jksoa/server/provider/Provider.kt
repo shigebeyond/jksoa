@@ -1,13 +1,13 @@
 package net.jkcode.jksoa.server.provider
 
-import net.jkcode.jkmvc.singleton.BeanSingletons
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.isSuperClass
+import net.jkcode.jkmvc.singleton.BeanSingletons
 import net.jkcode.jksoa.client.referer.RefererLoader
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.annotation.service
 import net.jkcode.jksoa.common.serverLogger
-import net.jkcode.jksoa.common.service
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.registry.IRegistry
 import net.jkcode.jksoa.registry.zk.ZkRegistry

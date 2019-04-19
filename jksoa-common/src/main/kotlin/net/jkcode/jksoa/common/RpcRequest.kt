@@ -2,6 +2,7 @@ package net.jkcode.jksoa.common
 
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jksoa.common.annotation.service
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod

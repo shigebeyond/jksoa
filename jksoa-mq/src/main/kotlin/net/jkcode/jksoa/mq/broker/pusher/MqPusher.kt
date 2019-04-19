@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.broker.pusher
 
-import net.jkcode.jkmvc.combiner.RequestQueueFlusher
+import net.jkcode.jksoa.guard.combiner.RequestQueueFlusher
 import net.jkcode.jkmvc.common.stringifyStackTrace
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcRequest
