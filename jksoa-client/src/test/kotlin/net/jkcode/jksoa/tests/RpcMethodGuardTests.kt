@@ -3,11 +3,12 @@ package net.jkcode.jksoa.tests
 import net.jkcode.jkmvc.common.makeThreads
 import net.jkcode.jkmvc.common.print
 import net.jkcode.jkmvc.common.randomString
-import net.jkcode.jksoa.client.combiner.GroupRpcRequestCombiner
-import net.jkcode.jksoa.client.combiner.KeyRpcRequestCombiner
 import net.jkcode.jksoa.client.referer.Referer
+import net.jkcode.jksoa.client.referer.RpcMethodGuard
 import net.jkcode.jksoa.example.IExampleService
 import net.jkcode.jksoa.example.User
+import net.jkcode.jksoa.guard.combiner.GroupFutureSupplierCombiner
+import net.jkcode.jksoa.guard.combiner.KeyFutureSupplierCombiner
 import org.junit.Test
 import java.util.concurrent.CompletableFuture
 
@@ -22,11 +23,12 @@ class RpcRequestCombinerTests {
 
     /************************* 测试 KeyRpcRequestCombiner **************************/
     /**
-     * 测试 KeyRpcRequestCombiner -- 手动调用
+     * 测试ke合并 -- 手动调用
      */
     @Test
-    fun testKeyRpcRequestCombiner() {
-        val keyCombiner = KeyRpcRequestCombiner(IExampleService::getUserById)
+    fun testKeyCombine() {
+        // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
+        val keyCombiner = RpcMethodGuard.instance(IExampleService::getUserByIdAsync).keyCombiner as KeyFutureSupplierCombiner<Int, User>
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(keyCombiner.add(1))
@@ -35,10 +37,10 @@ class RpcRequestCombinerTests {
     }
 
     /**
-     * 测试 GroupRpcRequestCombiner -- 通过调用目标方法来 同步调用
+     * 测试key合并 -- 通过调用目标方法来 同步调用
      */
     @Test
-    fun testKeyRpcRequestCombiner2() {
+    fun testKeyCombine2() {
         // 同步调用
         val run = {
             val id = 1
@@ -50,10 +52,10 @@ class RpcRequestCombinerTests {
 
 
     /**
-     * 测试 testKeyRpcRequestCombiner -- 通过调用目标方法来 异步调用
+     * 测试key合并 -- 通过调用目标方法来 异步调用
      */
     @Test
-    fun testKeyRpcRequestCombiner3() {
+    fun testKeyCombine3() {
         // 异步调用
         (0..2).forEach {
             val id = 1
@@ -67,11 +69,12 @@ class RpcRequestCombinerTests {
 
     /************************* 测试 GroupRpcRequestCombiner **************************/
     /**
-     * 测试 GroupRpcRequestCombiner -- 手动调用
+     * 测试group合并 -- 手动调用
      */
     @Test
-    fun testGroupRpcRequestCombiner() {
-        val groupCombiner = GroupRpcRequestCombiner<String, User, User>(IExampleService::listUsersByName, "name", "", true, 100, 100)
+    fun testGroupCombine() {
+        // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
+        val groupCombiner = RpcMethodGuard.instance(IExampleService::getUserByNameAsync).groupCombiner as GroupFutureSupplierCombiner<String, User, User>
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(groupCombiner.add(randomString(7))!!)
@@ -80,10 +83,10 @@ class RpcRequestCombinerTests {
     }
 
     /**
-     * 测试 GroupRpcRequestCombiner -- 通过调用目标方法来 同步调用
+     * 测试group合并 -- 通过调用目标方法来 同步调用
      */
     @Test
-    fun testGroupRpcRequestCombiner2() {
+    fun testGroupCombine2() {
         // 同步调用
         val run = {
             val name = randomString(7)
@@ -94,10 +97,10 @@ class RpcRequestCombinerTests {
     }
 
     /**
-     * 测试 GroupRpcRequestCombiner -- 通过调用目标方法来 异步调用
+     * 测试group合并 -- 通过调用目标方法来 异步调用
      */
     @Test
-    fun testGroupRpcRequestCombiner3() {
+    fun testGroupCombine3() {
         // 异步调用
         for (i in (0..2)) {
             val name = randomString(7)
