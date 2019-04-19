@@ -2,6 +2,7 @@ package net.jkcode.jksoa.client.referer
 
 import net.jkcode.jkmvc.common.getMethodHandle
 import net.jkcode.jkmvc.common.toExpr
+import net.jkcode.jkmvc.common.trySupplierCatch
 import net.jkcode.jksoa.client.combiner.GroupRpcRequestCombiner
 import net.jkcode.jksoa.client.combiner.KeyRpcRequestCombiner
 import net.jkcode.jksoa.client.connection.ConnectionHub
@@ -11,6 +12,7 @@ import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
 import net.jkcode.jksoa.common.*
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
+import net.jkcode.jksoa.guard.degrade.IDegradeHandler
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -68,7 +70,7 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
             return method.getMethodHandle().invokeWithArguments(proxy, *args)
 
         // 2 普通方法调用
-        val resFuture = doInvoke(method, args)
+        val resFuture = doInvoke(method, proxy, args)
 
         // 3 处理结果
         // 3.1 返回异步Future
@@ -83,10 +85,11 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
      * 处理普通方法调用
      *
      * @param method 方法
-     * @param args0 参数
+     * @param obj 对象
+     * @param args 参数
      * @return 返回异步响应
      */
-    protected fun doInvoke(method: Method, args: Array<Any?>): CompletableFuture<Any?> {
+    protected fun doInvoke(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
         clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: {}.{}(", ")") {
             it.toExpr()
         }, `interface`.name, method.name)
@@ -108,8 +111,15 @@ class RpcInvocationHandler(public val `interface`: Class<out IService> /* 接口
             if (!i.preHandleRequest(req))
                 throw RpcClientException("Interceptor [${i.javaClass.name}] handle request fail");
 
-        // 3.3 分发请求, 获得响应
-        return dispatcher.dispatch(req)
+        // 3.3 分发请求, 获得异步响应
+        return trySupplierCatch({dispatcher.dispatch(req)}){
+            // 4 回退处理
+            if (method.degrade != null)
+                IDegradeHandler.instance(method).handleFallback(it, obj, args)
+            else
+                throw it
+        }
+
     }
 
 
