@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.common
 
 import net.jkcode.jksoa.common.exception.RpcClientException
-import net.jkcode.jksoa.common.invocation.IInvocationResult
 import java.io.Serializable
 
 /**
@@ -11,7 +10,7 @@ import java.io.Serializable
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IRpcResponse: Serializable, IInvocationResult {
+interface IRpcResponse: Serializable {
 
     /**
      * 请求标识
@@ -29,8 +28,14 @@ interface IRpcResponse: Serializable, IInvocationResult {
     val exception: Exception?
 
     /**
-     *
+     * 是否失败
      */
     val failed: Boolean
         get() = exception is RpcClientException
+
+    /**
+     * 获得结果值或抛出异常
+     * @return
+     */
+    fun getOrThrow(): Any?
 }
