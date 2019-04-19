@@ -6,19 +6,14 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * 示例服务实现
+ * 守护者示例的服务接口
  *
  * @author shijianhang
  * @create 2017-12-15 下午7:39
  **/
-class ExampleService : IExampleService /*, UnicastRemoteObject() // rmi协议服务实现*/{
+class GuardService : IGuardService /*, UnicastRemoteObject() // rmi协议服务实现*/{
 
     private val userCounter = AtomicInteger(0)
-
-    @Throws(RemoteException::class) // rim异常
-    public override fun sayHi(name: String): String {
-        return "Hi, $name"
-    }
 
     /**
      * 根据id获得user
@@ -49,6 +44,13 @@ class ExampleService : IExampleService /*, UnicastRemoteObject() // rmi协议服
             getUserByName(name)
         }
         return CompletableFuture.completedFuture(us)
+    }
+
+    /**
+     * 根据id获得user -- 直接抛异常
+     */
+    public override fun getUserWhenException(id: Int): User{
+        throw Exception("获得用户[$id]发生异常")
     }
 
 

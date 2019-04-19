@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jksoa.example.ISystemService
+import net.jkcode.jksoa.example.ISimpleService
 import net.jkcode.jksoa.job.job.local.LpcJob
 import net.jkcode.jksoa.job.job.local.ShardingLpcJob
 import net.jkcode.jksoa.job.job.remote.RpcJob
@@ -46,7 +46,7 @@ class JobExprTests: BaseTests() {
 
     @Test
     fun testRpcJobExpr(){
-        val job = RpcJob(ISystemService::ping)
+        val job = RpcJob(ISimpleService::ping)
         toAndParseExpr(job)
     }
 
@@ -55,7 +55,7 @@ class JobExprTests: BaseTests() {
         val args:Array<Array<*>> = Array(3) { i ->
             arrayOf("第 ${i} 个分片的参数") // IEchoService::sayHi 的实参
         }
-        val job = ShardingRpcJob(ISystemService::echo, args)
+        val job = ShardingRpcJob(ISimpleService::echo, args)
         toAndParseExpr(job)
     }
 }

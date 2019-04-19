@@ -3,11 +3,8 @@ package net.jkcode.jksoa.tests
 import net.jkcode.jkmvc.common.format
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.example.ISystemService
+import net.jkcode.jksoa.example.ISimpleService
 import net.jkcode.jksoa.leader.ZkLeaderElection
-import io.netty.util.HashedWheelTimer
-import io.netty.util.Timeout
-import io.netty.util.TimerTask
 import org.junit.Test
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -40,7 +37,7 @@ class MyTests {
     @Test
     fun testKotlinFuction2JavaMethod(){
         // 有默认参数的kotlin方法
-        val func = ISystemService::echo
+        val func = ISimpleService::echo
         // 对应的是java方法签名是包含默认参数类型的
         println(func.javaMethod)
     }

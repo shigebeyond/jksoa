@@ -6,12 +6,12 @@ import net.jkcode.jksoa.common.serverLogger
 import java.rmi.RemoteException
 
 /**
- * 系统服务实现
+ * 简单示例的服务接口
  *
  * @author shijianhang
  * @create 2017-12-15 下午7:39
  **/
-class SystemService : ISystemService /*, UnicastRemoteObject() // rmi协议服务实现*/{
+class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服务实现*/{
 
     @Throws(RemoteException::class) // rim异常
     public override fun ping(): String {

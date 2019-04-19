@@ -6,13 +6,13 @@ import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
 import java.rmi.RemoteException
 
 /**
- * 系统服务接口
+ * 简单示例的服务接口
  *
  * @author shijianhang
  * @create 2017-12-15 下午7:37
  **/
 @Service(version = 1, onlyLeader = true)
-interface ISystemService : IService /*, Remote // rmi协议服务接口 */ {
+interface ISimpleService : IService /*, Remote // rmi协议服务接口 */ {
 
     @Throws(RemoteException::class) // rmi异常
     fun ping(): String

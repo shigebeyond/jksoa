@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.example
 
+import net.jkcode.jksoa.client.combiner.annotation.Degrade
 import net.jkcode.jksoa.client.combiner.annotation.GroupCombine
 import net.jkcode.jksoa.client.combiner.annotation.KeyCombine
 import net.jkcode.jksoa.common.IService
@@ -11,37 +12,50 @@ import java.util.concurrent.CompletableFuture
 data class User(public val id: Int, public val name: String): Serializable {}
 
 /**
- * 示例服务接口
+ * 守护者示例的服务接口
  *
  * @author shijianhang
  * @create 2017-12-15 下午7:37
  **/
 @Service(version = 1)
-interface IExampleService : IService /*, Remote // rmi协议服务接口 */ {
+interface IGuardService : IService /*, Remote // rmi协议服务接口 */ {
 
-    @Throws(RemoteException::class) // rmi异常
-    fun sayHi(name: String): String
-
+    // 默认方法
     @JvmDefault
     fun getUserById(id: Int): User{
         return getUserByIdAsync(id).get()
     }
 
+    // key合并
     @KeyCombine
     fun getUserByIdAsync(id: Int): CompletableFuture<User>
 
+    // 默认方法
     @JvmDefault
     fun getUserByName(name: String): User{
         return getUserByNameAsync(name).get()
     }
 
+    // group合并
     @GroupCombine("listUsersByNameAsync", "name", "", true, 100, 100)
     fun getUserByNameAsync(name: String): CompletableFuture<User>
 
+    // 默认方法
     @JvmDefault
     fun listUsersByName(names: List<String>): List<User>{
         return listUsersByNameAsync(names).get()
     }
 
+    // group合并后要调用的批量方法
     fun listUsersByNameAsync(names: List<String>): CompletableFuture<List<User>>
+
+    // 有异常回退方法
+    @Degrade(fallbackMethod = "getUserWhenFallback")
+    fun getUserWhenException(id: Int): User
+
+    // 发送异常时调用的方法, 一般是默认方法
+    @JvmDefault
+    fun getUserWhenFallback(id: Int): User {
+        return User(-1, "无名氏")
+    }
 }

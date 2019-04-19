@@ -5,7 +5,7 @@ import net.jkcode.jkmvc.common.print
 import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.client.referer.RpcMethodGuard
-import net.jkcode.jksoa.example.IExampleService
+import net.jkcode.jksoa.example.IGuardService
 import net.jkcode.jksoa.example.User
 import net.jkcode.jksoa.guard.combiner.GroupFutureSupplierCombiner
 import net.jkcode.jksoa.guard.combiner.KeyFutureSupplierCombiner
@@ -19,16 +19,16 @@ import java.util.concurrent.CompletableFuture
  */
 class RpcMethodGuardTests {
 
-    val exampleService = Referer.getRefer<IExampleService>()
+    val service = Referer.getRefer<IGuardService>()
 
-    /************************* 测试 KeyRpcRequestCombiner **************************/
+    /************************* 测试key合并 **************************/
     /**
-     * 测试ke合并 -- 手动调用
+     * 测试key合并 -- 手动调用
      */
     @Test
     fun testKeyCombine() {
         // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
-        val keyCombiner = RpcMethodGuard.instance(IExampleService::getUserByIdAsync).keyCombiner as KeyFutureSupplierCombiner<Int, User>
+        val keyCombiner = RpcMethodGuard.instance(IGuardService::getUserByIdAsync).keyCombiner as KeyFutureSupplierCombiner<Int, User>
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(keyCombiner.add(1))
@@ -44,8 +44,8 @@ class RpcMethodGuardTests {
         // 同步调用
         val run = {
             val id = 1
-            val u = exampleService.getUserById(id)
-            println("调用服务[IExampleService.getUserById($id)]结果： $u")
+            val u = service.getUserById(id)
+            println("调用服务[IGuardService.getUserById($id)]结果： $u")
         }
         makeThreads(3, run)
     }
@@ -59,22 +59,22 @@ class RpcMethodGuardTests {
         // 异步调用
         (0..2).forEach {
             val id = 1
-            val f = exampleService.getUserByIdAsync(id)
+            val f = service.getUserByIdAsync(id)
             f.thenAccept{
-                println("调用服务[IExampleService.getUserById($id)]结果： $it")
+                println("调用服务[IGuardService.getUserById($id)]结果： $it")
             }
         }
         Thread.sleep(2000)
     }
 
-    /************************* 测试 GroupRpcRequestCombiner **************************/
+    /************************* 测试group合并  **************************/
     /**
      * 测试group合并 -- 手动调用
      */
     @Test
     fun testGroupCombine() {
         // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
-        val groupCombiner = RpcMethodGuard.instance(IExampleService::getUserByNameAsync).groupCombiner as GroupFutureSupplierCombiner<String, User, User>
+        val groupCombiner = RpcMethodGuard.instance(IGuardService::getUserByNameAsync).groupCombiner as GroupFutureSupplierCombiner<String, User, User>
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(groupCombiner.add(randomString(7))!!)
@@ -90,8 +90,8 @@ class RpcMethodGuardTests {
         // 同步调用
         val run = {
             val name = randomString(7)
-            val u = exampleService.getUserByName(name)
-            println("调用服务[IExampleService.getUserByName($name)]结果： $u")
+            val u = service.getUserByName(name)
+            println("调用服务[IGuardService.getUserByName($name)]结果： $u")
         }
         makeThreads(3, run)
     }
@@ -104,14 +104,18 @@ class RpcMethodGuardTests {
         // 异步调用
         for (i in (0..2)) {
             val name = randomString(7)
-            val f = exampleService.getUserByNameAsync(name)
+            val f = service.getUserByNameAsync(name)
             f.thenAccept {
-                println("调用服务[IExampleService.getUserByName($name)]结果： $it")
+                println("调用服务[IGuardService.getUserByName($name)]结果： $it")
             }
         }
         Thread.sleep(2000)
     }
 
-
-
+    /************************* 测试回退 **************************/
+    @Test
+    fun testFallback(){
+        val user = service.getUserWhenException(1)
+        println("收到异常退回的结果: " + user)
+    }
 }
