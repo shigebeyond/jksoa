@@ -85,6 +85,10 @@ object RpcInvocationHandler: InvocationHandler {
         if (methodGuard.keyCombiner != null)
             return methodGuard.keyCombiner!!.add(args.single()!!)
 
+        // 3 缓存
+        if(methodGuard.cacheHandler != null)
+            return methodGuard.cacheHandler!!.cacheOrLoad(args)
+
         // 3 真正的调用: 发送rpc请求
         return doInvoke(method, proxy, args)
     }
@@ -109,10 +113,10 @@ object RpcInvocationHandler: InvocationHandler {
 
         // 3 分发请求, 获得异步响应
         val resFuture = trySupplierCatch({ dispatcher.dispatch(req) }) {
-            // 4 回退处理
+            // 4 后备处理
             val methodGuard = RpcMethodGuard.instance(method) // 获得方法守护者
             if (methodGuard.degradeHandler != null) {
-                clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: {}.{}(", "), 发生异常{}, 进而调用回退方法 {}") {
+                clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
                     it.toExpr()
                 }, method.getServiceClass().name, method.name, it.message, method.degrade?.fallbackMethod)
                 methodGuard.degradeHandler!!.handleFallback(it, obj, args)
