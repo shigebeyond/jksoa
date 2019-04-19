@@ -112,7 +112,7 @@ class RpcMethodGuardTests {
         Thread.sleep(2000)
     }
 
-    /************************* 测试回退 **************************/
+    /************************* 测试后备 **************************/
     @Test
     fun testFallback(){
         val user = service.getUserWhenException(1)

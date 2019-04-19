@@ -1,16 +1,15 @@
 package net.jkcode.jksoa.mq.consumer.puller
 
-import net.jkcode.jkmvc.common.getStackTrace
-import net.jkcode.jkmvc.common.stringifyStackTrace
+import io.netty.util.Timeout
+import io.netty.util.TimerTask
 import net.jkcode.jkmvc.common.CommonSecondTimer
 import net.jkcode.jkmvc.common.CommonThreadPool
+import net.jkcode.jkmvc.common.stringifyStackTrace
+import net.jkcode.jksoa.leader.ZkLeaderElection
+import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MessageStatus
 import net.jkcode.jksoa.mq.consumer.IMqHandler
 import net.jkcode.jksoa.mq.consumer.subscriber.MqSubscriber
-import io.netty.util.Timeout
-import io.netty.util.TimerTask
-import net.jkcode.jksoa.leader.ZkLeaderElection
-import net.jkcode.jksoa.mq.common.Message
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -67,7 +66,7 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
             var msgs: List<Message>
             do {
                 // 拉取消息
-                msgs = broker.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!)
+                msgs = broker.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!).get()
                 // 处理消息 + 主动更新消息状态
                 for (msg in msgs) {
                     try {

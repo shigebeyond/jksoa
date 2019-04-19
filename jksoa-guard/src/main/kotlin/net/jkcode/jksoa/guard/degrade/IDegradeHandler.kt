@@ -8,7 +8,7 @@ package net.jkcode.jksoa.guard.degrade
 interface IDegradeHandler {
 
     /**
-     * 处理异常回退
+     * 处理异常后备
      *
      * @param t
      * @param obj 方法调用的对象
