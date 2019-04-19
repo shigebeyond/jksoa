@@ -89,7 +89,7 @@ object RpcInvocationHandler: InvocationHandler {
         if(methodGuard.cacheHandler != null)
             return methodGuard.cacheHandler!!.cacheOrLoad(args)
 
-        // 3 真正的调用: 发送rpc请求
+        // 4 真正的调用: 发送rpc请求
         return doInvoke(method, proxy, args)
     }
 
@@ -119,7 +119,7 @@ object RpcInvocationHandler: InvocationHandler {
                 clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
                     it.toExpr()
                 }, method.getServiceClass().name, method.name, it.message, method.degrade?.fallbackMethod)
-                methodGuard.degradeHandler!!.handleFallback(it, obj, args)
+                methodGuard.degradeHandler!!.handleFallback(it, args)
             }else
                 throw it
         }

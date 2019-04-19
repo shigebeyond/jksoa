@@ -16,11 +16,15 @@ abstract class ICacheHandler(public val annotation: Cache) {
      * @return
      */
     public fun cacheOrLoad(args: Array<Any?>): Any? {
-        val cache = ICache.instance(annotation.type)
-        val key = args.joinToString(annotation.keySeparator, annotation.keyPrefix)
-        return cache.getOrPut(key, annotation.expires){
+        val cache = ICache.instance(annotation.type) // cache
+        val key = args.joinToString(annotation.keySeparator, annotation.keyPrefix) // key
+        val data = cache.getOrPut(key, annotation.expires){ // data
             loadData(args) ?: Unit // 回源 or 空对象
         }
+        if(data == Unit)
+            return null
+
+        return data
     }
 
     /**

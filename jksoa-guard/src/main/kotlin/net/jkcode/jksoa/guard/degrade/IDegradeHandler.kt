@@ -11,10 +11,9 @@ interface IDegradeHandler {
      * 处理异常后备
      *
      * @param t
-     * @param obj 方法调用的对象
      * @param args 方法调用的参数
      * @return
      */
-    fun handleFallback(t: Throwable, obj: Any, args: Array<Any?>): Any?
+    fun handleFallback(t: Throwable, args: Array<Any?>): Any?
 
 }

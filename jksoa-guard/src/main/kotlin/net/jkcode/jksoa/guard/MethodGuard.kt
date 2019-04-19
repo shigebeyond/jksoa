@@ -21,6 +21,11 @@ import java.util.concurrent.CompletableFuture
 abstract class MethodGuard(public val method: Method /* 方法 */){
 
     /**
+     * 方法调用的对象
+     */
+    public abstract val obj:Any
+
+    /**
      * 调用方法
      *   因为 MethodGuard 自身是通过方法反射来调用的, 因此不能再直接反射调用 method.invoke(obj, arg), 否则会递归调用以致于死循环
      *
@@ -117,7 +122,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
 
             object : IDegradeHandler {
                 // 处理异常后备
-                override fun handleFallback(t: Throwable, obj: Any, args: Array<Any?>): Any? {
+                override fun handleFallback(t: Throwable, args: Array<Any?>): Any? {
                     // 调用后备方法
                     return fallbackMethod.invoke(obj, *args)
                 }
