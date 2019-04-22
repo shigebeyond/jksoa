@@ -3,6 +3,8 @@ package net.jkcode.jksoa.mq.broker
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.isNullOrEmpty
+import net.jkcode.jkmvc.query.DbExpr
+import net.jkcode.jkmvc.query.DbQueryBuilder
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
@@ -55,7 +57,7 @@ class MqBroker : IMqBroker {
      * 批量保存消息
      * @param msgs
      */
-    protected fun saveMessages(msgs: List<Message>): Void{
+    protected fun saveMessages(msgs: List<Message>): Void?{
         val params = tmpParams.get()
         var ex: Exception? = null
         try {
@@ -74,6 +76,8 @@ class MqBroker : IMqBroker {
             // 2 给消费者推送消息
             for (msg in msgs)
                 MqPusher.push(msg)
+
+            return null
         }
     }
 
@@ -134,7 +138,7 @@ class MqBroker : IMqBroker {
                 .orderBy("order_id") // 针对有序消息
                 .limit(pageSize)
                 .findAll(){
-                    Message(it["topic"], it["group"], it["data"], it["order_id"], it["id"])
+                    Message(it["topic"] as String, it["data"], it["group"] as String, it["order_id"] as Long, it["id"] as Long)
                 }
 
         return CompletableFuture.completedFuture(msgs)

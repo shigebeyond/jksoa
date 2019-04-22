@@ -11,3 +11,8 @@ include 'jkmvc-common'
 
 project(':jkmvc-common').projectDir = new File('../jkmvc/jkmvc-common')
 project(':jkmvc-common').buildFileName = 'common.gradle'
+
+include 'jkmvc-orm'
+
+project(':jkmvc-orm').projectDir = new File('../jkmvc/jkmvc-orm')
+project(':jkmvc-orm').buildFileName = 'orm.gradle'
