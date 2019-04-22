@@ -24,12 +24,13 @@ class RpcMethodGuard(method: Method): MethodGuard(method) {
      * 调用方法
      *   因为 MethodGuard 自身是通过方法反射来调用的, 因此不能再直接反射调用 method.invoke(obj, arg), 否则会递归调用以致于死循环
      *
-     * @param singleArg
+     * @param args
+     * @param handlingCache 是否处理缓存, 即调用 cacheHandler
      * @return
      */
-    public override fun invokeMethod(args: Array<Any?>):Any?{
-        //return method.invoke(obj, singleArg)
-        return RpcInvocationHandler.doInvoke(method, obj, args)
+    public override fun invokeMethod(args: Array<Any?>, handlingCache: Boolean):Any?{
+        //return method.invoke(obj, *args)
+        return RpcInvocationHandler.doInvoke(method, obj, args, handlingCache)
     }
 
     companion object {

@@ -17,6 +17,7 @@ import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
 /**
@@ -85,12 +86,8 @@ object RpcInvocationHandler: InvocationHandler {
         if (methodGuard.keyCombiner != null)
             return methodGuard.keyCombiner!!.add(args.single()!!)
 
-        // 3 缓存
-        if(methodGuard.cacheHandler != null)
-            return methodGuard.cacheHandler!!.cacheOrLoad(args)
-
-        // 4 真正的调用: 发送rpc请求
-        return doInvoke(method, proxy, args)
+        // 3 真正的调用: 发送rpc请求
+        return doInvoke(method, proxy, args, true)
     }
 
 
@@ -100,9 +97,18 @@ object RpcInvocationHandler: InvocationHandler {
      * @param method 方法
      * @param obj 对象
      * @param args 参数
+     * @param handlingCache 是否处理缓存, 即调用 cacheHandler
+     *        cacheHandler会主动调用 doInvoke() 来回源, 需设置参数为 false, 否则递归调用死循环
      * @return 结果
      */
-    public fun doInvoke(method: Method, obj: Any, args: Array<Any?>): Any? {
+    public fun doInvoke(method: Method, obj: Any, args: Array<Any?>, handlingCache: Boolean): Any? {
+        // 0 缓存
+        val methodGuard = RpcMethodGuard.instance(method) // 获得方法守护者
+        if(handlingCache && methodGuard.cacheHandler != null) {
+            val resFuture = methodGuard.cacheHandler!!.cacheOrLoad(args)
+            return handleResult(method, resFuture)
+        }
+
         // 1 封装请求
         val req = RpcRequest(method, args)
 
@@ -114,7 +120,6 @@ object RpcInvocationHandler: InvocationHandler {
         // 3 分发请求, 获得异步响应
         val resFuture = trySupplierCatch({ dispatcher.dispatch(req) }) {
             // 4 后备处理
-            val methodGuard = RpcMethodGuard.instance(method) // 获得方法守护者
             if (methodGuard.degradeHandler != null) {
                 clientLogger.debug(args.joinToString(", ", "RpcInvocationHandler调用远端方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
                     it.toExpr()
@@ -125,11 +130,22 @@ object RpcInvocationHandler: InvocationHandler {
         }
 
         // 4 处理结果
-        // 4.1 异步结果
+        return handleResult(method, resFuture)
+    }
+
+    /**
+     * 处理结果
+     *
+     * @param method 方法
+     * @param resFuture
+     * @return
+     */
+    private fun handleResult(method: Method, resFuture: CompletableFuture<Any?>): Any? {
+        // 1 异步结果
         if (Future::class.java.isAssignableFrom(method.returnType))
             return resFuture
 
-        // 4.2 同步结果
+        // 2 同步结果
         return resFuture.get()
     }
 

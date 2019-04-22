@@ -2,6 +2,7 @@ package net.jkcode.jksoa.guard.cache
 
 import net.jkcode.jkmvc.cache.ICache
 import net.jkcode.jksoa.client.combiner.annotation.Cache
+import java.util.concurrent.CompletableFuture
 
 /**
  * 缓存处理器
@@ -15,20 +16,16 @@ abstract class ICacheHandler(public val annotation: Cache) {
      * @param args
      * @return
      */
-    public fun cacheOrLoad(args: Array<Any?>): Any? {
+    public fun cacheOrLoad(args: Array<Any?>): CompletableFuture<Any?> {
         val cache = ICache.instance(annotation.type) // cache
         val key = args.joinToString(annotation.keySeparator, annotation.keyPrefix) // key
-        val data = cache.getOrPut(key, annotation.expires){ // data
-            loadData(args) ?: Unit // 回源 or 空对象
+        return cache.getOrPut(key, annotation.expires){ // data
+            loadData(args) // 回源
         }
-        if(data == Unit)
-            return null
-
-        return data
     }
 
     /**
-     * 回源
+     * 回源, 兼容返回值类型是CompletableFuture
      * @param args
      * @return
      */

@@ -1,4 +1,0 @@
-# 使用的redis配置名
-redisConfigName: default
-# 使用的zk配置名
-zkConfigName: default

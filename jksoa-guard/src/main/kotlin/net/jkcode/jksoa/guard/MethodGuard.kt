@@ -30,9 +30,10 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
      *   因为 MethodGuard 自身是通过方法反射来调用的, 因此不能再直接反射调用 method.invoke(obj, arg), 否则会递归调用以致于死循环
      *
      * @param args
+     * @param handlingCache 是否处理缓存, 即调用 cacheHandler
      * @return
      */
-    public abstract fun invokeMethod(args: Array<Any?>):Any?
+    public abstract fun invokeMethod(args: Array<Any?>, handlingCache: Boolean):Any?
 
     /**
      * 方法的key合并器
@@ -81,7 +82,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
     }
 
     /**
-     * 将(单参数)的方法调用转为future工厂
+     * 将(单参数)的方法调用转为future工厂, 合并请求时调用
      *    兼容方法返回类型是CompletableFuture
      * @return
      */
@@ -89,7 +90,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
         return { singleArg ->
             // 1 将方法执行转为异步future
             var f = CompletableFuture.supplyAsync({
-                invokeMethod(arrayOf(singleArg))
+                invokeMethod(arrayOf(singleArg), true)
             })
             // 2 如果方法(如rpc方法)的返回类型是CompletableFuture, 则需要提取值
             if(CompletableFuture::class.java.isAssignableFrom(method.returnType))
@@ -139,9 +140,9 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
             null
         else {
             object: ICacheHandler(annotation){
-                // 回源
+                // 回源, 兼容返回值类型是CompletableFuture
                 override fun loadData(args: Array<Any?>): Any? {
-                    return invokeMethod(args)
+                    return invokeMethod(args, false)
                 }
 
             }
