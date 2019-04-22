@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 open class GroupFutureRunCombiner<RequestArgumentType/* 请求参数类型 */> (
         flushSize: Int = 100 /* 触发刷盘的队列大小 */,
         flushTimeoutMillis: Long = 100 /* 触发刷盘的定时时间 */,
-        public val batchFutureRun:(List<RequestArgumentType>) -> CompletableFuture<Void> /* 批量无值操作 */
+        public val batchFutureRun:(List<RequestArgumentType>) -> CompletableFuture<Void?> /* 批量无值操作 */
 ): RequestQueueFlusher<RequestArgumentType, Void>(flushSize, flushTimeoutMillis){
 
     /**
@@ -23,7 +23,7 @@ open class GroupFutureRunCombiner<RequestArgumentType/* 请求参数类型 */> (
      */
     protected override fun handleFlush(args: List<RequestArgumentType>, reqs: ArrayList<Pair<RequestArgumentType, CompletableFuture<Void>>>): Boolean {
         // 1 执行批量操作
-        val resultFuture: CompletableFuture<Void> = batchFutureRun.invoke(args)
+        val resultFuture: CompletableFuture<Void?> = batchFutureRun.invoke(args)
 
         // 2 设置异步响应
         resultFuture.thenAccept { result ->

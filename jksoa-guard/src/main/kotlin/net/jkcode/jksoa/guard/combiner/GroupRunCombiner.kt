@@ -11,6 +11,6 @@ import net.jkcode.jkmvc.common.toFutureSupplier
 class GroupRunCombiner<RequestArgumentType/* 请求参数类型 */>(
         flushSize: Int = 100 /* 触发刷盘的队列大小 */,
         flushTimeoutMillis: Long = 100 /* 触发刷盘的定时时间 */,
-        batchRun:(List<RequestArgumentType>) -> Void /* 批量无值操作 */
+        batchRun:(List<RequestArgumentType>) -> Void? /* 批量无值操作 */
 ): GroupFutureRunCombiner<RequestArgumentType>(flushSize, flushTimeoutMillis, toFutureSupplier(batchRun)){
 }
