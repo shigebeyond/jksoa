@@ -2,7 +2,6 @@ package net.jkcode.jksoa.example
 
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.annotation.Service
-import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
 import java.rmi.RemoteException
 
 /**
