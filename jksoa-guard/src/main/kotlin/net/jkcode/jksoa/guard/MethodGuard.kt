@@ -1,14 +1,14 @@
 package net.jkcode.jksoa.guard
 
 import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jksoa.client.combiner.annotation.cache
-import net.jkcode.jksoa.client.combiner.annotation.degrade
-import net.jkcode.jksoa.client.combiner.annotation.groupCombine
-import net.jkcode.jksoa.client.combiner.annotation.keyCombine
+import net.jkcode.jksoa.client.combiner.annotation.*
 import net.jkcode.jksoa.guard.cache.ICacheHandler
 import net.jkcode.jksoa.guard.combiner.GroupFutureSupplierCombiner
 import net.jkcode.jksoa.guard.combiner.KeyFutureSupplierCombiner
 import net.jkcode.jksoa.guard.degrade.IDegradeHandler
+import net.jkcode.jksoa.guard.rate.IRateLimiter
+import net.jkcode.jksoa.guard.rate.SmoothBurstyRateLimiter
+import net.jkcode.jksoa.guard.rate.SmoothWarmingUpRateLimiter
 import java.lang.reflect.Method
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -147,6 +147,19 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
 
             }
         }
+    }
+
+    /**
+     * 限流器
+     */
+    public val rateLimiterHandler: IRateLimiter? by lazy{
+        val annotation = method.rateLimiter
+        if(annotation == null)
+            null
+        else if(annotation.stablePeriodSeconds == 0 || annotation.warmupPeriodSeconds == 0)
+            SmoothBurstyRateLimiter(annotation.permitsPerSecond)
+        else
+            SmoothWarmingUpRateLimiter(annotation.permitsPerSecond, annotation.stablePeriodSeconds, annotation.warmupPeriodSeconds)
     }
 
 }

@@ -3,9 +3,6 @@ package net.jkcode.jksoa.client.referer
 import net.jkcode.jksoa.common.getServiceClass
 import net.jkcode.jksoa.guard.MethodGuard
 import java.lang.reflect.Method
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.reflect.KFunction
-import kotlin.reflect.jvm.javaMethod
 
 /**
  * rpc方法调用的守护者
@@ -30,6 +27,6 @@ class RpcMethodGuard(method: Method): MethodGuard(method) {
      */
     public override fun invokeMethod(args: Array<Any?>, handlingCache: Boolean):Any?{
         //return method.invoke(obj, *args)
-        return RpcInvocationHandler.realInvoke(method, obj, args, handlingCache)
+        return RpcInvocationHandler.invokeAfterCombine(method, obj, args, handlingCache)
     }
 }

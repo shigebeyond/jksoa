@@ -60,7 +60,7 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
     }
 
     /**
-     * 调用实现
+     * 真正的调用
      *
      * @param method 方法
      * @param obj 对象

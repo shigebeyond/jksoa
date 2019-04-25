@@ -70,31 +70,36 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
         if (methodGuard.keyCombiner != null)
             return methodGuard.keyCombiner!!.add(args.single()!!)
 
-        // 3 真正的调用
-        return realInvoke(method, proxy, args, true)
+        // 3 合并之后的调用
+        return invokeAfterCombine(method, proxy, args, true)
     }
 
     /**
-     * 真正的调用
+     * 合并之后的调用
      *
      * @param method 方法
      * @param obj 对象
      * @param args 参数
      * @param handlingCache 是否处理缓存, 即调用 cacheHandler
-     *        cacheHandler会主动调用 realInvoke() 来回源, 需设置参数为 false, 否则递归调用死循环
+     *        cacheHandler会主动调用 invokeAfterCombine() 来回源, 需设置参数为 false, 否则递归调用死循环
      * @return 结果
      */
-    public fun realInvoke(method: Method, obj: Any, args: Array<Any?>, handlingCache: Boolean): Any? {
-        // 0 缓存
+    public fun invokeAfterCombine(method: Method, obj: Any, args: Array<Any?>, handlingCache: Boolean): Any? {
         val methodGuard = getMethodGuard(method) // 获得方法守护者
+        // 1 限流
+        if(handlingCache && methodGuard.rateLimiterHandler != null)
+            if(!methodGuard.rateLimiterHandler!!.acquire())
+                throw GuardException("限流")
+
+        // 2 缓存
         if(handlingCache && methodGuard.cacheHandler != null) {
             val resFuture = methodGuard.cacheHandler!!.cacheOrLoad(args)
             return handleResult(method, resFuture)
         }
 
-        // 1 调用实现
+        // 3 真正的调用
         return doInvoke(method, obj, args) {
-            //  3 发生异常时后备处理
+            //  4 发生异常时后备处理
             if (methodGuard.degradeHandler != null) {
                 guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
                     it.toExpr()
@@ -106,7 +111,7 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
     }
 
     /**
-     * 调用实现
+     * 真正的调用
      *
      * @param method 方法
      * @param obj 对象

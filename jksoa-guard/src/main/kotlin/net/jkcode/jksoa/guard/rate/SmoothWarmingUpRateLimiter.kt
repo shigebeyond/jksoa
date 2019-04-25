@@ -75,6 +75,4 @@ class SmoothWarmingUpRateLimiter(
                         + Math.sqrt((storedSeconds - stablePeriodSeconds + complement)) // 热身期
     }
 
-
-
 }
