@@ -12,6 +12,7 @@ open class SmoothBurstyRateLimiter(permitsPerSecond: Double /* 1秒中放过的�
 
     /**
      * 根据许可数, 计算颁发时间
+     *    permits -> seconds
      *
      * @param permits
      * @return

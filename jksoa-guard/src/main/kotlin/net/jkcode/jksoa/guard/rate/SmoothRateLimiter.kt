@@ -22,7 +22,7 @@ abstract class SmoothRateLimiter(public val permitsPerSecond: Double /* 1秒中�
     /**
      * 上一次通过的时间
      */
-    protected val lastPassTime = AtomicLong(-1)
+    protected val lastPassTime = AtomicLong(0)
 
     /**
      * 申请许可
@@ -50,6 +50,7 @@ abstract class SmoothRateLimiter(public val permitsPerSecond: Double /* 1秒中�
 
     /**
      * 根据许可数, 计算颁发时间
+     *    permits -> seconds
      *
      * @param permits
      * @return
@@ -58,6 +59,7 @@ abstract class SmoothRateLimiter(public val permitsPerSecond: Double /* 1秒中�
 
     /**
      * 匀速下, 计算颁发时间
+     *    permits -> seconds
      *
      * @param permits
      * @return
