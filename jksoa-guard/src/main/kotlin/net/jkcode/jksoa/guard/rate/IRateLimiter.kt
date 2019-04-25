@@ -12,6 +12,6 @@ interface IRateLimiter{
      * @param 申请的许可数
      * @return 是否申请成功
      */
-    fun acquire(permits: Double): Boolean
+    fun acquire(permits: Double = 1.0): Boolean
 
 }

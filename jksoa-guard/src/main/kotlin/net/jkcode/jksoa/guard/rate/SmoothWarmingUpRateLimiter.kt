@@ -17,7 +17,8 @@ import net.jkcode.jkmvc.common.currMillis
 class SmoothWarmingUpRateLimiter(
          permitsPerSecond: Double, // 1秒中放过的许可数
          public val stablePeriodSeconds: Int, // 匀速期的时长(秒)
-         public val warmupPeriodSeconds: Int // 热身期的时长(秒)
+         public val warmupPeriodSeconds: Int, // 热身期的时长(秒)
+         public val complement: Double = permitsPerSecond / 2 // 热身期计算公式中的补数
 ): SmoothRateLimiter(permitsPerSecond) {
 
     /**
@@ -31,11 +32,6 @@ class SmoothWarmingUpRateLimiter(
     protected val maxPermits: Double = secondToStoredPermits(stablePeriodSeconds + warmupPeriodSeconds)
 
     /**
-     * 热身期计算公式中的补数
-     */
-    protected val complement: Double = permitsPerSecond / 2
-
-    /**
      * 根据许可数, 计算颁发时间
      *
      * @param permits
@@ -45,7 +41,7 @@ class SmoothWarmingUpRateLimiter(
         val currTime = currMillis()
         // 获得存储的许可
         val storedSeconds = (currTime - lastPassTime.get()) / 1000
-        var storedPermits = secondToStoredPermits(storedSeconds as Int)
+        var storedPermits = secondToStoredPermits(storedSeconds.toInt())
         if(storedPermits > maxPermits)
             storedPermits = maxPermits
 
