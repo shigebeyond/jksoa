@@ -30,34 +30,6 @@ class RpcMethodGuard(method: Method): MethodGuard(method) {
      */
     public override fun invokeMethod(args: Array<Any?>, handlingCache: Boolean):Any?{
         //return method.invoke(obj, *args)
-        return RpcInvocationHandler.doInvoke(method, obj, args, handlingCache)
-    }
-
-    companion object {
-
-        /**
-         * 方法守护者
-         */
-        protected val methodGuards: ConcurrentHashMap<Method, MethodGuard> = ConcurrentHashMap();
-
-        /**
-         * 获得方法守护者
-         * @param method
-         * @return
-         */
-        public fun instance(method: Method): MethodGuard{
-            return methodGuards.getOrPut(method){
-                RpcMethodGuard(method)
-            }
-        }
-
-        /**
-         * 获得方法守护者
-         * @param func
-         * @return
-         */
-        public fun instance(func: KFunction<*>): MethodGuard{
-            return instance(func.javaMethod!!)
-        }
+        return RpcInvocationHandler.realInvoke(method, obj, args, handlingCache)
     }
 }
