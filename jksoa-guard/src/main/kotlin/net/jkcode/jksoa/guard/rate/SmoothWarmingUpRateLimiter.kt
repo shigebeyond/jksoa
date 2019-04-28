@@ -58,24 +58,37 @@ class SmoothWarmingUpRateLimiter(
     protected fun resynWarmupPeriod(currTime: Long): Boolean {
         // 1 检查旧的热身期是否过了
         if(warmupPeriod != null){
+            println("检查旧的热身期是否过了")
             val (stableStartTime, warmupEndTime, _) = warmupPeriod!!
             val warmupStartTime = stableStartTime +  stablePeriodSeconds * 1000
-            if(currTime - warmupEndTime > warmupEndTime - warmupStartTime) // 过了
+            println("   currTime=$currTime, stableStartTime=$stableStartTime, warmupStartTime=$warmupStartTime, warmupEndTime=$warmupEndTime")
+            println("   currTime - warmupEndTime=" + (currTime - warmupEndTime))
+            println("   warmupEndTime - warmupStartTime=" + (warmupEndTime - warmupStartTime))
+            if(currTime - warmupEndTime > warmupEndTime - warmupStartTime) { // 过了
+                println("   过了热身期, 清空热身期")
                 warmupPeriod = null
-            else // 未过
+            }else { // 未过
+                println("   未过热身期")
                 return false
+            }
         }
 
         val lastPassTimes = lastPassTimes.get()
-        var seconds = ((currTime - lastPassTimes) / 1000).toInt() // 计算秒差
+        var seconds = (currTime - lastPassTimes) / 1000 // 计算秒差
 
         // 2 忽略匀速期
         if(seconds <= stablePeriodSeconds)
             return false
 
         // 3 刷新新的热身期
+        println("刷新新的热身期")
+        if(seconds > maxSeconds)
+            seconds = maxSeconds
         val storedPermits = secondToPermits(seconds) // 计算剩余许可数
-        warmupPeriod = WarmupPeriod(lastPassTimes, currTime, AtomicDouble(storedPermits))
+        //val stableStartTime = lastPassTimes // wrong: 初始化时为0
+        val stableStartTime = currTime - seconds * 1000
+        val warmupEndTime = currTime
+        warmupPeriod = WarmupPeriod(stableStartTime, warmupEndTime, AtomicDouble(storedPermits))
         return true
     }
 
@@ -86,6 +99,8 @@ class SmoothWarmingUpRateLimiter(
      * @return 是否申请成功
      */
     override fun doAcquire(requiredPermits: Double, currTime: Long): Boolean {
+        println("---- 开始申请许可: requiredPermits=$requiredPermits, currTime=$currTime")
+
         // 1 刷新热身期数据
         if(resynWarmupPeriod(currTime))
             if (requiredPermits == 1.0) // 2 热身期的第一个请求, 只放过一个许可
@@ -96,7 +111,7 @@ class SmoothWarmingUpRateLimiter(
             return doStableAcquire(requiredPermits, currTime)
 
         // 4 热身期的其他请求
-        // 通过剩余的许可数 + 要申请的许可数, 计算出毫秒差
+        // 通过存储的许可数 + 要申请的许可数, 计算出毫秒差
         // 先取热身期的许可
         val storedPermits = warmupPeriod!!.storedPermits.get()
         val warmupStoredPermits = storedPermits - thresholdPermits
@@ -110,11 +125,16 @@ class SmoothWarmingUpRateLimiter(
 
         // 到了需要的时间, 则放出许可
         val result = lastPassTimes.get() + requiredMillis <= currTime // 到了时间
+        println("发放许可结果:")
+        println("   申请许可数: $requiredPermits, 取热身期许可数: $requiredWarmupPermits, 取匀速期许可数: $requiredStablePermits")
+        println(if(result) "   到了时间, 放出许可" else "   未到时间, 不放许可")
 
         // 如果要放出许可, 则扣减存储的许可, 如果被扣完, 则直接设置  warmupPeriod = null
         if(result
-                && warmupPeriod!!.storedPermits.addAndGet(-requiredPermits) <= 0)
+                && warmupPeriod!!.storedPermits.addAndGet(-requiredPermits) <= 0) {
+            println("   存储的许可数被扣完, 清空热身期")
             warmupPeriod = null
+        }
 
         return result
     }
@@ -127,8 +147,6 @@ class SmoothWarmingUpRateLimiter(
      * @return
      */
     protected fun secondToPermits(seconds: Int): Double {
-        val seconds = if(seconds > maxSeconds) maxSeconds else seconds
-
         if(seconds <= stablePeriodSeconds) // 匀速期
             return permitsPerSecond * seconds
 

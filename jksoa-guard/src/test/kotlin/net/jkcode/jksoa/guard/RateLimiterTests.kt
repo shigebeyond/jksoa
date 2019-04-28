@@ -40,7 +40,10 @@ class RateLimiterTests{
     @Test
     fun testSmoothWarmingUpRateLimiter(){
         val l = SmoothWarmingUpRateLimiter(1.0, 2, 2)
-        testRateLimiter(l, 100)
+        testRateLimiter(l, 40)
+        println(" -------- 睡5s, 检查下一个热身期 -------- ")
+        Thread.sleep(5000)
+        testRateLimiter(l, 40)
     }
 
     @Test
