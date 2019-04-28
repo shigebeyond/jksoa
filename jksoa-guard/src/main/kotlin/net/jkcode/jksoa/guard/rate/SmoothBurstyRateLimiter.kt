@@ -11,14 +11,12 @@ package net.jkcode.jksoa.guard.rate
 open class SmoothBurstyRateLimiter(permitsPerSecond: Double /* 1秒中放过的许可数 */ ): SmoothRateLimiter(permitsPerSecond) {
 
     /**
-     * 根据许可数, 计算颁发时间
-     *    permits -> seconds
-     *
-     * @param permits
-     * @return
+     * 申请许可
+     * @param requiredPermits 申请的许可数
+     * @param currTime 当前时间
+     * @return 是否申请成功
      */
-    protected override fun permitsToTime(permits: Double): Double {
-        // 上一次通过时间 + 许可数 * 单许可等待时间
-        return permitsToStableTime(permits)
+    protected override fun doAcquire(requiredPermits: Double, currTime: Long): Boolean {
+        return doStableAcquire(requiredPermits, currTime)
     }
 }

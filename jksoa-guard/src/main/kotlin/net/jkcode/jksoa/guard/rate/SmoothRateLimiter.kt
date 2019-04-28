@@ -22,50 +22,61 @@ abstract class SmoothRateLimiter(public val permitsPerSecond: Double /* 1秒中�
     /**
      * 上一次通过的时间
      */
-    protected val lastPassTime = AtomicLong(0)
+    @Volatile
+    protected var lastPassTimes: AtomicLong = AtomicLong(0)
 
     /**
      * 申请许可
-     * @param 申请的许可数
+     * @param requiredPermits 申请的许可数
      * @return 是否申请成功
      */
-    public override fun acquire(permits: Double): Boolean {
-        if (permits <= 0)
+    public override fun acquire(requiredPermits: Double): Boolean {
+        if (requiredPermits <= 0)
             return true
 
         if (permitsPerSecond <= 0)
             return false
 
-        // 如果到了通过时间(获得足够的许可), 则直接放过
         val currTime = currMillis()
-        if (permitsToTime(permits) <= currTime) {
-            // 更新最新的通过时间: 并发会有问题, 但是多放过就放过了, 不要紧的
-            lastPassTime.set(currTime)
-            return true
-        }
+        // 申请许可
+        val result = doAcquire(requiredPermits, currTime)
+        // 更新通过时间
+        if(result)
+            lastPassTimes.set(currTime)
 
-        // 否则拒绝
-        return false
+        return result
     }
 
     /**
-     * 根据许可数, 计算颁发时间
-     *    permits -> seconds
-     *
-     * @param permits
-     * @return
+     * 申请许可
+     * @param requiredPermits 申请的许可数
+     * @param currTime 当前时间
+     * @return 是否申请成功
      */
-    protected abstract fun permitsToTime(permits: Double): Double
+    protected abstract fun doAcquire(requiredPermits: Double, currTime: Long): Boolean
 
     /**
-     * 匀速下, 计算颁发时间
-     *    permits -> seconds
-     *
-     * @param permits
-     * @return
+     * 匀速期申请许可
+     * @param requiredPermits 申请的许可数
+     * @param currTime 当前时间
+     * @return 是否申请(发放)成功
      */
-    protected fun permitsToStableTime(permits: Double): Double {
-        return lastPassTime.get() + permits * stableIntervalMills
+    protected fun doStableAcquire(requiredPermits: Double, currTime: Long): Boolean {
+        // 1 首次申请
+        if (lastPassTimes.get() == 0L
+                && lastPassTimes.incrementAndGet() == 1L) // 第一个线程
+            return requiredPermits == 1.0 // 一个许可
+
+        // 2 非首次申请
+        // 获得许可需要的时间: permits -> time
+        val requiredMillis: Long = (requiredPermits * stableIntervalMills).toLong()
+
+        // 到了需要的时间, 则放出许可
+        return lastPassTimes.get() + requiredMillis <= currTime // 到了时间
+
+        // 并发下会多放出许可, 但是不能使用以下的代码来防止超发
+        // 因为只有返回true时, 才会刷新 lastPassTimes, 从而抵消以下代码对 lastPassTimes 的影响, 否则 lastPassTimes 的数据就是脏的
+        // && lastPassTimes.addAndGet(requiredMillis) <= currTime // 防止超发
     }
 
 }
