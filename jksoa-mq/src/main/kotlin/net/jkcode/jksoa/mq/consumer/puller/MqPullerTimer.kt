@@ -4,6 +4,7 @@ import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import net.jkcode.jkmvc.common.CommonSecondTimer
 import net.jkcode.jkmvc.common.CommonThreadPool
+import net.jkcode.jkmvc.common.newPeriodic
 import net.jkcode.jkmvc.common.stringifyStackTrace
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.mq.common.Message
@@ -47,13 +48,9 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
      */
     public override fun start(){
         // 一分钟拉取一次
-        CommonSecondTimer.newTimeout(object : TimerTask {
-            override fun run(timeout: Timeout) {
-                for(topic in subscribedTopics)
-                    pull(topic)
-
-                start()
-            }
+        CommonSecondTimer.newPeriodic({
+            for(topic in subscribedTopics)
+                pull(topic)
         }, 600, TimeUnit.SECONDS)
     }
 
