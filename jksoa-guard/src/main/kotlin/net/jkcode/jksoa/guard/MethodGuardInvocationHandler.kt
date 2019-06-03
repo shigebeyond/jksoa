@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.guard
 
+import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jkmvc.common.getMethodHandle
 import net.jkcode.jkmvc.common.toExpr
 import net.jkcode.jksoa.client.combiner.annotation.degrade
@@ -97,16 +98,33 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
             return handleResult(method, resFuture)
         }
 
-        // 3 真正的调用
-        return doInvoke(method, obj, args) {
-            //  4 发生异常时后备处理
+        // 3 计量
+        // 3.1 添加总计数
+        methodGuard.measurer?.currentBucket()?.addTotal()
+        val startTime = currMillis()
+
+        // 4 真正的调用
+        return doInvoke(method, obj, args) { v, r ->
+            // 3.2 添加慢请求数
+            methodGuard.measurer?.currentBucket()?.addSlow(currMillis() - startTime)
+
+            // 3.3 添加成功计数
+            if(r == null){
+                methodGuard.measurer?.currentBucket()?.addSuccess()
+                return@doInvoke
+            }
+
+            // 3.4 添加异常计数
+            methodGuard.measurer?.currentBucket()?.addException()
+
+            //  5 发生异常时后备处理
             if (methodGuard.degradeHandler != null) {
                 guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
                     it.toExpr()
-                }, this::class.simpleName, method.declaringClass.name, method.name, it.message, method.degrade?.fallbackMethod)
-                methodGuard.degradeHandler!!.handleFallback(it, args)
+                }, this::class.simpleName, method.declaringClass.name, method.name, r.message, method.degrade?.fallbackMethod)
+                methodGuard.degradeHandler!!.handleFallback(r, args)
             } else
-                throw it
+                throw r
         }
     }
 
@@ -116,10 +134,10 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
      * @param method 方法
      * @param obj 对象
      * @param args 参数
-     * @param catch 异常回调函数, 发生异常时必须调用
+     * @param complete 完成后的回调函数, 接收2个参数: 1 结果值 2 异常
      * @return
      */
-    public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>, catch: (Throwable) -> Any?): Any?
+    public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>, complete: (Any?, Throwable?) -> Unit): Any?
 
     /**
      * 处理结果

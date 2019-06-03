@@ -6,6 +6,8 @@ import net.jkcode.jksoa.guard.cache.ICacheHandler
 import net.jkcode.jksoa.guard.combiner.GroupFutureSupplierCombiner
 import net.jkcode.jksoa.guard.combiner.KeyFutureSupplierCombiner
 import net.jkcode.jksoa.guard.degrade.IDegradeHandler
+import net.jkcode.jksoa.guard.measure.HashedWheelMeasurer
+import net.jkcode.jksoa.guard.measure.IMeasurer
 import net.jkcode.jksoa.guard.rate.IRateLimiter
 import net.jkcode.jksoa.guard.rate.SmoothBurstyRateLimiter
 import net.jkcode.jksoa.guard.rate.SmoothWarmingUpRateLimiter
@@ -147,6 +149,17 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
 
             }
         }
+    }
+
+    /**
+     * 计量器
+     */
+    public val measurer: IMeasurer? by lazy{
+        val annotation = method.metric
+        if(annotation == null)
+            null
+        else
+            HashedWheelMeasurer(annotation.bucketCount, annotation.bucketMs)
     }
 
     /**

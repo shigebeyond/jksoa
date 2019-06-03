@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.client.referer
 
-import net.jkcode.jkmvc.common.trySupplierCatch
+import net.jkcode.jkmvc.common.trySupplierFinally
 import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
@@ -65,10 +65,10 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
      * @param method 方法
      * @param obj 对象
      * @param args 参数
-     * @param catch 异常回调函数, 发生异常时必须调用
+     * @param complete 完成后的回调函数, 接收2个参数: 1 结果值 2 异常
      * @return
      */
-    public override fun doInvoke(method: Method, obj: Any, args: Array<Any?>, catch: (Throwable) -> Any?): Any? {
+    public override fun doInvoke(method: Method, obj: Any, args: Array<Any?>, complete: (Any?, Throwable?) -> Unit): Any? {
         // 1 封装请求
         val req = RpcRequest(method, args)
 
@@ -78,7 +78,7 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
                 throw RpcClientException("Interceptor [${i.javaClass.name}] handle request fail");
 
         // 3 分发请求, 获得异步响应
-        val resFuture = trySupplierCatch({ dispatcher.dispatch(req) }, catch)
+        val resFuture = trySupplierFinally({ dispatcher.dispatch(req) }, false, complete)
 
         // 4 处理结果
         return handleResult(method, resFuture)
