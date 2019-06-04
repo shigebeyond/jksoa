@@ -33,7 +33,7 @@ class CircuitBreakerTest {
     fun testCircuitBreaker() {
         makeThreads(1, false, this::prepareMeasurer)
 
-        while(true){
+        for(i in 0..10000){
             // 计数
             //val c = measurer.bucketCollection()
             //println(c)

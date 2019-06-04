@@ -3,6 +3,8 @@ package net.jkcode.jksoa.client.referer
 import net.jkcode.jksoa.common.getServiceClass
 import net.jkcode.jksoa.guard.MethodGuard
 import java.lang.reflect.Method
+import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.javaMethod
 
 /**
  * rpc方法调用的守护者
@@ -10,6 +12,11 @@ import java.lang.reflect.Method
  * @date 2019-04-19 2:22 PM
  */
 class RpcMethodGuard(method: Method): MethodGuard(method) {
+
+    /**
+     * 构造函数
+     */
+    constructor(func: KFunction<*>) : this(func.javaMethod!!)
 
     /**
      * 方法调用的对象

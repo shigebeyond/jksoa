@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.example
 
+import net.jkcode.jkmvc.common.randomBoolean
 import net.jkcode.jkmvc.common.randomString
 import java.rmi.RemoteException
 import java.util.concurrent.CompletableFuture
@@ -51,6 +52,15 @@ class GuardService : IGuardService /*, UnicastRemoteObject() // rmi协议服务�
      */
     public override fun getUserWhenException(id: Int): User{
         throw Exception("获得用户[$id]发生异常")
+    }
+
+    /**
+     * 根据id获得user -- 随机抛异常
+     */
+    public override fun getUserWhenRandomException(id: Int): User{
+        if(randomBoolean())
+            throw Exception("获得用户[$id]发生随机异常")
+        return User(id, randomString(7))
     }
 
 

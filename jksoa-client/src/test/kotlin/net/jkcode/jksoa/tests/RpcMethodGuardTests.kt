@@ -28,7 +28,7 @@ class RpcMethodGuardTests {
     @Test
     fun testKeyCombine() {
         // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
-        val keyCombiner = RpcMethodGuard.instance(IGuardService::getUserByIdAsync).keyCombiner as KeyFutureSupplierCombiner<Int, User>
+        val keyCombiner = RpcMethodGuard(IGuardService::getUserByIdAsync).keyCombiner as KeyFutureSupplierCombiner<Int, User>
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(keyCombiner.add(1))
@@ -74,7 +74,7 @@ class RpcMethodGuardTests {
     @Test
     fun testGroupCombine() {
         // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
-        val groupCombiner = RpcMethodGuard.instance(IGuardService::getUserByNameAsync).groupCombiner as GroupFutureSupplierCombiner<String, User, User>
+        val groupCombiner = RpcMethodGuard(IGuardService::getUserByNameAsync).groupCombiner as GroupFutureSupplierCombiner<String, User, User>
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(groupCombiner.add(randomString(7))!!)
@@ -118,4 +118,20 @@ class RpcMethodGuardTests {
         val user = service.getUserWhenException(1)
         println("收到异常退回的结果: " + user)
     }
+
+    /************************* 测试统计+断路 **************************/
+    @Test
+    fun testCircuitBreaker(){
+        for(i in 0..10000) {
+            try {
+                val user = service.getUserWhenRandomException(1)
+                println("成功: " + user)
+            } catch (e: Throwable) {
+                //println("异常: " + e)
+                e.printStackTrace()
+            }
+            Thread.sleep(1000)
+        }
+    }
+
 }
