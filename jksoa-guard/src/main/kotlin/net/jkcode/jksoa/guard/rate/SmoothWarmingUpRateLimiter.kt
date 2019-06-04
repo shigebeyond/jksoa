@@ -12,7 +12,7 @@ data class WarmupPeriod(
 )
 
 /**
- * 限流处理: 平滑发放 + 热身
+ * 限流器: 平滑发放 + 热身
  *    有2个时期, 两者的permits相互独立, 不能相互累积
  *    1 匀速期: seconds = permits / permitsPerSecond
  *             permits = permitsPerSecond * seconds

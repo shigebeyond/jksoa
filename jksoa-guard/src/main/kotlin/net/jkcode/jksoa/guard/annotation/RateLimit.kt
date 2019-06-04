@@ -11,7 +11,7 @@ import java.lang.reflect.Method
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class RateLimiter(
+annotation class RateLimit(
     public val permitsPerSecond: Double, // 1秒中放过的许可数
     public val stablePeriodSeconds: Int = 0, // 匀速期的时长(秒)
     public val warmupPeriodSeconds: Int = 0 // 热身期的时长(秒)
@@ -20,7 +20,7 @@ annotation class RateLimiter(
 /**
  * 获得限流的注解
  */
-public val Method.rateLimiter: RateLimiter?
+public val Method.rateLimit: RateLimit?
     get(){
-        return getAnnotation(RateLimiter::class.java)
+        return getAnnotation(RateLimit::class.java)
     }

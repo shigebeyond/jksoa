@@ -87,9 +87,14 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
      */
     public fun invokeAfterCombine(method: Method, obj: Any, args: Array<Any?>, handlingCache: Boolean): Any? {
         val methodGuard = getMethodGuard(method) // 获得方法守护者
+        // 0 断路
+        if(handlingCache && methodGuard.circuitBreaker != null)
+            if(!methodGuard.circuitBreaker!!.acquire())
+                throw GuardException("断路")
+
         // 1 限流
-        if(handlingCache && methodGuard.rateLimiterHandler != null)
-            if(!methodGuard.rateLimiterHandler!!.acquire())
+        if(handlingCache && methodGuard.rateLimiter != null)
+            if(!methodGuard.rateLimiter!!.acquire())
                 throw GuardException("限流")
 
         // 2 缓存
@@ -105,8 +110,8 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
 
         // 4 真正的调用
         return doInvoke(method, obj, args) { v, r ->
-            // 3.2 添加慢请求数
-            methodGuard.measurer?.currentBucket()?.addSlow(currMillis() - startTime)
+            // 3.2 添加请求耗时
+            methodGuard.measurer?.currentBucket()?.addCostTime(currMillis() - startTime)
 
             // 3.3 添加成功计数
             if(r == null){

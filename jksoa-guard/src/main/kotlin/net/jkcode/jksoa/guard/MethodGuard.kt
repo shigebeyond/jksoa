@@ -3,6 +3,8 @@ package net.jkcode.jksoa.guard
 import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.client.combiner.annotation.*
 import net.jkcode.jksoa.guard.cache.ICacheHandler
+import net.jkcode.jksoa.guard.circuit.CircuitBreaker
+import net.jkcode.jksoa.guard.circuit.ICircuitBreaker
 import net.jkcode.jksoa.guard.combiner.GroupFutureSupplierCombiner
 import net.jkcode.jksoa.guard.combiner.KeyFutureSupplierCombiner
 import net.jkcode.jksoa.guard.degrade.IDegradeHandler
@@ -10,6 +12,7 @@ import net.jkcode.jksoa.guard.measure.HashedWheelMeasurer
 import net.jkcode.jksoa.guard.measure.IMeasurer
 import net.jkcode.jksoa.guard.rate.IRateLimiter
 import net.jkcode.jksoa.guard.rate.SmoothBurstyRateLimiter
+import net.jkcode.jksoa.guard.rate.SmoothRateLimiter
 import net.jkcode.jksoa.guard.rate.SmoothWarmingUpRateLimiter
 import java.lang.reflect.Method
 import java.util.*
@@ -152,6 +155,14 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
     }
 
     /**
+     * 限流器
+     */
+    public val rateLimiter: IRateLimiter? by lazy{
+        val annotation = method.rateLimit
+        IRateLimiter.create(annotation)
+    }
+
+    /**
      * 计量器
      */
     public val measurer: IMeasurer? by lazy{
@@ -159,20 +170,20 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
         if(annotation == null)
             null
         else
-            HashedWheelMeasurer(annotation.bucketCount, annotation.bucketMs)
+            HashedWheelMeasurer(annotation)
     }
 
     /**
-     * 限流器
+     * 断路器
      */
-    public val rateLimiterHandler: IRateLimiter? by lazy{
-        val annotation = method.rateLimiter
+    public val circuitBreaker: ICircuitBreaker? by lazy{
+        val annotation = method.circuitBreak
         if(annotation == null)
             null
-        else if(annotation.stablePeriodSeconds == 0 || annotation.warmupPeriodSeconds == 0)
-            SmoothBurstyRateLimiter(annotation.permitsPerSecond)
+        else if(measurer == null)
+            throw GuardException("方法中${method.getSignature(true)}的注解CircuitBreak, 必须配合有注解@Metric")
         else
-            SmoothWarmingUpRateLimiter(annotation.permitsPerSecond, annotation.stablePeriodSeconds, annotation.warmupPeriodSeconds)
+             CircuitBreaker(annotation, measurer!!)
     }
 
 }

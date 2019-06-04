@@ -17,4 +17,16 @@ interface IMeasurer{
      * @return
      */
     fun currentBucket(timestamp: Long = currMillis()): MetricBucket
+
+    /**
+     * 获得有效桶的迭代器
+     * @return
+     */
+    fun bucketIterator(): Iterator<MetricBucket>
+
+    /**
+     * 获得有效桶的集合
+     * @return
+     */
+    fun bucketCollection(): MetricBucketCollection
 }

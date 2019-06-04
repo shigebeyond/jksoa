@@ -4,7 +4,7 @@ import net.jkcode.jkmvc.common.currMillis
 import java.util.concurrent.atomic.AtomicLong
 
 /**
- * 限流处理: 平滑发放
+ * 限流器: 平滑发放
  *     在申请许可时, 根据申请的许可数据来计算放过的时间, 到了时间就放过, 否则直接拒绝, 不休眠等待
  *     参考: guava 项目的 SmoothRateLimiter
  *

@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.LongAdder
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-03 3:54 PM
  */
-abstract class MetricBucket {
+abstract class MetricBucket : IMetricBucket() {
 
     /**
      * 慢请求的阀值, 请求耗时超过该时间则为慢请求, 单位: 毫秒
@@ -53,25 +53,31 @@ abstract class MetricBucket {
     /**
      * 请求总数
      */
-    public val total: Long
+    public override val total: Long
         get() = this[MetricType.TOTAL]
 
     /**
      * 请求异常数
      */
-    public val exception: Long
+    public override val exception: Long
         get() = this[MetricType.SUCCESS]
 
     /**
      * 请求成功数
      */
-    public val success: Long
+    public override val success: Long
         get() = this[MetricType.EXCEPTION]
+
+    /**
+     * 请求总耗时
+     */
+    public override val costTime: Long
+        get() = this[MetricType.COST_TIME]
 
     /**
      * 慢请求数
      */
-    public val slow: Long
+    public override val slow: Long
         get() = this[MetricType.SLOW]
 
     /**
@@ -102,14 +108,17 @@ abstract class MetricBucket {
     }
 
     /**
-     * 增加慢请求数
-     * @param costTime 请求耗时
+     * 增加请求耗时
+     * @param costTime
      * @return
      */
-    public fun addSlow(costTime: Long): MetricBucket {
+    public fun addCostTime(costTime: Long): MetricBucket {
+        // 增加慢请求数
         if(costTime > slowRequestMillis)
             add(MetricType.SLOW, 1)
 
-        return this
+        // 增加请求耗时
+        return add(MetricType.COST_TIME, costTime)
     }
+
 }

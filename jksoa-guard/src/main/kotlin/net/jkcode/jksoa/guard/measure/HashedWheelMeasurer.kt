@@ -2,6 +2,8 @@ package net.jkcode.jksoa.guard.measure
 
 import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jkmvc.common.mapToArray
+import net.jkcode.jksoa.client.combiner.annotation.Metric
+import java.util.*
 
 /**
  * 基于时间轮实现的计量器
@@ -9,10 +11,16 @@ import net.jkcode.jkmvc.common.mapToArray
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-03 3:54 PM
  */
-class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
-                          public val bucketMillis: Int = 1000, // 每个槽的时长, 单位: 毫秒
-                          public val slowRequestMillis: Long = 10000 // 慢请求的阀值, 请求耗时超过该时间则为慢请求, 单位: 毫秒
+class HashedWheelMeasurer(protected val bucketCount: Int = 60, // 槽的数量
+                          protected val bucketMillis: Int = 1000, // 每个槽的时长, 单位: 毫秒
+                          protected val slowRequestMillis: Long = 10000 // 慢请求的阀值, 请求耗时超过该时间则为慢请求, 单位: 毫秒
 ):IMeasurer {
+
+    /**
+     * 构造函数, 使用注解传参
+     */
+    constructor(annotation: Metric) : this(annotation.bucketCount, annotation.bucketMillis, annotation.slowRequestMillis)
+
     /**
      * 轮的时长, 单位: 毫秒
      */
@@ -56,6 +64,76 @@ class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
     }
 
     /**
+     * 获得有效桶的迭代器
+     * @return
+     */
+    public override fun bucketIterator(): Iterator<MetricBucket> {
+        return BucketIterator()
+    }
+
+    /**
+     * 获得有效桶的集合
+     * @return
+     */
+    public override fun bucketCollection(): MetricBucketCollection {
+        return BucketCollection()
+    }
+
+    /**
+     * 桶的迭代器
+     */
+    protected inner class BucketIterator : Iterator<MetricBucket> {
+        protected var _curr = -1 // 当前序号
+        protected var _next = -1 // 下一序号
+
+        // 准备下一序号
+        protected fun prepareNext() {
+            if (_curr == _next) {
+                var i = _curr
+                while (++i < wheel.size) {
+                    if (!wheel[i].deprecated) // 未过期
+                        break
+                }
+                _next = i
+            }
+        }
+
+        public override fun hasNext(): Boolean {
+            if(_next == wheel.size)
+                return false
+
+            // 准备下一序号
+            prepareNext()
+            return _next < wheel.size
+        }
+
+        public  override fun next(): MetricBucket {
+            try {
+                // 准备下一序号
+                if(_next < wheel.size)
+                    prepareNext()
+                _curr = _next
+                return wheel[_curr]
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                throw NoSuchElementException()
+            }
+        }
+    }
+
+    /**
+     * 桶的集合
+     */
+    protected inner class BucketCollection: MetricBucketCollection(){
+        /**
+         * 获得迭代器
+         */
+        public override fun iterator(): Iterator<IMetricBucket> {
+            return bucketIterator()
+        }
+
+    }
+
+    /**
      * 槽数据
      */
     public inner class HashedWheelBucket(
@@ -80,7 +158,7 @@ class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
          * @param startTime 开始时间
          * @return
          */
-        fun reset(startTime: Long): HashedWheelBucket{
+        public fun reset(startTime: Long): HashedWheelBucket{
             this.startTime = startTime
             this.reset()
             return this

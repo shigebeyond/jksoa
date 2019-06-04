@@ -11,7 +11,7 @@ import java.lang.reflect.Method
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Metric(
         public val bucketCount: Int = 60, // 槽的数量
-        public val bucketMs: Int = 1000, // 每个槽的时长, 单位: 毫秒
+        public val bucketMillis: Int = 1000, // 每个槽的时长, 单位: 毫秒
         public val slowRequestMillis: Long = 10000 // 慢请求的阀值, 请求耗时超过该时间则为慢请求, 单位: 毫秒
 )
 
