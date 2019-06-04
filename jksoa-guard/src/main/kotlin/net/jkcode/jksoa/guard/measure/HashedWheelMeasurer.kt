@@ -11,9 +11,9 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-03 3:54 PM
  */
-class HashedWheelMeasurer(protected val bucketCount: Int = 60, // 槽的数量
-                          protected val bucketMillis: Int = 1000, // 每个槽的时长, 单位: 毫秒
-                          protected val slowRequestMillis: Long = 10000 // 慢请求的阀值, 请求耗时超过该时间则为慢请求, 单位: 毫秒
+class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
+                          public val bucketMillis: Int = 1000, // 每个槽的时长, 单位: 毫秒
+                          public val slowRequestMillis: Long = 10000 // 慢请求的阀值, 请求耗时超过该时间则为慢请求, 单位: 毫秒
 ):IMeasurer {
 
     /**
@@ -24,7 +24,7 @@ class HashedWheelMeasurer(protected val bucketCount: Int = 60, // 槽的数量
     /**
      * 轮的时长, 单位: 毫秒
      */
-    protected val wheelMillis: Int = bucketMillis * bucketCount
+    public override val wheelMillis: Int = bucketMillis * bucketCount
 
     /**
      * 存放统计数据的槽的数组

@@ -6,22 +6,22 @@ import org.junit.Test
 
 open class MeasurerTest {
 
-    protected val m = HashedWheelMeasurer(60, 1000, 10000)
+    val measurer = HashedWheelMeasurer(60, 1000, 10000)
 
     @Test
     fun testMeasurer() {
         // 添加计数
         for(i in 0 until 100) {
-            m.currentBucket().addTotal()
+            measurer.currentBucket().addTotal()
             if (randomBoolean()) { // 异常
-                m.currentBucket().addSuccess()
+                measurer.currentBucket().addSuccess()
             } else {
-                m.currentBucket().addException()
+                measurer.currentBucket().addException()
             }
         }
 
         // 汇总计数
-        val c = m.bucketCollection()
+        val c = measurer.bucketCollection()
         println(c)
     }
 }

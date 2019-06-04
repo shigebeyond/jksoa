@@ -121,7 +121,7 @@ class ClientTests {
             val content = service.echo("Man $tname")
             println("结果$tname： $content")
         }
-        makeThreads(3, run)
+        makeThreads(3,  run)
     }
 
     @Test

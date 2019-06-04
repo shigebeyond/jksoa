@@ -36,6 +36,10 @@ class CircuitBreaker(
     protected var breaked: Boolean = false
 
     init {
+        // 检查参数
+        if(checkBreakingSeconds * 1000 > measurer.wheelMillis)
+            throw IllegalArgumentException("定时检查断路的时间间隔, 不能大于计量器的轮时长")
+
         // 启动定时检查断路
         startCheckBreaking()
     }
@@ -59,13 +63,15 @@ class CircuitBreaker(
      * 启动断路中状态
      */
     protected fun startBreaked() {
+        println("转入断路中状态: type=$type, threthold=$threshold, bucket=" + measurer.bucketCollection())
         breaked = true
         CommonSecondTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
+                println("转回正常状态")
                 breaked = false
                 startCheckBreaking() // 启动定时检查断路
             }
-        }, checkBreakingSeconds, TimeUnit.SECONDS)
+        }, breakedSeconds, TimeUnit.SECONDS)
     }
 
     /**
@@ -74,7 +80,7 @@ class CircuitBreaker(
      * @return 是否申请成功
      */
     public override fun acquire(permits: Double): Boolean {
-        // 1 非断路
+        // 1 正常
         if(!breaked)
             return true;
 

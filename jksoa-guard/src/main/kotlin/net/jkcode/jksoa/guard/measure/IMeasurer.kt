@@ -11,6 +11,11 @@ import net.jkcode.jkmvc.common.currMillis
 interface IMeasurer{
 
     /**
+     * 轮的时长, 单位: 毫秒
+     */
+    val wheelMillis: Int
+
+    /**
      * 根据时间戳, 获得对应的槽
      *
      * @param timestamp 时间戳, 单位: 毫秒
