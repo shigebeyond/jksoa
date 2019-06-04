@@ -10,7 +10,7 @@ import org.junit.Test
 
 class CircuitBreakerTest {
 
-    val measurer = HashedWheelMeasurer(2, 100, 100)
+    val measurer = HashedWheelMeasurer(5, 1000, 100)
 
     val circuitBreaker = CircuitBreaker(CircuitBreakType.EXCEPTION_COUNT, 1.0, 5, 5, measurer)
 

@@ -68,7 +68,7 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
      * @param complete 完成后的回调函数, 接收2个参数: 1 结果值 2 异常
      * @return
      */
-    public override fun doInvoke(method: Method, obj: Any, args: Array<Any?>, complete: (Any?, Throwable?) -> Unit): Any? {
+    public override fun doInvoke(method: Method, obj: Any, args: Array<Any?>, complete: (Any?, Throwable?) -> Any?): Any? {
         // 1 封装请求
         val req = RpcRequest(method, args)
 
@@ -78,7 +78,7 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
                 throw RpcClientException("Interceptor [${i.javaClass.name}] handle request fail");
 
         // 3 分发请求, 获得异步响应
-        val resFuture = trySupplierFinally({ dispatcher.dispatch(req) }, false, complete)
+        val resFuture = trySupplierFinally({ dispatcher.dispatch(req) }, complete)
 
         // 4 处理结果
         return handleResult(method, resFuture)

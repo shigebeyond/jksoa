@@ -90,12 +90,12 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
         // 0 断路
         if(handlingCache && methodGuard.circuitBreaker != null)
             if(!methodGuard.circuitBreaker!!.acquire())
-                throw GuardException("断路")
+                return handleException(methodGuard, method, args, GuardException("断路"))
 
         // 1 限流
         if(handlingCache && methodGuard.rateLimiter != null)
             if(!methodGuard.rateLimiter!!.acquire())
-                throw GuardException("限流")
+                return handleException(methodGuard, method, args, GuardException("限流"))
 
         // 2 缓存
         if(handlingCache && methodGuard.cacheHandler != null) {
@@ -116,21 +116,33 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
             // 3.3 添加成功计数
             if(r == null){
                 methodGuard.measurer?.currentBucket()?.addSuccess()
-                return@doInvoke
+                return@doInvoke v
             }
 
             // 3.4 添加异常计数
             methodGuard.measurer?.currentBucket()?.addException()
 
-            //  5 发生异常时后备处理
-            if (methodGuard.degradeHandler != null) {
-                guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
-                    it.toExpr()
-                }, this::class.simpleName, method.declaringClass.name, method.name, r.message, method.degrade?.fallbackMethod)
-                methodGuard.degradeHandler!!.handleFallback(r, args)
-            } else
-                throw r
+            //  5 处理异常: 调用后备处理
+            return@doInvoke handleException(methodGuard, method, args, r!!)
         }
+    }
+
+    /**
+     * 处理异常: 调用后备处理
+     * @param methodGuard
+     * @param method 方法
+     * @param args 参数
+     * @param r 异常
+     * @return
+     */
+    protected fun handleException(methodGuard: MethodGuard, method: Method, args: Array<Any?>, r: Throwable): Any? {
+        if (methodGuard.degradeHandler == null)
+            throw r
+
+        guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", "), 发生异常{}, 进而调用后备方法 {}") {
+            it.toExpr()
+        }, this::class.simpleName, method.declaringClass.name, method.name, r.message, method.degrade?.fallbackMethod)
+        return methodGuard.degradeHandler!!.handleFallback(r, args)
     }
 
     /**
@@ -142,7 +154,7 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
      * @param complete 完成后的回调函数, 接收2个参数: 1 结果值 2 异常
      * @return
      */
-    public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>, complete: (Any?, Throwable?) -> Unit): Any?
+    public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>, complete: (Any?, Throwable?) -> Any?): Any?
 
     /**
      * 处理结果
