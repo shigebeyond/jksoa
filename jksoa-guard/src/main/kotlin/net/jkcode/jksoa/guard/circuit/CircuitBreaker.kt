@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit
 /**
  * 断路器
  *    继承限流器, 在断路状态下, 有限流作用
+ *    依赖于: 1 IMeasurer 用统计数据来检查是否满足断路条件 2 IRateLimiter 如果存在则用他来做断路状态下的线路
+ *    实现: 定时 checkBreakingSeconds 秒检查断路(用统计数据来检查是否满足断路条件), 如果满足条件则转入断路中状态, 断路中状态维持 breakedSeconds 秒, 超过该时间则转入正常状态
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-03 6:57 PM
@@ -63,11 +65,11 @@ class CircuitBreaker(
      * 启动断路中状态
      */
     protected fun startBreaked() {
-        println("转入断路中状态: type=$type, threthold=$threshold, bucket=" + measurer.bucketCollection())
+        //println("转入断路中状态: type=$type, threthold=$threshold, bucket=" + measurer.bucketCollection())
         breaked = true
         CommonSecondTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
-                println("转回正常状态")
+                //println("转回正常状态")
                 breaked = false
                 startCheckBreaking() // 启动定时检查断路
             }
