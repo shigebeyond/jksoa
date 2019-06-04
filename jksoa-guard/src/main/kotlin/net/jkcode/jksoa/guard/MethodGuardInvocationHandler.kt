@@ -151,7 +151,7 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
      * @param method 方法
      * @param obj 对象
      * @param args 参数
-     * @param complete 完成后的回调函数, 接收2个参数: 1 结果值 2 异常
+     * @param complete 完成后的回调函数, 接收2个参数: 1 结果值 2 异常, 返回新结果
      * @return
      */
     public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>, complete: (Any?, Throwable?) -> Any?): Any?
