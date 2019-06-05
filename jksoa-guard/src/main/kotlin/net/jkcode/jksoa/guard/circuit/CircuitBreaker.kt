@@ -3,6 +3,7 @@ package net.jkcode.jksoa.guard.circuit
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import net.jkcode.jkmvc.common.CommonSecondTimer
+import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jksoa.client.combiner.annotation.CircuitBreak
 import net.jkcode.jksoa.guard.measure.IMeasurer
 import net.jkcode.jksoa.guard.rate.IRateLimiter
@@ -37,43 +38,16 @@ class CircuitBreaker(
     @Volatile
     protected var breaked: Boolean = false
 
+    /**
+     * 上次更新的时间截
+     */
+    @Volatile
+    protected var lastTimestamp: Long = -1L
+
     init {
         // 检查参数
         if(checkBreakingSeconds * 1000 > measurer.wheelMillis)
             throw IllegalArgumentException("定时检查断路的时间间隔, 不能大于计量器的轮时长")
-
-        // 启动定时检查断路
-        startCheckBreaking()
-    }
-
-    /**
-     * 启动定时检查断路
-     */
-    protected fun startCheckBreaking() {
-        CommonSecondTimer.newTimeout(object : TimerTask {
-            override fun run(timeout: Timeout) {
-                // 判断是否断路, 即对比阀值
-                if(type.isBreaking(measurer.bucketCollection(), threshold))
-                    startBreaked() // 启动断路中状态
-                else
-                    startCheckBreaking() // 递归定时检查断路
-            }
-        }, checkBreakingSeconds, TimeUnit.SECONDS)
-    }
-
-    /**
-     * 启动断路中状态
-     */
-    protected fun startBreaked() {
-        //println("转入断路中状态: type=$type, threthold=$threshold, bucket=" + measurer.bucketCollection())
-        breaked = true
-        CommonSecondTimer.newTimeout(object : TimerTask {
-            override fun run(timeout: Timeout) {
-                //println("转回正常状态")
-                breaked = false
-                startCheckBreaking() // 启动定时检查断路
-            }
-        }, breakedSeconds, TimeUnit.SECONDS)
     }
 
     /**
@@ -82,16 +56,41 @@ class CircuitBreaker(
      * @return 是否申请成功
      */
     public override fun acquire(permits: Double): Boolean {
+        val timestamp = currMillis()
+        var changed = false
+
         // 1 正常
-        if(!breaked)
-            return true;
+        if(!breaked) {
+            // 1.1 超时检查断路状态
+            if(lastTimestamp + checkBreakingSeconds * 1000 > timestamp){
+                // 判断是否断路, 即对比阀值
+                if(type.isBreaking(measurer.bucketCollection(), threshold)) {
+                    //println("转入断路中状态: type=$type, threthold=$threshold, bucket=" + measurer.bucketCollection())
+                    breaked = true
+                    lastTimestamp = timestamp
+                    changed = true
+                }
+            }
+
+            // 1.2 依旧正常: 通过
+            if(!breaked)
+                return true;
+        }
 
         // 2 断路
-        // 2.1 有限流器
+        // 2.1 超时恢复正常状态: 通过
+        if(!changed && lastTimestamp + breakedSeconds * 1000 > timestamp){
+            //println("转回正常状态")
+            breaked = false
+            lastTimestamp = timestamp
+            return true
+        }
+
+        // 2.2 有限流器: 限流
         if(rateLimiter != null)
             return rateLimiter.acquire(permits)
 
-        // 2.2 无限流器
+        // 2.3 无限流器: 直接拒绝
         return false
     }
 
