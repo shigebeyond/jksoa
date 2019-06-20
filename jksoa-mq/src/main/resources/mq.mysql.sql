@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `message` (
   `topic` varchar(255) NOT NULL COMMENT '主题',
   `group` varchar(255) NOT NULL COMMENT '分组',
   `data` text DEFAULT NULL COMMENT '数据',
-  `order_id` bigint(11) unsigned NOT NULL COMMENT '顺序编号',
+  `subject_id` bigint(11) unsigned NOT NULL COMMENT '业务实体编号, 如订单号, 用于标识一系列的顺序消息',
   `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '状态：0 未处理 1 锁定 2 完成 3 失败(超过时间或超过重试次数)',
   `try_times` int(11) NOT NULL DEFAULT '0' COMMENT '尝试次数',
   `created` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',

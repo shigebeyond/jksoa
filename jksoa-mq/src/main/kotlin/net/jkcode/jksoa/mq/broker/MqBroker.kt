@@ -1,10 +1,10 @@
 package net.jkcode.jksoa.mq.broker
 
-import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.isNullOrEmpty
 import net.jkcode.jkmvc.query.DbExpr
 import net.jkcode.jkmvc.query.DbQueryBuilder
+import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
@@ -45,7 +45,7 @@ class MqBroker : IMqBroker {
     }
 
     /**
-     * 发送消息
+     * 接收producer发过来的消息
      * @param msg 消息
      * @return
      */
@@ -110,7 +110,7 @@ class MqBroker : IMqBroker {
     public val connHub: IConsumerConnectionHub = ConsumerConnectionHub
 
     /**
-     * 订阅主题
+     * 接受consumer的订阅主题
      * @param topic 主题
      * @param group 分组
      * @return
@@ -124,7 +124,7 @@ class MqBroker : IMqBroker {
     }
 
     /**
-     * 拉取消息
+     * 接受consumer的拉取消息
      * @param topic 主题
      * @param group 分组
      * @param pageSize 每页记录数
@@ -145,7 +145,7 @@ class MqBroker : IMqBroker {
     }
 
     /**
-     * 更新消息
+     * 接受consumer的更新消息
      * @param id 消息标识
      * @param status 消息状态: 0 未处理 1 锁定 2 完成 3 失败(超过时间或超过重试次数)
      * @param remark 备注

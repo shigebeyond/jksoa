@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
 
+
+
     /**
      * 是否已启动
      */
@@ -59,20 +61,24 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
      * @param topic
      */
     public override fun pull(topic: String) {
-        CommonThreadPool.execute() {
+        commonPool.execute() {
             var msgs: List<Message>
             do {
                 // 拉取消息
                 msgs = broker.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!).get()
                 // 处理消息 + 主动更新消息状态
                 for (msg in msgs) {
-                    try {
-                        // true表示处理完成, false表示未处理
-                        if (handleMessage(msg))
+                    // 异步处理消息: true表示处理完成, false表示未处理
+                    val f = handleMessage(msg)
+                    f.thenAccept {
+                        if(it) // 处理成功
                             broker.updateMessage(msg.id, MessageStatus.DONE)
-                    } catch (e: Exception) {
-                        // Exception对象表示处理异常
-                        broker.updateMessage(msg.id, MessageStatus.FAIL, "Exception: " + e.stringifyStackTrace())
+                    }
+
+                    f.exceptionally {
+                        // 处理异常
+                        broker.updateMessage(msg.id, MessageStatus.FAIL, "Exception: " + it.stringifyStackTrace())
+                        false
                     }
                 }
             }while(msgs.isNotEmpty())

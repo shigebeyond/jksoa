@@ -1,11 +1,14 @@
 package net.jkcode.jksoa.mq.consumer.subscriber
 
+import io.netty.util.concurrent.DefaultEventExecutorGroup
 import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.selectExecutor
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.IMqBroker
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
 import net.jkcode.jksoa.mq.consumer.IMqHandler
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -19,6 +22,11 @@ open class MqSubscriber : IMqSubscriber {
      * 消费者配置
      */
     public val config = Config.instance("consumer", "yaml")
+
+    /**
+     * 消息处理的线程池
+     */
+    public val commonPool: DefaultEventExecutorGroup = DefaultEventExecutorGroup(config["threadNum"]!!)
 
     /**
      * 消息中转者
@@ -64,9 +72,19 @@ open class MqSubscriber : IMqSubscriber {
      * @param msg 消息
      * @return
      */
-    public override fun handleMessage(msg: Message): Boolean{
-        // 获得处理器,并调用
-        return handlers[msg.topic]!!.handleMessage(msg)
+    public override fun handleMessage(msg: Message): CompletableFuture<Boolean>{
+        val f = CompletableFuture<Boolean>()
+        // 异步处理: 选择线程
+        val executor = if(msg.subjectId == 0L)
+                            commonPool
+                        else
+                            commonPool.selectExecutor(msg.subjectId) // 根据 subjectId 选择固定的线程, 以便实现consumer进程内部的消息有序
+        executor.execute {
+            // 获得处理器,并调用
+            val result = handlers[msg.topic]!!.handleMessage(msg)
+            f.complete(result)
+        }
+        return f
     }
 
 }

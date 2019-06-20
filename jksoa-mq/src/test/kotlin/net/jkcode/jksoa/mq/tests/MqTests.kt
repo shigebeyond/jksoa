@@ -29,8 +29,9 @@ class MqTests {
     fun testConsumer(){
         // 订阅主题
         MqConsumer.subscribeTopic("topic1", object: IMqHandler {
-            override fun handleMessage(msg: Message) {
+            override fun handleMessage(msg: Message): Boolean {
                 println("收到消息: $msg")
+                return true
             }
         })
     }

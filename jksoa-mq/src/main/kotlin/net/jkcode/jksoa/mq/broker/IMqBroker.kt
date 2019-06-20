@@ -17,7 +17,7 @@ interface IMqBroker : IService {
 
     /****************** 生产者调用 *****************/
     /**
-     * 发送消息
+     * 接收producer发过来的消息
      * @param msg 消息
      * @return
      */
@@ -25,7 +25,7 @@ interface IMqBroker : IService {
 
     /****************** 消费者调用 *****************/
     /**
-     * 订阅主题
+     * 接受consumer的订阅主题
      * @param topic 主题
      * @param group 分组
      * @return
@@ -33,7 +33,7 @@ interface IMqBroker : IService {
     fun subscribeTopic(topic: String, group: String): CompletableFuture<Void>
 
     /**
-     * 拉取消息
+     * 接受consumer的拉取消息
      * @param topic 主题
      * @param group 分组
      * @param pageSize 每页记录数
@@ -42,7 +42,7 @@ interface IMqBroker : IService {
     fun pullMessages(topic: String, group: String, pageSize: Int): CompletableFuture<List<Message>>
 
     /**
-     * 更新消息
+     * 接受consumer的更新消息
      * @param id 消息标识
      * @param status 状态: 0 未处理 1 锁定 2 完成 3 失败(超过时间或超过重试次数)
      * @param remark 备注

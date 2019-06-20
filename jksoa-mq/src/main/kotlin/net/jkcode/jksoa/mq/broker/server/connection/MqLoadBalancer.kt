@@ -27,13 +27,14 @@ class MqLoadBalancer : ILoadBalancer {
         if(conns.isEmpty())
             return null
 
+        // 消息
         val msg = req.args.first() as Message
 
         var i: Int
-        if(msg.orderId == 0L) // 无序: 随机选个连接
+        if(msg.subjectId == 0L) // 无序: 随机选个连接
             i = randomInt(conns.size)
         else // 有序: 固定连接
-            i = (msg.orderId % conns.size).toInt()
+            i = (msg.subjectId % conns.size).toInt()
 
         return conns[i]
     }
