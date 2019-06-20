@@ -9,6 +9,6 @@ import net.jkcode.jksoa.job.IJob
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM
  */
-abstract class BaseJob(public override val id: Long = generateId() /* 作业标识，全局唯一 */) : IJob {
+abstract class BaseJob(public override val id: Long = generateId("job") /* 作业标识，全局唯一 */) : IJob {
 
 }
