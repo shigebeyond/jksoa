@@ -36,27 +36,10 @@ object ConsumerConnectionHub : IConsumerConnectionHub {
      *
      * @param topic
      * @param group
-     * @param channel
-     */
-    override fun add(topic: String, group: String, channel: Channel){
-        // 构建连接
-        val addr = channel.remoteAddress() as InetSocketAddress
-        val url = Url("netty", addr.hostName, addr.port)
-        val conn = NettyConnection(channel, url)
-
-        // 添加连接
-        add(topic, group, conn)
-    }
-
-    /**
-     * 添加连接
-     *
-     * @param topic
-     * @param group
      * @param conn
      */
-    override fun add(topic: String, group: String, conn: NettyConnection) {
-        // 绑定主题+分组+连接
+    override fun add(topic: String, group: String, conn: IConnection){
+        // 添加连接: 绑定主题+分组+连接
         val conns = connections.getOrPutOnce(topic) {
             // <主题 to 分组连接>
             ConcurrentHashMap()
@@ -65,6 +48,24 @@ object ConsumerConnectionHub : IConsumerConnectionHub {
             ArrayList()
         }
         conns.add(conn)
+    }
+
+    /**
+     * 删除连接
+     *
+     * @param topic
+     * @param group
+     * @param conn
+     * @return
+     */
+    override fun remove(topic: String, group: String, conn: IConnection): Boolean {
+
+        // 找到该主题+分组绑定的连接
+        val conns = connections.get(topic)?.get(group) // <主题 to <分组 to 连接>>
+        if(conns == null || conns.isEmpty())
+            return false
+
+        return conns.remove(conn)
     }
 
     /**

@@ -9,7 +9,17 @@ import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import io.netty.channel.Channel
 import io.netty.util.AttributeKey
+import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
+
+/**
+ * 根据channel来构建url
+ * @return
+ */
+public fun Channel.buildUrl(protocol: String): Url {
+    val addr = this.remoteAddress() as InetSocketAddress
+    return Url(protocol, addr.hostName, addr.port)
+}
 
 /**
  * netty连接
@@ -18,7 +28,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1) : BaseConnection(url, weight) {
+class NettyConnection(public val channel: Channel, url: Url = channel.buildUrl("netty"), weight: Int = 1) : BaseConnection(url, weight) {
 
     companion object{
 
@@ -82,7 +92,9 @@ class NettyConnection(protected val channel: Channel, url: Url, weight: Int = 1)
 
     /**
      * 关闭连接
-     *   在shutdown时 或 channelInactive事件中触发
+     *   触发时机
+     *   1. 在ConnectionHub.handleServiceUrlsChange()中server被摘掉时
+     *   2. shutdown
      */
     public override fun close() {
         // 1 在shutdown时, 需手动关闭channel

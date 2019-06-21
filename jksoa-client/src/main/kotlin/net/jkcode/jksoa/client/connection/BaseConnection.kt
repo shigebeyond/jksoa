@@ -17,4 +17,11 @@ abstract class BaseConnection(public override val url: Url /* 服务端地址 */
      * 连接关闭的回调
      */
     internal var closeCallback: ((BaseConnection) -> Unit)? = null
+
+    /**
+     * 改写 hashCode(), 用在 ConsistentHash 计算哈希
+     */
+    public override fun hashCode(): Int {
+        return url.hashCode()
+    }
 }
