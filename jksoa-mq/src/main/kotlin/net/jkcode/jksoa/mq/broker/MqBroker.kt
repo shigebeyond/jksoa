@@ -4,6 +4,7 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.isNullOrEmpty
 import net.jkcode.jkmvc.query.DbExpr
 import net.jkcode.jkmvc.query.DbQueryBuilder
+import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
@@ -118,8 +119,15 @@ class MqBroker : IMqBroker {
     public override fun subscribeTopic(topic: String, group: String): CompletableFuture<Void> {
         // 记录连接
         val ctx = RpcContext.current().ctx
-        connHub.add(topic, group, ctx.channel())
-        
+        val channel = ctx.channel()
+        val conn = NettyConnection(channel)
+        connHub.add(topic, group, conn)
+
+        // channel关闭时删除连接
+        channel.closeFuture().addListener {
+            connHub.remove(topic, group, conn)
+        }
+
         return CompletableFuture.completedFuture(null)
     }
 
