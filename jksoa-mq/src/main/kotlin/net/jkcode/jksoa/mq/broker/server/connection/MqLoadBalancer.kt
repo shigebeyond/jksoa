@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.mq.broker.server.connection
 
+import net.jkcode.jkmvc.common.ConsistentHash
 import net.jkcode.jkmvc.common.get
 import net.jkcode.jkmvc.common.randomInt
 import net.jkcode.jksoa.common.IRpcRequest
@@ -30,12 +31,15 @@ class MqLoadBalancer : ILoadBalancer {
         // 消息
         val msg = req.args.first() as Message
 
-        var i: Int
-        if(msg.subjectId == 0L) // 无序: 随机选个连接
-            i = randomInt(conns.size)
-        else // 有序: 固定连接
-            i = (msg.subjectId % conns.size).toInt()
+        if(msg.subjectId == 0L) { // 无序: 随机选个连接
+            val i = randomInt(conns.size)
+            return conns[i]
+        }
+        // 有序: 固定连接
+//        val i = (msg.subjectId % conns.size).toInt()
+//        return conns[i]
 
-        return conns[i]
+        // 有序: 一致性哈希
+        return ConsistentHash(3, 100, conns).get(msg.subjectId)
     }
 }
