@@ -98,6 +98,13 @@ data class Url(public override var protocol: String /* 协议 */,
     }
 
     /**
+     * 哈希值
+     */
+    protected val hash: Int by lazy{
+        toString().hashCode()
+    }
+
+    /**
      * 服务路径
      *    格式为 /jksoa/服务
      */
@@ -234,7 +241,7 @@ data class Url(public override var protocol: String /* 协议 */,
      * @return
      */
     public override fun hashCode(): Int {
-        return protocol.hashCode() + host.hashCode() + port + path.hashCode() + parameters.hashCode()
+        return hash
     }
 
     /**
