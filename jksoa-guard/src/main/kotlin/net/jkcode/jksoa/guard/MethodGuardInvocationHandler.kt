@@ -64,12 +64,16 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
         // 2 合并调用
         // 2.1 根据group来合并请求
         val methodGuard = getMethodGuard(method) // 获得方法守护者
-        if (methodGuard.groupCombiner != null)
-            return methodGuard.groupCombiner!!.add(args.single()!!)!!
+        if (methodGuard.groupCombiner != null) {
+            val resFuture = methodGuard.groupCombiner!!.add(args.single()!!)
+            return handleResult(method, resFuture)
+        }
 
         // 2.2 根据key来合并请求
-        if (methodGuard.keyCombiner != null)
-            return methodGuard.keyCombiner!!.add(args.single()!!)
+        if (methodGuard.keyCombiner != null) {
+            val resFuture = methodGuard.keyCombiner!!.add(args.single()!!)
+            return handleResult(method, resFuture)
+        }
 
         // 3 合并之后的调用
         return invokeAfterCombine(method, proxy, args, true)
@@ -109,21 +113,21 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
         val startTime = currMillis()
 
         // 4 真正的调用
-        return doInvoke(method, obj, args) { v, r ->
+        return doInvoke(method, obj, args) { r, e ->
             // 3.2 添加请求耗时
             methodGuard.measurer?.currentBucket()?.addCostTime(currMillis() - startTime)
 
             // 3.3 添加成功计数
-            if(r == null){
+            if(e == null){
                 methodGuard.measurer?.currentBucket()?.addSuccess()
-                return@doInvoke v
+                return@doInvoke r
             }
 
             // 3.4 添加异常计数
             methodGuard.measurer?.currentBucket()?.addException()
 
             //  5 处理异常: 调用后备处理
-            return@doInvoke handleException(methodGuard, method, args, r!!)
+            return@doInvoke handleException(methodGuard, method, args, e!!)
         }
     }
 
