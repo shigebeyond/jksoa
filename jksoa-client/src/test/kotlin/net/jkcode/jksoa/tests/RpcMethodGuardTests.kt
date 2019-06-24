@@ -42,12 +42,12 @@ class RpcMethodGuardTests {
     @Test
     fun testKeyCombine2() {
         // 同步调用
-        val run = {
+        makeThreads(3){
             val id = 1
             val u = service.getUserById(id)
             println("调用服务[IGuardService.getUserById($id)]结果： $u")
         }
-        makeThreads(3, run)
+        Thread.sleep(7000)
     }
 
 
@@ -64,7 +64,7 @@ class RpcMethodGuardTests {
                 println("调用服务[IGuardService.getUserById($id)]结果： $it")
             }
         }
-        Thread.sleep(2000)
+        Thread.sleep(7000)
     }
 
     /************************* 测试group合并  **************************/
@@ -88,12 +88,12 @@ class RpcMethodGuardTests {
     @Test
     fun testGroupCombine2() {
         // 同步调用
-        val run = {
+        makeThreads(3){
             val name = randomString(7)
             val u = service.getUserByName(name)
             println("调用服务[IGuardService.getUserByName($name)]结果： $u")
         }
-        makeThreads(3, run)
+        Thread.sleep(7000)
     }
 
     /**
@@ -109,7 +109,7 @@ class RpcMethodGuardTests {
                 println("调用服务[IGuardService.getUserByName($name)]结果： $it")
             }
         }
-        Thread.sleep(2000)
+        Thread.sleep(7000)
     }
 
     /************************* 测试后备 **************************/
