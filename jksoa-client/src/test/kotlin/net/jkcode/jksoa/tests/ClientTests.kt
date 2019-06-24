@@ -1,19 +1,16 @@
 package net.jkcode.jksoa.tests
 
-import net.jkcode.jkmvc.common.getMethodHandle
-import net.jkcode.jkmvc.common.getRootResource
-import net.jkcode.jkmvc.common.makeThreads
-import net.jkcode.jkmvc.common.print
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
 import net.jkcode.jksoa.client.protocol.netty.NettyClient
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.example.IGuardService
 import net.jkcode.jksoa.example.ISimpleService
 import org.junit.Test
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
-import java.util.concurrent.CompletableFuture
 import kotlin.reflect.jvm.javaMethod
 
 
@@ -107,6 +104,24 @@ class ClientTests {
     }
 
     @Test
+    fun testFuture(){
+        //ThreadLocalInheritableThreadPool.applyCommonPoolToCompletableFuture() // 已在 RpcInvocationHandler 调用
+        val service = Referer.getRefer< IGuardService>()
+        val msgs:ThreadLocal<String> = ThreadLocal()
+        msgs.set("before")
+        val future = service.getUserByIdAsync(1)
+        future.whenComplete { r, e ->
+            print("调用服务[IGuardService.getUserByIdAsync()]")
+            if(e == null)
+                println("成功： $r")
+            else
+                println("异常: $e" )
+            println("获得ThreadLocal: " + msgs.get())
+        }
+        Thread.sleep(1000000)
+    }
+
+    @Test
     fun testFailove() {
         val service = Referer.getRefer<ISimpleService>()
         val millis = service.sleep()
@@ -115,13 +130,12 @@ class ClientTests {
 
     @Test
     fun testConcurrent(){
-        val run = {
+        makeThreads(3){
             val tname = Thread.currentThread().name
             val service = Referer.getRefer<ISimpleService>()
             val content = service.echo("Man $tname")
             println("结果$tname： $content")
         }
-        makeThreads(3,  run)
     }
 
     @Test

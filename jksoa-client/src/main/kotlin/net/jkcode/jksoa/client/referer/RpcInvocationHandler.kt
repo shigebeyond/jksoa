@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.client.referer
 
+import net.jkcode.jkmvc.common.ThreadLocalInheritableThreadPool
 import net.jkcode.jkmvc.common.trySupplierFinally
 import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.client.connection.IConnectionHub
@@ -23,7 +24,6 @@ import java.lang.reflect.Proxy
  */
 object RpcInvocationHandler: MethodGuardInvocationHandler() {
 
-
     /**
      * rpc连接集中器
      */
@@ -38,6 +38,11 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
      * 拦截器
      */
     private val interceptors: List<IRpcInterceptor> = listOf()
+
+    init{
+        // 修改 CompletableFuture.asyncPool 属性为 ThreadLocalInheritableThreadPool.commonPool
+        ThreadLocalInheritableThreadPool.applyCommonPoolToCompletableFuture()
+    }
 
     /**
      * 创建服务代理

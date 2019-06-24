@@ -48,6 +48,7 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
      * @param proxy 代理对象
      * @param method 方法
      * @param args0 参数
+     * @return
      */
     public override fun invoke(proxy: Any, method: Method, args0: Array<Any?>?): Any? {
         val args: Array<Any?> = if(args0 == null) emptyArray() else args0
