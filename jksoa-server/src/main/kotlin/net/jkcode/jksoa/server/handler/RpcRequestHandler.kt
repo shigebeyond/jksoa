@@ -26,8 +26,8 @@ object RpcRequestHandler : IRpcRequestHandler() {
      * @param req
      */
     public override fun doHandle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
-        trySupplierFinally({callProvider(req, ctx)} /* 调用provider方法 */){ v, r ->
-            endResponse(req, v, r, ctx) // 返回响应
+        trySupplierFinally({callProvider(req, ctx)} /* 调用provider方法 */){ r, e ->
+            endResponse(req, r, e, ctx) // 返回响应
         }
     }
 

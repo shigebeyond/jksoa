@@ -77,7 +77,7 @@ class RpcMethodGuardTests {
         val groupCombiner = RpcMethodGuard(IGuardService::getUserByNameAsync).groupCombiner as GroupFutureSupplierCombiner<String, User, User>
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
-            futures.add(groupCombiner.add(randomString(7))!!)
+            futures.add(groupCombiner.add(randomString(7)))
         }
         futures.print()
     }

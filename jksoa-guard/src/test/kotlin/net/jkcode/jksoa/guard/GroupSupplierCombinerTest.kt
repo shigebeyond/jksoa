@@ -23,7 +23,7 @@ class GroupSupplierCombinerTest{
         fun addArgs(c: GroupSupplierCombiner<Int, String, Map<String, Any>>): List<CompletableFuture<String>> {
             return (1..randomInt(500)).map { _ ->
                 println("添加参数: ${arg.incrementAndGet()}")
-                c.add(arg.get())!!
+                c.add(arg.get())
             }
         }
     }
@@ -44,7 +44,7 @@ class GroupSupplierCombinerTest{
     fun testAdd1(){
         //println(combiner.javaClass.getSuperClassGenricType()) // 由于泛型确定是在子类, 因此无法获得父类的泛型类型
 
-        val f = combiner.add(1)!!
+        val f = combiner.add(1)
         println(f.get())
         Thread.sleep(10000)
     }

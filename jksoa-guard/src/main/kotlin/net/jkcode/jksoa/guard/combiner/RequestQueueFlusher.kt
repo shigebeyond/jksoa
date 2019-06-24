@@ -66,12 +66,10 @@ abstract class RequestQueueFlusher<RequestArgumentType, ResponseType> (
      * @param arg
      * @return 返回异步响应, 如果入队失败, 则返回null
      */
-    public fun add(arg: RequestArgumentType): CompletableFuture<ResponseType>? {
+    public fun add(arg: RequestArgumentType): CompletableFuture<ResponseType> {
         // 1 添加
         val resFuture = CompletableFuture<ResponseType>()
-        val result = reqQueue.offer(arg to resFuture)
-        if(!result)
-            return null
+        reqQueue.offer(arg to resFuture) // 返回都是true
 
         // 2 空 -> 非空: 启动定时
         if((timerState.get() == 0 || reqQueue.isEmpty()) && timerState.getAndIncrement() == 0)

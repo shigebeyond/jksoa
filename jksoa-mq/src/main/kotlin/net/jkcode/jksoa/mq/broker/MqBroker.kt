@@ -51,7 +51,7 @@ class MqBroker : IMqBroker {
      * @return
      */
     public override fun postMessage(msg: Message): CompletableFuture<Void> {
-        return combiner.add(msg)!!
+        return combiner.add(msg)
     }
 
     /**
