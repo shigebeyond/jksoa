@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.common
 
 import net.jkcode.jkmvc.common.getAndConvert
+import net.jkcode.jkmvc.common.joinHashCode
 
 /**
  * url与字符串互转的工具类
@@ -101,7 +102,9 @@ data class Url(public override var protocol: String /* 协议 */,
      * 哈希值
      */
     protected val hash: Int by lazy{
-        toString().hashCode()
+        //toString().hashCode()
+        val h = joinHashCode(protocol, host, path) * 10000 + port
+        h xor parameters.hashCode()
     }
 
     /**
