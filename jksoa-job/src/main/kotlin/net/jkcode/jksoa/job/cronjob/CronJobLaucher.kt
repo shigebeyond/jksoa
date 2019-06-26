@@ -20,11 +20,11 @@ object CronJobLaucher {
     /**
      * 启动
      * @param cronJobExpr cron与作业的复合表达式, 由cron表达式 + 作业表达式组成, 其中作业表达式前面加`:`, 标识触发的内容是作业
-     *                    如 "0/10 * * * * ? :lpc net.jkcode.jksoa.example.SystemService ping() ()"
+     *                    如 "0/10 * * * * ? -> lpc net.jkcode.jksoa.example.SystemService ping() ()"
      */
     public fun lauch(cronJobExpr: String): CronTrigger {
         // 分隔cron表达式 + 作业表达式
-        val (cronExpr, jobExpr) = cronJobExpr.split("\\s+:".toRegex())
+        val (cronExpr, jobExpr) = cronJobExpr.split("\\s*->\\s*".toRegex())
         // 由cron表达式构建触发器
         val trigger = triggers.getOrPut(cronExpr){
             CronTrigger(cronExpr)
