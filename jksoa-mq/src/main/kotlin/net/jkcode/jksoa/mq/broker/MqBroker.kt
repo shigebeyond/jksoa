@@ -68,7 +68,7 @@ class MqBroker : IMqBroker {
                 addMessageParams(msg, params)
 
             // 批量插入
-            DbQueryBuilder().table("message").insertColumns("topic", "data", "group").value(DbExpr.question, DbExpr.question, DbExpr.question).batchInsert(params, 3)// 每次只处理3个参数
+            DbQueryBuilder().table("message").insertColumns("topic", "data", "group").value(DbExpr.question, DbExpr.question, DbExpr.question).batchInsert(params)
         }catch (e: Exception){
             ex = e
         }finally {
