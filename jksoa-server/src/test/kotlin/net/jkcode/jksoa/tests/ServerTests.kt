@@ -4,7 +4,7 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.server.protocol.netty.NettyServer
 import net.jkcode.jksoa.server.protocol.rmi.RmiServer
-import getIntranetHost
+import net.jkcode.jkmvc.common.getIntranetHost
 import org.junit.Test
 
 /**

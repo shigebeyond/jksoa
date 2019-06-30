@@ -51,7 +51,7 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
     /**
      * 服务路径
      */
-    public override val serviceUrl:Url = IRpcServer.current().serverUrl.withPathPart(`interface`.name, config.getMap("parameters", emptyMap<String, Any?>())!!);
+    public override val serviceUrl:Url = IRpcServer.current()!!.serverUrl.withPathPart(`interface`.name, config.getMap("parameters", emptyMap<String, Any?>())!!);
 
     /**
      * 服务实例

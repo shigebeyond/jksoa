@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.server
 
-import getIntranetHost
+import net.jkcode.jkmvc.common.getIntranetHost
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
@@ -30,15 +30,16 @@ abstract class IRpcServer {
         public val config = Config.instance("server", "yaml")
 
         /**
-         * 当前服务器
+         * 当前启动的服务器
          */
-        protected lateinit var server: IRpcServer
+        protected var server: IRpcServer? = null
 
         /**
-         * 获得当前服务器
+         * 获得当前启动的服务器
+         *   可借此来判断是否启动了服务器
          */
         @JvmStatic
-        public fun current(): IRpcServer {
+        public fun current(): IRpcServer? {
             return server
         }
     }

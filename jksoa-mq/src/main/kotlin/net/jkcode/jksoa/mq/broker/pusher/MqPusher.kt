@@ -35,7 +35,7 @@ object MqPusher : IMqPusher {
      */
     private val resultQueue: RequestQueueFlusher<ConsumeResult, Void> = object: RequestQueueFlusher<ConsumeResult, Void>(100, 100){
         // 处理刷盘的元素
-        override fun handleFlush(results: List<ConsumeResult>, reqs: java.util.ArrayList<Pair<ConsumeResult, CompletableFuture<Void>>>): Boolean {
+        override fun handleFlush(results: List<ConsumeResult>, reqs: ArrayList<Pair<ConsumeResult, CompletableFuture<Void>>>): Boolean {
             flushResult(results)
             return true
         }
@@ -95,6 +95,6 @@ object MqPusher : IMqPusher {
                 .set("status", DbExpr.question)
                 .set("remark", DbExpr.question)
                 .where("id", "=", DbExpr.question)
-                .batchUpdate(params, 2)// 每次只处理2个参数
+                .batchUpdate(params)
     }
 }

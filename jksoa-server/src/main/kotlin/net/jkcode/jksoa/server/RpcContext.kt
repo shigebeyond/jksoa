@@ -2,6 +2,7 @@ package net.jkcode.jksoa.server
 
 import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.RpcRequest
 
 /**
  * rpc上下文
@@ -32,6 +33,7 @@ data class RpcContext(public val req: IRpcRequest /* 请求 */,
 
     init {
         ctxs.set(this)
+        RpcRequest.setCurrent(req as RpcRequest);
     }
 
 }
