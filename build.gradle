@@ -9,10 +9,17 @@ buildscript {
         maven {
             url "http://dl.bintray.com/kotlin/kotlin"
         }
+        maven {
+            url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
+        }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
+
+        classpath "org.akhikhl.gretty:gretty:${gretty_version}"
     }
 }
 
@@ -49,6 +56,12 @@ subprojects{
         }
         maven {
             url "http://dl.bintray.com/kotlin/kotlin"
+        }
+        maven {
+            url "https://repository.apache.org/content/repositories/releases"
+        }
+        maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-eap'
         }
     }
     
