@@ -42,8 +42,8 @@ open class GroupFutureSupplierCombiner<RequestArgumentType /* 请求参数类型
         resultFuture.thenAccept { result ->
             // 空响应
             if(result.isEmpty()) {
-                reqs.forEach {
-                    it.second.complete(null)
+                reqs.forEach { (arg, resFuture) ->
+                    resFuture.complete(null)
                 }
                 return@thenAccept
             }
@@ -70,10 +70,10 @@ open class GroupFutureSupplierCombiner<RequestArgumentType /* 请求参数类型
 
 
             // 设置异步响应
-            reqs.forEach {
+            reqs.forEach {  (arg, resFuture) ->
                 // 根据请求参数来获得响应
-                val resp = arg2resp.getOrDefault(it.first, defaultReps) as ResponseType
-                it.second.complete(resp)
+                val resp = arg2resp.getOrDefault(arg, defaultReps) as ResponseType
+                resFuture.complete(resp)
             }
         }
 

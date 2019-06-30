@@ -104,13 +104,16 @@ abstract class RequestQueueFlusher<RequestArgumentType, ResponseType> (
                     //println("$msg, 出队请求: $num 个, 请求参数为: $args")
 
                     // 处理刷盘
-                    val result = handleFlush(args, reqs)
+                    val done = handleFlush(args, reqs)
 
-                    // 在处理完成后, 如果 ResponseType == Void, 则框架帮设置异步响应
-                    if (result && this.javaClass.getSuperClassGenricType(1) == Void::class.java)
-                        reqs.forEach {
-                            it.second.complete(null)
-                        }
+                    // 在处理完成后, 如果 ResponseType == Void/Unit, 则框架帮设置异步响应, 否则开发者自行在 handleFlush() 中设置
+                    if (done) {
+                        val responseType = this.javaClass.getSuperClassGenricType(1)
+                        if(responseType == Void::class.java || responseType == Unit::class.java)
+                            reqs.forEach { (arg, resFuture) ->
+                                resFuture.complete(null)
+                            }
+                    }
                 }
 
                 // 调用回调

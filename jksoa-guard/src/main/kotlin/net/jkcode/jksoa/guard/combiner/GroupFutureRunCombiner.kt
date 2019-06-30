@@ -27,8 +27,8 @@ open class GroupFutureRunCombiner<RequestArgumentType/* 请求参数类型 */> (
 
         // 2 设置异步响应
         resultFuture.thenAccept { result ->
-            reqs.forEach {
-                it.second.complete(null)
+            reqs.forEach {  (arg, resFuture) ->
+                resFuture.complete(null)
             }
             return@thenAccept
         }
