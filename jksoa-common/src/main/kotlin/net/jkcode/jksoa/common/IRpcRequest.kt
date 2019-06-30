@@ -18,4 +18,67 @@ interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
     val serviceId: String
         get() = clazz
 
+    /**
+     * 附加数据
+     */
+    val attachments: MutableMap<String, Any?>
+
+    /**
+     * 获得附加参数
+     *    注：调用时需明确指定返回类型，来自动转换参数值为指定类型
+     *
+     * <code>
+     *     val id:Long = req["id"]
+     *     // 或
+     *     val id = req["id"] as Long
+     *
+     *     // 相当于
+     *     var id = req.attachments["id"]
+     * </code>
+     *
+     * @param key 参数名
+     * @param defaultValue 默认值
+     * @return
+     */
+    public fun <T> get(key: String, defaultValue: T? = null): T?{
+        return getAttachment(key, defaultValue)
+    }
+
+    /**
+     * 获得附加参数
+     *    注：调用时需明确指定返回类型，来自动转换参数值为指定类型
+     * @param key 参数名
+     * @param defaultValue 默认值
+     * @return
+     */
+    public fun <T> getAttachment(key: String, defaultValue: T? = null): T?{
+        return attachments.getOrDefault(key, defaultValue) as T?
+    }
+
+    /**
+     * 设置附加参数
+     * @param key
+     * @param value
+     */
+    public operator fun set(key: String, value: Any?) {
+        setAttachment(key, value)
+    }
+
+    /**
+     * 设置附加参数
+     * @param key
+     * @param value
+     */
+    public fun setAttachment(key: String, value: Any?) {
+        attachments[key] = value
+    }
+
+    /**
+     * 删除附加参数
+     * @param key
+     * @return
+     */
+    public fun removeAttachment(key: String): Any? {
+        return attachments.remove(key)
+    }
 }

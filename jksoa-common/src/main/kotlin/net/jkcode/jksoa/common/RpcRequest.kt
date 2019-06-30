@@ -1,10 +1,11 @@
 package net.jkcode.jksoa.common
 
-import net.jkcode.jkmvc.common.generateId
-import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.common.annotation.service
 import java.lang.reflect.Method
+import java.util.HashMap
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.javaMethod
 
 /**
@@ -23,23 +24,44 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
     companion object {
 
         /**
-         * 线程安全的请求对象缓存
+         * 线程安全的server端请求对象缓存
          */
         protected val reqs:ThreadLocal<RpcRequest> = ThreadLocal();
 
         /**
-         * 获得当前请求
+         * 设置server端当前请求
+         *   在server端的 RpcRequestHandler 中创建 RpcContext 时调用
+         */
+        public fun setCurrent(req: RpcRequest){
+            reqs.set(req)
+        }
+
+        /**
+         * 获得server端当前请求
          */
         @JvmStatic
         public fun current(): RpcRequest {
             return reqs.get()!!;
         }
+
+        /**
+         * 是否服务端
+         *   至于是不是客户端或其他端, 老子不管
+         * @return
+         */
+        public val isServerSide: Boolean
+            get() = reqs.get() != null
     }
 
     /**
      * 请求标识，全局唯一
      */
     public override val id: Long = generateId("rpc")
+
+    /**
+     * 附加参数
+     */
+    public override val attachments: MutableMap<String, Any?> = LazyAllocatedMap()
 
     /**
      * 构造函数
@@ -57,10 +79,6 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
      * @param args 实参
      */
     public constructor(func: KFunction<*>, args: Array<Any?> = emptyArray()) : this(func.javaMethod!!, args)
-
-    init{
-        reqs.set(this);
-    }
 
     /**
      * 转为字符串
