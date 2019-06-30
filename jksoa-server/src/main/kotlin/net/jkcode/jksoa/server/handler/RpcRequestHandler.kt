@@ -2,11 +2,15 @@ package net.jkcode.jksoa.server.handler
 
 import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.common.IInterceptor
 import net.jkcode.jkmvc.common.trySupplierFinally
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
+import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.RpcContext
 import net.jkcode.jksoa.server.provider.ProviderLoader
@@ -18,15 +22,25 @@ import net.jkcode.jksoa.server.provider.ProviderLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-object RpcRequestHandler : IRpcRequestHandler() {
+object RpcRequestHandler : IRpcRequestHandler {
+
+    /**
+     * 服务端配置
+     */
+    private val config: IConfig = Config.instance("server", "yaml")
+
+    /**
+     * 拦截器
+     */
+    public override val interceptors: List<IRpcInterceptor> = IRpcInterceptor.load(config)
 
     /**
      * 处理请求: 调用Provider来处理
      *
      * @param req
      */
-    public override fun doHandle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
-        trySupplierFinally({callProvider(req, ctx)} /* 调用provider方法 */){ r, e ->
+    public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
+        IInterceptor.trySupplierFinallyAroundInterceptor(interceptors, req, {callProvider(req, ctx)} /* 调用provider方法 */){ r, e ->
             endResponse(req, r, e, ctx) // 返回响应
         }
     }
@@ -67,13 +81,13 @@ object RpcRequestHandler : IRpcRequestHandler() {
         var ex:Exception? = null
         if(r != null && r !is RpcServerException) // 封装业务异常
             ex = RpcBusinessException(r)
-
         serverLogger.debug("Server处理请求：{}，结果: {}, 异常: {}", req, result, r)
-        // 返回响应
+
+        // 1 返回响应
         var res: RpcResponse = RpcResponse(req.id, result, ex)
         ctx.writeAndFlush(res)
 
-        // 请求处理后，关闭资源
+        // 2 请求处理后，关闭资源
         ClosingOnRequestEnd.triggerClosings()
     }
 }
