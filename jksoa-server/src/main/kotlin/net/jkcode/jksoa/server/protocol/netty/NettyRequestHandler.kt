@@ -33,7 +33,11 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
         serverLogger.debug("NettyRequestHandler收到请求: {}", req)
         // 异步处理, 不阻塞io线程
         CommonThreadPool.execute {
-            RpcRequestHandler.handle(req, ctx)
+            try {
+                RpcRequestHandler.handle(req, ctx)
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
         }
     }
 
