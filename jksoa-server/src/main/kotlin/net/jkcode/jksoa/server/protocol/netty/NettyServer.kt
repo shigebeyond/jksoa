@@ -1,12 +1,5 @@
 package net.jkcode.jksoa.server.protocol.netty
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jksoa.common.serverLogger
-import net.jkcode.jksoa.server.IRpcServer
-import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageDecoder
-import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageEncoder
-import net.jkcode.jksoa.server.provider.ProviderLoader
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.PooledByteBufAllocator
@@ -15,12 +8,14 @@ import io.netty.channel.epoll.*
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import io.netty.handler.codec.http.HttpObjectAggregator
-import io.netty.handler.codec.http.HttpServerCodec
 import io.netty.handler.timeout.IdleStateHandler
-import io.netty.util.concurrent.DefaultEventExecutor
 import io.netty.util.concurrent.DefaultThreadFactory
 import net.jkcode.jkmvc.closing.ClosingOnShutdown
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageDecoder
+import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageEncoder
+import net.jkcode.jksoa.common.serverLogger
+import net.jkcode.jksoa.server.IRpcServer
 import java.io.Closeable
 
 /**
@@ -106,9 +101,8 @@ open class NettyServer : IRpcServer(), Closeable {
 
     /**
      * 启动server
-     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载Provider服务
      */
-    public override fun doStart(): Unit{
+    public override fun doStart(callback: () -> Unit): Unit{
         // 关机时要关闭
         ClosingOnShutdown.addClosing(this)
 
@@ -116,8 +110,8 @@ open class NettyServer : IRpcServer(), Closeable {
            // Bind and start to accept incoming connections.
            val f: ChannelFuture = bootstrap.bind(serverUrl.port).sync()
 
-           // 扫描加载Provider服务
-           ProviderLoader.load()
+           // 调用回调
+           callback.invoke()
 
            // Wait until the server socket is closed.
            // In this example, this does not happen, but you can do that to gracefully

@@ -1,12 +1,13 @@
 package net.jkcode.jksoa.server
 
-import net.jkcode.jkmvc.common.getIntranetHost
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.common.getIntranetHost
 import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
+import net.jkcode.jksoa.server.provider.ProviderLoader
 
 /**
  * rpc协议-服务器端
@@ -61,13 +62,21 @@ abstract class IRpcServer {
 
     /**
      * 启动服务器
+     * @param callback 启动后回调
      */
-    fun start(){
+    fun start(callback: (() -> Unit)? = null){
         // 启动服务器
         try{
             serverLogger.info("{}在地址[{}]上启动", name, serverUrl)
             server = this
-            doStart() // 可能阻塞，只能在最后一句执行
+            // 可能阻塞，只能在最后一句执行
+            doStart() {
+                //启动后，主动调用 ProviderLoader.load() 来扫描加载Provider服务
+                ProviderLoader.load()
+
+                // 调用原来的回调
+                callback?.invoke()
+            }
         }catch(e: Exception){
             serverLogger.error("${name}在地址[$serverUrl]上启动失败", e)
             throw RpcServerException(e)
@@ -76,7 +85,7 @@ abstract class IRpcServer {
 
     /**
      * 启动服务器
-     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载Provider服务
+     * @param callback 启动后回调
      */
-    abstract fun doStart()
+    abstract fun doStart(callback: () -> Unit)
 }

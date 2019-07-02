@@ -4,7 +4,7 @@ import net.jkcode.jksoa.mq.MqProducer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.consumer.IMqHandler
 import net.jkcode.jksoa.mq.consumer.MqConsumer
-import org.junit.Test
+import net.jkcode.jksoa.server.IRpcServer
 
 /**
  * @Description:
@@ -12,6 +12,11 @@ import org.junit.Test
  * @date 2017-12-14 3:11 PM
  */
 class MqTests {
+
+    //@Test
+    fun testServer(){
+        IRpcServer.instance("netty").start()
+    }
 
     /**
      * 测试消息生产

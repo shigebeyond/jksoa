@@ -16,9 +16,8 @@ class RmiServer : IRpcServer() {
 
     /**
      * 启动服务器
-     *   必须在启动后，主动调用 ProviderLoader.load() 来扫描加载Provider服务
      */
-    public override fun doStart(): Unit{
+    public override fun doStart(callback: () -> Unit): Unit{
         // 监听端口
         LocateRegistry.createRegistry(serverUrl.port)
 
@@ -30,8 +29,8 @@ class RmiServer : IRpcServer() {
             namingContext.rebind(provider.serviceUrl.toString(), provider.service)
         }
 
-        // 扫描加载Provider服务
-        ProviderLoader.load()
+        // 调用回调
+        callback.invoke()
     }
 
 }

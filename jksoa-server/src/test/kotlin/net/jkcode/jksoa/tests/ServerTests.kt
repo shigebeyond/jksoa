@@ -1,10 +1,11 @@
 package net.jkcode.jksoa.tests
 
 import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.getIntranetHost
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.server.IRpcServer
 import net.jkcode.jksoa.server.protocol.netty.NettyServer
 import net.jkcode.jksoa.server.protocol.rmi.RmiServer
-import net.jkcode.jkmvc.common.getIntranetHost
 import org.junit.Test
 
 /**
@@ -15,6 +16,11 @@ import org.junit.Test
  * @date 2017-12-14 3:11 PM
  */
 class ServerTests {
+
+    //@Test
+    fun testServer(){
+        IRpcServer.instance("netty").start()
+    }
 
     @Test
     fun testUrl(){
