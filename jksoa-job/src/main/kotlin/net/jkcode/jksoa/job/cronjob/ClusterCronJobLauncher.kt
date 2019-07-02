@@ -19,7 +19,7 @@ abstract class ClusterCronJobLauncher {
             // 加载cron与作业的复合表达式
             for(cronJobExpr in loadCronJobs()) {
                 // 启动作业
-                CronJobLaucher.lauch(cronJobExpr)
+                CronJobLauncher.lauch(cronJobExpr)
             }
         }
     }

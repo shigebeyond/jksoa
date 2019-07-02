@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-23 6:43 PM
  */
-object CronJobLaucher {
+object CronJobLauncher {
 
     /**
      * 缓存触发器
