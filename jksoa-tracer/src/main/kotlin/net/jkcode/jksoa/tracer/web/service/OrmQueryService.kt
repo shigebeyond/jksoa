@@ -1,11 +1,11 @@
-package net.jkcode.jksoa.tracer.common.service
+package net.jkcode.jksoa.tracer.web.service
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import net.jkcode.jkmvc.orm.toJson
 import net.jkcode.jkmvc.util.TreeNode
 import net.jkcode.jksoa.tracer.common.model.SpanModel
 import net.jkcode.jksoa.tracer.common.model.TraceModel
+import net.jkcode.jksoa.tracer.common.service.IQueryService
 
 /**
  * 基于orm实现的查询服务
@@ -42,7 +42,7 @@ class OrmQueryService : IQueryService {
 
 
     // 根据耗时来查询跟踪信息
-    override fun getTracesByDuration(serviceId: String, startTime: Long, limit: Int, durationMin: Int, durationMax: Int): JSONArray {
+    override fun getTracesByDuration(serviceId: Int, startTime: Long, limit: Int, durationMin: Int, durationMax: Int): JSONArray {
         /*
         SELECT * FROM trace
             WHERE service=#{serviceId}
@@ -54,7 +54,7 @@ class OrmQueryService : IQueryService {
         val items = TraceModel.queryBuilder()
                 .where("service", serviceId)
                 .where("timestamp", ">=", startTime)
-                .where("duration", ",=", durationMax)
+                .where("duration", "<=", durationMax)
                 .where("duration", ">=", durationMin)
                 .limit(limit)
                 .findAllModels<TraceModel>()

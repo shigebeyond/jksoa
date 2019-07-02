@@ -1,9 +1,10 @@
-package net.jkcode.jksoa.tracer.common.service
+package net.jkcode.jksoa.tracer.collector.service
 
 import net.jkcode.jksoa.tracer.common.entity.Span
 import net.jkcode.jksoa.tracer.common.model.AnnotationModel
 import net.jkcode.jksoa.tracer.common.model.SpanModel
 import net.jkcode.jksoa.tracer.common.model.TraceModel
+import net.jkcode.jksoa.tracer.common.service.IInsertService
 
 /**
  * 基于orm实现的插入服务
@@ -22,15 +23,12 @@ class OrmInsertService : IInsertService {
     }
 
     override fun addTrace(span: Span) {
-        if (span.isTopAnntation && span.isRoot) {
-            val cr = span.crAnnotation
-            val cs = span.csAnnotation
-
+        if (span.isRoot && span.isTopAnntation) {
             val t = TraceModel()
             t.id = span.traceId
-            t.duration = (cr!!.timestamp - cs!!.timestamp).toInt() // 耗时
+            t.duration = span.calculateDurationClient().toInt() // 耗时
             t.service = span.service
-            t.timestamp = cs.timestamp // 开始时间
+            t.timestamp = span.startTimeClient // 开始时间
             t.create()
         }
     }

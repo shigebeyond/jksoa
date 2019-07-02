@@ -1,10 +1,13 @@
 package net.jkcode.jksoa.tracer.collector.service
 
+import net.jkcode.jkmvc.common.Application
+import net.jkcode.jkmvc.orm.toMap
 import net.jkcode.jksoa.guard.combiner.RequestQueueFlusher
 import net.jkcode.jksoa.tracer.common.entity.Span
-import net.jkcode.jksoa.tracer.common.service.ICollectorService
+import net.jkcode.jksoa.tracer.common.model.AppModel
+import net.jkcode.jksoa.tracer.common.model.ServiceModel
+import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
 import net.jkcode.jksoa.tracer.common.service.IInsertService
-import net.jkcode.jksoa.tracer.common.service.OrmInsertService
 
 import java.util.concurrent.CompletableFuture
 
@@ -17,6 +20,40 @@ import java.util.concurrent.CompletableFuture
 class OrmCollectorService : ICollectorService {
 
     private var insertService: IInsertService = OrmInsertService()
+
+
+    /**
+     * 同步服务
+     * @param appName 应用名
+     * @param serviceNames 服务全类名
+     * @return appId + service的name对id的映射
+     */
+    public override fun syncService(appName: String, serviceNames: List<String>): CompletableFuture<Pair<Int, HashMap<String, Int>>>? {
+        // 查询app
+        val app = AppModel.queryBuilder().where("name", Application.name).findModel<AppModel>()
+        if(app == null){
+            // 新建app
+            val app = AppModel()
+            app.name = Application.name
+            app.create()
+        }
+        val appId = app!!.id
+
+        // 查询service
+        val serviceMap = ServiceModel.queryBuilder().where("name", "IN", serviceNames).findAllModels<ServiceModel>().toMap<String, Int>("name", "id") as HashMap<String, Int>
+
+        // 新建service
+        (serviceNames as MutableList).removeAll(serviceMap.keys)
+        for (name in serviceNames){
+            val service = ServiceModel()
+            service.appId = app.id
+            service.name = name
+            service.create()
+            serviceMap.put(name, service.id)
+        }
+
+        return CompletableFuture.completedFuture(appId to serviceMap)
+    }
 
     /**
      * span队列

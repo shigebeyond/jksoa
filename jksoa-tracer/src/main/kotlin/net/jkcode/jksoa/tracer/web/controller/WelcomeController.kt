@@ -8,7 +8,7 @@ import net.jkcode.jkmvc.http.controller.Controller
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-class IndexController: Controller()
+class WelcomeController: Controller()
 {
     /**
      * 主页

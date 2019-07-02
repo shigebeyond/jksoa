@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject
 interface IQueryService {
 
     // 根据耗时来查询跟踪信息
-    fun getTracesByDuration(serviceId: String, startTime: Long, limit: Int, durationMin: Int, durationMax: Int): JSONArray
+    fun getTracesByDuration(serviceId: Int, startTime: Long, limit: Int, durationMin: Int, durationMax: Int): JSONArray
 
     // 根据异常来查询跟踪信息
     fun getTracesByEx(serviceId: String, startTime: Long, limit: Int): JSONArray

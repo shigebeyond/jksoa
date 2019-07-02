@@ -8,7 +8,6 @@ import net.jkcode.jkmvc.orm.OrmEntity
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-@org.nustaq.serialization.annotations.Transient
 open class Trace: OrmEntity()  {
 
 	// 代理属性读写

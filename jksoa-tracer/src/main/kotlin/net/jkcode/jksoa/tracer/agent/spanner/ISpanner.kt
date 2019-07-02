@@ -3,8 +3,10 @@ package net.jkcode.jksoa.tracer.agent.spanner
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.guard.combiner.RequestQueueFlusher
 import net.jkcode.jksoa.tracer.agent.Tracer
+import net.jkcode.jksoa.tracer.collector.service.OrmInsertService
 import net.jkcode.jksoa.tracer.common.entity.Span
-import net.jkcode.jksoa.tracer.common.service.ICollectorService
+import net.jkcode.jksoa.tracer.common.service.IInsertService
+import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -29,6 +31,7 @@ abstract class ISpanner(protected val tracer: Tracer, protected val span: Span){
 		 */
 		protected val collectorService: ICollectorService = Referer.getRefer<ICollectorService>()
 
+		private var insertService: IInsertService = OrmInsertService()
 
 		/**
 		 * 待发送span队列
@@ -36,7 +39,13 @@ abstract class ISpanner(protected val tracer: Tracer, protected val span: Span){
 		internal val spanQueue: RequestQueueFlusher<Span, Void> = object: RequestQueueFlusher<Span, Void>(100, 100){
 			// 处理刷盘的元素
 			override fun handleFlush(spans: List<Span>, reqs: ArrayList<Pair<Span, CompletableFuture<Void>>>): Boolean {
-				collectorService.send(spans)
+				//collectorService.send(spans)
+
+				for(s in spans) {
+					insertService.addSpan(s)
+					insertService.addTrace(s)
+					insertService.addAnnotation(s)
+				}
 				return true
 			}
 		}

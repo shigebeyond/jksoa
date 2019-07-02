@@ -2,7 +2,7 @@ package net.jkcode.jksoa.tracer.web.controller
 
 import net.jkcode.jkmvc.http.controller.Controller
 import net.jkcode.jksoa.tracer.common.service.IQueryService
-import net.jkcode.jksoa.tracer.common.service.OrmQueryService
+import net.jkcode.jksoa.tracer.web.service.OrmQueryService
 
 /**
  * 跟踪信息查询的控制器
@@ -21,7 +21,7 @@ class TraceController: Controller()
 
     // 根据耗时来查询跟踪信息
     fun listAction(){
-        val serviceId: String = req["serviceId"]!!
+        val serviceId: Int = req["serviceId"]!!
         val startTime: Long = req["startTime"]!!
         val durationMin: Int = req["durationMin"]!!
         val durationMax: Int = req["durationMax"]!!

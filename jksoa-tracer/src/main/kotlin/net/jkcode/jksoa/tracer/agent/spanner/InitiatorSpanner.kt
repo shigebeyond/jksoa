@@ -16,7 +16,7 @@ class InitiatorSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 	 * 开始跟踪
 	 */
 	public override fun start(){
-
+		span.addIsAnnotation()
 	}
 
 	/**
@@ -27,6 +27,8 @@ class InitiatorSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 	public override fun end(ex: Throwable?): CompletableFuture<Void> {
 		if(ex != null)
 			span.addExAnnotation(ex)
+		else
+			span.addIeAnnotation()
 
 		// 清理当前tracer
 		tracer.clear()

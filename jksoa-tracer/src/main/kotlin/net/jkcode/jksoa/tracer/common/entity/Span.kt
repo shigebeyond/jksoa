@@ -11,7 +11,6 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-@org.nustaq.serialization.annotations.Transient
 open class Span: OrmEntity() {
 
 	// 代理属性读写
@@ -23,14 +22,28 @@ open class Span: OrmEntity() {
 
 	public var traceId:Long by property() //
 
-	public var parentId:Long by property() //
+	public var parentId:Long? by property() //
 
 	public open val annotations: List<Annotation> = LinkedList()
 
 	public val isTopAnntation: Boolean
 		get(){
 			return annotations.any {
-				it.isCs
+				it.isIs
+			}
+		}
+
+	public val isAnnotation: Annotation?
+		get(){
+			return annotations.firstOrNull {
+				it.isIs
+			}
+		}
+
+	public val ieAnnotation: Annotation?
+		get(){
+			return annotations.firstOrNull {
+				it.isIe
 			}
 		}
 
@@ -70,13 +83,18 @@ open class Span: OrmEntity() {
 		}
 
 	public val isRoot: Boolean
-		get() = parentId == null
+		get() = parentId == null || parentId == 0L
 
 	/**
 	 * 如果某个span没有收集全4个annotation，则判定为不可用
 	 */
 	public val isAvailable: Boolean
-		get() = annotations.size == 4
+		get() {
+			if(isTopAnntation)
+				return annotations.size == 2
+
+			return annotations.size == 4
+		}
 
 	/**
 	 * 添加标注
@@ -100,6 +118,20 @@ open class Span: OrmEntity() {
 		annotation.spanId = id
 		annotation.service = service
 		addAnnotation(annotation)
+	}
+
+	/**
+	 * 添加is annotation
+	 */
+	public fun addIsAnnotation() {
+		addAnnotation(Annotation.INITIATOR_START)
+	}
+
+	/**
+	 * 添加ie annotation
+	 */
+	public fun addIeAnnotation() {
+		addAnnotation(Annotation.INITIATOR_END)
 	}
 
 	/**
@@ -138,27 +170,31 @@ open class Span: OrmEntity() {
 	}
 
 	/**
+	 * 获得client的开始时间
+	 */
+	val startTimeClient: Long
+		get(){
+			return if(isRoot && isTopAnntation)
+						isAnnotation.timestamp
+					else
+						csAnnotation.timestamp
+		}
+
+	/**
 	 * 计算client端耗时
 	 */
 	public fun calculateDurationClient(): Long {
-		val cs = csAnnotation
-		val cr = crAnnotation
-		if(cs != null && cr != null)
-			return cr.timestamp - cs.timestamp
+		if(isRoot && isTopAnntation)
+			return ieAnnotation.timestamp - isAnnotation.timestamp
 
-		return -1
+		return crAnnotation.timestamp - csAnnotation.timestamp
 	}
 
 	/**
 	 * 计算server端耗时
 	 */
 	public fun calculateDurationServer(): Long {
-		val ss = ssAnnotation
-		val sr = srAnnotation
-		if(ss != null && sr != null)
-			return ss.timestamp - sr.timestamp
-
-		return -1
+		return ssAnnotation.timestamp - srAnnotation.timestamp
 	}
 
 }

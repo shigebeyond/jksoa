@@ -12,13 +12,12 @@ import net.jkcode.jksoa.tracer.common.entity.Trace
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-class TraceModel: Trace(), IOrm by GeneralModel(SpanModel)  {
+class TraceModel: Trace(), IOrm by GeneralModel(m)  {
 
 	// 伴随对象就是元数据
  	companion object m: OrmMeta(TraceModel::class, "trace", "trace", "id"){
 
 		init {
-			belongsTo("service", ServiceModel::class)
 			hasMany("spans", SpanModel::class)
 			hasMany("annotations", AnnotationModel::class)
 		}

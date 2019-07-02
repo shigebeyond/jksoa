@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.common.service
+package net.jkcode.jksoa.tracer.common.service.remote
 
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.annotation.Service
@@ -13,6 +13,14 @@ import java.util.concurrent.CompletableFuture
  */
 @Service(version = 1)
 interface ICollectorService: IService {
+
+    /**
+     * 同步服务
+     * @param appName 应用名
+     * @param serviceName 服务全类名
+     * @return appId + service的name对id的映射
+     */
+    fun syncService(appName: String, serviceName: List<String>): CompletableFuture<Pair<Int, HashMap<String, Int>>>?
 
     /**
      * agent给collector发送span

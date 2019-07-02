@@ -26,15 +26,21 @@ class AppModel: App(), IOrm by GeneralModel(m)  {
 
 		/**
 		 * 初始化当前app/service信息
+		 * @param force 是否强制
 		 */
-		public fun initialize() {
+		public fun initialize(force: Boolean = false) {
 			// 检查是否已初始化过
-			val n = AppModel.queryBuilder().where("name", Application.name).count()
-			if(n > 0)
+			val oapp = AppModel.queryBuilder().where("name", Application.name).findModel<AppModel>()
+			if(oapp != null && !force) // 不强制: 直接退出
 				return
 
 			// 事务
 			db.transaction {
+				if(oapp != null && force) { // 强制: 先删除原有数据
+					AppModel.queryBuilder().where("id", oapp.id).delete()
+					ServiceModel.queryBuilder().where("app_id", oapp.id).delete()
+				}
+
 				// 新建app
 				val app = AppModel()
 				app.name = Application.name

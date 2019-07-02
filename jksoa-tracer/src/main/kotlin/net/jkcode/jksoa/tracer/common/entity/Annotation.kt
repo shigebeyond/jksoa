@@ -8,16 +8,17 @@ import net.jkcode.jkmvc.orm.OrmEntity
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-@org.nustaq.serialization.annotations.Transient
 open class Annotation: OrmEntity() {
 
     companion object {
         // value的值
-        public val CLIENT_SEND = "cs"
-        public val CLIENT_RECEIVE = "cr"
-        public val SERVER_SEND = "ss"
-        public val SERVER_RECEIVE = "sr"
-        public val EXCEPTION = "ex"
+        public val INITIATOR_START = "is" // 发起者开始跟踪
+        public val INITIATOR_END = "ie" // 发起者结束跟踪
+        public val CLIENT_SEND = "cs" // 客户端发送请求
+        public val CLIENT_RECEIVE = "cr" // 客户端收到响应
+        public val SERVER_SEND = "ss" // 服务端收到请求
+        public val SERVER_RECEIVE = "sr" // 服务端发送响应
+        public val EXCEPTION = "ex" // 发生异常
     }
 
     // 代理属性读写
@@ -41,6 +42,14 @@ open class Annotation: OrmEntity() {
 
     public var service:String by property() //
 
+    // initiator start
+    public val isIs: Boolean
+        get() = key == INITIATOR_START
+
+    // initiator end
+    public val isIe: Boolean
+        get() = key == INITIATOR_END
+
     // client send
     public val isCs: Boolean
         get() = key == CLIENT_SEND
@@ -61,3 +70,6 @@ open class Annotation: OrmEntity() {
     public val isEx: Boolean
         get() = key == EXCEPTION
 }
+
+val Annotation?.timestamp:Long
+    get() = if(this == null) 0 else timestamp
