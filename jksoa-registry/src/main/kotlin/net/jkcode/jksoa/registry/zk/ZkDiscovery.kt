@@ -95,10 +95,12 @@ open class ZkDiscovery: IDiscovery {
             zkClient.unsubscribeChildChanges(rootPath, childListeners[serviceId]!![listener]!!)
             
             // 2 取消监听子节点的数据变化
-            for(dataListener in dataListeners[serviceId]!![listener]!!){
-                val path = dataListener.url.serverRegistryPath
-                zkClient.unsubscribeDataChanges(path, dataListener)
-            }
+            val list = dataListeners.get(serviceId)?.get(listener)
+            if(list != null) // 可能没有子节点, 也就没有数据监听器
+                for(dataListener in list){
+                    val path = dataListener.url.serverRegistryPath
+                    zkClient.unsubscribeDataChanges(path, dataListener)
+                }
         } catch (e: Throwable) {
             throw RegistryException("ZkDiscovery取消监听服务[$serviceId]变化失败：${e.message}", e)
         }
