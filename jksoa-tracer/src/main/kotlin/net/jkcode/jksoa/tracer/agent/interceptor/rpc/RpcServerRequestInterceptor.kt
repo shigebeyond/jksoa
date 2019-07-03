@@ -1,16 +1,18 @@
-package net.jkcode.jksoa.tracer.agent.interceptor
+package net.jkcode.jksoa.tracer.agent.interceptor.rpc
 
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
+import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
 
 /**
- * rpc客户端的拦截器
+ * 服务端处理rpc请求的拦截器
+ *    添加span
+ *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-30 2:53 PM
  */
-class RpcClientInterceptor: IRpcInterceptor {
+class RpcServerRequestInterceptor: IRpcRequestInterceptor {
 
     /**
      * 前置处理
@@ -18,8 +20,8 @@ class RpcClientInterceptor: IRpcInterceptor {
      * @return 是否通过
      */
     override fun before(req: IRpcRequest): Boolean {
-        val spanner = Tracer.current().startClientSpanSpanner(req)
-        req.setAttachment("clientSpanner", spanner)
+        val spanner = Tracer.current().startServerSpanSpanner(req)
+        req.setAttachment("serverSpanner", spanner)
         return true
     }
 
@@ -30,7 +32,7 @@ class RpcClientInterceptor: IRpcInterceptor {
      * @param ex
      */
     override fun after(req: IRpcRequest, result: Any?, ex: Throwable?) {
-        val spanner = req.removeAttachment("clientSpanner") as ISpanner
+        val spanner = req.removeAttachment("serverSpanner") as ISpanner
         spanner.end(ex)
     }
 

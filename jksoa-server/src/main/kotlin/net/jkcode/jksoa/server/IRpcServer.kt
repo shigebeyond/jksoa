@@ -4,6 +4,7 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.common.getIntranetHost
 import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
+import net.jkcode.jksoa.common.IRpcServerInterceptor
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
@@ -29,6 +30,11 @@ abstract class IRpcServer {
          * 服务端配置
          */
         public val config = Config.instance("server", "yaml")
+
+        /**
+         * rpc server启动的拦截器
+         */
+        public val interceptors: List<IRpcServerInterceptor> = IRpcServerInterceptor.load(config, "serverInterceptors")
 
         /**
          * 当前启动的服务器
@@ -73,6 +79,10 @@ abstract class IRpcServer {
             doStart() {
                 //启动后，主动调用 ProviderLoader.load() 来扫描加载Provider服务
                 ProviderLoader.load()
+
+                //调用拦截器后置处理
+                for (i in interceptors)
+                    i.after(null, null, null)
 
                 // 调用原来的回调
                 callback?.invoke()

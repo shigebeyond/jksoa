@@ -2,7 +2,7 @@ package net.jkcode.jksoa.tracer.common.service.remote
 
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.annotation.Service
-import net.jkcode.jksoa.tracer.common.entity.Span
+import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -16,11 +16,14 @@ interface ICollectorService: IService {
 
     /**
      * 同步服务
+     *    1 只新增, 不删除
+     *    2 返回所有应用的service, 用于获得service对应的id, 给span引用, 存储时省点空间
+     *
      * @param appName 应用名
      * @param serviceName 服务全类名
-     * @return appId + service的name对id的映射
+     * @return 所有应用的service的name对id的映射
      */
-    fun syncService(appName: String, serviceName: List<String>): CompletableFuture<Pair<Int, HashMap<String, Int>>>?
+    fun syncServices(appName: String, serviceName: List<String>): Map<String, Int>
 
     /**
      * agent给collector发送span

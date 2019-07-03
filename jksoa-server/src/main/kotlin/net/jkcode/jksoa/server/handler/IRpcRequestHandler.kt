@@ -2,8 +2,7 @@ package net.jkcode.jksoa.server.handler
 
 import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.exception.RpcServerException
-import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
+import net.jkcode.jksoa.common.IRpcRequestInterceptor
 
 /**
  * Rpc请求处理者
@@ -15,9 +14,9 @@ import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
 interface IRpcRequestHandler {
 
     /**
-     * 拦截器
+     * 服务端处理rpc请求的拦截器
      */
-    val interceptors: List<IRpcInterceptor>
+    val interceptors: List<IRpcRequestInterceptor>
 
     /**
      * 处理请求

@@ -28,9 +28,9 @@ import java.io.Closeable
 open class NettyServer : IRpcServer(), Closeable {
 
     /**
-     * 服务端配置
+     * 服务端的netty配置
      */
-    public val config = Config.instance("server", "yaml")
+    public val nettyConfig = Config.instance("server.netty", "yaml")
 
     /**
      * 是否用epoll
@@ -56,8 +56,8 @@ open class NettyServer : IRpcServer(), Closeable {
         bootstrap = ServerBootstrap()
 
         if(Epoll.isAvailable()){
-            bossGroup = EpollEventLoopGroup(config["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
-            workerGroup = EpollEventLoopGroup(config["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
+            bossGroup = EpollEventLoopGroup(nettyConfig["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
+            workerGroup = EpollEventLoopGroup(nettyConfig["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
             (bossGroup as EpollEventLoopGroup).setIoRatio(100)
             (workerGroup as EpollEventLoopGroup).setIoRatio(100)
 
@@ -65,20 +65,20 @@ open class NettyServer : IRpcServer(), Closeable {
             bootstrap.option(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED)
             bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED)
         }else{
-            bossGroup = NioEventLoopGroup(config["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
-            workerGroup = NioEventLoopGroup(config["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
+            bossGroup = NioEventLoopGroup(nettyConfig["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
+            workerGroup = NioEventLoopGroup(nettyConfig["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
 
             bootstrap.channel(NioServerSocketChannel::class.java)
         }
 
         // 启动选项
-        bootstrap.option(ChannelOption.SO_BACKLOG, config["backlog"]!!) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
-                .childOption(ChannelOption.SO_KEEPALIVE, config["keepAlive"]!!) // 保持心跳
-                .childOption(ChannelOption.SO_REUSEADDR, config["reuseAddress"]!!) // 重用端口
-                .childOption(ChannelOption.TCP_NODELAY, config["tcpNoDelay"]!!) // 禁用了Nagle算法,允许小包的发送
-                .childOption(ChannelOption.SO_LINGER, config["soLinger"]!!) //
-                .childOption(ChannelOption.SO_SNDBUF, config["sendBufferSize"]!!) // 发送的缓冲大小
-                .childOption(ChannelOption.SO_RCVBUF, config["receiveBufferSize"]!!) // 接收的缓冲大小
+        bootstrap.option(ChannelOption.SO_BACKLOG, nettyConfig["backlog"]!!) // TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128×8
+                .childOption(ChannelOption.SO_KEEPALIVE, nettyConfig["keepAlive"]!!) // 保持心跳
+                .childOption(ChannelOption.SO_REUSEADDR, nettyConfig["reuseAddress"]!!) // 重用端口
+                .childOption(ChannelOption.TCP_NODELAY, nettyConfig["tcpNoDelay"]!!) // 禁用了Nagle算法,允许小包的发送
+                .childOption(ChannelOption.SO_LINGER, nettyConfig["soLinger"]!!) //
+                .childOption(ChannelOption.SO_SNDBUF, nettyConfig["sendBufferSize"]!!) // 发送的缓冲大小
+                .childOption(ChannelOption.SO_RCVBUF, nettyConfig["receiveBufferSize"]!!) // 接收的缓冲大小
                 .childOption<ByteBufAllocator>(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 
         bootstrap.group(bossGroup, workerGroup)
@@ -90,7 +90,7 @@ open class NettyServer : IRpcServer(), Closeable {
                         pipeline
                                 .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
                                 .addLast(NettyMessageEncoder()) // 编码
-                                .addLast(IdleStateHandler(config["readerIdleTimeSecond"]!!, config["writerIdleTimeSeconds"]!!, config["allIdleTimeSeconds"]!!)) // channel空闲检查
+                                .addLast(IdleStateHandler(nettyConfig["readerIdleTimeSecond"]!!, nettyConfig["writerIdleTimeSeconds"]!!, nettyConfig["allIdleTimeSeconds"]!!)) // channel空闲检查
 
                         // 自定义子channel处理器
                         for(h in customChildChannelHandlers())

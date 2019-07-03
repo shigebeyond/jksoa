@@ -3,8 +3,8 @@ package net.jkcode.jksoa.tracer.web.service
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import net.jkcode.jkmvc.util.TreeNode
-import net.jkcode.jksoa.tracer.common.model.SpanModel
-import net.jkcode.jksoa.tracer.common.model.TraceModel
+import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
+import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
 import net.jkcode.jksoa.tracer.common.service.IQueryService
 
 /**
@@ -45,14 +45,14 @@ class OrmQueryService : IQueryService {
     override fun getTracesByDuration(serviceId: Int, startTime: Long, limit: Int, durationMin: Int, durationMax: Int): JSONArray {
         /*
         SELECT * FROM trace
-            WHERE service=#{serviceId}
+            WHERE serviceId=#{serviceId}
             and timestamp >= #{startTime}
             and duration <= #{durationMax}
             and duration >= #{durationMin}
             limit #{limit}
          */
         val items = TraceModel.queryBuilder()
-                .where("service", serviceId)
+                .where("serviceId", serviceId)
                 .where("timestamp", ">=", startTime)
                 .where("duration", "<=", durationMax)
                 .where("duration", ">=", durationMin)
@@ -62,7 +62,7 @@ class OrmQueryService : IQueryService {
         val array = JSONArray()
         for (trace in items) {
             val obj = JSONObject()
-            obj["service"] = trace.service
+            obj["serviceId"] = trace.serviceId
             obj["timestamp"] = trace.timestamp
             obj["duration"] = trace.duration
             obj["traceId"] = trace.id
@@ -77,13 +77,13 @@ class OrmQueryService : IQueryService {
             left join trace t
             on a.traceId=t.traceId
             and t.time>= #{startTime}
-            where a.service=#{serviceId}
+            where a.serviceId=#{serviceId}
             group by spanId
             limit #{limit}
         */
         val items = TraceModel.queryBuilder().with("annotations")
                 .where("trace.timestamp", ">=", startTime)
-                .where("annotations.service", serviceId)
+                .where("annotations.serviceId", serviceId)
                 .groupBy("spanId")
                 .limit(limit)
                 .findAllModels<TraceModel>()
@@ -91,7 +91,7 @@ class OrmQueryService : IQueryService {
         val array = JSONArray()
         for (trace in items) {
             val obj = JSONObject()
-            obj["service"] = trace.service
+            obj["serviceId"] = trace.serviceId
             obj["timestamp"] = trace.timestamp
             obj["exInfo"] = trace.annotations.first().value
             obj["traceId"] = trace.id

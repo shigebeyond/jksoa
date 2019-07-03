@@ -9,7 +9,7 @@ import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
-import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
+import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.RpcContext
 import net.jkcode.jksoa.server.provider.ProviderLoader
@@ -29,9 +29,9 @@ object RpcRequestHandler : IRpcRequestHandler {
     private val config: IConfig = Config.instance("server", "yaml")
 
     /**
-     * 拦截器
+     * 服务端处理rpc请求的拦截器
      */
-    public override val interceptors: List<IRpcInterceptor> = IRpcInterceptor.load(config)
+    public override val interceptors: List<IRpcRequestInterceptor> = IRpcRequestInterceptor.load(config, "requestInterceptors")
 
     /**
      * 处理请求: 调用Provider来处理

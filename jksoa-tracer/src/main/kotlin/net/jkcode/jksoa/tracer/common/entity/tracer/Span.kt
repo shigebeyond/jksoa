@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.common.entity
+package net.jkcode.jksoa.tracer.common.entity.tracer
 
 import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jkmvc.common.getLocalHostPort
@@ -16,7 +16,7 @@ open class Span: OrmEntity() {
 	// 代理属性读写
 	public var id:Long by property() //
 
-	public var service:String by property() // 服务类名
+	public var serviceId:Int by property() // 服务类名
 
 	public var name:String by property() // 方法名
 
@@ -116,7 +116,7 @@ open class Span: OrmEntity() {
 		annotation.port = port
 		annotation.traceId = traceId
 		annotation.spanId = id
-		annotation.service = service
+		annotation.serviceId = serviceId
 		addAnnotation(annotation)
 	}
 

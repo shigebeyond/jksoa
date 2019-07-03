@@ -1,10 +1,10 @@
-package net.jkcode.jksoa.tracer.common.model
+package net.jkcode.jksoa.tracer.common.model.service
 
 import net.jkcode.jkmvc.model.GeneralModel
 import net.jkcode.jkmvc.orm.IOrm
 import net.jkcode.jkmvc.orm.OrmMeta
-import net.jkcode.jksoa.tracer.common.entity.Service
-import net.jkcode.jksoa.tracer.common.entity.Trace
+import net.jkcode.jksoa.tracer.common.entity.service.Service
+import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
 
 /**
  * 应用信息

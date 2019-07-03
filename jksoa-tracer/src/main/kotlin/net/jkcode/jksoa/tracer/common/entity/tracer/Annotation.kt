@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.common.entity
+package net.jkcode.jksoa.tracer.common.entity.tracer
 
 import net.jkcode.jkmvc.orm.OrmEntity
 
@@ -40,7 +40,7 @@ open class Annotation: OrmEntity() {
 
     public var traceId:Long by property() //
 
-    public var service:String by property() //
+    public var serviceId:Int by property() //
 
     // initiator start
     public val isIs: Boolean

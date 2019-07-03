@@ -1,9 +1,9 @@
-package net.jkcode.jksoa.tracer.common.model
+package net.jkcode.jksoa.tracer.common.model.tracer
 
 import net.jkcode.jkmvc.model.GeneralModel
 import net.jkcode.jkmvc.orm.IOrm
 import net.jkcode.jkmvc.orm.OrmMeta
-import net.jkcode.jksoa.tracer.common.entity.Span
+import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 
 /**
  * span
@@ -17,6 +17,10 @@ class SpanModel: Span(), IOrm by GeneralModel(m) {
  	companion object m: OrmMeta(SpanModel::class, "span", "span", "id"){
 
 		init {
+			// 规则
+			addRule("serviceId", "serviceId", "notEmpty")
+
+			// 关联关系
 			belongsTo("trace", TraceModel::class)
 			hasMany("annotations", AnnotationModel::class)
 		}

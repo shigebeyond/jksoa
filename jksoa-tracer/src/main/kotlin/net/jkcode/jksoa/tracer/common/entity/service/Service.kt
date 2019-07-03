@@ -1,6 +1,7 @@
-package net.jkcode.jksoa.tracer.common.entity
+package net.jkcode.jksoa.tracer.common.entity.service
 
 import net.jkcode.jkmvc.orm.OrmEntity
+import net.jkcode.jksoa.tracer.common.entity.tracer.Trace
 
 /**
  * 应用信息

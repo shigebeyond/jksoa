@@ -1,14 +1,18 @@
 package net.jkcode.jksoa.tracer.agent
 
+import net.jkcode.jkmvc.common.Application
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jksoa.client.referer.RefererLoader
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.getServiceClass
 import net.jkcode.jksoa.tracer.agent.spanner.ClientSpanner
 import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
 import net.jkcode.jksoa.tracer.agent.spanner.InitiatorSpanner
 import net.jkcode.jksoa.tracer.agent.spanner.ServerSpanner
-import net.jkcode.jksoa.tracer.common.entity.Span
+import net.jkcode.jksoa.tracer.collector.service.OrmCollectorService
+import net.jkcode.jksoa.tracer.common.entity.tracer.Span
+import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -16,6 +20,7 @@ import kotlin.reflect.jvm.javaMethod
 /**
  * 系统跟踪类
  * 都需要创建trace才能操作其他api
+ * 用#号前缀来标识发起人的service
  *
  * 在client
  * 1. 第一次创建trace, 即可创建 rootspan, 其parentid为null, 记录为后面span的parentspan -- http处理/定时任务处理
@@ -36,6 +41,46 @@ class Tracer protected constructor() {
          * 取样器
          */
         protected val sampler = BaseSample()
+
+        /**
+         * collector服务
+         */
+        //protected val collectorService: ICollectorService = Referer.getRefer<ICollectorService>()
+        public val collectorService: ICollectorService = OrmCollectorService()
+
+        /**
+         * <服务名, 服务id>
+         */
+        public val serviceMap:HashMap<String, Int> = HashMap()
+
+        init {
+            // 扫描加载Referer服务
+            RefererLoader.load()
+
+            // 获得service
+            val refers = RefererLoader.getAll()
+            val serviceNames = refers.map { it.serviceId }
+
+            // 同步service
+            syncServices(serviceNames)
+        }
+
+        /**
+         * 同步service
+         */
+        public fun syncServices(serviceNames: List<String>) {
+            if(serviceMap.keys.containsAll(serviceNames))
+                return
+
+            // 只同步新的service
+            val newServiceNames = ArrayList(serviceNames)
+            newServiceNames.removeAll(serviceMap.keys)
+            if(newServiceNames.isNotEmpty()) {
+                // 同步service
+                val serviceMap = collectorService.syncServices(Application.name, newServiceNames)
+                this.serviceMap.putAll(serviceMap)
+            }
+        }
 
         /**
          * 线程安全的跟踪器对象缓存
@@ -86,17 +131,20 @@ class Tracer protected constructor() {
      * @return
      */
     public fun startInitiatorSpanSpanner(method: Method): ISpanner {
-        return startInitiatorSpanSpanner(method.getServiceClass().name, method.getSignature())
+        return startInitiatorSpanSpanner(method.declaringClass.name, method.getSignature())
     }
 
     /**
      * 新建发起人的span
      *
-     * @param serviceId
+     * @param serviceName
      * @param name
      * @return
      */
-    public fun startInitiatorSpanSpanner(serviceId: String, name: String): ISpanner {
+    public fun startInitiatorSpanSpanner(serviceName: String, name: String): ISpanner {
+        // 用#号前缀来标识发起人的service
+        val serviceName2 = "#$serviceName"
+
         // 初始化取样 + id
         if(isSample == null) {
             isSample = sampler.isSample()
@@ -106,7 +154,7 @@ class Tracer protected constructor() {
         // 创建span
         val span = Span()
         span.id = generateId("span")
-        span.service = serviceId;
+        span.serviceId = serviceMap[serviceName2]!!;
         span.name = name
         span.traceId = id
 
@@ -123,6 +171,10 @@ class Tracer protected constructor() {
      * @return
      */
     public fun startServerSpanSpanner(req: IRpcRequest): ISpanner {
+        // 不跟踪 ICollectorService
+        if(req.serviceId == ICollectorService::class.qualifiedName)
+            return ISpanner.EmptySpanner
+
         // 初始化取样 + id : 根据请求的附加参数来确定
         val traceId: Long? = req.getAttachment("traceId")
         if(traceId == null) { // 不采样
@@ -135,7 +187,7 @@ class Tracer protected constructor() {
         val span = Span()
         span.id = req.getAttachment("spanId")!!
         span.parentId = req.getAttachment("parentId")!!
-        span.service = req.serviceId;
+        span.serviceId = serviceMap[req.serviceId]!!;
         span.name = req.methodSignature
         span.traceId = id
 
@@ -152,13 +204,18 @@ class Tracer protected constructor() {
      * @return
      */
     public fun startClientSpanSpanner(req: IRpcRequest): ISpanner {
-        if(!isSample!!) // 不取样
+        // 不跟踪 ICollectorService
+        if(req.serviceId == ICollectorService::class.qualifiedName)
+            return ISpanner.EmptySpanner
+
+        // 不取样
+        if(!isSample!!)
             return ISpanner.EmptySpanner
 
         // 创建span
         val span = Span()
         span.id = generateId("span")
-        span.service = req.serviceId;
+        span.serviceId = serviceMap[req.serviceId]!!
         span.name = req.methodSignature
         span.traceId = id
 

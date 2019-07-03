@@ -1,13 +1,18 @@
 package net.jkcode.jksoa.tracer.collector.service
 
 import net.jkcode.jkmvc.common.Application
+import net.jkcode.jkmvc.orm.collectColumn
 import net.jkcode.jkmvc.orm.toMap
 import net.jkcode.jksoa.guard.combiner.RequestQueueFlusher
-import net.jkcode.jksoa.tracer.common.entity.Span
-import net.jkcode.jksoa.tracer.common.model.AppModel
-import net.jkcode.jksoa.tracer.common.model.ServiceModel
+import net.jkcode.jksoa.tracer.common.entity.tracer.Span
+import net.jkcode.jksoa.tracer.common.entity.tracer.Annotation
+import net.jkcode.jksoa.tracer.common.entity.service.Service
+import net.jkcode.jksoa.tracer.common.model.service.AppModel
+import net.jkcode.jksoa.tracer.common.model.service.ServiceModel
+import net.jkcode.jksoa.tracer.common.model.tracer.AnnotationModel
+import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
+import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
 import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
-import net.jkcode.jksoa.tracer.common.service.IInsertService
 
 import java.util.concurrent.CompletableFuture
 
@@ -19,40 +24,45 @@ import java.util.concurrent.CompletableFuture
  */
 class OrmCollectorService : ICollectorService {
 
-    private var insertService: IInsertService = OrmInsertService()
-
-
     /**
      * 同步服务
+     *    1 只新增, 不删除
+     *    2 返回所有应用的service, 用于获得service对应的id, 给span引用, 存储时省点空间
+     *
      * @param appName 应用名
      * @param serviceNames 服务全类名
-     * @return appId + service的name对id的映射
+     * @return 所有应用的service的name对id的映射
      */
-    public override fun syncService(appName: String, serviceNames: List<String>): CompletableFuture<Pair<Int, HashMap<String, Int>>>? {
+    public override fun syncServices(appName: String, serviceNames: List<String>): Map<String, Int> {
         // 查询app
-        val app = AppModel.queryBuilder().where("name", Application.name).findModel<AppModel>()
+        var app = AppModel.queryBuilder().where("name", Application.name).findModel<AppModel>()
         if(app == null){
             // 新建app
-            val app = AppModel()
+            app = AppModel()
             app.name = Application.name
             app.create()
         }
         val appId = app!!.id
 
         // 查询service
-        val serviceMap = ServiceModel.queryBuilder().where("name", "IN", serviceNames).findAllModels<ServiceModel>().toMap<String, Int>("name", "id") as HashMap<String, Int>
+        val oldServices = ServiceModel.queryBuilder().where("app_id", app.id).findAllModels<ServiceModel>()
+        val oldServiceNames = oldServices.collectColumn("name")
 
-        // 新建service
-        (serviceNames as MutableList).removeAll(serviceMap.keys)
-        for (name in serviceNames){
-            val service = ServiceModel()
-            service.appId = app.id
-            service.name = name
-            service.create()
-            serviceMap.put(name, service.id)
+        // 新建service -- 只新增, 不删除
+        val newServiceNames = ArrayList(serviceNames)
+        newServiceNames.removeAll(oldServiceNames)
+        if(newServiceNames.isNotEmpty()) {
+            val newServices = newServiceNames.map { name ->
+                val service = Service()
+                service.appId = app.id
+                service.name = name
+                service
+            }
+            ServiceModel.batchInsert(newServices)
         }
 
-        return CompletableFuture.completedFuture(appId to serviceMap)
+        // 返回全部service
+        return ServiceModel.queryBuilder().findAllModels<ServiceModel>().toMap<String, Int>("name", "id") as Map<String, Int>
     }
 
     /**
@@ -61,17 +71,8 @@ class OrmCollectorService : ICollectorService {
     private val spanQueue: RequestQueueFlusher<List<Span>, Void> = object: RequestQueueFlusher<List<Span>, Void>(100, 100){
         // 处理刷盘的元素
         override fun handleFlush(spanses: List<List<Span>>, reqs: ArrayList<Pair<List<Span>, CompletableFuture<Void>>>): Boolean {
-            val spans = ArrayList<Span>()
-            spanses.forEach {
-                spans.addAll(it)
-            }
-
-            for (s in spans) {
-                insertService.addSpan(s)
-                insertService.addTrace(s)
-                insertService.addAnnotation(s)
-            }
-
+            // 保存span
+            saveSpans(spanses)
             return true
         }
     }
@@ -86,5 +87,39 @@ class OrmCollectorService : ICollectorService {
         return spanQueue.add(spans)
     }
 
+    /**
+     * 保存收到的span
+     */
+    protected fun saveSpans(data: List<List<Span>>){
+        //1 保存span
+        // 收集合格的span
+        val spans = ArrayList<Span>()
+        data.forEach {
+            it.filterTo(spans){ span ->
+                // 过滤有效的span
+                !span.isRoot || span.isRoot && span.isTopAnntation
+            }
+        }
+        SpanModel.batchInsert(spans)
 
+        // 2 保存trace
+        val traces = spans.filter { span ->
+            span.isRoot && span.isTopAnntation // 根span
+        }.map { span ->
+            val t = TraceModel()
+            t.id = span.traceId
+            t.duration = span.calculateDurationClient().toInt() // 耗时
+            t.serviceId = span.serviceId
+            t.timestamp = span.startTimeClient // 开始时间
+            t
+        }
+        TraceModel.batchInsert(traces)
+
+        // 3 保存annotation
+        val annotations = ArrayList<Annotation>()
+        spans.forEach {
+            annotations.addAll(it.annotations)
+        }
+        AnnotationModel.batchInsert(annotations)
+    }
 }

@@ -1,9 +1,8 @@
 package net.jkcode.jksoa.tracer.web.controller
 
 import net.jkcode.jkmvc.http.controller.Controller
-import net.jkcode.jkmvc.orm.itemToMap
-import net.jkcode.jksoa.tracer.common.model.AppModel
-import net.jkcode.jksoa.tracer.common.model.ServiceModel
+import net.jkcode.jksoa.tracer.common.model.service.AppModel
+import net.jkcode.jksoa.tracer.common.model.service.ServiceModel
 
 /**
  * 服务信息查询的控制器

@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.common.entity
+package net.jkcode.jksoa.tracer.common.entity.tracer
 
 import net.jkcode.jkmvc.orm.OrmEntity
 
@@ -15,7 +15,7 @@ open class Trace: OrmEntity()  {
 
 	public var duration:Int by property() //
 
-	public var service:String by property() //  
+	public var serviceId:Int by property() //
 
 	public var timestamp:Long by property() //
 

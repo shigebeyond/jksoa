@@ -9,7 +9,7 @@ import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.RpcRequest
-import net.jkcode.jksoa.common.interceptor.IRpcInterceptor
+import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.guard.MethodGuard
 import net.jkcode.jksoa.guard.MethodGuardInvocationHandler
 import java.lang.reflect.Method
@@ -30,9 +30,9 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
     public val config = Config.instance("client", "yaml")
 
     /**
-     * 拦截器
+     * 客户端处理rpc请求的拦截器
      */
-    public val interceptors: List<IRpcInterceptor> = IRpcInterceptor.load(config)
+    public val interceptors: List<IRpcRequestInterceptor> = IRpcRequestInterceptor.load(config, "interceptors")
 
     /**
      * rpc连接集中器

@@ -1,9 +1,9 @@
-package net.jkcode.jksoa.tracer.common.model
+package net.jkcode.jksoa.tracer.common.model.tracer
 
 import net.jkcode.jkmvc.model.GeneralModel
 import net.jkcode.jkmvc.orm.IOrm
 import net.jkcode.jkmvc.orm.OrmMeta
-import net.jkcode.jksoa.tracer.common.entity.Annotation
+import net.jkcode.jksoa.tracer.common.entity.tracer.Annotation
 
 /**
  * span的标注信息

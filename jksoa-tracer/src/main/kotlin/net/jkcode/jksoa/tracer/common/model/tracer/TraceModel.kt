@@ -1,10 +1,9 @@
-package net.jkcode.jksoa.tracer.common.model
+package net.jkcode.jksoa.tracer.common.model.tracer
 
 import net.jkcode.jkmvc.model.GeneralModel
 import net.jkcode.jkmvc.orm.IOrm
 import net.jkcode.jkmvc.orm.OrmMeta
-import net.jkcode.jksoa.tracer.common.entity.Span
-import net.jkcode.jksoa.tracer.common.entity.Trace
+import net.jkcode.jksoa.tracer.common.entity.tracer.Trace
 
 /**
  * trace
