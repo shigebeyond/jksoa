@@ -3,6 +3,7 @@ package net.jkcode.jksoa.tracer.agent.interceptor
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.tracer.agent.Tracer
+import net.jkcode.jksoa.tracer.agent.loader.AnnotationTraceableServiceLoader
 import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
 
 /**
@@ -12,7 +13,7 @@ import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-30 2:53 PM
  */
-class RpcClientRequestInterceptor: IRpcRequestInterceptor {
+class RpcClientRequestInterceptor: IRpcRequestInterceptor, AnnotationTraceableServiceLoader() {
 
     /**
      * 前置处理

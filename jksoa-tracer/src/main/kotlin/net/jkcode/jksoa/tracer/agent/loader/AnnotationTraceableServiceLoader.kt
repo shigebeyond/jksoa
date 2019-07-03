@@ -18,7 +18,7 @@ import kotlin.collections.set
  * @author shijianhang
  * @date 2019-7-3 下午8:02:47
  */
-class AnnotationTraceableServiceLoader(annotation: Class<out Annotation>) : ITraceableServiceLoader()  {
+open class AnnotationTraceableServiceLoader : ITraceableServiceLoader()  {
 
     /**
      * http配置
@@ -26,7 +26,7 @@ class AnnotationTraceableServiceLoader(annotation: Class<out Annotation>) : ITra
     public val config = Config.instance("agent", "yaml")
 
     /**
-     * 加载自定义的服务
+     * 加载自定义的服务: 做了去重
      *    如@TraceableService注解的类
      */
     override fun load(): List<String> {
@@ -46,7 +46,7 @@ class AnnotationTraceableServiceLoader(annotation: Class<out Annotation>) : ITra
                 serviceNames.add("#${clazz.name}")
         }
 
-        // 扫描
+        // 扫描包: 做了去重
         c.addPackages(pcks!!)
 
         return serviceNames
