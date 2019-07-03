@@ -1,6 +1,8 @@
 package net.jkcode.jksoa.client.dispatcher
 
+import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IPlugin
 import net.jkcode.jkmvc.common.get
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.connection.ConnectionHub
@@ -21,12 +23,17 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
-object RcpRequestDispatcher : IRpcRequestDispatcher {
+object RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
 
     /**
      * 客户端配置
      */
     public val config = Config.instance("client", "yaml")
+
+    /**
+     * 插件列表
+     */
+    public val plugins: List<IPlugin> = config.classes2Instances("plugins")
 
     /**
      * rpc连接集中器
@@ -41,6 +48,19 @@ object RcpRequestDispatcher : IRpcRequestDispatcher {
     init {
         // 延迟扫描加载Referer服务
         RefererLoader.load()
+
+        // 初始化插件
+        for(p in plugins)
+            p.start()
+    }
+
+    /**
+     * 关闭
+     */
+    override fun close() {
+        // 关闭插件
+        for(p in plugins)
+            p.close()
     }
 
     /**

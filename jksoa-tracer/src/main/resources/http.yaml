@@ -4,5 +4,5 @@ debug: true
 # controller classes's package paths
 controllerPackages:
     - net.jkcode.jksoa.tracer.web.controller
-requestInterceptors: # 请求拦截器, 用于采集与发送span
-    - net.jkcode.jksoa.tracer.agent.interceptor.HttpServerRequestInterceptor
+plugins: # 跟踪的插件
+    - net.jkcode.jksoa.tracer.agent.plugin.HttpServerPlugin

@@ -3,7 +3,6 @@ package net.jkcode.jksoa.tracer.agent
 import net.jkcode.jkmvc.common.Application
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jksoa.client.referer.RpcInvocationHandler
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.tracer.agent.loader.ITraceableServiceLoader
 import net.jkcode.jksoa.tracer.agent.sample.BaseSample
@@ -46,11 +45,6 @@ class Tracer protected constructor() {
         protected val sampler = BaseSample()
 
         /**
-         * 可跟踪的服务加载器
-         */
-        protected val serviceLoaders: LinkedList<ITraceableServiceLoader> = LinkedList()
-
-        /**
          * collector服务
          */
         //protected val collectorService: ICollectorService = Referer.getRefer<ICollectorService>()
@@ -59,27 +53,43 @@ class Tracer protected constructor() {
         /**
          * <服务名, 服务id>
          */
-        public val serviceMap: Map<String, Int> by lazy{
-            // 预先加载client端的拦截器组件, 让其一开始就做好组件初始化
-            tracerLogger.info("Trace预先加载其依赖的client端interceptors: {}", RpcInvocationHandler.interceptors)
+        public val serviceMap:HashMap<String, Int> = HashMap()
 
-            // 加载service
-            val serviceNames = LinkedList<String>()
-            for(l in serviceLoaders)
-                serviceNames.addAll(l.load())
+        /**
+         * 可跟踪的服务加载器
+         */
+        protected val serviceLoaders: LinkedList<ITraceableServiceLoader> = LinkedList()
 
-            // 同步service
-            val serviceMap = collectorService.syncServices(Application.name, serviceNames) as MutableMap
-            serviceMap.putAll(serviceMap)
-            tracerLogger.info("同步servcie: {}", serviceNames)
-            serviceMap
+        /**
+         * 同步加载器的service
+         */
+        public fun syncLoaderServices(loader: ITraceableServiceLoader) {
+            // 去重
+            if(!serviceLoaders.contains(loader)) {
+                serviceLoaders.add(loader)
+                // 同步service
+                syncServices(loader.load())
+            }
         }
 
         /**
-         * 添加可跟踪的服务加载器
+         * 同步service
          */
-        public fun addServiceLoader(l: ITraceableServiceLoader){
-            serviceLoaders.add(l)
+        @Synchronized
+        public fun syncServices(serviceNames: List<String>) {
+            // 去重
+            if(serviceMap.keys.containsAll(serviceNames))
+                return
+
+            // 只同步新的service
+            val newServiceNames = ArrayList(serviceNames)
+            newServiceNames.removeAll(serviceMap.keys)
+            if(newServiceNames.isNotEmpty()) {
+                // 同步service
+                val serviceMap = collectorService.syncServices(Application.name, newServiceNames)
+                this.serviceMap.putAll(serviceMap)
+            }
+            tracerLogger.info("同步servcie: {}", serviceNames)
         }
 
         /**
@@ -154,7 +164,7 @@ class Tracer protected constructor() {
         // 创建span
         val span = Span()
         span.id = generateId("span")
-        span.serviceId = getServiceIdByName(serviceName2)
+        span.serviceId = serviceMap[serviceName2]!!;
         span.name = name
         span.traceId = id
 
@@ -187,7 +197,7 @@ class Tracer protected constructor() {
         val span = Span()
         span.id = req.getAttachment("spanId")!!
         span.parentId = req.getAttachment("parentId")!!
-        span.serviceId = getServiceIdByName(req.serviceId)
+        span.serviceId = serviceMap[req.serviceId]!!;
         span.name = req.methodSignature
         span.traceId = id
 
@@ -215,7 +225,7 @@ class Tracer protected constructor() {
         // 创建span
         val span = Span()
         span.id = generateId("span")
-        span.serviceId = getServiceIdByName(req.serviceId)
+        span.serviceId = serviceMap[req.serviceId]!!
         span.name = req.methodSignature
         span.traceId = id
 
@@ -229,16 +239,6 @@ class Tracer protected constructor() {
         req.setAttachment("traceId", span.traceId)
 
         return ClientSpanner(this, span).apply { start() }
-    }
-
-    /**
-     * 获得服务id
-     */
-    protected fun getServiceIdByName(name: String): Int{
-        if(!serviceMap.containsKey(name))
-            throw IllegalArgumentException("不能识别服务: $name")
-
-        return serviceMap[name]!!
     }
 
     /**

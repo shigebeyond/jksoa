@@ -10,13 +10,11 @@ import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.timeout.IdleStateHandler
 import io.netty.util.concurrent.DefaultThreadFactory
-import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageDecoder
 import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageEncoder
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.IRpcServer
-import java.io.Closeable
 
 /**
  * netty服务端
@@ -25,7 +23,7 @@ import java.io.Closeable
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-open class NettyServer : IRpcServer(), Closeable {
+open class NettyServer : IRpcServer() {
 
     /**
      * 服务端的netty配置
@@ -103,9 +101,6 @@ open class NettyServer : IRpcServer(), Closeable {
      * 启动server
      */
     public override fun doStart(callback: () -> Unit): Unit{
-        // 关机时要关闭
-        ClosingOnShutdown.addClosing(this)
-
        try {
            // Bind and start to accept incoming connections.
            val f: ChannelFuture = bootstrap.bind(serverUrl.port).sync()
@@ -134,6 +129,8 @@ open class NettyServer : IRpcServer(), Closeable {
      * 关闭server
      */
     public override fun close() {
+        super.close()
+
         serverLogger.debug("NettyServer关闭netty工作线程池")
         workerGroup.shutdownGracefully();
         bossGroup.shutdownGracefully();

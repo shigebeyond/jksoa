@@ -4,12 +4,12 @@ import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.common.IInterceptor
+import net.jkcode.jkmvc.common.IRequestInterceptor
 import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
-import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.RpcContext
 import net.jkcode.jksoa.server.provider.ProviderLoader
@@ -31,7 +31,7 @@ object RpcRequestHandler : IRpcRequestHandler {
     /**
      * 服务端处理rpc请求的拦截器
      */
-    public override val interceptors: List<IRpcRequestInterceptor> = IRpcRequestInterceptor.load(config, "requestInterceptors")
+    public override val interceptors: List<IRpcRequestInterceptor> = config.classes2Instances("requestInterceptors")
 
     /**
      * 处理请求: 调用Provider来处理
@@ -39,7 +39,7 @@ object RpcRequestHandler : IRpcRequestHandler {
      * @param req
      */
     public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
-        IInterceptor.trySupplierFinallyAroundInterceptor(interceptors, req, {callProvider(req, ctx)} /* 调用provider方法 */){ r, e ->
+        IRequestInterceptor.trySupplierFinallyAroundInterceptor(interceptors, req, {callProvider(req, ctx)} /* 调用provider方法 */){ r, e ->
             endResponse(req, r, e, ctx) // 返回响应
         }
     }

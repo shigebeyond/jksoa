@@ -2,8 +2,6 @@ package net.jkcode.jksoa.tracer.agent.interceptor
 
 import net.jkcode.jkmvc.http.HttpRequest
 import net.jkcode.jkmvc.http.IHttpRequestInterceptor
-import net.jkcode.jkmvc.http.controller.ControllerClassLoader
-import net.jkcode.jksoa.tracer.agent.loader.ITraceableServiceLoader
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
 
@@ -14,19 +12,7 @@ import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-30 2:53 PM
  */
-class HttpServerRequestInterceptor: IHttpRequestInterceptor, ITraceableServiceLoader() {
-
-    /**
-     * 加载自定义的服务
-     *    如web框架中的controller类
-     */
-    override fun load(): List<String> {
-        // 同步发起人的service: controller类名
-        val controllerClasses = ControllerClassLoader.getAll()
-        val services = controllerClasses.map { it.clazz.qualifiedName }
-        // 用#号前缀来标识发起人的service
-        return services.map { "#$it" }
-    }
+class HttpServerRequestInterceptor: IHttpRequestInterceptor {
 
     /**
      * 前置处理

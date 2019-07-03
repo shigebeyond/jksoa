@@ -1,7 +1,5 @@
 package net.jkcode.jksoa.tracer.agent.loader
 
-import net.jkcode.jksoa.tracer.agent.Tracer
-
 /**
  * 可跟踪的服务加载器
  *   依赖于IInterceptor机制, 基于IInterceptor的初始化来做tracer的初始化
@@ -10,11 +8,6 @@ import net.jkcode.jksoa.tracer.agent.Tracer
  * @date 2019-07-03 11:58 AM
  */
 abstract class ITraceableServiceLoader {
-
-    init {
-        // Tracer 会记录每一个服务加载器
-        Tracer.addServiceLoader(this)
-    }
 
     /**
      * 加载自定义的服务

@@ -1,14 +1,16 @@
 package net.jkcode.jksoa.server
 
+import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.common.IPlugin
 import net.jkcode.jkmvc.common.getIntranetHost
 import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
-import net.jkcode.jksoa.common.IRpcServerInterceptor
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.provider.ProviderLoader
+import java.io.Closeable
 
 /**
  * rpc协议-服务器端
@@ -17,7 +19,7 @@ import net.jkcode.jksoa.server.provider.ProviderLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:58 PM
  **/
-abstract class IRpcServer {
+abstract class IRpcServer: Closeable {
 
     // 可配置的单例
     companion object mxx: NamedConfiguredSingletons<IRpcServer>() {
@@ -30,11 +32,6 @@ abstract class IRpcServer {
          * 服务端配置
          */
         public val config = Config.instance("server", "yaml")
-
-        /**
-         * rpc server启动的拦截器
-         */
-        public val interceptors: List<IRpcServerInterceptor> = IRpcServerInterceptor.load(config, "serverInterceptors")
 
         /**
          * 当前启动的服务器
@@ -50,6 +47,11 @@ abstract class IRpcServer {
             return server
         }
     }
+
+    /**
+     * 插件列表
+     */
+    public val plugins: List<IPlugin> = config.classes2Instances("plugins")
 
     /**
      * 服务器url
@@ -80,12 +82,15 @@ abstract class IRpcServer {
                 //启动后，主动调用 ProviderLoader.load() 来扫描加载Provider服务
                 ProviderLoader.load()
 
-                //调用拦截器后置处理
-                for (i in interceptors)
-                    i.after(null, null, null)
+                // 初始化插件
+                for(p in plugins)
+                    p.start()
 
                 // 调用原来的回调
                 callback?.invoke()
+
+                // 关机时要关闭
+                ClosingOnShutdown.addClosing(this)
             }
         }catch(e: Exception){
             serverLogger.error("${name}在地址[$serverUrl]上启动失败", e)
@@ -98,4 +103,13 @@ abstract class IRpcServer {
      * @param callback 启动后回调
      */
     abstract fun doStart(callback: () -> Unit)
+
+    /**
+     * 关闭server
+     */
+    override fun close(){
+        // 关闭插件
+        for(p in plugins)
+            p.close()
+    }
 }

@@ -1,24 +1,20 @@
 package net.jkcode.jksoa.tracer.agent.loader
 
-import net.jkcode.jkmvc.common.*
-import net.jkcode.jkmvc.http.httpLogger
-import net.jkcode.jksoa.common.annotation.Service
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.LambdaClassScanner
+import net.jkcode.jkmvc.common.classPath2class
+import net.jkcode.jkmvc.common.isNullOrEmpty
 import net.jkcode.jksoa.tracer.agent.TraceableService
-import java.lang.reflect.Modifier
 import java.util.*
-import kotlin.collections.Collection
-import kotlin.collections.HashMap
-import kotlin.collections.List
-import kotlin.collections.MutableMap
-import kotlin.collections.set
 
 /**
  * 有@TraceableService注解的类的加载器
+ *    因为被多个插件引用, 因此做成单例, 去重调用
  *
  * @author shijianhang
  * @date 2019-7-3 下午8:02:47
  */
-open class AnnotationTraceableServiceLoader : ITraceableServiceLoader()  {
+object AnnotationServiceLoader : ITraceableServiceLoader()  {
 
     /**
      * http配置
@@ -26,7 +22,7 @@ open class AnnotationTraceableServiceLoader : ITraceableServiceLoader()  {
     public val config = Config.instance("agent", "yaml")
 
     /**
-     * 加载自定义的服务: 做了去重
+     * 加载自定义的服务
      *    如@TraceableService注解的类
      */
     override fun load(): List<String> {

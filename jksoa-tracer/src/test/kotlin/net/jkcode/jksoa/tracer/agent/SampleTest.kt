@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.tracer.agent
 
 import junit.framework.TestCase
+import net.jkcode.jksoa.tracer.agent.sample.BaseSample
 import org.junit.Test
 
 import java.util.concurrent.atomic.AtomicLong
