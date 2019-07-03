@@ -3,9 +3,9 @@ package net.jkcode.jksoa.tracer.agent
 import net.jkcode.jkmvc.common.Application
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jksoa.client.referer.RefererLoader
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.getServiceClass
+import net.jkcode.jksoa.tracer.agent.loader.ITraceableServiceLoader
+import net.jkcode.jksoa.tracer.agent.sample.BaseSample
 import net.jkcode.jksoa.tracer.agent.spanner.ClientSpanner
 import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
 import net.jkcode.jksoa.tracer.agent.spanner.InitiatorSpanner
@@ -13,7 +13,9 @@ import net.jkcode.jksoa.tracer.agent.spanner.ServerSpanner
 import net.jkcode.jksoa.tracer.collector.service.OrmCollectorService
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
+import net.jkcode.jksoa.tracer.tracerLogger
 import java.lang.reflect.Method
+import java.util.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
@@ -43,6 +45,11 @@ class Tracer protected constructor() {
         protected val sampler = BaseSample()
 
         /**
+         * 可跟踪的服务加载器
+         */
+        protected val serviceLoaders: LinkedList<ITraceableServiceLoader> = LinkedList()
+
+        /**
          * collector服务
          */
         //protected val collectorService: ICollectorService = Referer.getRefer<ICollectorService>()
@@ -54,15 +61,20 @@ class Tracer protected constructor() {
         public val serviceMap:HashMap<String, Int> = HashMap()
 
         init {
-            // 扫描加载Referer服务
-            RefererLoader.load()
-
-            // 获得service
-            val refers = RefererLoader.getAll()
-            val serviceNames = refers.map { it.serviceId }
+            // 加载service
+            val serviceNames = LinkedList<String>()
+            for(l in serviceLoaders)
+                serviceNames.addAll(l.load())
 
             // 同步service
             syncServices(serviceNames)
+        }
+
+        /**
+         * 添加可跟踪的服务加载器
+         */
+        public fun addServiceLoader(l: ITraceableServiceLoader){
+            serviceLoaders.add(l)
         }
 
         /**
@@ -80,6 +92,7 @@ class Tracer protected constructor() {
                 val serviceMap = collectorService.syncServices(Application.name, newServiceNames)
                 this.serviceMap.putAll(serviceMap)
             }
+            tracerLogger.info("同步servcie: {}", serviceNames)
         }
 
         /**

@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.agent
+package net.jkcode.jksoa.tracer.agent.sample
 
 import net.jkcode.jkmvc.common.currMillis
 

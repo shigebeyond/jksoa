@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.agent
+package net.jkcode.jksoa.tracer.agent.sample
 
 /**
  * 采样器

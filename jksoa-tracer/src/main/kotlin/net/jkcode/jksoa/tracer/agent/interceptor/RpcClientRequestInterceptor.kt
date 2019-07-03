@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.agent.interceptor.rpc
+package net.jkcode.jksoa.tracer.agent.interceptor
 
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
