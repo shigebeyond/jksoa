@@ -145,6 +145,18 @@ class Tracer protected constructor() {
     }
 
     /**
+     * 根据服务名获得id
+     * @param name
+     * @return id
+     */
+    fun getServiceIdByName(name: String): Int{
+        if(!serviceMap.containsKey(name))
+            throw IllegalArgumentException("不能识别服务: $name")
+
+        return serviceMap[name]!!
+    }
+
+    /**
      * 新建发起人的span
      *
      * @param serviceName
@@ -164,7 +176,7 @@ class Tracer protected constructor() {
         // 创建span
         val span = Span()
         span.id = generateId("span")
-        span.serviceId = serviceMap[serviceName2]!!;
+        span.serviceId = getServiceIdByName(serviceName2)
         span.name = name
         span.traceId = id
 
@@ -197,7 +209,7 @@ class Tracer protected constructor() {
         val span = Span()
         span.id = req.getAttachment("spanId")!!
         span.parentId = req.getAttachment("parentId")!!
-        span.serviceId = serviceMap[req.serviceId]!!;
+        span.serviceId = getServiceIdByName(req.serviceId)
         span.name = req.methodSignature
         span.traceId = id
 
@@ -225,7 +237,7 @@ class Tracer protected constructor() {
         // 创建span
         val span = Span()
         span.id = generateId("span")
-        span.serviceId = serviceMap[req.serviceId]!!
+        span.serviceId = getServiceIdByName(req.serviceId)
         span.name = req.methodSignature
         span.traceId = id
 
