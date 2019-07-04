@@ -17,22 +17,21 @@ class RpcClientRequestInterceptor: IRpcRequestInterceptor {
     /**
      * 前置处理
      * @param req
-     * @return 是否通过
+     * @return 调用结果作为after()调用的第二参数
      */
-    override fun before(req: IRpcRequest): Boolean {
-        val spanner = Tracer.current().startClientSpanSpanner(req)
-        req.setAttachment("clientSpanner", spanner)
-        return true
+    override fun before(req: IRpcRequest): Any? {
+        return Tracer.current().startClientSpanner(req)
     }
 
     /**
      * 后置处理
-     * @param req
-     * @param result
-     * @param ex
+     * @param req 可能会需要通过req来传递before()中操作过的对象, 如
+     * @param beforeResult before()方法的调用结果
+     * @param result 目标方法的调用结果
+     * @param ex 目标方法的调用异常
      */
-    override fun after(req: IRpcRequest, result: Any?, ex: Throwable?) {
-        val spanner = req.removeAttachment("clientSpanner") as ISpanner
+    override fun after(req: IRpcRequest, beforeResult: Any?, result: Any?, ex: Throwable?) {
+        val spanner = beforeResult as ISpanner
         spanner.end(ex)
     }
 

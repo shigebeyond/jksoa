@@ -17,24 +17,22 @@ class HttpServerRequestInterceptor: IHttpRequestInterceptor {
     /**
      * 前置处理
      * @param req
-     * @return 是否通过
+     * @return 调用结果作为after()调用的第二参数
      */
-    override fun before(req: HttpRequest): Boolean {
-        val spanner = Tracer.current().startInitiatorSpanSpanner(req.controller, req.action)
-        req.setAttribute("initiatorSpanner", spanner)
-        return true
+    override fun before(req: HttpRequest): Any? {
+        return Tracer.current().startInitiatorSpanner(req.controllerClass.clazz.qualifiedName!!, req.action)
     }
 
     /**
      * 后置处理
      * @param req 可能会需要通过req来传递before()中操作过的对象, 如
-     * @param result
-     * @param ex
+     * @param beforeResult before()方法的调用结果
+     * @param result 目标方法的调用结果
+     * @param ex 目标方法的调用异常
      */
-    override fun after(req: HttpRequest, result: Any?, ex: Throwable?) {
-        val spanner = req.getAttribute("initiatorSpanner") as ISpanner
+    override fun after(req: HttpRequest, beforeResult: Any?, result: Any?, ex: Throwable?) {
+        val spanner = beforeResult as ISpanner
         spanner.end(ex)
-        req.removeAttribute("initiatorSpanner")
     }
 
 }
