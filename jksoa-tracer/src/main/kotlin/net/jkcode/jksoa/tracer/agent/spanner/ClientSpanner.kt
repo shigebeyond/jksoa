@@ -17,7 +17,6 @@ open class ClientSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 	 * 开始跟踪
 	 */
 	public override fun start(){
-		println("----------" + "cs")
 		span.addCsAnnotation()
 	}
 
@@ -27,14 +26,12 @@ open class ClientSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 	 * @return
 	 */
 	public override fun end(ex: Throwable?): CompletableFuture<Void> {
-		println("----------" + if(ex != null) "ex" else "cr")
 		if(ex != null)
 			span.addExAnnotation(ex)
 		else
 			span.addCrAnnotation()
 
 		// 待发送span入队
-		println("---------- send client span: " + span)
 		return spanQueue.add(span)
 	}
 

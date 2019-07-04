@@ -17,7 +17,6 @@ class ServerSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 	 * 开始跟踪
 	 */
 	public override fun start(){
-		println("----------" + "sr")
 		span.addSrAnnotation()
 	}
 
@@ -27,7 +26,6 @@ class ServerSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 	 * @return
 	 */
 	public override fun end(ex: Throwable?): CompletableFuture<Void> {
-		println("----------" + if(ex != null) "ex" else "ss")
 		if(ex != null)
 			span.addExAnnotation(ex)
 		else
@@ -37,7 +35,6 @@ class ServerSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 		tracer.clear()
 
 		// 待发送span入队
-		println("---------- send server span: " + span)
 		return spanQueue.add(span)
 	}
 
