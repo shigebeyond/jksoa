@@ -18,7 +18,7 @@ CREATE TABLE `service` (
 CREATE TABLE `trace` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `duration` int(11) DEFAULT NULL,
-  `service` varchar(1024) CHARACTER SET utf8 DEFAULT NULL,
+  `service_id` int(11) NOT NULL,
   `timestamp` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

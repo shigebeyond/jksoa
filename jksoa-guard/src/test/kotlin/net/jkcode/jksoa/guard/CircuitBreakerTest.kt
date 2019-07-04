@@ -14,7 +14,7 @@ class CircuitBreakerTest {
 
     val circuitBreaker = CircuitBreaker(CircuitBreakType.EXCEPTION_COUNT, 1.0, 5, 5, measurer)
 
-    fun prepareMeasurer() {
+    fun prepareMeasurer(i: Int) {
         while(true) {
             // 添加计数
             for (i in 0 until 100) {
