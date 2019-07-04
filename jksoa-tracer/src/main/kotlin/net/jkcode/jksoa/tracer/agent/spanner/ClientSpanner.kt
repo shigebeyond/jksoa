@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-class ClientSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
+open class ClientSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 
 	/**
 	 * 开始跟踪

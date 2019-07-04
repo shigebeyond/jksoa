@@ -34,6 +34,10 @@ class OrmQueryService : IQueryService {
             data["durationClient"] = span.calculateDurationClient()
             data
         }
+        // 不存在
+        if(rootSpans.isEmpty())
+            return trace
+
         // 获得根span
         val rootSpan = rootSpans.single()
         trace["rootSpan"] = rootSpan

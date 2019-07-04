@@ -32,7 +32,9 @@ class BaseSample(
      * @return
      */
     public override fun isSample(): Boolean {
-        // 一秒内
+        // test
+        return true
+        /*// 一秒内
         if (System.currentTimeMillis() - lastTime < 1000) {
             val n = count.incrementAndGet()
             if (n > base && n % fraction != 0L)
@@ -44,7 +46,7 @@ class BaseSample(
         // 大于一秒
         count.set(0)
         lastTime = currMillis()
-        return true
+        return true*/
     }
 
 }

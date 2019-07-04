@@ -31,7 +31,7 @@ open class Span: OrmEntity() {
 	public val isInitiator: Boolean
 		get(){
 			// 以开始为准, 可能有异常
-			return isAnnotation != null
+			return (parentId == null || parentId == 0L) && isClient
 		}
 
 	/**
@@ -50,20 +50,6 @@ open class Span: OrmEntity() {
 		get(){
 			// 以开始为准, 可能有异常
 			return csAnnotation != null && srAnnotation == null
-		}
-
-	public val isAnnotation: Annotation?
-		get(){
-			return annotations.firstOrNull {
-				it.isIs
-			}
-		}
-
-	public val ieAnnotation: Annotation?
-		get(){
-			return annotations.firstOrNull {
-				it.isIe
-			}
 		}
 
 	public val csAnnotation: Annotation?
@@ -101,9 +87,6 @@ open class Span: OrmEntity() {
 			}
 		}
 
-	public val isRoot: Boolean
-		get() = parentId == null || parentId == 0L
-
 	/**
 	 * 如果某个span没有收集全4个annotation，则判定为不可用
 	 */
@@ -139,20 +122,6 @@ open class Span: OrmEntity() {
 		annotation.spanId = id
 		annotation.serviceId = serviceId
 		addAnnotation(annotation)
-	}
-
-	/**
-	 * 添加is annotation
-	 */
-	public fun addIsAnnotation() {
-		addAnnotation(Annotation.INITIATOR_START)
-	}
-
-	/**
-	 * 添加ie annotation
-	 */
-	public fun addIeAnnotation() {
-		addAnnotation(Annotation.INITIATOR_END)
 	}
 
 	/**
@@ -194,20 +163,12 @@ open class Span: OrmEntity() {
 	 * 获得client的开始时间
 	 */
 	val startTimeClient: Long
-		get(){
-			return if(isRoot && isInitiator)
-						isAnnotation.timestamp
-					else
-						csAnnotation.timestamp
-		}
+		get() = csAnnotation.timestamp
 
 	/**
 	 * 计算client端耗时
 	 */
 	public fun calculateDurationClient(): Long {
-		if(isRoot && isInitiator)
-			return ieAnnotation.timestamp - isAnnotation.timestamp
-
 		return crAnnotation.timestamp - csAnnotation.timestamp
 	}
 

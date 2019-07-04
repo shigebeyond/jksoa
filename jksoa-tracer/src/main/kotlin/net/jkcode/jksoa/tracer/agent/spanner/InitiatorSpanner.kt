@@ -11,15 +11,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-class InitiatorSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
-
-	/**
-	 * 开始跟踪
-	 */
-	public override fun start(){
-		println("----------" + "is")
-		span.addIsAnnotation()
-	}
+class InitiatorSpanner(tracer: Tracer, span: Span): ClientSpanner(tracer, span) {
 
 	/**
 	 * 结束跟踪
@@ -27,18 +19,11 @@ class InitiatorSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 	 * @return
 	 */
 	public override fun end(ex: Throwable?): CompletableFuture<Void> {
-		println("----------" + if(ex != null) "ex" else "ie")
-		if(ex != null)
-			span.addExAnnotation(ex)
-		else
-			span.addIeAnnotation()
+		val result = super.end(ex)
 
 		// 清理当前tracer
 		tracer.clear()
 
-		// 待发送span入队
-		println("---------- send initiator span: " + span)
-		return spanQueue.add(span)
+		return result
 	}
-
 }

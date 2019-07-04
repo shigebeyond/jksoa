@@ -139,7 +139,7 @@ class Tracer protected constructor() {
 
 
     /**
-     * 父span
+     * 父span: 可能是发起人, 也可能是服务端
      */
     protected var parentSpan: Span? = null
 
@@ -192,12 +192,18 @@ class Tracer protected constructor() {
         // 初始化取样 + id
         if(isSample == null) {
             isSample = sampler.isSample()
+
+            // 不取样
+            if(!isSample!!)
+                return EmptySpanner
+
             this.id = generateId("tracer")
         }
 
         // 创建span
         val span = Span()
         span.id = generateId("span")
+        span.parentId = null // 父span为null
         span.serviceId = getServiceIdByName(serviceName2)
         span.name = name
         span.traceId = id
@@ -206,6 +212,40 @@ class Tracer protected constructor() {
         parentSpan = span
 
         return InitiatorSpanner(this, span).apply { start() }
+    }
+
+    /**
+     * 新建客户端的span
+     *
+     * @param req
+     * @return
+     */
+    public fun startClientSpanner(req: IRpcRequest): ISpanner {
+        // 不跟踪 ICollectorService
+        if(req.serviceId == ICollectorService::class.qualifiedName)
+            return EmptySpanner
+
+        // 不取样
+        if(!isSample!!)
+            return EmptySpanner
+
+        // 创建span
+        val span = Span()
+        span.id = generateId("span") // 新开一个span, 用于记录cs/cr的annotation
+        span.serviceId = getServiceIdByName(req.serviceId)
+        span.name = req.methodSignature
+        span.traceId = id
+
+        // 以当前发起人/服务端的span为 父span
+        if(parentSpan != null)
+            span.parentId = parentSpan!!.id
+
+        // 向下游传递的参数
+        req.setAttachment("spanId", span.id)
+        req.setAttachment("parentId", span.parentId)
+        req.setAttachment("traceId", span.traceId)
+
+        return ClientSpanner(this, span).apply { start() }
     }
 
     /**
@@ -229,8 +269,8 @@ class Tracer protected constructor() {
 
         // 创建span
         val span = Span()
-        span.id = req.getAttachment("spanId")!!
-        span.parentId = req.getAttachment("parentId")!!
+        span.id = req.getAttachment("spanId")!! // 复用client的span, 不保存span, 只补充sr/ss的annotation
+        span.parentId = req.getAttachment("parentId")!! // 沿用client的span的父span
         span.serviceId = getServiceIdByName(req.serviceId)
         span.name = req.methodSignature
         span.traceId = id
@@ -239,40 +279,6 @@ class Tracer protected constructor() {
         parentSpan = span
 
         return ServerSpanner(this, span).apply { start() }
-    }
-
-    /**
-     * 新建客户端的span
-     *
-     * @param req
-     * @return
-     */
-    public fun startClientSpanner(req: IRpcRequest): ISpanner {
-        // 不跟踪 ICollectorService
-        if(req.serviceId == ICollectorService::class.qualifiedName)
-            return EmptySpanner
-
-        // 不取样
-        if(!isSample!!)
-            return EmptySpanner
-
-        // 创建span
-        val span = Span()
-        span.id = generateId("span")
-        span.serviceId = getServiceIdByName(req.serviceId)
-        span.name = req.methodSignature
-        span.traceId = id
-
-        // 父span
-        if(parentSpan != null)
-            span.parentId = parentSpan!!.id
-
-        // 向下游传递的参数
-        req.setAttachment("spanId", span.id)
-        req.setAttachment("parentId", span.parentId)
-        req.setAttachment("traceId", span.traceId)
-
-        return ClientSpanner(this, span).apply { start() }
     }
 
     /**
