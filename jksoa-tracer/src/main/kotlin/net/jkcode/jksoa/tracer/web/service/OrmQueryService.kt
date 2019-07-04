@@ -2,6 +2,7 @@ package net.jkcode.jksoa.tracer.web.service
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import net.jkcode.jkmvc.util.TreeJsonFactory
 import net.jkcode.jkmvc.util.TreeNode
 import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
 import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
@@ -25,7 +26,8 @@ class OrmQueryService : IQueryService {
         trace["available"] = spans.all { it.isAvailable }
 
         // 构建span树
-        val rootSpans = TreeNode.buildTreeNodes<Long, SpanModel>(spans, "id", "parentId", "name"){ span ->
+        val rootSpans =TreeJsonFactory<Long>("id", "parentId").buildTreeJsons(spans){
+            val span = it as SpanModel
             val data = span.toMap()
             // 计算耗时
             data["durationServer"] = span.calculateDurationServer()
@@ -35,7 +37,7 @@ class OrmQueryService : IQueryService {
         // 获得根span
         val rootSpan = rootSpans.single()
         trace["rootSpan"] = rootSpan
-        trace["traceId"] = (rootSpan.data as Map<String, *>).get("traceId")
+        trace["traceId"] = rootSpan.get("traceId")
 
         return trace
     }
@@ -52,7 +54,7 @@ class OrmQueryService : IQueryService {
             limit #{limit}
          */
         val items = TraceModel.queryBuilder()
-                .where("serviceId", serviceId)
+                .where("service_id", serviceId)
                 .where("timestamp", ">=", startTime)
                 .where("duration", "<=", durationMax)
                 .where("duration", ">=", durationMin)
@@ -65,7 +67,7 @@ class OrmQueryService : IQueryService {
             obj["serviceId"] = trace.serviceId
             obj["timestamp"] = trace.timestamp
             obj["duration"] = trace.duration
-            obj["traceId"] = trace.id
+            obj["traceId"] = trace.id.toString() // long转string, 预防js对long丢失精度
             array.add(obj)
         }
         return array

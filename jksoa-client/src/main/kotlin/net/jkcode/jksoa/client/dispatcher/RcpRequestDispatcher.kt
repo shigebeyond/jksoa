@@ -72,6 +72,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      */
     public override fun dispatch(req: IRpcRequest): CompletableFuture<Any?> {
         return FailoveRpcResponseFuture(config["maxTryTimes"]!!){
+            clientLogger.debug(" ------ dispatch request ------ ")
             // 1 选择连接
             val conn = connHub.select(req)
 

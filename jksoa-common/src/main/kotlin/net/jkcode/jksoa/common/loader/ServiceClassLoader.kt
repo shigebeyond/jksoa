@@ -37,6 +37,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      *      主要是为了先调用 ProviderLoader.load() 调用, 以便能添加本地服务, 因此要延迟调用
      */
     public fun load(){
+        commonLogger.debug(" ------ load service: {} ------ ", this.javaClass)
         if(loaded.compareAndSet(false, true)) {
             // 系统的service包
             addPackage("net.jkcode.jksoa.service")

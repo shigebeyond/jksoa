@@ -64,6 +64,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         if(res !is RpcResponse)
             return
 
+        clientLogger.debug(" ------ receive response ------ ")
         clientLogger.debug("NettyResponseHandler获得响应: {}", res)
 
         // 1 删除异步响应的记录

@@ -87,24 +87,28 @@ class OrmCollectorService : ICollectorService {
         return spanQueue.add(spans)
     }
 
+    fun forEachSpan(data: List<List<Span>>){
+
+    }
+
     /**
      * 保存收到的span
      */
-    protected fun saveSpans(data: List<List<Span>>){
+    public fun saveSpans(data: List<List<Span>>){
         //1 保存span
         // 收集合格的span
         val spans = ArrayList<Span>()
         data.forEach {
             it.filterTo(spans){ span ->
                 // 过滤有效的span
-                !span.isRoot || span.isRoot && span.isTopAnntation
+                !span.isRoot || span.isRoot && span.isInitiator
             }
         }
         SpanModel.batchInsert(spans)
 
         // 2 保存trace
         val traces = spans.filter { span ->
-            span.isRoot && span.isTopAnntation // 根span
+            span.isRoot && span.isInitiator // 根span
         }.map { span ->
             val t = TraceModel()
             t.id = span.traceId

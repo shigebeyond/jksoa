@@ -80,6 +80,8 @@ object RpcRequestHandler : IRpcRequestHandler {
         var ex:Exception? = null
         if(r != null && r !is RpcServerException) // 封装业务异常
             ex = RpcBusinessException(r)
+
+        serverLogger.debug(" ------ send response ------ ")
         serverLogger.debug("Server处理请求：{}，结果: {}, 异常: {}", req, result, r)
 
         // 1 返回响应

@@ -22,7 +22,7 @@ class TraceModel: Trace(), IOrm by GeneralModel(m)  {
 		}
 	}
 
-	public override val spans: List<SpanModel> by property()
+	public val spans: List<SpanModel> by property()
 
 	public val annotations: List<AnnotationModel> by property()
 }

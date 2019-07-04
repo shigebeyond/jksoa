@@ -3,7 +3,6 @@ package net.jkcode.jksoa.tracer.common.entity.tracer
 import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jkmvc.common.getLocalHostPort
 import net.jkcode.jkmvc.orm.OrmEntity
-import java.util.*
 
 /**
  * span
@@ -24,13 +23,33 @@ open class Span: OrmEntity() {
 
 	public var parentId:Long? by property() //
 
-	public open val annotations: List<Annotation> = LinkedList()
+	public open val annotations: List<Annotation> by listProperty() //
 
-	public val isTopAnntation: Boolean
+	/**
+	 * 是否发起人
+	 */
+	public val isInitiator: Boolean
 		get(){
-			return annotations.any {
-				it.isIs
-			}
+			// 以开始为准, 可能有异常
+			return isAnnotation != null
+		}
+
+	/**
+	 * 是否服务端
+	 */
+	public val isServer: Boolean
+		get(){
+			// 以开始为准, 可能有异常
+			return srAnnotation != null && csAnnotation == null
+		}
+
+	/**
+	 * 是否客户端
+	 */
+	public val isClient: Boolean
+		get(){
+			// 以开始为准, 可能有异常
+			return csAnnotation != null && srAnnotation == null
 		}
 
 	public val isAnnotation: Annotation?
@@ -90,10 +109,12 @@ open class Span: OrmEntity() {
 	 */
 	public val isAvailable: Boolean
 		get() {
-			if(isTopAnntation)
+			// todo
+			/*if(isInitiator)
 				return annotations.size == 2
 
-			return annotations.size == 4
+			return annotations.size == 4*/
+			return true
 		}
 
 	/**
@@ -174,7 +195,7 @@ open class Span: OrmEntity() {
 	 */
 	val startTimeClient: Long
 		get(){
-			return if(isRoot && isTopAnntation)
+			return if(isRoot && isInitiator)
 						isAnnotation.timestamp
 					else
 						csAnnotation.timestamp
@@ -184,7 +205,7 @@ open class Span: OrmEntity() {
 	 * 计算client端耗时
 	 */
 	public fun calculateDurationClient(): Long {
-		if(isRoot && isTopAnntation)
+		if(isRoot && isInitiator)
 			return ieAnnotation.timestamp - isAnnotation.timestamp
 
 		return crAnnotation.timestamp - csAnnotation.timestamp

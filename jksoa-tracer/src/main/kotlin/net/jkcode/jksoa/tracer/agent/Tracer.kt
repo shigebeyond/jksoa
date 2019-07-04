@@ -49,9 +49,9 @@ class Tracer protected constructor() {
          *
          * 问题: Tracer 与 RcpRequestDispatcher 的循环依赖
          *      Tracer -> ICollectorService代理 -> RcpRequestDispatcher
-         *      RcpRequestDispatcher -> RpcClientPlugin插件 -> Tracer
+         *      RcpRequestDispatcher -> TracerRpcClientPlugin插件 -> Tracer
          * 解决: 1. Tracer 不能直接引用 ICollectorService
-         *      2. RpcClientPlugin插件中延迟调用 ICollectorService.syncServices()
+         *      2. TracerRpcClientPlugin插件中延迟调用 ICollectorService.syncServices()
          */
         public val collectorService: ICollectorService
             get(){
@@ -183,7 +183,7 @@ class Tracer protected constructor() {
      * @return
      */
     public fun startInitiatorSpanner(serviceName: String, name: String): ISpanner {
-        // RpcClientPlugin插件中延迟调用 ICollectorService.syncServices()
+        // TracerRpcClientPlugin插件中延迟调用 ICollectorService.syncServices()
         syncServices()
 
         // 用#号前缀来标识发起人的service

@@ -19,6 +19,4 @@ open class Trace: OrmEntity()  {
 
 	public var timestamp:Long by property() //
 
-	public open val spans: List<Span> = ArrayList()
-
 }

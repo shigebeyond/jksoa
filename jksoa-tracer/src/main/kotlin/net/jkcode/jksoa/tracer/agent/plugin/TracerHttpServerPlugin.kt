@@ -4,7 +4,6 @@ import net.jkcode.jkmvc.common.IPlugin
 import net.jkcode.jkmvc.http.handler.HttpRequestHandler
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.agent.interceptor.HttpServerRequestInterceptor
-import net.jkcode.jksoa.tracer.agent.loader.AnnotationServiceLoader
 import net.jkcode.jksoa.tracer.agent.loader.HttpServerServiceLoader
 
 /**
@@ -13,18 +12,18 @@ import net.jkcode.jksoa.tracer.agent.loader.HttpServerServiceLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-03 5:02 PM
  */
-class HttpServerPlugin: IPlugin {
+class TracerHttpServerPlugin: IPlugin {
 
     /**
      * 初始化
      */
-    override fun start() {
+    override fun doStart() {
         // 添加拦截器
         (HttpRequestHandler.interceptors as MutableList).add(HttpServerRequestInterceptor())
 
         // 添加服务加载器
-        Tracer.syncLoaderServices(AnnotationServiceLoader) // 单例, 用于去重
-        Tracer.syncLoaderServices(HttpServerServiceLoader())
+        Tracer.addServiceLoader(HttpServerServiceLoader())
+        Tracer.syncServices() // 预先同步服务
     }
 
     /**

@@ -12,16 +12,9 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-abstract class ISpanner(protected val tracer: Tracer, protected val span: Span){
+abstract class ISpanner(public val tracer: Tracer, public val span: Span){
 
-	companion object EmptySpanner: ISpanner(Tracer.current(), Span()){
-		override fun start() {
-			// do nothing
-		}
-		override fun end(ex: Throwable?): CompletableFuture<Void> {
-			// do nothing
-			return CompletableFuture.completedFuture(null)
-		}
+	companion object {
 
 		/**
 		 * collector服务
@@ -35,6 +28,7 @@ abstract class ISpanner(protected val tracer: Tracer, protected val span: Span){
 			// 处理刷盘的元素
 			override fun handleFlush(spans: List<Span>, reqs: ArrayList<Pair<Span, CompletableFuture<Void>>>): Boolean {
 				collectorService.send(spans)
+				//(collectorService as OrmCollectorService).saveSpans(listOf(spans))
 				return true
 			}
 		}

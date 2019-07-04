@@ -4,7 +4,6 @@ import net.jkcode.jkmvc.common.IPlugin
 import net.jkcode.jksoa.server.handler.RpcRequestHandler
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.agent.interceptor.RpcServerRequestInterceptor
-import net.jkcode.jksoa.tracer.agent.loader.AnnotationServiceLoader
 import net.jkcode.jksoa.tracer.agent.loader.RpcServerServiceLoader
 
 /**
@@ -13,18 +12,18 @@ import net.jkcode.jksoa.tracer.agent.loader.RpcServerServiceLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-03 5:02 PM
  */
-class RpcServerPlugin: IPlugin {
+class TracerRpcServerPlugin: IPlugin {
 
     /**
      * 初始化
      */
-    override fun start() {
+    override fun doStart() {
         // 添加拦截器
         (RpcRequestHandler.interceptors as MutableList).add(RpcServerRequestInterceptor())
 
         // 添加服务加载器
-        Tracer.syncLoaderServices(AnnotationServiceLoader) // 单例, 用于去重
-        Tracer.syncLoaderServices(RpcServerServiceLoader())
+        Tracer.addServiceLoader(RpcServerServiceLoader())
+        Tracer.syncServices() // 预先同步服务
     }
 
     /**

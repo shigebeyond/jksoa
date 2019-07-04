@@ -26,6 +26,6 @@ class SpanModel: Span(), IOrm by GeneralModel(m) {
 		}
 	}
 
-	public override val annotations: List<AnnotationModel> by property()
+	public override val annotations: List<AnnotationModel> by listProperty()
 
 }

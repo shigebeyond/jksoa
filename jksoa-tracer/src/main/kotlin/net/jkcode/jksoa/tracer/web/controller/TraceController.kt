@@ -41,7 +41,7 @@ class TraceController: Controller()
 
     // 查询跟踪详细信息
     fun infoAction() {
-        val traceId: Long = req.getRouteParameter("traceId")!!
+        val traceId: Long = req.getRouteParameter("id")!!
         val info = queryService.getTraceInfo(traceId)
         res.renderJson(info)
     }

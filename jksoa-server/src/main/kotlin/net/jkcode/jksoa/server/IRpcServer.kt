@@ -75,6 +75,7 @@ abstract class IRpcServer: Closeable {
     fun start(callback: (() -> Unit)? = null){
         // 启动服务器
         try{
+            serverLogger.debug(" ------ start rpc server ------ ")
             serverLogger.info("{}在地址[{}]上启动", name, serverUrl)
             server = this
             // 可能阻塞，只能在最后一句执行

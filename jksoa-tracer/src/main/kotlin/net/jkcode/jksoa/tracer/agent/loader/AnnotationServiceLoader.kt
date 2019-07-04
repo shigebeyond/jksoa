@@ -9,12 +9,11 @@ import java.util.*
 
 /**
  * 有@TraceableService注解的类的加载器
- *    因为被多个插件引用, 因此做成单例, 去重调用
  *
  * @author shijianhang
  * @date 2019-7-3 下午8:02:47
  */
-object AnnotationServiceLoader : ITraceableServiceLoader()  {
+class AnnotationServiceLoader : ITraceableServiceLoader()  {
 
     /**
      * http配置
