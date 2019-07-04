@@ -20,7 +20,7 @@ class HttpServerRequestInterceptor: IHttpRequestInterceptor {
      * @return 调用结果作为after()调用的第二参数
      */
     override fun before(req: HttpRequest): Any? {
-        return Tracer.current().startInitiatorSpanner(req.controllerClass.clazz.qualifiedName!!, req.action)
+        return Tracer.current().startInitiatorSpanner(req.controllerClass.clazz.qualifiedName!!, req.action + "()")
     }
 
     /**

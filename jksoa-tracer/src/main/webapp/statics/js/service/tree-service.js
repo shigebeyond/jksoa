@@ -99,7 +99,6 @@ angular.module('hydra.services.tree', [])
                                     return 25;
                                 }
                             }();
-                            debugger;
                             if (length > lengthMax){
                                 return '...' + (d.serviceName + '|' + d.name).substring(length - 30, length);
                             }else {
