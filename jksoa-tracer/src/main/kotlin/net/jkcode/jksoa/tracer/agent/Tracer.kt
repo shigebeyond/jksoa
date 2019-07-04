@@ -1,21 +1,21 @@
 package net.jkcode.jksoa.tracer.agent
 
 import net.jkcode.jkmvc.common.Application
+import net.jkcode.jkmvc.common.DoneFlagList
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.tracer.agent.loader.AnnotationServiceLoader
 import net.jkcode.jksoa.tracer.agent.loader.ITraceableServiceLoader
 import net.jkcode.jksoa.tracer.agent.sample.BaseSample
-import net.jkcode.jksoa.tracer.agent.spanner.ClientSpanner
-import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
-import net.jkcode.jksoa.tracer.agent.spanner.InitiatorSpanner
-import net.jkcode.jksoa.tracer.agent.spanner.ServerSpanner
-import net.jkcode.jksoa.tracer.collector.service.OrmCollectorService
+import net.jkcode.jksoa.tracer.agent.spanner.*
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
 import net.jkcode.jksoa.tracer.tracerLogger
 import java.lang.reflect.Method
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
@@ -46,9 +46,18 @@ class Tracer protected constructor() {
 
         /**
          * collector服务
+         *
+         * 问题: Tracer 与 RcpRequestDispatcher 的循环依赖
+         *      Tracer -> ICollectorService代理 -> RcpRequestDispatcher
+         *      RcpRequestDispatcher -> RpcClientPlugin插件 -> Tracer
+         * 解决: 1. Tracer 不能直接引用 ICollectorService
+         *      2. RpcClientPlugin插件中延迟调用 ICollectorService.syncServices()
          */
-        //protected val collectorService: ICollectorService = Referer.getRefer<ICollectorService>()
-        public val collectorService: ICollectorService = OrmCollectorService()
+        public val collectorService: ICollectorService
+            get(){
+                //return OrmCollectorService()
+                return Referer.getRefer<ICollectorService>()
+            }
 
         /**
          * <服务名, 服务id>
@@ -58,27 +67,37 @@ class Tracer protected constructor() {
         /**
          * 可跟踪的服务加载器
          */
-        protected val serviceLoaders: LinkedList<ITraceableServiceLoader> = LinkedList()
+        protected val serviceLoaders: DoneFlagList<ITraceableServiceLoader> by lazy { DoneFlagList<ITraceableServiceLoader>() }
+
+        init {
+            // 有@TraceableService注解的类的加载器
+            addServiceLoader(AnnotationServiceLoader())
+        }
 
         /**
-         * 同步加载器的service
+         * 添加服务加载器
          */
-        public fun syncLoaderServices(loader: ITraceableServiceLoader) {
-            // 去重
-            if(!serviceLoaders.contains(loader)) {
-                serviceLoaders.add(loader)
-                // 同步service
-                syncServices(loader.load())
-            }
+        public fun addServiceLoader(loader: ITraceableServiceLoader) {
+            serviceLoaders.add(loader)
         }
 
         /**
          * 同步service
+         *   可重入, 已去重
          */
         @Synchronized
-        public fun syncServices(serviceNames: List<String>) {
+        public fun syncServices() {
+            // 只收集未加载过的加载器的服务
+            if(serviceLoaders.isAllDone())
+                return
+            val serviceNames: MutableList<String> = LinkedList()
+            for((i, loader) in serviceLoaders.doneIterator(false)){
+                serviceNames.addAll(loader.load())
+                serviceLoaders.setDone(i, true)
+            }
+
             // 去重
-            if(serviceMap.keys.containsAll(serviceNames))
+            if(serviceNames.isEmpty() || serviceMap.keys.containsAll(serviceNames))
                 return
 
             // 只同步新的service
@@ -130,8 +149,8 @@ class Tracer protected constructor() {
      * @param func
      * @return
      */
-    public fun startInitiatorSpanSpanner(func: KFunction<*>): ISpanner {
-        return startInitiatorSpanSpanner(func.javaMethod!!)
+    public fun startInitiatorSpanner(func: KFunction<*>): ISpanner {
+        return startInitiatorSpanner(func.javaMethod!!)
     }
 
     /**
@@ -140,8 +159,8 @@ class Tracer protected constructor() {
      * @param method
      * @return
      */
-    public fun startInitiatorSpanSpanner(method: Method): ISpanner {
-        return startInitiatorSpanSpanner(method.declaringClass.name, method.getSignature())
+    public fun startInitiatorSpanner(method: Method): ISpanner {
+        return startInitiatorSpanner(method.declaringClass.name, method.getSignature())
     }
 
     /**
@@ -163,7 +182,10 @@ class Tracer protected constructor() {
      * @param name
      * @return
      */
-    public fun startInitiatorSpanSpanner(serviceName: String, name: String): ISpanner {
+    public fun startInitiatorSpanner(serviceName: String, name: String): ISpanner {
+        // RpcClientPlugin插件中延迟调用 ICollectorService.syncServices()
+        syncServices()
+
         // 用#号前缀来标识发起人的service
         val serviceName2 = "#$serviceName"
 
@@ -192,16 +214,16 @@ class Tracer protected constructor() {
      * @param req
      * @return
      */
-    public fun startServerSpanSpanner(req: IRpcRequest): ISpanner {
+    public fun startServerSpanner(req: IRpcRequest): ISpanner {
         // 不跟踪 ICollectorService
         if(req.serviceId == ICollectorService::class.qualifiedName)
-            return ISpanner.EmptySpanner
+            return EmptySpanner
 
         // 初始化取样 + id : 根据请求的附加参数来确定
         val traceId: Long? = req.getAttachment("traceId")
         if(traceId == null) { // 不采样
             isSample = false
-            return ISpanner.EmptySpanner
+            return EmptySpanner
         }
         this.id = traceId
 
@@ -225,14 +247,14 @@ class Tracer protected constructor() {
      * @param req
      * @return
      */
-    public fun startClientSpanSpanner(req: IRpcRequest): ISpanner {
+    public fun startClientSpanner(req: IRpcRequest): ISpanner {
         // 不跟踪 ICollectorService
         if(req.serviceId == ICollectorService::class.qualifiedName)
-            return ISpanner.EmptySpanner
+            return EmptySpanner
 
         // 不取样
         if(!isSample!!)
-            return ISpanner.EmptySpanner
+            return EmptySpanner
 
         // 创建span
         val span = Span()
