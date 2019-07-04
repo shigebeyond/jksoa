@@ -8,7 +8,7 @@
 </script>
 <body>
 <div style="width:100%;background-color: #7AC5CD;height: 50px;color: #ffffff;font-size:35px;">
-    <div style="padding: 10 0 0 10">Hydra</div>
+    <div style="padding: 10 0 0 10">Jksoa-tracer web <span style="font-size:20px;">(UI from Hydra)</span></div>
 </div>
 <div style="width: 100%;" ng-view></div>
 

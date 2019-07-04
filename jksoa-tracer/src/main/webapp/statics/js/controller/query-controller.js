@@ -152,7 +152,7 @@ function QueryCtrl($scope, $filter, $location,//内置
 
         var trace = Trace.get({traceId: traceId}, function (t) {
             if (t.available) {
-                debugger;
+                //debugger;
                 sequenceService.getMyTrace(t, $scope);
                 var spanMap = sequenceService.getSpanMap(t);
 

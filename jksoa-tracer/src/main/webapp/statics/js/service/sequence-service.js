@@ -33,7 +33,7 @@ angular.module('hydra.services.sequence', [])
                  * @param
                  */
                 function getMySpan(span, spanIndex, myParent, index) {
-                    debugger;
+                    //debugger;
                     var ip;
                     var anMap = {};
                     //我自己的anMap -- annotation的map: <key, 耗时>
@@ -58,7 +58,7 @@ angular.module('hydra.services.sequence', [])
                     //sr约等于网络消耗时长的一半
                     anMap['sr'] = parseInt(anMap['cs']) + (parseInt(span.durationClient) - parseInt(span.durationServer)) / 2;
 
-                    debugger;
+                    //debugger;
                     span.used = {
                         spanId: span.id,
                         start: parseInt(anMap['cs']),
@@ -198,7 +198,6 @@ angular.module('hydra.services.sequence', [])
                         return i * view.delay;
                     })
                     .attr("transform", function (time) {
-                        debugger;
                         return 'translate(' + view.x(time.start - rootSpan.used.start) + ',' + view.y * time.viewIndex * 1.2 + ')';
                     })
                     .style('fill', function (time) {
@@ -307,7 +306,7 @@ angular.module('hydra.services.sequence', [])
                                 var html = '<div><table class="table table-condensed" style="font-family:Tahoma;">';
 
                                 html += '<tr><td>服务名:</td><td style="font-size: small;word-break:break-all">'+spanModel.serviceName+'</td></tr>';
-                                html += '<tr><td>方法名:</td><td>'+spanModel.spanName+'</td></tr>';
+                                html += '<tr><td>方法名:</td><td>'+spanModel.name+'</td></tr>';
 
                                 if (isUsed){
                                     html += '<tr><td style="text-align:center;">ip</td>';

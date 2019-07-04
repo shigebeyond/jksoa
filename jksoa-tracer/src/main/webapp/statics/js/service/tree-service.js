@@ -88,7 +88,7 @@ angular.module('hydra.services.tree', [])
                         .attr("dy", 3.5)
                         .attr("dx", 5.5)
                         .text(function (d) {
-                            var length = (d.serviceName + '|' + d.spanName).length;
+                            var length = (d.serviceName + '|' + d.name).length;
                             var lengthMax = function(){
                                 var width = myScope.env.windowWidth;
                                 if (width == 1920) {
@@ -99,10 +99,11 @@ angular.module('hydra.services.tree', [])
                                     return 25;
                                 }
                             }();
+                            debugger;
                             if (length > lengthMax){
-                                return '...' + (d.serviceName + '|' + d.spanName).substring(length - 30, length);
+                                return '...' + (d.serviceName + '|' + d.name).substring(length - 30, length);
                             }else {
-                                return d.serviceName + '|' + d.spanName;
+                                return d.serviceName + '|' + d.name;
                             }
                         });
 
