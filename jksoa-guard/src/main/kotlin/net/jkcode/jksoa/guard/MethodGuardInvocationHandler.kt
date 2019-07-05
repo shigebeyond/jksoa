@@ -92,42 +92,49 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
      */
     public fun invokeAfterCombine(method: Method, obj: Any, args: Array<Any?>, handlingCache: Boolean): Any? {
         val methodGuard = getMethodGuard(method) // 获得方法守护者
-        // 0 断路
+        // 1 自动降级
+        if(handlingCache && methodGuard.degradeHandler != null)
+            if(methodGuard.degradeHandler!!.isAutoDegrading()) {
+                guardLogger.debug("自动降级中")
+                return methodGuard.degradeHandler!!.handleFallback(null, args)
+            }
+
+        // 2 断路
         if(handlingCache && methodGuard.circuitBreaker != null)
             if(!methodGuard.circuitBreaker!!.acquire())
                 return handleException(methodGuard, method, args, GuardException("断路"))
 
-        // 1 限流
+        // 3 限流
         if(handlingCache && methodGuard.rateLimiter != null)
             if(!methodGuard.rateLimiter!!.acquire())
                 return handleException(methodGuard, method, args, GuardException("限流"))
 
-        // 2 缓存
+        // 4 缓存
         if(handlingCache && methodGuard.cacheHandler != null) {
             val resFuture = methodGuard.cacheHandler!!.cacheOrLoad(args)
             return handleResult(method, resFuture)
         }
 
-        // 3 计量
-        // 3.1 添加总计数
+        // 5 计量
+        // 5.1 添加总计数
         methodGuard.measurer?.currentBucket()?.addTotal()
         val startTime = currMillis()
 
-        // 4 真正的调用
+        // 6 真正的调用
         return doInvoke(method, obj, args) { r, e ->
-            // 3.2 添加请求耗时
+            // 5.2 添加请求耗时
             methodGuard.measurer?.currentBucket()?.addCostTime(currMillis() - startTime)
 
-            // 3.3 添加成功计数
+            // 5.3 添加成功计数
             if(e == null){
                 methodGuard.measurer?.currentBucket()?.addSuccess()
                 return@doInvoke r
             }
 
-            // 3.4 添加异常计数
+            // 5.4 添加异常计数
             methodGuard.measurer?.currentBucket()?.addException()
 
-            //  5 处理异常: 调用后备处理
+            //  7 处理异常: 调用后备处理
             return@doInvoke handleException(methodGuard, method, args, e!!)
         }
     }

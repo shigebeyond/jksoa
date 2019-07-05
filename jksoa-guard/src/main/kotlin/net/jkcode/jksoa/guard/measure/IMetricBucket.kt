@@ -32,6 +32,21 @@ abstract class IMetricBucket {
      */
     public abstract val slow: Long
 
+    /**
+     * 请求平均耗时
+     */
+    public val avgCostTime: Long
+        get() = costTime / success
+
+    /**
+     * 异常比例
+     */
+    public val exceptionRatio: Double
+        get() = exception.toDouble() / total
+
+    /**
+     * 转字符串
+     */
     public override fun toString(): String {
         return "total=$total, exception=$exception, success=$success, costTime=$costTime, slow=$slow";
     }

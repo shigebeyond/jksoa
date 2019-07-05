@@ -7,6 +7,7 @@ import net.jkcode.jksoa.guard.circuit.CircuitBreaker
 import net.jkcode.jksoa.guard.circuit.ICircuitBreaker
 import net.jkcode.jksoa.guard.combiner.GroupFutureSupplierCombiner
 import net.jkcode.jksoa.guard.combiner.KeyFutureSupplierCombiner
+import net.jkcode.jksoa.guard.degrade.DegradeHandler
 import net.jkcode.jksoa.guard.degrade.IDegradeHandler
 import net.jkcode.jksoa.guard.measure.HashedWheelMeasurer
 import net.jkcode.jksoa.guard.measure.IMeasurer
@@ -110,36 +111,6 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
     }
 
     /**
-     * 降级处理器
-     */
-    public val degradeHandler: IDegradeHandler? by lazy{
-        val annotation = method.degrade
-        if(annotation == null)
-            null
-        else {
-            // 获得后备方法
-            val fallbackMethod = method.declaringClass.methods.first { it.name == annotation.fallbackMethod }
-            val msg = "源方法 ${method.getSignature(true)}的注解@Degrade声明了fallbackMethod=[${annotation.fallbackMethod}]"
-            if(fallbackMethod == null)
-                throw GuardException("${msg}不存在")
-            // 检查参数类型: 注 != 不好使
-            if (!Arrays.equals(method.parameterTypes, fallbackMethod.parameterTypes))
-                throw GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的参数类型不一致")
-            // 检查返回类型
-            if (method.returnType != fallbackMethod.returnType)
-                throw GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的返回值类型不一致")
-
-            object : IDegradeHandler {
-                // 处理异常后备
-                override fun handleFallback(t: Throwable, args: Array<Any?>): Any? {
-                    // 调用后备方法
-                    return fallbackMethod.invoke(obj, *args)
-                }
-            }
-        }
-    }
-
-    /**
      * 缓存处理器
      */
     public val cacheHandler: ICacheHandler? by lazy{
@@ -174,6 +145,41 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
             null
         else
             HashedWheelMeasurer(annotation)
+    }
+
+    /**
+     * 降级处理器
+     */
+    public val degradeHandler: IDegradeHandler? by lazy{
+        val annotation = method.degrade
+        if(annotation == null)
+            null
+        else {
+            // 获得后备方法
+            val fallbackMethod = method.declaringClass.methods.first { it.name == annotation.fallbackMethod }
+            val msg = "源方法 ${method.getSignature(true)}的注解@Degrade声明了fallbackMethod=[${annotation.fallbackMethod}]"
+            if(fallbackMethod == null)
+                throw GuardException("${msg}不存在")
+            // 检查参数类型: 注 != 不好使
+            if (!Arrays.equals(method.parameterTypes, fallbackMethod.parameterTypes))
+                throw GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的参数类型不一致")
+            // 检查返回类型
+            if (method.returnType != fallbackMethod.returnType)
+                throw GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的返回值类型不一致")
+
+            object : DegradeHandler(annotation, measurer) {
+                /**
+                 * 处理异常后备
+                 * @param t 异常. 如果为null则为自动降级, 否则为异常降级
+                 * @param args 方法调用的参数
+                 * @return
+                 */
+                override fun handleFallback(t: Throwable?, args: Array<Any?>): Any? {
+                    // 调用后备方法
+                    return fallbackMethod.invoke(obj, *args)
+                }
+            }
+        }
     }
 
     /**

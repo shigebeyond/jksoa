@@ -10,10 +10,10 @@ import java.lang.reflect.Method
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Degrade(
-    public val fallbackMethod: String, // 后备回调
-    public val autoByRequestTime: Long = 0, // 主动降级触发的请求时间
-    public val autoByExceptionRatio: Double = 0.0, // 主动降级触发的异常比例
-    public val autoDegradeTime: Long = 0 // 主动降级的时间, 过了这个时间重新开始
+        public val fallbackMethod: String, // 后备回调
+        public val autoByCostTime: Long = 0, // 自动降级触发的请求耗时
+        public val autoByExceptionRatio: Double = 0.0, // 自动降级触发的异常比例
+        public val autoDegradeSeconds: Long = 0 // 自动降级的时间, 单位秒, 过了这个时间重新开始
 )
 
 /**

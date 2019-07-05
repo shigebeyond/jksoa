@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-04-19 9:39 PM
  */
-abstract class ICacheHandler(public val annotation: Cache) {
+abstract class ICacheHandler(public val annotation: Cache /* 该类不是通用工具类, 直接使用注解做属性 */) {
 
     /**
      * 尝试读缓存, 如果缓存不存在, 则回源并写缓存
