@@ -32,8 +32,6 @@ open class Annotation: OrmEntity() {
 
     public var timestamp:Long by property() //
 
-    public var duration:Int by property() //
-
     public var spanId:Long by property() //
 
     public var traceId:Long by property() //

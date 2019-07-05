@@ -41,7 +41,6 @@ CREATE TABLE `annotation` (
   `ip` varchar(45) DEFAULT NULL,
   `port` int(11) DEFAULT 0,
   `timestamp` bigint(20) DEFAULT NULL,
-  `duration` int(11) DEFAULT NULL,
   `span_id` bigint(128) DEFAULT NULL,
   `trace_id` bigint(128) DEFAULT NULL,
   `service_id` int(11) NOT NULL,
