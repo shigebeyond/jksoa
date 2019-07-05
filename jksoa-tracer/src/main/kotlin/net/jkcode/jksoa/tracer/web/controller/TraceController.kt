@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.tracer.web.controller
 
 import net.jkcode.jkmvc.http.controller.Controller
-import net.jkcode.jksoa.tracer.common.service.ITracePersistentService
-import net.jkcode.jksoa.tracer.common.service.OrmTracePersistentService
+import net.jkcode.jksoa.tracer.common.service.ITraceService
+import net.jkcode.jksoa.tracer.common.service.OrmTraceService
 
 /**
  * 跟踪信息查询的控制器
@@ -14,7 +14,7 @@ class TraceController: Controller()
 {
     companion object {
 
-        public val service: ITracePersistentService = OrmTracePersistentService()
+        public val service: ITraceService = OrmTraceService()
     }
 
 
@@ -31,7 +31,7 @@ class TraceController: Controller()
 
     // 根据异常来查询跟踪信息
     fun listExAction(){
-        val serviceId: String = req["serviceId"]!!
+        val serviceId: Int = req["serviceId"]!!
         val startTime: Long = req["startTime"]!!
         val sum: Int = req["sum"]!!
         val traces = service.getTracesByEx(serviceId, startTime, sum)

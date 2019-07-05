@@ -10,7 +10,7 @@ import net.jkcode.jksoa.tracer.common.entity.tracer.Span
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-interface ITracePersistentService {
+interface ITraceService {
 
     /**
      * 保存收到的span
@@ -37,7 +37,7 @@ interface ITracePersistentService {
      * @param limit 分页数
      * @return
      */
-    fun getTracesByEx(serviceId: String, startTime: Long, limit: Int): JSONArray
+    fun getTracesByEx(serviceId: Int, startTime: Long, limit: Int): JSONArray
 
     /**
      * 查询跟踪详细信息

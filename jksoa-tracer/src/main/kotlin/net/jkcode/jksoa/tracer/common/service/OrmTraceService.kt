@@ -16,7 +16,7 @@ import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-class OrmTracePersistentService : ITracePersistentService {
+class OrmTraceService : ITraceService {
 
     /**
      * 遍历收到的span
@@ -142,29 +142,31 @@ class OrmTracePersistentService : ITracePersistentService {
      * @param limit 分页数
      * @return
      */
-    public override fun getTracesByEx(serviceId: String, startTime: Long, limit: Int): JSONArray {
+    public override fun getTracesByEx(serviceId: Int, startTime: Long, limit: Int): JSONArray {
         /*select a.*, t.timestamp from annotation a
             left join trace t
             on a.traceId=t.traceId
             and t.time>= #{startTime}
             where a.serviceId=#{serviceId}
+            and a.key = "ex"
             group by spanId
             limit #{limit}
         */
-        val items = TraceModel.queryBuilder().with("annotations")
+        val items = AnnotationModel.queryBuilder().with("trace")
                 .where("trace.timestamp", ">=", startTime)
-                .where("annotations.serviceId", serviceId)
-                .groupBy("spanId")
+                .where("annotation.service_id", serviceId)
+                .where("annotation.key", Annotation.EXCEPTION)
+                .groupBy("span_id")
                 .limit(limit)
-                .findAllModels<TraceModel>()
+                .findAllModels<AnnotationModel>()
 
         val array = JSONArray()
-        for (trace in items) {
+        for (annotation in items) {
             val obj = JSONObject()
-            obj["serviceId"] = trace.serviceId
-            obj["timestamp"] = trace.timestamp
-            obj["exInfo"] = trace.annotations.first().value
-            obj["traceId"] = trace.id
+            obj["serviceId"] = annotation.serviceId
+            obj["timestamp"] = annotation.timestamp
+            obj["exInfo"] = annotation.value
+            obj["traceId"] = annotation.id
             array.add(obj)
         }
 
