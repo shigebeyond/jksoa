@@ -2,7 +2,7 @@ dependencies{
     // other project
     compile project(':jkmvc-http')
     compile project(':jkmvc-server-jetty')
-    compile project(':jksoa-server')
+    compile project(':jksoa-rpc-server')
 
     // jdbc
     runtime "mysql:mysql-connector-java:5.1.6"

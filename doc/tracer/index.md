@@ -43,21 +43,21 @@ traceableServicePackages: #
 
 ```
 plugins: # 跟踪的插件
-    - net.jkcode.jksoa.tracer.agent.plugin.RpcClientPlugin
+    - net.jkcode.jksoa.tracer.agent.plugin.RpcClientTracerPlugin
 ```
 
 2. rpc server端配置 server.yaml
 
 ```
 plugins: # 跟踪的插件
-    - net.jkcode.jksoa.tracer.agent.plugin.RpcServerPlugin
+    - net.jkcode.jksoa.tracer.agent.plugin.RpcServerTracerPlugin
 ```
 
 3. http server端配置 http.yaml
 
 ```
 plugins: # 跟踪的插件
-    - net.jkcode.jksoa.tracer.agent.plugin.HttpServerPlugin
+    - net.jkcode.jksoa.tracer.agent.plugin.HttpServerTracerPlugin
 ```
 
 ## collector端

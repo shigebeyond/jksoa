@@ -2,8 +2,13 @@ rootProject.name = 'jksoa'
 
 include 'jksoa-common', 'jksoa-registry', 'jksoa-rpc-client', 'jksoa-rpc-server', 'jksoa-job', 'jksoa-mq', 'jksoa-guard', 'jksoa-tracer'
 
+// 子项目的gradle文件
 rootProject.children.each {
-    it.buildFileName = it.name + '.gradle' - 'jksoa-'
+	def name = it.name
+	def i = name.indexOf(':')
+	if(i > 0)
+		name = name.substring(i + 1)
+    it.buildFileName = name + '.gradle' - 'jksoa-'
 }
 
 // 添加jkmvc子项目

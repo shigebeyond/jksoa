@@ -139,3 +139,12 @@ val pong = service.ping()
 println("调用服务[ISimpleService.ping()]结果： $pong")
 ```
 
+# 异步
+
+
+# 守护者
+
+# 拦截器
+
+
+# 插件机制
