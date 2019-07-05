@@ -31,13 +31,14 @@ abstract class DegradeHandler(
 
         // 降级中
         val lastEndTime = endTime.get()
-        if(currMillis() < lastEndTime)
+	val now = currMillis()
+        if(now < lastEndTime)
             return true
 
         // 检查自动降级的触发条件
         if(checkAutoDegrading()) {
             // 记录自动降级结束的时间
-            endTime.compareAndSet(lastEndTime, annotation.autoDegradeSeconds * 1000)
+            endTime.compareAndSet(lastEndTime, now + annotation.autoDegradeSeconds * 1000)
             return true
         }
 
