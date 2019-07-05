@@ -29,6 +29,10 @@ abstract class DegradeHandler(
         if(measurer == null)
             return false
 
+	// 无触发条件, 不降级
+	if(annotation.autoByCostTime == 0 && annotation.autoByExceptionRatio == 0)
+	    return false
+	
         // 降级中
         val lastEndTime = endTime.get()
 	val now = currMillis()
