@@ -1,25 +1,42 @@
 package net.jkcode.jksoa.tracer
 
-import net.jkcode.jkmvc.common.currMillis
-import net.jkcode.jkmvc.common.generateId
-import net.jkcode.jkmvc.common.getLocalHostPort
-import net.jkcode.jkmvc.db.Db
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.tracer.common.entity.tracer.Annotation
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.model.tracer.AnnotationModel
 import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
-import net.jkcode.jksoa.tracer.common.service.ITracePersistentService
-import net.jkcode.jksoa.tracer.common.service.OrmTracePersistentService
+import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
+import net.jkcode.jksoa.tracer.common.service.ITraceService
+import net.jkcode.jksoa.tracer.common.service.OrmTraceService
 import org.junit.Test
+import java.util.*
 
 class TraceServiceTest {
 
-    protected val service: ITracePersistentService = OrmTracePersistentService()
+    protected val service: ITraceService = OrmTraceService()
 
-    protected val traceId: Long by lazy {
-        val minId = Db.instance().queryCell<Long>("select id from trace order by id limit 1").get()!!
-        println("随便选个id: " + minId)
-        minId
+    protected val time = GregorianCalendar().dayStartTime.time
+
+    protected val myTrace: TraceModel by lazy {
+        TraceModel.queryBuilder().findModel<TraceModel>()!!
+    }
+
+    protected val serviceId: Int
+        get() = myTrace.serviceId
+
+    protected val traceId: Long
+        get() = myTrace.id
+
+    @Test
+    fun testGetTracesByDuration() {
+        val traces = service.getTracesByDuration(serviceId, time, 10, 0, 10000)
+        println(traces)
+    }
+
+    @Test
+    fun testGetTracesByEx() {
+        val traces = service.getTracesByEx(serviceId, time, 10)
+        println(traces)
     }
 
     @Test
