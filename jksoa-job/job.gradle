@@ -1,4 +1,4 @@
 dependencies{
     // other project
-    compile project(':jksoa-client')
+    compile project(':jksoa-rpc-client')
 }

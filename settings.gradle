@@ -1,6 +1,6 @@
 rootProject.name = 'jksoa'
 
-include 'jksoa-common', 'jksoa-registry', 'jksoa-client', 'jksoa-server', 'jksoa-job', 'jksoa-mq', 'jksoa-guard', 'jksoa-tracer'
+include 'jksoa-common', 'jksoa-registry', 'jksoa-rpc-client', 'jksoa-rpc-server', 'jksoa-job', 'jksoa-mq', 'jksoa-guard', 'jksoa-tracer'
 
 rootProject.children.each {
     it.buildFileName = it.name + '.gradle' - 'jksoa-'

@@ -48,8 +48,9 @@ interface IGuardService : IService /*, Remote // rmi协议服务接口 */ {
     // group合并后要调用的批量方法
     fun listUsersByNameAsync(names: List<String>): CompletableFuture<List<User>>
 
-    // 有异常后备方法
+    // 降级: 有异常后备方法
     @Degrade(fallbackMethod = "getUserWhenFallback")
+    // 断路器
     @CircuitBreak(CircuitBreakType.EXCEPTION_COUNT, 1.0, 5, 5)
     fun getUserWhenException(id: Int): User
 
