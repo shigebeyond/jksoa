@@ -5,16 +5,11 @@ import net.jkcode.jkmvc.orm.collectColumn
 import net.jkcode.jkmvc.orm.toMap
 import net.jkcode.jksoa.guard.combiner.RequestQueueFlusher
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
-import net.jkcode.jksoa.tracer.common.entity.tracer.Annotation
 import net.jkcode.jksoa.tracer.common.entity.service.Service
-import net.jkcode.jksoa.tracer.common.entity.tracer.Trace
 import net.jkcode.jksoa.tracer.common.model.service.AppModel
 import net.jkcode.jksoa.tracer.common.model.service.ServiceModel
-import net.jkcode.jksoa.tracer.common.model.tracer.AnnotationModel
-import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
-import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
-import net.jkcode.jksoa.tracer.common.service.ITracePersistentService
-import net.jkcode.jksoa.tracer.common.service.OrmTracePersistentService
+import net.jkcode.jksoa.tracer.common.service.ITraceService
+import net.jkcode.jksoa.tracer.common.service.OrmTraceService
 import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
 
 import java.util.concurrent.CompletableFuture
@@ -27,7 +22,7 @@ import java.util.concurrent.CompletableFuture
  */
 class OrmCollectorService : ICollectorService {
 
-    protected val service: ITracePersistentService = OrmTracePersistentService()
+    protected val service: ITraceService = OrmTraceService()
 
     /**
      * 同步服务

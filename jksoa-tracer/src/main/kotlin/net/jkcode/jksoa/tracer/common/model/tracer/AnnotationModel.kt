@@ -17,6 +17,7 @@ class AnnotationModel: Annotation(), IOrm by GeneralModel(m) {
  	companion object m: OrmMeta(AnnotationModel::class, "span的标注信息", "annotation", "id"){
 
 		init {
+			belongsTo("trace", TraceModel::class)
 			belongsTo("span", SpanModel::class)
 		}
 	}

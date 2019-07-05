@@ -88,15 +88,14 @@ open class Span: OrmEntity() {
 		}
 
 	/**
-	 * 如果某个span没有收集全4个annotation，则判定为不可用
+	 * 不够annotation, 则不可用
 	 */
 	public val isAvailable: Boolean
 		get() {
-			// todo
-			/*if(isInitiator)
+			if(isInitiator)
 				return annotations.size == 2
 
-			return annotations.size == 4*/
+			return annotations.size == 4
 			return true
 		}
 
