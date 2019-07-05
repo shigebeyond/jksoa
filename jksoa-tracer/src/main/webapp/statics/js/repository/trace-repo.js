@@ -31,7 +31,8 @@ angular.module('hydra.repository.trace', ['ngResource'])
     })
     // 根据异常来查询跟踪信息
     .factory('TraceListEx', function ($resource) {
-        return $resource(ctp + '/trace/listEx/:serviceId/:startTime/:sum', {}, {
+        // 参数: serviceId/startTime/sum
+        return $resource(ctp + '/trace/listEx', {}, {
             getTraceList:{
                 method:'GET',
                 isArray:true
