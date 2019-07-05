@@ -4,3 +4,6 @@ build/
 gradle.log
 out/
 jetty/
+logs/
+tmp/
+
