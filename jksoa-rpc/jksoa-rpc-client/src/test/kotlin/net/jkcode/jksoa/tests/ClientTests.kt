@@ -86,11 +86,12 @@ class ClientTests {
     @Test
     fun testClient(){
         val client = NettyClient()
-        val url1 = Url("netty://192.168.61.200:9080/net.jkcode.jksoa.example.ISimpleService?weight=1")
+        val ip = getIntranetHost()
+        val url1 = Url("netty://$ip:9080/net.jkcode.jksoa.example.ISimpleService?weight=1")
         val conn1 = client.connect(url1)
         println(conn1)
         makeThreads(1){
-            val url2 = Url("netty://192.168.61.200:9080/net.jkcode.jksoa.example.ISimpleService?weight=1")
+            val url2 = Url("netty://$ip:9080/net.jkcode.jksoa.example.ISimpleService?weight=1")
             val conn2 = client.connect(url2)
             println(conn2)
         }

@@ -1,29 +1,16 @@
 rootProject.name = 'jksoa'
 
-include 'jksoa-common', 'jksoa-registry', 'jksoa-rpc-client', 'jksoa-rpc-server', 'jksoa-job', 'jksoa-mq', 'jksoa-guard', 'jksoa-tracer'
-
-// 子项目的gradle文件
-rootProject.children.each {
-	def name = it.name
-	def i = name.indexOf(':')
-	if(i > 0)
-		name = name.substring(i + 1)
-    it.buildFileName = name + '.gradle' - 'jksoa-'
-}
+include 'jksoa-common', 'jksoa-registry', 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc:jksoa-rpc-server', 'jksoa-job', 'jksoa-mq', 'jksoa-guard', 'jksoa-tracer'
 
 // 添加jkmvc子项目
 include 'jkmvc-common'
 project(':jkmvc-common').projectDir = new File('../jkmvc/jkmvc-common')
-project(':jkmvc-common').buildFileName = 'common.gradle'
 
 include 'jkmvc-orm'
 project(':jkmvc-orm').projectDir = new File('../jkmvc/jkmvc-orm')
-project(':jkmvc-orm').buildFileName = 'orm.gradle'
 
 include 'jkmvc-http'
 project(':jkmvc-http').projectDir = new File('../jkmvc/jkmvc-http')
-project(':jkmvc-http').buildFileName = 'http.gradle'
 
 include 'jkmvc-server-jetty'
 project(':jkmvc-server-jetty').projectDir = new File('../jkmvc/jkmvc-server-jetty')
-project(':jkmvc-server-jetty').buildFileName = 'server-jetty.gradle'
