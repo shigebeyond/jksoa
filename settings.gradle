@@ -1,6 +1,9 @@
 rootProject.name = 'jksoa'
 
-include 'jksoa-common', 'jksoa-registry', 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc:jksoa-rpc-server', 'jksoa-job', 'jksoa-mq', 'jksoa-guard', 'jksoa-tracer'
+include 'jksoa-common', 'jksoa-registry', 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc:jksoa-rpc-server', 'jksoa-guard'
+include 'jksoa-job'
+include 'jksoa-mq'
+include 'jksoa-tracer:jksoa-tracer-common', 'jksoa-tracer:jksoa-tracer-agent', 'jksoa-tracer:jksoa-tracer-collector', 'jksoa-tracer:jksoa-tracer-web'
 
 // 添加jkmvc子项目
 include 'jkmvc-common'

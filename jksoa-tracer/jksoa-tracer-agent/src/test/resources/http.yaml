@@ -1,0 +1,8 @@
+# 是否调试
+debug: true
+# controller类所在的包路径
+# controller classes's package paths
+controllerPackages:
+    - ???
+plugins: # 跟踪的插件
+    - net.jkcode.jksoa.tracer.agent.plugin.HttpServerTracerPlugin

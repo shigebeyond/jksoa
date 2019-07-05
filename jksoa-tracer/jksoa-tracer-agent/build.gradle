@@ -1,0 +1,6 @@
+dependencies{
+    // other project
+    compile project(':jksoa-rpc:jksoa-rpc-server')
+    compile project(':jkmvc-http')
+    compile project(':jksoa-tracer:jksoa-tracer-common')
+}
