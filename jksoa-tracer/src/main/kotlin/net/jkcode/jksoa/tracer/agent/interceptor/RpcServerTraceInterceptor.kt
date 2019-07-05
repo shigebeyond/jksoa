@@ -6,13 +6,13 @@ import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
 
 /**
- * 客户端处理rpc请求的拦截器
+ * 服务端处理rpc请求的拦截器
  *    添加span
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-30 2:53 PM
  */
-class RpcClientRequestInterceptor: IRpcRequestInterceptor {
+class RpcServerTraceInterceptor: IRpcRequestInterceptor {
 
     /**
      * 前置处理
@@ -20,7 +20,7 @@ class RpcClientRequestInterceptor: IRpcRequestInterceptor {
      * @return 调用结果作为after()调用的第二参数
      */
     override fun before(req: IRpcRequest): Any? {
-        return Tracer.current().startClientSpanner(req)
+        return Tracer.current().startServerSpanner(req)
     }
 
     /**

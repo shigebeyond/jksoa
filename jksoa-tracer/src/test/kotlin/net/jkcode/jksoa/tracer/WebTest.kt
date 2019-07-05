@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.web
+package net.jkcode.jksoa.tracer
 
 import net.jkcode.jkmvc.server.JettyServer
 import org.junit.Test

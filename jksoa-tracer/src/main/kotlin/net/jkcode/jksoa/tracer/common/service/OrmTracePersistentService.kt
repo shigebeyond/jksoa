@@ -1,23 +1,73 @@
-package net.jkcode.jksoa.tracer.web.service
+package net.jkcode.jksoa.tracer.common.service
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import net.jkcode.jkmvc.util.TreeJsonFactory
-import net.jkcode.jkmvc.util.TreeNode
+import net.jkcode.jksoa.tracer.common.entity.tracer.Annotation
+import net.jkcode.jksoa.tracer.common.entity.tracer.Span
+import net.jkcode.jksoa.tracer.common.entity.tracer.Trace
+import net.jkcode.jksoa.tracer.common.model.tracer.AnnotationModel
 import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
 import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
-import net.jkcode.jksoa.tracer.common.service.IQueryService
 
 /**
- * 基于orm实现的查询服务
+ * 基于orm实现的跟踪读写服务
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-class OrmQueryService : IQueryService {
+class OrmTracePersistentService : ITracePersistentService {
 
-    // 查询跟踪详细信息
-    override fun getTraceInfo(traceId: Long): JSONObject {
+    /**
+     * 遍历收到的span
+     */
+    inline protected fun forEachSpan(data: List<List<Span>>, action: (Span) -> Unit){
+        data.forEach {
+            it.forEach(action)
+        }
+    }
+
+    /**
+     * 保存收到的span
+     * @param data
+     */
+    public override fun saveSpans(data: List<List<Span>>){
+        //1 保存span
+        val spans = ArrayList<Span>()
+        forEachSpan(data){ span ->
+            if(!span.isServer) // 非server才保存
+                spans.add(span)
+        }
+        SpanModel.batchInsert(spans)
+
+        // 2 保存trace
+        val traces = ArrayList<Trace>()
+        forEachSpan(data){ span ->
+            if(span.isInitiator) { // 发起人span
+                val t = Trace()
+                t.id = span.traceId
+                t.duration = span.calculateDurationClient().toInt() // 耗时
+                t.serviceId = span.serviceId
+                t.timestamp = span.startTimeClient // 开始时间
+                traces.add(t)
+            }
+        }
+        TraceModel.batchInsert(traces)
+
+        // 3 保存annotation
+        val annotations = ArrayList<Annotation>()
+        forEachSpan(data){ span ->
+            annotations.addAll(span.annotations)
+        }
+        AnnotationModel.batchInsert(annotations)
+    }
+
+    /**
+     * 查询跟踪详细信息
+     * @param traceId
+     * @return
+     */
+    public override fun getTraceInfo(traceId: Long): JSONObject {
         val spans = SpanModel.queryBuilder().with("annotations").where("trace_id", traceId).findAllModels<SpanModel>()
 
         val trace = JSONObject()
@@ -47,8 +97,16 @@ class OrmQueryService : IQueryService {
     }
 
 
-    // 根据耗时来查询跟踪信息
-    override fun getTracesByDuration(serviceId: Int, startTime: Long, limit: Int, durationMin: Int, durationMax: Int): JSONArray {
+    /**
+     * 根据耗时来查询跟踪信息
+     * @param serviceId 服务id
+     * @param startTime 开始时间
+     * @param limit 分页数
+     * @param durationMin 耗时区间
+     * @param durationMax
+     * @return
+     */
+    public override fun getTracesByDuration(serviceId: Int, startTime: Long, limit: Int, durationMin: Int, durationMax: Int): JSONArray {
         /*
         SELECT * FROM trace
             WHERE serviceId=#{serviceId}
@@ -77,8 +135,14 @@ class OrmQueryService : IQueryService {
         return array
     }
 
-    // 根据异常来查询跟踪信息
-    override fun getTracesByEx(serviceId: String, startTime: Long, limit: Int): JSONArray {
+    /**
+     * 根据异常来查询跟踪信息
+     * @param serviceId 服务id
+     * @param startTime 开始时间
+     * @param limit 分页数
+     * @return
+     */
+    public override fun getTracesByEx(serviceId: String, startTime: Long, limit: Int): JSONArray {
         /*select a.*, t.timestamp from annotation a
             left join trace t
             on a.traceId=t.traceId

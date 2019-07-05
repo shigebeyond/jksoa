@@ -23,4 +23,4 @@ netty:
     writerIdleTimeSeconds: 600
     allIdleTimeSeconds: 600
 plugins: # 跟踪的插件
-    - net.jkcode.jksoa.tracer.agent.plugin.TracerRpcServerPlugin
+    - net.jkcode.jksoa.tracer.agent.plugin.RpcServerTracerPlugin

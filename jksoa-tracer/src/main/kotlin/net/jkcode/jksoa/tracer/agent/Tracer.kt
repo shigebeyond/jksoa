@@ -6,7 +6,7 @@ import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.tracer.agent.loader.AnnotationServiceLoader
+import net.jkcode.jksoa.tracer.agent.loader.AnnotationTraceableServiceLoader
 import net.jkcode.jksoa.tracer.agent.loader.ITraceableServiceLoader
 import net.jkcode.jksoa.tracer.agent.sample.BaseSample
 import net.jkcode.jksoa.tracer.agent.spanner.*
@@ -49,9 +49,9 @@ class Tracer protected constructor() {
          *
          * 问题: Tracer 与 RcpRequestDispatcher 的循环依赖
          *      Tracer -> ICollectorService代理 -> RcpRequestDispatcher
-         *      RcpRequestDispatcher -> TracerRpcClientPlugin插件 -> Tracer
+         *      RcpRequestDispatcher -> RpcClientTracerPlugin插件 -> Tracer
          * 解决: 1. Tracer 不能直接引用 ICollectorService
-         *      2. TracerRpcClientPlugin插件中延迟调用 ICollectorService.syncServices()
+         *      2. RpcClientTracerPlugin插件中延迟调用 ICollectorService.syncServices()
          */
         public val collectorService: ICollectorService
             get(){
@@ -71,7 +71,7 @@ class Tracer protected constructor() {
 
         init {
             // 有@TraceableService注解的类的加载器
-            addServiceLoader(AnnotationServiceLoader())
+            addServiceLoader(AnnotationTraceableServiceLoader())
         }
 
         /**
@@ -183,7 +183,7 @@ class Tracer protected constructor() {
      * @return
      */
     public fun startInitiatorSpanner(serviceName: String, name: String): ISpanner {
-        // TracerRpcClientPlugin插件中延迟调用 ICollectorService.syncServices()
+        // RpcClientTracerPlugin插件中延迟调用 ICollectorService.syncServices()
         syncServices()
 
         // 用#号前缀来标识发起人的service

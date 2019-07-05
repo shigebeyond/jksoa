@@ -8,7 +8,7 @@ import net.jkcode.jkmvc.http.controller.ControllerClassLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-30 2:53 PM
  */
-class HttpServerServiceLoader: ITraceableServiceLoader() {
+class HttpServerTraceableServiceLoader: ITraceableServiceLoader() {
 
     /**
      * 加载自定义的服务

@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.tracer.web.controller
 
 import net.jkcode.jkmvc.http.controller.Controller
-import net.jkcode.jksoa.tracer.common.service.IQueryService
-import net.jkcode.jksoa.tracer.web.service.OrmQueryService
+import net.jkcode.jksoa.tracer.common.service.ITracePersistentService
+import net.jkcode.jksoa.tracer.common.service.OrmTracePersistentService
 
 /**
  * 跟踪信息查询的控制器
@@ -12,10 +12,9 @@ import net.jkcode.jksoa.tracer.web.service.OrmQueryService
  */
 class TraceController: Controller()
 {
-
     companion object {
 
-        val queryService: IQueryService = OrmQueryService()
+        public val service: ITracePersistentService = OrmTracePersistentService()
     }
 
 
@@ -26,7 +25,7 @@ class TraceController: Controller()
         val durationMin: Int = req["durationMin"]!!
         val durationMax: Int = req["durationMax"]!!
         val sum: Int = req["sum"]!!
-        val traces = queryService.getTracesByDuration(serviceId, startTime, sum, durationMin, durationMax)
+        val traces = service.getTracesByDuration(serviceId, startTime, sum, durationMin, durationMax)
         res.renderJson(traces)
     }
 
@@ -35,14 +34,14 @@ class TraceController: Controller()
         val serviceId: String = req["serviceId"]!!
         val startTime: Long = req["startTime"]!!
         val sum: Int = req["sum"]!!
-        val traces = queryService.getTracesByEx(serviceId, startTime, sum)
+        val traces = service.getTracesByEx(serviceId, startTime, sum)
         res.renderJson(traces)
     }
 
     // 查询跟踪详细信息
     fun infoAction() {
         val traceId: Long = req.getRouteParameter("id")!!
-        val info = queryService.getTraceInfo(traceId)
+        val info = service.getTraceInfo(traceId)
         res.renderJson(info)
     }
 }

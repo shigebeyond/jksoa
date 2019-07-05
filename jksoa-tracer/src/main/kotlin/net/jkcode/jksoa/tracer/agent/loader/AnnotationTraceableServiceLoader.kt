@@ -13,7 +13,7 @@ import java.util.*
  * @author shijianhang
  * @date 2019-7-3 下午8:02:47
  */
-class AnnotationServiceLoader : ITraceableServiceLoader()  {
+class AnnotationTraceableServiceLoader : ITraceableServiceLoader()  {
 
     /**
      * http配置

@@ -13,6 +13,8 @@ import net.jkcode.jksoa.tracer.common.model.service.ServiceModel
 import net.jkcode.jksoa.tracer.common.model.tracer.AnnotationModel
 import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
 import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
+import net.jkcode.jksoa.tracer.common.service.ITracePersistentService
+import net.jkcode.jksoa.tracer.common.service.OrmTracePersistentService
 import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
 
 import java.util.concurrent.CompletableFuture
@@ -24,6 +26,8 @@ import java.util.concurrent.CompletableFuture
  * @date 2019-06-26 17:09:27
  */
 class OrmCollectorService : ICollectorService {
+
+    protected val service: ITracePersistentService = OrmTracePersistentService()
 
     /**
      * 同步服务
@@ -73,7 +77,7 @@ class OrmCollectorService : ICollectorService {
         // 处理刷盘的元素
         override fun handleFlush(spanses: List<List<Span>>, reqs: ArrayList<Pair<List<Span>, CompletableFuture<Void>>>): Boolean {
             // 保存span
-            saveSpans(spanses)
+            service.saveSpans(spanses)
             return true
         }
     }
@@ -88,46 +92,4 @@ class OrmCollectorService : ICollectorService {
         return spanQueue.add(spans)
     }
 
-    /**
-     * 遍历收到的span
-     */
-    inline protected fun forEachSpan(data: List<List<Span>>, action: (Span) -> Unit){
-        data.forEach {
-            it.forEach(action)
-        }
-    }
-
-    /**
-     * 保存收到的span
-     */
-    public fun saveSpans(data: List<List<Span>>){
-        //1 保存span
-        val spans = ArrayList<Span>()
-        forEachSpan(data){ span ->
-            if(!span.isServer) // 非server才保存
-                spans.add(span)
-        }
-        SpanModel.batchInsert(spans)
-
-        // 2 保存trace
-        val traces = ArrayList<Trace>()
-        forEachSpan(data){ span ->
-            if(span.isInitiator) { // 发起人span
-                val t = Trace()
-                t.id = span.traceId
-                t.duration = span.calculateDurationClient().toInt() // 耗时
-                t.serviceId = span.serviceId
-                t.timestamp = span.startTimeClient // 开始时间
-                traces.add(t)
-            }
-        }
-        TraceModel.batchInsert(traces)
-
-        // 3 保存annotation
-        val annotations = ArrayList<Annotation>()
-        forEachSpan(data){ span ->
-            annotations.addAll(span.annotations)
-        }
-        AnnotationModel.batchInsert(annotations)
-    }
 }

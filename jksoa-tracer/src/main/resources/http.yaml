@@ -5,4 +5,4 @@ debug: true
 controllerPackages:
     - net.jkcode.jksoa.tracer.web.controller
 plugins: # 跟踪的插件
-    - net.jkcode.jksoa.tracer.agent.plugin.TracerHttpServerPlugin
+    - net.jkcode.jksoa.tracer.agent.plugin.HttpServerTracerPlugin

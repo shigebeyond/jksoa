@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.web
+package net.jkcode.jksoa.tracer
 
 import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jkmvc.common.generateId
@@ -8,13 +8,13 @@ import net.jkcode.jksoa.tracer.common.entity.tracer.Annotation
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.model.tracer.AnnotationModel
 import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
-import net.jkcode.jksoa.tracer.common.service.IQueryService
-import net.jkcode.jksoa.tracer.web.service.OrmQueryService
+import net.jkcode.jksoa.tracer.common.service.ITracePersistentService
+import net.jkcode.jksoa.tracer.common.service.OrmTracePersistentService
 import org.junit.Test
 
-class QueryServiceTest {
+class TraceServiceTest {
 
-    protected val queryService: IQueryService = OrmQueryService()
+    protected val service: ITracePersistentService = OrmTracePersistentService()
 
     protected val traceId: Long by lazy {
         val minId = Db.instance().queryCell<Long>("select id from trace order by id limit 1").get()!!
@@ -24,7 +24,7 @@ class QueryServiceTest {
 
     @Test
     fun testGetTraceInfo() {
-        val trace = queryService.getTraceInfo(traceId)
+        val trace = service.getTraceInfo(traceId)
         println(trace)
     }
 
