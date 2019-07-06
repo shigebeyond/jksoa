@@ -29,15 +29,20 @@ abstract class DegradeHandler(
         if(measurer == null)
             return false
 
+	// 无触发条件, 不降级
+	if(annotation.autoByCostTime == 0 && annotation.autoByExceptionRatio == 0)
+	    return false
+	
         // 降级中
         val lastEndTime = endTime.get()
-        if(currMillis() < lastEndTime)
+	val now = currMillis()
+        if(now < lastEndTime)
             return true
 
         // 检查自动降级的触发条件
         if(checkAutoDegrading()) {
             // 记录自动降级结束的时间
-            endTime.compareAndSet(lastEndTime, annotation.autoDegradeSeconds * 1000)
+            endTime.compareAndSet(lastEndTime, now + annotation.autoDegradeSeconds * 1000)
             return true
         }
 
