@@ -34,9 +34,10 @@ class MqBroker : IMqBroker {
 
     /****************** 生产者调用 *****************/
     /**
-     * 请求合并器
+     * 消息合并器
+     *    消息入队, 合并存储
      */
-    protected val combiner = GroupRunCombiner(100, 100, this::saveMessages)
+    protected val msgCombiner = GroupRunCombiner(100, 100, this::saveMessages)
 
     /**
      * 全局共享的可复用的用于存储临时参数的 List 对象
@@ -50,15 +51,15 @@ class MqBroker : IMqBroker {
      * @param msg 消息
      * @return
      */
-    public override fun postMessage(msg: Message): CompletableFuture<Void> {
-        return combiner.add(msg)
+    public override fun postMessage(msg: Message): CompletableFuture<Unit> {
+        return msgCombiner.add(msg)
     }
 
     /**
      * 批量保存消息
      * @param msgs
      */
-    protected fun saveMessages(msgs: List<Message>): Void?{
+    protected fun saveMessages(msgs: List<Message>){
         val params = tmpParams.get()
         var ex: Exception? = null
         try {
@@ -77,8 +78,6 @@ class MqBroker : IMqBroker {
             // 2 给消费者推送消息
             for (msg in msgs)
                 MqPusher.push(msg)
-
-            return null
         }
     }
 

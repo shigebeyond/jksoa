@@ -5,6 +5,7 @@ import net.jkcode.jkmvc.query.DbExpr
 import net.jkcode.jkmvc.query.DbQueryBuilder
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcRequest
+import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.guard.combiner.RequestQueueFlusher
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
@@ -31,15 +32,10 @@ object MqPusher : IMqPusher {
     public val connHub: IConsumerConnectionHub = ConsumerConnectionHub
 
     /**
-     * 结果队列
+     * 结果合并器
+     *    结果入队, 合并存储
      */
-    private val resultQueue: RequestQueueFlusher<ConsumeResult, Void> = object: RequestQueueFlusher<ConsumeResult, Void>(100, 100){
-        // 处理刷盘的元素
-        override fun handleFlush(results: List<ConsumeResult>, reqs: ArrayList<Pair<ConsumeResult, CompletableFuture<Void>>>): Boolean {
-            flushResult(results)
-            return true
-        }
-    }
+    private val resultCombiner = GroupRunCombiner(100, 100, this::flushResult)
 
     /**
      * 给消费者推送消息
@@ -57,10 +53,10 @@ object MqPusher : IMqPusher {
 
         // 处理响应
         resFuture.thenAccept {
-            resultQueue.add(msg to (it as Boolean))
+            resultCombiner.add(msg to (it as Boolean))
         }
         resFuture.exceptionally {
-            resultQueue.add(msg to it)
+            resultCombiner.add(msg to it)
         }
     }
 

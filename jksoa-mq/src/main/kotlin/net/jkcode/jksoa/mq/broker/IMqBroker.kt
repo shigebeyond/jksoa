@@ -21,7 +21,7 @@ interface IMqBroker : IService {
      * @param msg 消息
      * @return
      */
-    fun postMessage(msg: Message): CompletableFuture<Void>
+    fun postMessage(msg: Message): CompletableFuture<Unit>
 
     /****************** 消费者调用 *****************/
     /**

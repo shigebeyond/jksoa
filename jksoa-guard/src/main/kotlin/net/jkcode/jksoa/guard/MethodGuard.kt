@@ -97,7 +97,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
      */
     public inline fun <RequestArgumentType, ResponseType> toFutureSupplier(method: Method = this.method):(RequestArgumentType) -> CompletableFuture<ResponseType> {
         return { singleArg ->
-            // 1 将方法执行转为异步future
+            // 1 将方法执行转为异步future, 不管方法的返回类型是不是CompletableFuture, 都转异步, 鬼懂方法实现中是真异步还是假异步
             var f = CompletableFuture.supplyAsync({
                 invokeMethod(method, arrayOf(singleArg), true)
             })
