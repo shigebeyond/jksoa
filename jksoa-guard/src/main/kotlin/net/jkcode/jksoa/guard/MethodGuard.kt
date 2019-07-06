@@ -167,6 +167,10 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
             if (method.returnType != fallbackMethod.returnType)
                 throw GuardException("$msg 与后备方法 ${fallbackMethod.getSignature(true)} 的返回值类型不一致")
 
+            //无触发条件或降级时间, 不降级
+            if(annotation.autoByCostTime <= 0L && annotation.autoByExceptionRatio <= 0.0 || annotation.autoDegradeSeconds <= 0L)
+                guardLogger.debug("无自动降级的触发条件或降级时间, 不自动降级: {}", annotation)
+
             object : DegradeHandler(annotation, measurer) {
                 /**
                  * 处理异常后备
