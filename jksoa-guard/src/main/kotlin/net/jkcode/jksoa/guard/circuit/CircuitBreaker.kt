@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 /**
  * 断路器
  *    继承限流器, 在断路状态下, 有限流作用
- *    依赖于: 1 IMeasurer 用统计数据来检查是否满足断路条件 2 IRateLimiter 如果存在则用他来做断路状态下的线路
+ *    依赖于: 1 IMeasurer 用统计数据来检查是否满足断路条件 2 IRateLimiter 如果存在则用他来做断路状态下的限流
  *    实现: 定时 checkBreakingSeconds 秒检查断路(用统计数据来检查是否满足断路条件), 如果满足条件则转入断路中状态, 断路中状态维持 breakedSeconds 秒, 超过该时间则转入正常状态
  *
  * @author shijianhang<772910474@qq.com>

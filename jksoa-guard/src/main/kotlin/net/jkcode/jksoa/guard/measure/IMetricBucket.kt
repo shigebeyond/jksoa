@@ -35,14 +35,14 @@ abstract class IMetricBucket {
     /**
      * 请求平均耗时
      */
-    public val avgCostTime: Long
-        get() = costTime / success
+    public val avgCostTime: Double
+        get() = costTime / (success + exception).toDouble()
 
     /**
      * 异常比例
      */
     public val exceptionRatio: Double
-        get() = exception.toDouble() / total
+        get() = exception / (success + exception).toDouble()
 
     /**
      * 转字符串

@@ -15,11 +15,11 @@ public enum class CircuitBreakType {
     },
     // 异常比例
     EXCEPTION_RATIO {
-        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.exception.toDouble() / (bucket.success + bucket.exception)
+        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.exceptionRatio
     },
-    // 请求耗时的均值
-    COST_TIME_AVERAGE {
-        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.costTime / (bucket.success + bucket.exception).toDouble()
+    // 请求平均耗时
+    AVG_COST_TIME {
+        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.avgCostTime
     },
     // 慢请求数
     SLOW_COUNT {
