@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.tracer.agent.spanner
 
+import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.guard.combiner.RequestQueueFlusher
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
@@ -22,15 +23,17 @@ abstract class ISpanner(public val tracer: Tracer, public val span: Span){
 		protected val collectorService: ICollectorService = Tracer.collectorService
 
 		/**
-		 * 待发送span队列
+		 * 待发送span合并器
+		 *    span入队, 合并发送
 		 */
-		internal val spanQueue: RequestQueueFlusher<Span, Void> = object: RequestQueueFlusher<Span, Void>(100, 100){
-			// 处理刷盘的元素
-			override fun handleFlush(spans: List<Span>, reqs: ArrayList<Pair<Span, CompletableFuture<Void>>>): Boolean {
-				collectorService.send(spans)
-				//(collectorService as OrmCollectorService).saveSpans(listOf(spans))
-				return true
-			}
+		internal val spanCombine = GroupRunCombiner(100, 100, this::sendSpans)
+
+		/**
+		 * 发送span
+		 */
+		internal fun sendSpans(spans: List<Span>) {
+			collectorService.send(spans)
+			//(collectorService as OrmCollectorService).saveSpans(listOf(spans))
 		}
 	}
 
@@ -44,6 +47,6 @@ abstract class ISpanner(public val tracer: Tracer, public val span: Span){
 	 * @param ex
 	 * @return
 	 */
-	public abstract fun end(ex: Throwable? = null): CompletableFuture<Void>
+	public abstract fun end(ex: Throwable? = null): CompletableFuture<Unit>
 
 }

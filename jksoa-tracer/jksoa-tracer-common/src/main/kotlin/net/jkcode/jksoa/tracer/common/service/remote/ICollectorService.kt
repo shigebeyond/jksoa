@@ -31,6 +31,6 @@ interface ICollectorService: IService {
      * @param spans
      * @return
      */
-    fun send(spans: List<Span>): CompletableFuture<Void>
+    fun send(spans: List<Span>): CompletableFuture<Unit>
 
 }

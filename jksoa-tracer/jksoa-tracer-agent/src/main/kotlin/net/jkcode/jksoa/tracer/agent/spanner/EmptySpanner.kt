@@ -8,7 +8,7 @@ object EmptySpanner : ISpanner(Tracer.current(), Span()){
     override fun start() {
         // do nothing
     }
-    override fun end(ex: Throwable?): CompletableFuture<Void> {
+    override fun end(ex: Throwable?): CompletableFuture<Unit> {
         // do nothing
         return CompletableFuture.completedFuture(null)
     }

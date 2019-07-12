@@ -3,7 +3,7 @@ package net.jkcode.jksoa.tracer.collector.service
 import net.jkcode.jkmvc.common.Application
 import net.jkcode.jkmvc.orm.collectColumn
 import net.jkcode.jkmvc.orm.toMap
-import net.jkcode.jksoa.guard.combiner.RequestQueueFlusher
+import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.entity.service.Service
 import net.jkcode.jksoa.tracer.common.model.service.AppModel
@@ -66,16 +66,19 @@ class OrmCollectorService : ICollectorService {
     }
 
     /**
-     * span队列
+     * span合并器
+     *    span入队, 合并存储
      */
-    private val spanQueue: RequestQueueFlusher<List<Span>, Void> = object: RequestQueueFlusher<List<Span>, Void>(100, 100){
-        // 处理刷盘的元素
-        override fun handleFlush(spanses: List<List<Span>>, reqs: ArrayList<Pair<List<Span>, CompletableFuture<Void>>>): Boolean {
-            // 保存span
-            service.saveSpans(spanses)
-            return true
-        }
+    protected val spanCombiner = GroupRunCombiner(100, 100, this::saveSpanses)
+
+
+    /**
+     * 保存span
+     */
+    protected fun saveSpanses(spanses: List<List<Span>>) {
+        service.saveSpans(spanses)
     }
+
 
     /**
      * collector接收agent发送过来的span
@@ -83,8 +86,8 @@ class OrmCollectorService : ICollectorService {
      * @param spans
      * @return
      */
-    public override fun send(spans: List<Span>): CompletableFuture<Void> {
-        return spanQueue.add(spans)
+    public override fun send(spans: List<Span>): CompletableFuture<Unit> {
+        return spanCombiner.add(spans)
     }
 
 }

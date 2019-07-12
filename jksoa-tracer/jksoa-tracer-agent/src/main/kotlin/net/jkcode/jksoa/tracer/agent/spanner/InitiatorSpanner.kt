@@ -18,7 +18,7 @@ class InitiatorSpanner(tracer: Tracer, span: Span): ClientSpanner(tracer, span) 
 	 * @param ex
 	 * @return
 	 */
-	public override fun end(ex: Throwable?): CompletableFuture<Void> {
+	public override fun end(ex: Throwable?): CompletableFuture<Unit> {
 		val result = super.end(ex)
 
 		// 清理当前tracer

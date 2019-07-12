@@ -2,7 +2,6 @@ package net.jkcode.jksoa.tracer.agent.spanner
 
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
-import net.jkcode.jksoa.tracer.tracerLogger
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -25,7 +24,7 @@ class ServerSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 	 * @param ex
 	 * @return
 	 */
-	public override fun end(ex: Throwable?): CompletableFuture<Void> {
+	public override fun end(ex: Throwable?): CompletableFuture<Unit> {
 		if(ex != null)
 			span.addExAnnotation(ex)
 		else
@@ -35,7 +34,7 @@ class ServerSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 		tracer.clear()
 
 		// 待发送span入队
-		return spanQueue.add(span)
+		return spanCombine.add(span)
 	}
 
 }
