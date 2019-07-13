@@ -1,16 +1,16 @@
-package net.jkcode.jksoa.tracer.common.service
+package net.jkcode.jksoa.tracer.common.repository
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 
 /**
- * 跟踪读写服务
+ * 跟踪的仓库
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-interface ITraceService {
+interface ITraceRepository {
 
     /**
      * 保存收到的span

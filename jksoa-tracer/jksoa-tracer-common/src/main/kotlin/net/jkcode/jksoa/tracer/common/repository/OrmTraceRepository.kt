@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.common.service
+package net.jkcode.jksoa.tracer.common.repository
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
@@ -11,12 +11,12 @@ import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
 import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
 
 /**
- * 基于orm实现的跟踪读写服务
+ * 基于orm实现的跟踪仓库
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-class OrmTraceService : ITraceService {
+class OrmTraceRepository : ITraceRepository {
 
     /**
      * 遍历收到的span

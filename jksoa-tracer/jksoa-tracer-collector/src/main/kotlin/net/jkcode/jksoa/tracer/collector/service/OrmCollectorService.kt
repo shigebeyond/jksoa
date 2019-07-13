@@ -8,8 +8,8 @@ import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.entity.service.Service
 import net.jkcode.jksoa.tracer.common.model.service.AppModel
 import net.jkcode.jksoa.tracer.common.model.service.ServiceModel
-import net.jkcode.jksoa.tracer.common.service.ITraceService
-import net.jkcode.jksoa.tracer.common.service.OrmTraceService
+import net.jkcode.jksoa.tracer.common.repository.ITraceRepository
+import net.jkcode.jksoa.tracer.common.repository.OrmTraceRepository
 import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
 
 import java.util.concurrent.CompletableFuture
@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture
  */
 class OrmCollectorService : ICollectorService {
 
-    protected val service: ITraceService = OrmTraceService()
+    protected val repository: ITraceRepository = OrmTraceRepository()
 
     /**
      * 同步服务
@@ -76,7 +76,7 @@ class OrmCollectorService : ICollectorService {
      * 保存span
      */
     protected fun saveSpanses(spanses: List<List<Span>>) {
-        service.saveSpans(spanses)
+        repository.saveSpans(spanses)
     }
 
 

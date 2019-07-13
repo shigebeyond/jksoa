@@ -6,14 +6,14 @@ import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.model.tracer.AnnotationModel
 import net.jkcode.jksoa.tracer.common.model.tracer.SpanModel
 import net.jkcode.jksoa.tracer.common.model.tracer.TraceModel
-import net.jkcode.jksoa.tracer.common.service.ITraceService
-import net.jkcode.jksoa.tracer.common.service.OrmTraceService
+import net.jkcode.jksoa.tracer.common.repository.ITraceRepository
+import net.jkcode.jksoa.tracer.common.repository.OrmTraceRepository
 import org.junit.Test
 import java.util.*
 
 class TraceServiceTest {
 
-    protected val service: ITraceService = OrmTraceService()
+    protected val repository: ITraceRepository = OrmTraceRepository()
 
     protected val time = GregorianCalendar().dayStartTime.time
 
@@ -29,19 +29,19 @@ class TraceServiceTest {
 
     @Test
     fun testGetTracesByDuration() {
-        val traces = service.getTracesByDuration(serviceId, time, 10, 0, 10000)
+        val traces = repository.getTracesByDuration(serviceId, time, 10, 0, 10000)
         println(traces)
     }
 
     @Test
     fun testGetTracesByEx() {
-        val traces = service.getTracesByEx(serviceId, time, 10)
+        val traces = repository.getTracesByEx(serviceId, time, 10)
         println(traces)
     }
 
     @Test
     fun testGetTraceInfo() {
-        val trace = service.getTraceInfo(traceId)
+        val trace = repository.getTraceInfo(traceId)
         println(trace)
     }
 
