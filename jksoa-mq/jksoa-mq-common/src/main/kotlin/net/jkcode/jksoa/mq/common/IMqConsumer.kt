@@ -17,6 +17,6 @@ interface IMqConsumer : IService  {
      * @param msg 消息
      * @return
      */
-    fun pushMessage(msg: Message): CompletableFuture<Boolean>
+    fun pushMessage(msg: Message): CompletableFuture<Unit>
 
 }

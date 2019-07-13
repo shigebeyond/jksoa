@@ -1,14 +1,10 @@
 package net.jkcode.jksoa.mq.consumer.puller
 
-import io.netty.util.Timeout
-import io.netty.util.TimerTask
 import net.jkcode.jkmvc.common.CommonSecondTimer
-import net.jkcode.jkmvc.common.CommonThreadPool
 import net.jkcode.jkmvc.common.newPeriodic
-import net.jkcode.jkmvc.common.stringifyStackTrace
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.MessageStatus
+import net.jkcode.jksoa.mq.common.mqLogger
 import net.jkcode.jksoa.mq.consumer.IMqHandler
 import net.jkcode.jksoa.mq.consumer.subscriber.MqSubscriber
 import java.util.concurrent.TimeUnit
@@ -69,16 +65,13 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
                 // 处理消息 + 主动更新消息状态
                 for (msg in msgs) {
                     // 异步处理消息: true表示处理完成, false表示未处理
-                    val f = handleMessage(msg)
-                    f.thenAccept {
-                        if(it) // 处理成功
-                            broker.updateMessage(msg.id, MessageStatus.DONE)
-                    }
-
-                    f.exceptionally {
-                        // 处理异常
-                        broker.updateMessage(msg.id, MessageStatus.FAIL, "Exception: " + it.stringifyStackTrace())
-                        false
+                    handleMessage(msg).whenComplete { r, e ->
+                        if(e == null) // 处理成功
+                            broker.feedbackMessage(msg.id)
+                        else { // 处理异常
+                            e.printStackTrace()
+                            mqLogger.error("消费消息出错: 消息={}, 异常={}", msg, e.message)
+                        }
                     }
                 }
             }while(msgs.isNotEmpty())

@@ -21,7 +21,7 @@ class MqConsumer : IMqConsumer {
      * @param msg 消息
      * @return
      */
-    public override fun pushMessage(msg: Message): CompletableFuture<Boolean> {
+    public override fun pushMessage(msg: Message): CompletableFuture<Unit> {
         return handleMessage(msg)
     }
 

@@ -2,9 +2,6 @@ package net.jkcode.jksoa.mq.common
 
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.annotation.Service
-import net.jkcode.jksoa.common.annotation.ServiceMethodMeta
-import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.MessageStatus
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -42,12 +39,11 @@ interface IMqBroker : IService {
     fun pullMessages(topic: String, group: String, pageSize: Int): CompletableFuture<List<Message>>
 
     /**
-     * 接受consumer的更新消息
+     * 接受consumer的反馈消息消费结果
      * @param id 消息标识
-     * @param status 状态: 0 未处理 1 锁定 2 完成 3 失败(超过时间或超过重试次数)
-     * @param remark 备注
+     * @param e 消费异常
      * @return
      */
-    fun updateMessage(id: Long, status: MessageStatus, remark: String? = null): CompletableFuture<Boolean>
+    fun feedbackMessage(id: Long, e: Throwable?): CompletableFuture<Boolean>
 
 }

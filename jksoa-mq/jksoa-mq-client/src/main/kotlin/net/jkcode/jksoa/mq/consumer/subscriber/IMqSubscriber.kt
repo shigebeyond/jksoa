@@ -28,7 +28,7 @@ interface IMqSubscriber {
      * @param topic 主题
      * @param lambda
      */
-    fun subscribeTopic(topic: String, lambda: (Message) -> Boolean){
+    fun subscribeTopic(topic: String, lambda: (Message) -> Unit){
         subscribeTopic(topic, LambdaMqHandler(lambda))
     }
 
@@ -40,9 +40,9 @@ interface IMqSubscriber {
     fun isTopicSubscribed(topic: String): Boolean
 
     /**
-     * 处理消息
+     * 异步处理消息
      * @param msg 消息
      * @return
      */
-    fun handleMessage(msg: Message): CompletableFuture<Boolean>
+    fun handleMessage(msg: Message): CompletableFuture<Unit>
 }

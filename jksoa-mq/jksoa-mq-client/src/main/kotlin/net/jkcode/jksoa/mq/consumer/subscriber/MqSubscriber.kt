@@ -4,7 +4,7 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.selectExecutor
 import net.jkcode.jksoa.client.referer.Referer
-import net.jkcode.jksoa.mq.broker.IMqBroker
+import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
 import net.jkcode.jksoa.mq.consumer.IMqHandler
@@ -68,21 +68,26 @@ open class MqSubscriber : IMqSubscriber {
     }
 
     /**
-     * 处理消息
+     * 异步处理消息
      * @param msg 消息
      * @return
      */
-    public override fun handleMessage(msg: Message): CompletableFuture<Boolean>{
-        val f = CompletableFuture<Boolean>()
+    public override fun handleMessage(msg: Message): CompletableFuture<Unit>{
+        val f = CompletableFuture<Unit>()
         // 异步处理: 选择线程
         val executor = if(msg.subjectId == 0L)
                             commonPool
                         else
                             commonPool.selectExecutor(msg.subjectId) // 根据 subjectId 选择固定的线程, 以便实现consumer进程内部的消息有序
         executor.execute {
-            // 获得处理器,并调用
-            val result = handlers[msg.topic]!!.handleMessage(msg)
-            f.complete(result)
+            try {
+                // 调用对应处理器
+                handlers[msg.topic]!!.handleMessage(msg)
+                f.complete(null)
+            }catch (e: Exception){
+                f.completeExceptionally(e)
+            }
+
         }
         return f
     }
