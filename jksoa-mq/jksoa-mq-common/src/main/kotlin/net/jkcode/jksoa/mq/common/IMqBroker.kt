@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.broker
+package net.jkcode.jksoa.mq.common
 
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.annotation.Service
@@ -21,7 +21,7 @@ interface IMqBroker : IService {
      * @param msg 消息
      * @return
      */
-    fun postMessage(msg: Message): CompletableFuture<Unit>
+    fun putMessage(msg: Message): CompletableFuture<Unit>
 
     /****************** 消费者调用 *****************/
     /**

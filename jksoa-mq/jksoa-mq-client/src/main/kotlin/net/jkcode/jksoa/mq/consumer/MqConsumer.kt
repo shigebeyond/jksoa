@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.mq.consumer
 
+import net.jkcode.jksoa.mq.common.IMqConsumer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.consumer.puller.MqPullerTimer
 import net.jkcode.jksoa.mq.consumer.subscriber.IMqSubscriber

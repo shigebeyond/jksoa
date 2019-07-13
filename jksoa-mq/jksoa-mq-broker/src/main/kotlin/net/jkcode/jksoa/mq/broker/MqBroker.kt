@@ -9,6 +9,7 @@ import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
+import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MessageStatus
 import net.jkcode.jksoa.mq.common.MqException
@@ -51,7 +52,7 @@ class MqBroker : IMqBroker {
      * @param msg 消息
      * @return
      */
-    public override fun postMessage(msg: Message): CompletableFuture<Unit> {
+    public override fun putMessage(msg: Message): CompletableFuture<Unit> {
         return msgCombiner.add(msg)
     }
 

@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.consumer
+package net.jkcode.jksoa.mq.common
 
 import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.mq.common.Message
