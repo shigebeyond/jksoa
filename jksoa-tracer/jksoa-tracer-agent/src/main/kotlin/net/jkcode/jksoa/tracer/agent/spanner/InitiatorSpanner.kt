@@ -2,7 +2,6 @@ package net.jkcode.jksoa.tracer.agent.spanner
 
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
-import net.jkcode.jksoa.tracer.tracerLogger
 import java.util.concurrent.CompletableFuture
 
 /**

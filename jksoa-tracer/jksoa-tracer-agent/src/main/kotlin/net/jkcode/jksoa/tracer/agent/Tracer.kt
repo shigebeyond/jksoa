@@ -12,7 +12,7 @@ import net.jkcode.jksoa.tracer.agent.sample.BaseSample
 import net.jkcode.jksoa.tracer.agent.spanner.*
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
-import net.jkcode.jksoa.tracer.tracerLogger
+import net.jkcode.jksoa.tracer.common.tracerLogger
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.collections.HashMap

@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer
+package net.jkcode.jksoa.tracer.common
 
 import org.slf4j.LoggerFactory
 
