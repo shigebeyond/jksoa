@@ -7,7 +7,9 @@ import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
+import net.jkcode.jksoa.mq.common.mqLogger
 import net.jkcode.jksoa.mq.consumer.IMqHandler
+import net.jkcode.jksoa.mq.consumer.puller.MqPullerTimer
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
@@ -70,26 +72,30 @@ open class MqSubscriber : IMqSubscriber {
     /**
      * 异步处理消息
      * @param msg 消息
-     * @return
      */
-    public override fun handleMessage(msg: Message): CompletableFuture<Unit>{
-        val f = CompletableFuture<Unit>()
+    public override fun handleMessage(msg: Message){
         // 异步处理: 选择线程
         val executor = if(msg.subjectId == 0L)
                             commonPool
                         else
                             commonPool.selectExecutor(msg.subjectId) // 根据 subjectId 选择固定的线程, 以便实现consumer进程内部的消息有序
         executor.execute {
+            var e:Exception? = null
             try {
                 // 调用对应处理器
                 handlers[msg.topic]!!.handleMessage(msg)
-                f.complete(null)
-            }catch (e: Exception){
-                f.completeExceptionally(e)
+            }catch (ex: Exception){
+                e = ex
+            }finally {
+                // 反馈消息消费结果
+                MqPullerTimer.broker.feedbackMessage(msg.id, e)
+                if(e != null) { // 处理异常
+                    e.printStackTrace()
+                    mqLogger.error("消费消息出错: 消息={}, 异常={}", msg, e.message)
+                }
             }
 
         }
-        return f
     }
 
 }

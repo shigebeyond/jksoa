@@ -64,15 +64,8 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
                 msgs = broker.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!).get()
                 // 处理消息 + 主动更新消息状态
                 for (msg in msgs) {
-                    // 异步处理消息: true表示处理完成, false表示未处理
-                    handleMessage(msg).whenComplete { r, e ->
-                        if(e == null) // 处理成功
-                            broker.feedbackMessage(msg.id)
-                        else { // 处理异常
-                            e.printStackTrace()
-                            mqLogger.error("消费消息出错: 消息={}, 异常={}", msg, e.message)
-                        }
-                    }
+                    // 异步处理消息
+                    handleMessage(msg)
                 }
             }while(msgs.isNotEmpty())
         }

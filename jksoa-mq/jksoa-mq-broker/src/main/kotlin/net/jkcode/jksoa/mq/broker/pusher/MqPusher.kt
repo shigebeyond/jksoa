@@ -7,11 +7,6 @@ import net.jkcode.jksoa.mq.common.IMqConsumer
 import net.jkcode.jksoa.mq.common.Message
 
 /**
- * 消息消费结果: 消息 + 结果(true表示处理完成, false表示未处理, Exception对象表示处理异常)
- */
-private typealias ConsumeResult = Pair<Message, Any>
-
-/**
  * 消费推送者
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:41 PM

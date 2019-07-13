@@ -42,7 +42,6 @@ interface IMqSubscriber {
     /**
      * 异步处理消息
      * @param msg 消息
-     * @return
      */
-    fun handleMessage(msg: Message): CompletableFuture<Unit>
+    fun handleMessage(msg: Message)
 }
