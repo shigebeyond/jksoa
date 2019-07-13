@@ -11,6 +11,7 @@ import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.server.RpcContext
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 消息中转者
@@ -34,6 +35,21 @@ class MqBroker : IMqBroker {
          * 消息仓库
          */
         public val repository: IMessageRepository = DbMessageRepository()
+
+        /**
+        * <topic, id生成器>
+        */
+        private val idGenerators: ConcurrentHashMap<String, AtomicLong> = ConcurrentHashMap()
+
+        /**
+        * 生成id
+        *   Todo: 需要从文件中加载该topic下最新的id
+        * @param topic
+        * @return
+        */
+        public fun generateId(topic: String){
+            return idGenerators.getOrPut(topic){ AtomicLong(0) }.incrementAndGet();
+        }
     }
 
     /****************** 生产者调用 *****************/
