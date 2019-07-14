@@ -33,17 +33,18 @@ interface IMqBroker : IService {
      * 接受consumer的拉取消息
      * @param topic 主题
      * @param group 分组
-     * @param pageSize 每页记录数
+     * @param limit 拉取记录数
      * @return
      */
-    fun pullMessages(topic: String, group: String, pageSize: Int): CompletableFuture<List<Message>>
+    fun pullMessages(topic: String, group: String, limit: Int = 100): CompletableFuture<List<Message>>
 
     /**
      * 接受consumer的反馈消息消费结果
+     * @param topic 主题
      * @param id 消息标识
      * @param e 消费异常
      * @return
      */
-    fun feedbackMessage(id: Long, e: Throwable?): CompletableFuture<Boolean>
+    fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Boolean>
 
 }

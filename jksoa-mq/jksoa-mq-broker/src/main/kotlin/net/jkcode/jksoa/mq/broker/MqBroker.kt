@@ -1,17 +1,14 @@
 package net.jkcode.jksoa.mq.broker
 
-import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
-import net.jkcode.jksoa.mq.broker.repository.DbMessageRepository
-import net.jkcode.jksoa.mq.broker.repository.IMessageRepository
+import net.jkcode.jksoa.mq.broker.repository.LsmMessageRepository
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.server.RpcContext
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 消息中转者
@@ -19,38 +16,6 @@ import java.util.concurrent.ConcurrentHashMap
  * @date 2019-01-10 8:41 PM
  */
 class MqBroker : IMqBroker {
-
-    companion object{
-        /**
-         * 中转者者配置
-         */
-        public val config = Config.instance("broker", "yaml")
-
-        /**
-         * 主题对分组的映射
-         */
-        public val topic2group: Map<String, List<String>> = config["topic2group"]!!
-
-        /**
-         * 消息仓库
-         */
-        public val repository: IMessageRepository = DbMessageRepository()
-
-        /**
-        * <topic, id生成器>
-        */
-        private val idGenerators: ConcurrentHashMap<String, AtomicLong> = ConcurrentHashMap()
-
-        /**
-        * 生成id
-        *   Todo: 需要从文件中加载该topic下最新的id
-        * @param topic
-        * @return
-        */
-        public fun generateId(topic: String){
-            return idGenerators.getOrPut(topic){ AtomicLong(0) }.incrementAndGet();
-        }
-    }
 
     /****************** 生产者调用 *****************/
     /**
@@ -72,8 +37,16 @@ class MqBroker : IMqBroker {
      * 批量保存消息
      * @param msgs
      */
-    public fun saveMessages(msgs: List<Message>){
-        repository.saveMessages(msgs)
+    protected fun saveMessages(msgs: List<Message>){
+        // 按topic分组
+        val topic2Msgs = msgs.groupBy { it.topic }
+        // 逐个topic存储
+        for((topic, msgs2) in topic2Msgs){
+            // 根据topic获得仓库
+            val repository = LsmMessageRepository.getOrCreateRepository(topic)
+            // 逐个消息存储
+            repository.saveMessages(msgs2)
+        }
     }
 
     /****************** 消费者调用 *****************/
@@ -107,25 +80,31 @@ class MqBroker : IMqBroker {
      * 接受consumer的拉取消息
      * @param topic 主题
      * @param group 分组
-     * @param pageSize 每页记录数
+     * @param limit 拉取记录数
      * @return
      */
-    public override fun pullMessages(topic: String, group: String, pageSize: Int): CompletableFuture<List<Message>> {
-        val msgs = repository.getMessagesByTopicAndGroup(topic, group, pageSize)
-
+    public override fun pullMessages(topic: String, group: String, limit: Int): CompletableFuture<List<Message>> {
+        // 根据topic获得仓库
+        val repository = LsmMessageRepository.getOrCreateRepository(topic)
+        // 查询消息
+        val msgs = repository.getMessagesByGroup(group, limit)
         return CompletableFuture.completedFuture(msgs)
     }
 
 
     /**
      * 接受consumer的反馈消息消费结果
+     * @param topic 主题
      * @param id 消息标识
      * @param e 消费异常
      * @return
      */
-    public override fun feedbackMessage(id: Long, e: Throwable?): CompletableFuture<Boolean> {
-        val r = repository.deleteMsg(id)
-        return CompletableFuture.completedFuture(r)
+    public override fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Boolean> {
+        // 根据topic获得仓库
+        val repository = LsmMessageRepository.getOrCreateRepository(topic)
+        // 删除消息
+        repository.deleteMsg(id)
+        return CompletableFuture.completedFuture(true)
     }
 
 }

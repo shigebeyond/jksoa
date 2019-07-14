@@ -15,18 +15,24 @@ interface IMessageRepository {
     fun saveMessages(msgs: List<Message>)
 
     /**
-     * 根据topic+group来查询消息
-     * @param topic 主题
-     * @param group 分组
-     * @param pageSize 每页记录数
+     * 根据范围查询消息
+     * @param startId 开始的id
+     * @param limit
      * @return
      */
-    fun getMessagesByTopicAndGroup(topic: String, group: String, pageSize: Int): List<Message>
+    fun getMessagesByRange(startId: Long, limit: Int = 100): List<Message>
+
+    /**
+     * 根据分组查询消息
+     * @param startId 开始的id
+     * @param limit
+     * @return
+     */
+    fun getMessagesByGroup(group: String, limit: Int = 100): List<Message>
 
     /**
      * 删除消息
      * @param id
-     * @return
      */
-    fun deleteMsg(id: Long): Boolean
+    fun deleteMsg(id: Long)
 }

@@ -88,7 +88,7 @@ open class MqSubscriber : IMqSubscriber {
                 e = ex
             }finally {
                 // 反馈消息消费结果
-                MqPullerTimer.broker.feedbackMessage(msg.id, e)
+                MqPullerTimer.broker.feedbackMessage(msg.topic, msg.id, e)
                 if(e != null) { // 处理异常
                     e.printStackTrace()
                     mqLogger.error("消费消息出错: 消息={}, 异常={}", msg, e.message)
