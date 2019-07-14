@@ -117,7 +117,8 @@ class LsmMessageRepository(
     public override fun saveMessages(msgs: List<Message>){
         for(msg in msgs) {
             // 由broker端生成消息id, 保证在同一个topic下有序
-            idProp.set(msg, maxId.incrementAndGet())
+            if(msg.id != 0L)
+                idProp.set(msg, maxId.incrementAndGet())
             // 保存消息
             queueStore.put(msg.id, msg)
         }

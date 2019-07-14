@@ -38,7 +38,7 @@ object ConsumerConnectionHub : IConsumerConnectionHub {
      * @param group
      * @param conn
      */
-    override fun add(topic: String, group: String, conn: IConnection){
+    public override fun add(topic: String, group: String, conn: IConnection){
         // 添加连接: 绑定主题+分组+连接
         val conns = connections.getOrPutOnce(topic) {
             // <主题 to 分组连接>
@@ -58,8 +58,7 @@ object ConsumerConnectionHub : IConsumerConnectionHub {
      * @param conn
      * @return
      */
-    override fun remove(topic: String, group: String, conn: IConnection): Boolean {
-
+    public override fun remove(topic: String, group: String, conn: IConnection): Boolean {
         // 找到该主题+分组绑定的连接
         val conns = connections.get(topic)?.get(group) // <主题 to <分组 to 连接>>
         if(conns == null || conns.isEmpty())

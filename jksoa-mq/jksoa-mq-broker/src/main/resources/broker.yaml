@@ -1,2 +1,2 @@
 # 消息中转者配置
-dataDir: data # 数据存储目录
+dataDir: mq # 数据存储目录
