@@ -74,8 +74,7 @@ allIdleTimeSeconds: 600
 ```
 package net.jkcode.jksoa.example
 
-import net.jkcode.jksoa.common.IService
-import net.jkcode.jksoa.common.annotation.Service
+import net.jkcode.jksoa.common.annotation.RemoteService
 import java.rmi.RemoteException
 
 /**
@@ -84,8 +83,8 @@ import java.rmi.RemoteException
  * @author shijianhang
  * @create 2017-12-15 下午7:37
  **/
-@Service(version = 1, onlyLeader = true)
-interface ISimpleService : IService /*, Remote // rmi协议服务接口 */ {
+@RemoteService(version = 1, onlyLeader = true)
+interface ISimpleService  /*: Remote // rmi协议服务接口 */ {
 
     @Throws(RemoteException::class) // rmi异常
     fun ping(): String

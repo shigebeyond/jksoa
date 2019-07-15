@@ -2,7 +2,6 @@ package net.jkcode.jksoa.common.loader
 
 import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import net.jkcode.jkmvc.common.getMethodBySignature
-import net.jkcode.jksoa.common.IService
 import java.lang.reflect.Method
 
 /**
@@ -16,7 +15,7 @@ abstract class IServiceClass: ClosingOnShutdown() {
     /**
      * 接口类
      */
-    public abstract val `interface`: Class<out IService>
+    public abstract val `interface`: Class<*>
 
     /**
      * 服务标识
@@ -27,7 +26,7 @@ abstract class IServiceClass: ClosingOnShutdown() {
     /**
      * 服务实例
      */
-    public abstract val service: IService
+    public abstract val service: Any
 
     /**
      * 根据方法签名来获得方法

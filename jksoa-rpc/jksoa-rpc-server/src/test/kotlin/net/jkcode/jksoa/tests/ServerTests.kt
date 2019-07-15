@@ -17,7 +17,7 @@ import org.junit.Test
  */
 class ServerTests {
 
-    //@Test
+    @Test
     fun testServer(){
         IRpcServer.instance("netty").start()
     }

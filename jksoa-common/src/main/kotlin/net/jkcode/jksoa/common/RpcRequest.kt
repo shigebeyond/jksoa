@@ -1,11 +1,10 @@
 package net.jkcode.jksoa.common
 
 import net.jkcode.jkmvc.common.*
-import net.jkcode.jksoa.common.annotation.service
+import net.jkcode.jksoa.common.annotation.getServiceClass
+import net.jkcode.jksoa.common.annotation.remoteService
 import java.lang.reflect.Method
-import java.util.HashMap
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.javaMethod
 
 /**
@@ -69,7 +68,7 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
      * @param method 方法
      * @param args 实参
      */
-    public constructor(method: Method, args: Array<Any?> = emptyArray()) : this(method.getServiceClass().name, method.getSignature(), args, method.getServiceClass().service?.version ?: 0)
+    public constructor(method: Method, args: Array<Any?> = emptyArray()) : this(method.getServiceClass().name, method.getSignature(), args, method.getServiceClass().remoteService?.version ?: 0)
 
     /**
      * 构造函数

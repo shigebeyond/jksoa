@@ -2,7 +2,6 @@ package net.jkcode.jksoa.client.referer
 
 import net.jkcode.jksoa.client.IReferer
 import net.jkcode.jksoa.client.connection.ConnectionHub
-import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.registry.IRegistry
@@ -17,8 +16,8 @@ import net.jkcode.jksoa.registry.zk.ZkRegistry
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 9:52 AM
  */
-class Referer(public override val `interface`:Class<out IService> /* 接口类 */,
-              public override val service: IService = RpcInvocationHandler.createProxy(`interface`), /* 服务实例，默认是服务代理，但在服务端可指定本地服务实例 */
+class Referer(public override val `interface`:Class<*> /* 接口类 */,
+              public override val service: Any = RpcInvocationHandler.createProxy(`interface`), /* 服务实例，默认是服务代理，但在服务端可指定本地服务实例 */
               public val local: Boolean = false /* 是否本地服务 */
 ): IReferer() {
 
@@ -37,7 +36,7 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
          * @param local 限制本地服务
          * @return
          */
-        internal fun <T: IService> getRefer(clazzName: String, local: Boolean = false): T {
+        internal fun <T> getRefer(clazzName: String, local: Boolean = false): T {
             val referer = RefererLoader.get(clazzName) as Referer?
             if(referer == null)
                 throw RpcClientException("未加载远程服务: " + clazzName)
@@ -53,7 +52,7 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
          * @param local 限制本地服务
          * @return
          */
-        public fun <T: IService> getRefer(clazz: Class<T>, local: Boolean = false): T {
+        public fun <T> getRefer(clazz: Class<T>, local: Boolean = false): T {
             return getRefer(clazz.name, local)
         }
 
@@ -63,7 +62,7 @@ class Referer(public override val `interface`:Class<out IService> /* 接口类 *
          * @param local 限制本地服务
          * @return
          */
-        public inline fun <reified T: IService> getRefer(local: Boolean = false): T {
+        public inline fun <reified T> getRefer(local: Boolean = false): T {
             return getRefer(T::class.java, local)
         }
     }

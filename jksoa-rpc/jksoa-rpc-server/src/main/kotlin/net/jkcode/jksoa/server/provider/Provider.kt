@@ -1,12 +1,10 @@
 package net.jkcode.jksoa.server.provider
 
 import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.isSuperClass
 import net.jkcode.jkmvc.singleton.BeanSingletons
 import net.jkcode.jksoa.client.referer.RefererLoader
-import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.annotation.service
+import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.registry.IRegistry
@@ -23,7 +21,7 @@ import net.jkcode.jksoa.server.IRpcServer
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 3:48 PM
  */
-class Provider(public override val clazz: Class<out IService> /* 实现类 */, public val registerable: Boolean /* 是否注册 */) : IProvider() {
+class Provider(public override val clazz: Class<*> /* 实现类 */, public val registerable: Boolean /* 是否注册 */) : IProvider() {
 
     companion object{
         /**
@@ -41,11 +39,11 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
     /**
      * 接口类
      */
-    public override val `interface`: Class<out IService> by lazy{
+    public override val `interface`: Class<*> by lazy{
         // 遍历接口
         clazz.interfaces.first {
-            IService::class.java.isSuperClass(it) // 过滤服务接口
-        } as Class<out IService>
+            it.remoteService != null // 过滤 @RemoteService 注解
+        }
     }
 
     /**
@@ -56,10 +54,10 @@ class Provider(public override val clazz: Class<out IService> /* 实现类 */, p
     /**
      * 服务实例
      */
-    public override val service: IService = BeanSingletons.instance(clazz) as IService
+    public override val service: Any = BeanSingletons.instance(clazz)
 
     init{
-        if(`interface`.service?.onlyLeader ?: false){ // 要选举leader
+        if(`interface`.remoteService?.onlyLeader ?: false){ // 要选举leader
             // 先选举leader才注册服务
             val election = ZkLeaderElection(serviceId)
             election.run(){

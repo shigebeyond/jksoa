@@ -1,8 +1,17 @@
 package net.jkcode.jksoa.common.loader
 
-import net.jkcode.jkmvc.common.*
-import net.jkcode.jksoa.common.IService
+import net.jkcode.jkmvc.common.ClassScanner
+import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.common.classPath2class
+import net.jkcode.jkmvc.common.commonLogger
+import net.jkcode.jksoa.common.annotation.remoteService
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.collections.Collection
+import kotlin.collections.HashMap
+import kotlin.collections.MutableMap
+import kotlin.collections.any
+import kotlin.collections.set
+import kotlin.collections.toSet
 
 /**
  * 加载服务类
@@ -73,10 +82,12 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
         // 过滤service的类文件
         if(!relativePath.endsWith("Service.class"))
             return
-        val clazz = relativePath.classPath2class() as Class<IService>
+        val clazz = relativePath.classPath2class()
 
-        // 过滤service子类
-        if(IService::class.java.isSuperClass(clazz) /* 继承IService */)
+        // 过滤service注解: 接口声明注解 @RemoteService
+        val isRemoteService = clazz.remoteService != null // 自身是接口
+                || clazz.interfaces.any { it.remoteService != null } // 自身是实现类
+        if(isRemoteService)
             addClass(clazz, true) // 收集类
     }
 
@@ -86,7 +97,7 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      * @param clazz 类
      * @param registerable 是否注册
      */
-    public fun addClass(clazz: Class<out IService>, registerable: Boolean) {
+    public fun addClass(clazz: Class<*>, registerable: Boolean) {
         // 创建服务类元数据
         val serviceClass = createServiceClass(clazz, registerable)
         // 缓存服务提供者，key是服务标识，即接口类全名
@@ -102,5 +113,5 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
      * @param registerable 是否注册
      * @return
      */
-    protected abstract fun createServiceClass(clazz: Class<out IService>, registerable: Boolean): T?
+    protected abstract fun createServiceClass(clazz: Class<*>, registerable: Boolean): T?
 }

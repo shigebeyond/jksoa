@@ -42,8 +42,8 @@ interface IUrl {
     /**
      * 接口类名 = 路径 = 服务标识
      */
-    val `interface`: Class<out IService>
-        get() = Class.forName(path) as Class<out IService>
+    val `interface`: Class<*>
+        get() = Class.forName(path)
 
     /**
      * 服务路径

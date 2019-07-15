@@ -4,7 +4,6 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.common.getConstructorOrNull
 import net.jkcode.jkmvc.common.isAbstract
-import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.loader.ServiceClassLoader
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.server.IProvider
@@ -30,7 +29,7 @@ object ProviderLoader: ServiceClassLoader<IProvider>() {
      * @param registerable 是否注册
      * @return
      */
-    public override fun createServiceClass(clazz: Class<out IService>, registerable: Boolean): Provider? {
+    public override fun createServiceClass(clazz: Class<*>, registerable: Boolean): Provider? {
         if (clazz.isAbstract /* 抽象类 */ || clazz.isInterface /* 接口 */)
             return null
 

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.client.referer
 
-import net.jkcode.jksoa.common.getServiceClass
+import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.guard.MethodGuard
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction

@@ -1,11 +1,9 @@
 package net.jkcode.jksoa.example
 
 import net.jkcode.jksoa.client.combiner.annotation.*
-import net.jkcode.jksoa.common.IService
-import net.jkcode.jksoa.common.annotation.Service
+import net.jkcode.jksoa.common.annotation.RemoteService
 import net.jkcode.jksoa.guard.circuit.CircuitBreakType
 import java.io.Serializable
-import java.rmi.RemoteException
 import java.util.concurrent.CompletableFuture
 
 data class User(public val id: Int, public val name: String): Serializable {}
@@ -16,8 +14,8 @@ data class User(public val id: Int, public val name: String): Serializable {}
  * @author shijianhang
  * @create 2017-12-15 下午7:37
  **/
-@Service(version = 1)
-interface IGuardService : IService /*, Remote // rmi协议服务接口 */ {
+@RemoteService(version = 1)
+interface IGuardService /*: Remote // rmi协议服务接口 */ {
 
     // 默认方法
     @JvmDefault

@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.mq.common
 
-import net.jkcode.jksoa.common.IService
-import net.jkcode.jksoa.common.annotation.Service
+import net.jkcode.jksoa.common.annotation.RemoteService
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -9,8 +8,8 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
-@Service(onlyLeader = true)
-interface IMqBroker : IService {
+@RemoteService(onlyLeader = true)
+interface IMqBroker {
 
     /****************** 生产者调用 *****************/
     /**

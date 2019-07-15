@@ -1,2 +1,1 @@
-服务接口必须继承
-IService
+服务接口必须声明注解 @RemoteService

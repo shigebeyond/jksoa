@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.server
 
-import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.loader.IServiceClass
 import net.jkcode.jksoa.common.Url
 
@@ -23,6 +22,6 @@ abstract class IProvider : IServiceClass() {
     /**
      * 实现类
      */
-    public abstract val clazz: Class<out IService>
+    public abstract val clazz: Class<*>
 
 }

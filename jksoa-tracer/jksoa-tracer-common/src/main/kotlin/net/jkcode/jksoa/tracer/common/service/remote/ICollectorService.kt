@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.tracer.common.service.remote
 
-import net.jkcode.jksoa.common.IService
-import net.jkcode.jksoa.common.annotation.Service
+import net.jkcode.jksoa.common.annotation.RemoteService
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import java.util.concurrent.CompletableFuture
 
@@ -11,8 +10,8 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
  */
-@Service(version = 1)
-interface ICollectorService: IService {
+@RemoteService(version = 1)
+interface ICollectorService {
 
     /**
      * 同步服务

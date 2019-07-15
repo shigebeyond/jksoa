@@ -8,7 +8,6 @@ import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
-import net.jkcode.jksoa.common.IService
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.guard.MethodGuard
 import net.jkcode.jksoa.guard.MethodGuardInvocationHandler
@@ -56,8 +55,8 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
      * @param connHub rpc连接集中器
      * @return
      */
-    public fun createProxy(intf: Class<out IService>): IService {
-        return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(intf), RpcInvocationHandler) as IService
+    public fun createProxy(intf: Class<*>): Any {
+        return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(intf), RpcInvocationHandler)
     }
 
     /**

@@ -2,7 +2,8 @@ package net.jkcode.jksoa.common
 
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jksoa.common.annotation.service
+import net.jkcode.jksoa.common.annotation.getServiceClass
+import net.jkcode.jksoa.common.annotation.remoteService
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -30,7 +31,7 @@ class ShardingRpcRequest(public override val clazz: String, /* 服务接口类�
      * @param method 方法
      * @param shardingArgses 分片要调用的实参
      */
-    public constructor(method: Method, shardingArgses: Array<Array<*>>) : this(method.getServiceClass().name, method.getSignature(), shardingArgses, method.getServiceClass().service?.version ?: 0)
+    public constructor(method: Method, shardingArgses: Array<Array<*>>) : this(method.getServiceClass().name, method.getSignature(), shardingArgses, method.getServiceClass().remoteService?.version ?: 0)
 
     /**
      * 构造函数
