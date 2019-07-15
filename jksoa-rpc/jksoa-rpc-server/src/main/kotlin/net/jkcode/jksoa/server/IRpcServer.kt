@@ -34,6 +34,11 @@ abstract class IRpcServer: Closeable {
         public val config = Config.instance("server", "yaml")
 
         /**
+         * 插件配置
+         */
+        public val pluginConfig: Config = Config.instance("plugin", "yaml")
+
+        /**
          * 当前启动的服务器
          */
         protected var server: IRpcServer? = null
@@ -51,7 +56,7 @@ abstract class IRpcServer: Closeable {
     /**
      * 插件列表
      */
-    public val plugins: List<IPlugin> = config.classes2Instances("plugins")
+    public val plugins: List<IPlugin> = pluginConfig.classes2Instances("rpcServerPlugins")
 
     /**
      * 服务器url

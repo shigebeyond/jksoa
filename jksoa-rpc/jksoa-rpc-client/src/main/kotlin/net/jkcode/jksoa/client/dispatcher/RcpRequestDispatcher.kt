@@ -31,9 +31,14 @@ object RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
     public val config = Config.instance("client", "yaml")
 
     /**
+     * 插件配置
+     */
+    public val pluginConfig: Config = Config.instance("plugin", "yaml")
+
+    /**
      * 插件列表
      */
-    public val plugins: List<IPlugin> = config.classes2Instances("plugins")
+    public val plugins: List<IPlugin> = pluginConfig.classes2Instances("rpcClientPlugins")
 
     /**
      * rpc连接集中器

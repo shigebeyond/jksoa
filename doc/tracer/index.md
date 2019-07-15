@@ -39,24 +39,17 @@ traceableServicePackages: #
 ```
 
 ### 添加agent插件
-1. rpc client端配置 client.yaml
+vim plugin.yaml
 
 ```
-plugins: # 跟踪的插件
+# rpc客户端的插件
+rpcClientPlugins:
     - net.jkcode.jksoa.tracer.agent.plugin.RpcClientTracerPlugin
-```
-
-2. rpc server端配置 server.yaml
-
-```
-plugins: # 跟踪的插件
+# rpc服务端的插件
+rpcServerPlugins:
     - net.jkcode.jksoa.tracer.agent.plugin.RpcServerTracerPlugin
-```
-
-3. http server端配置 http.yaml
-
-```
-plugins: # 跟踪的插件
+# http服务端的插件
+httpServerPlugins:
     - net.jkcode.jksoa.tracer.agent.plugin.HttpServerTracerPlugin
 ```
 
