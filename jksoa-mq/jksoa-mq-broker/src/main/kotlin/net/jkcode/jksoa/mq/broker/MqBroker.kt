@@ -53,7 +53,7 @@ class MqBroker : IMqBroker {
     /**
      * 消费者连接集中器
      */
-    public val connHub: IConsumerConnectionHub = ConsumerConnectionHub
+    internal val connHub: IConsumerConnectionHub = ConsumerConnectionHub
 
     /**
      * 接受consumer的订阅主题

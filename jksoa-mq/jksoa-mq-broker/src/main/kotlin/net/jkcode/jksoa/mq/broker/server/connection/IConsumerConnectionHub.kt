@@ -10,7 +10,7 @@ import net.jkcode.jksoa.common.IRpcRequest
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:04 PM
  */
-interface IConsumerConnectionHub {
+internal interface IConsumerConnectionHub {
 
     /**
      * 添加连接

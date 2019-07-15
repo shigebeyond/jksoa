@@ -10,12 +10,13 @@ import net.jkcode.jksoa.mq.common.Message
 
 /**
  * 消息的均衡负载算法
- *   1 无序消息: 随机选择 2 有序消息: 固定选择
+ *   1 无序消息: 随机选择 2 有序消息: 一致性哈希
+ *   仅用在 ConsumerConnectionHub
  *
  * @author shijianhang
  * @create 2019-02-18 下午9:21
  **/
-class MqLoadBalancer : ILoadBalancer {
+internal class MqLoadBalancer : ILoadBalancer {
 
     /**
      * 选择连接
@@ -31,15 +32,13 @@ class MqLoadBalancer : ILoadBalancer {
         // 消息
         val msg = req.args.first() as Message
 
-        if(msg.subjectId == 0L) { // 无序: 随机选个连接
+        // 1 无序: 随机选个连接
+        if(msg.subjectId == 0L) {
             val i = randomInt(conns.size)
             return conns[i]
         }
-        // 有序: 固定连接
-//        val i = (msg.subjectId % conns.size).toInt()
-//        return conns[i]
 
-        // 有序: 一致性哈希
+        // 2 有序: 一致性哈希
         return ConsistentHash(3, 100, conns).get(msg.subjectId)
     }
 }

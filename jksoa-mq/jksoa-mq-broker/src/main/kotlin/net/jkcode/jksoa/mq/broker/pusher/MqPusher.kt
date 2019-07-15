@@ -16,7 +16,7 @@ object MqPusher : IMqPusher {
     /**
      * 消费者连接集中器
      */
-    public val connHub: IConsumerConnectionHub = ConsumerConnectionHub
+    internal val connHub: IConsumerConnectionHub = ConsumerConnectionHub
 
     /**
      * 给消费者推送消息

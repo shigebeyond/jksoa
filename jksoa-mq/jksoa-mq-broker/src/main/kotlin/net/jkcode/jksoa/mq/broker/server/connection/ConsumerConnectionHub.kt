@@ -19,12 +19,12 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:04 PM
  */
-object ConsumerConnectionHub : IConsumerConnectionHub {
+internal object ConsumerConnectionHub : IConsumerConnectionHub {
 
     /**
      * 均衡负载算法
      */
-    private val balancer: ILoadBalancer = ILoadBalancer.instance("mq")
+    private val balancer: ILoadBalancer = MqLoadBalancer()
 
     /**
      * 消费者的连接池: <主题 to <分组 to 连接>>
