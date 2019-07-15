@@ -15,7 +15,7 @@ import net.jkcode.jksoa.server.IProvider
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM
  */
-object ProviderLoader: ServiceClassLoader<IProvider>() {
+object ProviderLoader: ServiceClassLoader<IProvider>(true) {
 
     /**
      * 服务端配置

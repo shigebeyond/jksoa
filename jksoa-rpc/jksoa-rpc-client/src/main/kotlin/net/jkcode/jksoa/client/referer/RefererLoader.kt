@@ -12,7 +12,7 @@ import net.jkcode.jksoa.common.loader.ServiceClassLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM
  */
-object RefererLoader : ServiceClassLoader<IReferer>() {
+object RefererLoader : ServiceClassLoader<IReferer>(false) {
 
     /**
      * 客户端配置

@@ -20,7 +20,7 @@ import kotlin.collections.toSet
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM
  */
-abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
+abstract class ServiceClassLoader<T: IServiceClass>(protected val isProvider: Boolean /* 是否是加载服务提供者 */) : ClassScanner() {
 
     /**
      * 是否已加载
@@ -85,8 +85,10 @@ abstract class ServiceClassLoader<T: IServiceClass> : ClassScanner() {
         val clazz = relativePath.classPath2class()
 
         // 过滤service注解: 接口声明注解 @RemoteService
-        val isRemoteService = clazz.remoteService != null // 自身是接口
-                || clazz.interfaces.any { it.remoteService != null } // 自身是实现类
+        val isRemoteService: Boolean = if(isProvider)
+                                            clazz.interfaces.any { it.remoteService != null } // 自身是实现类
+                                        else
+                                            clazz.remoteService != null // 自身是接口
         if(isRemoteService)
             addClass(clazz, true) // 收集类
     }
