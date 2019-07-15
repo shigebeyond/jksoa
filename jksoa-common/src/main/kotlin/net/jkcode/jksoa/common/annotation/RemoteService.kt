@@ -10,8 +10,9 @@ import java.lang.reflect.Method
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class RemoteService(public val version: Int = 0 /* 接口版本 */,
-                               public val onlyLeader: Boolean = false /* 是否选举leader, 该服务接口只暴露唯一一个选为leader的server */
+annotation class RemoteService(public val version: Int = 0, // 接口版本
+                               public val onlyLeader: Boolean = false, // 是否选举leader, 该服务接口只暴露唯一一个选为leader的server
+                               public val dispatcher: String = "default" // 请求分发者
 )
 
 /**

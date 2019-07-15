@@ -206,7 +206,8 @@ data class Url(public override var protocol: String /* 协议 */,
         val str = StringBuilder(protocol).append("://").append(host)
         if(port >= 0)
             str.append(':').append(port)
-        str.append("/").append(path)
+        if(path.isNotEmpty())
+            str.append("/").append(path)
         // 参数
         if(withQuery) {
             str.append('?')

@@ -50,13 +50,13 @@ open class ZkDiscovery: IDiscovery {
     public override fun subscribe(serviceId: String, listener: IDiscoveryListener){
         try{
             clientLogger.info("ZkDiscovery监听服务[{}]变化", serviceId)
-            val rootPath = Url.serviceId2serviceRegistryPath(serviceId)
+            val servicePath = Url.serviceId2serviceRegistryPath(serviceId)
             // 1 监听子节点
             val childListener = ZkChildListener(listener)
             childListeners.getOrPut(serviceId){ // 记录监听器，以便取消监听时使用
                 ConcurrentHashMap()
             }.put(listener, childListener)
-            zkClient.subscribeChildChanges(rootPath, childListener)
+            zkClient.subscribeChildChanges(servicePath, childListener)
 
             // 2 发现服务：获得子节点
             val urls = discover(serviceId)
@@ -90,9 +90,9 @@ open class ZkDiscovery: IDiscovery {
     public override fun unsubscribe(serviceId: String, listener: IDiscoveryListener){
         try{
             clientLogger.info("ZkDiscovery取消监听服务[{}]变化", serviceId)
-            val rootPath = Url.serviceId2serviceRegistryPath(serviceId)
+            val servicePath = Url.serviceId2serviceRegistryPath(serviceId)
             // 1 取消监听子节点
-            zkClient.unsubscribeChildChanges(rootPath, childListeners[serviceId]!![listener]!!)
+            zkClient.unsubscribeChildChanges(servicePath, childListeners[serviceId]!![listener]!!)
             
             // 2 取消监听子节点的数据变化
             val list = dataListeners.get(serviceId)?.get(listener)
