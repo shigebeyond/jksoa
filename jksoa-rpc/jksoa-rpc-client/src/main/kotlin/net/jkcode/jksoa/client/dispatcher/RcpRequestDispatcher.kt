@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
-object RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
+class RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
 
     /**
      * 客户端配置
@@ -62,7 +62,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
     /**
      * 关闭
      */
-    override fun close() {
+    public override fun close() {
         // 关闭插件
         for(p in plugins)
             p.close()

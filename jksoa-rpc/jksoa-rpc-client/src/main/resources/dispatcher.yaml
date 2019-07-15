@@ -1,0 +1,2 @@
+# rpc请求分发者实现
+default: net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher

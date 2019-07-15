@@ -1,9 +1,7 @@
 package net.jkcode.jksoa.job.job.remote
 
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
-import net.jkcode.jksoa.client.dispatcher.RcpRequestDispatcher
 import net.jkcode.jksoa.common.ShardingRpcRequest
-import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.common.invocation.IShardingInvocation
 import net.jkcode.jksoa.job.IJob
 import net.jkcode.jksoa.job.IJobExecutionContext
@@ -23,7 +21,7 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : IJob, IShardingInv
         /**
          * 请求分发者
          */
-        protected val distr: IRpcRequestDispatcher = RcpRequestDispatcher
+        protected val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance("default")
     }
 
     /**
@@ -47,7 +45,7 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : IJob, IShardingInv
      * @param context 作业执行的上下文
      */
     public override fun execute(context: IJobExecutionContext) {
-        val resFutures = distr.dispatchSharding(req)
+        val resFutures = dispatcher.dispatchSharding(req)
         // 记录执行异常
         for(resFuture in resFutures)
             resFuture.exceptionally{

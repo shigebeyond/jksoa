@@ -1,5 +1,9 @@
 package net.jkcode.jksoa.client.dispatcher
 
+import net.jkcode.jkmvc.cache.ICache
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IShardingRpcRequest
 import java.util.concurrent.CompletableFuture
@@ -10,6 +14,14 @@ import java.util.concurrent.CompletableFuture
  * @date 2019-01-07 11:10 AM
  */
 interface IRpcRequestDispatcher {
+
+    // 可配置的单例
+    companion object: NamedConfiguredSingletons<IRpcRequestDispatcher>() {
+        /**
+         * 单例类的配置，内容是哈希 <单例名 to 单例类>
+         */
+        public override val instsConfig: IConfig = Config.instance("dispatcher", "yaml")
+    }
 
     /**
      * 分发一个请求
