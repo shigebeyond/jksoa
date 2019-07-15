@@ -1,17 +1,18 @@
 package net.jkcode.jksoa.loadbalance
 
+import net.jkcode.jkmvc.common.ConsistentHash
 import net.jkcode.jkmvc.common.get
 import net.jkcode.jkmvc.common.randomInt
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.client.IConnection
 
 /**
- * 随机的均衡负载算法
+ * 一致性hash的均衡负载算法
  *
  * @author shijianhang
- * @create 2017-12-18 下午9:21
+ * @create 2019-7-18 下午9:21
  **/
-class RandomLoadBalancer : ILoadBalancer {
+class ConsistentHashLoadBalancer : ILoadBalancer {
     /**
      * 选择连接
      *    TODO: 添加权重因子 IConnection.weight
@@ -24,8 +25,7 @@ class RandomLoadBalancer : ILoadBalancer {
         if(conns.isEmpty())
             return null
 
-        // 随机选个连接
-        val i = randomInt(conns.size)
-        return conns[i]
+        // 一致性哈希
+        return ConsistentHash(3, 100, conns).get(req)
     }
 }

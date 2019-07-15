@@ -1,3 +1,0 @@
-# 均衡负载类型
-random: net.jkcode.jksoa.loadbalance.RandomLoadBalancer # 随机选择
-mq: net.jkcode.jksoa.mq.broker.server.connection.MqLoadBalancer # 1 无序消息: 随机选择 2 有序消息: 固定选择

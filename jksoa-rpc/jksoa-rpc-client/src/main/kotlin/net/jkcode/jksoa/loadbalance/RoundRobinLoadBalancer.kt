@@ -4,14 +4,22 @@ import net.jkcode.jkmvc.common.get
 import net.jkcode.jkmvc.common.randomInt
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.client.IConnection
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * 随机的均衡负载算法
+ * 轮询的均衡负载算法
  *
  * @author shijianhang
- * @create 2017-12-18 下午9:21
+ * @create 2019-7-18 下午9:21
  **/
-class RandomLoadBalancer : ILoadBalancer {
+class RoundRobinLoadBalancer : ILoadBalancer {
+
+    /**
+     * 缓存计数器 <serviceId, 计数器>
+     */
+    protected val counters: ConcurrentHashMap<String, AtomicInteger> = ConcurrentHashMap();
+
     /**
      * 选择连接
      *    TODO: 添加权重因子 IConnection.weight
@@ -24,8 +32,10 @@ class RandomLoadBalancer : ILoadBalancer {
         if(conns.isEmpty())
             return null
 
-        // 随机选个连接
-        val i = randomInt(conns.size)
+        val counter = counters.getOrPut(req.serviceId){
+            AtomicInteger(0)
+        }
+        val i = counter.getAndIncrement() % conns.size
         return conns[i]
     }
 }
