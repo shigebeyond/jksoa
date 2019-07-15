@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.common.annotation
 
-import java.lang.annotation.RetentionPolicy
 import java.lang.reflect.Method
 
 /**
@@ -11,16 +10,15 @@ import java.lang.reflect.Method
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ServiceMethodMeta(
+annotation class RemoteMethod(
         public val requestTimeoutMillis: Long = 0 /* 请求超时，Long类型，单位毫秒, 如果为0则实际的超时使用client.yaml中定义的配置项 requestTimeoutMillis */
 ){
 }
 
-
 /**
  * 服务方法的元数据
  */
-public val Method.serviceMethodMeta: ServiceMethodMeta?
+public val Method.remoteMethod: RemoteMethod?
     get(){
-        return getAnnotation(ServiceMethodMeta::class.java)
+        return getAnnotation(RemoteMethod::class.java)
     }

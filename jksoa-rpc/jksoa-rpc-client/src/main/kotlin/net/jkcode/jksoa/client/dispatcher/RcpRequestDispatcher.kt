@@ -73,16 +73,17 @@ object RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      *   将该请求发给任一节点
      *
      * @param req 请求
+     * @param requestTimeoutMillis 请求超时
      * @return 异步结果
      */
-    public override fun dispatch(req: IRpcRequest): CompletableFuture<Any?> {
+    public override fun dispatch(req: IRpcRequest, requestTimeoutMillis: Long): CompletableFuture<Any?> {
         return FailoveRpcResponseFuture(config["maxTryTimes"]!!){
             clientLogger.debug(" ------ dispatch request ------ ")
             // 1 选择连接
             val conn = connHub.select(req)
 
             // 2 发送请求，并获得异步响应
-            conn.send(req)
+            conn.send(req, requestTimeoutMillis)
         }.thenApply(IRpcResponse::getOrThrow)
     }
 
@@ -91,9 +92,10 @@ object RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      *    将请求分成多片, 然后逐片分发给对应的节点
      *
      * @param shdReq 分片的rpc请求
+     * @param requestTimeoutMillis 请求超时
      * @return 多个结果
      */
-    public override fun dispatchSharding(shdReq: IShardingRpcRequest): List<CompletableFuture<Any?>> {
+    public override fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long): List<CompletableFuture<Any?>> {
         // 1 分片
         // 获得所有连接(节点)
         val conns = connHub.selectAll(shdReq.serviceId)
@@ -114,7 +116,7 @@ object RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
             val req = shdReq.buildRpcRequest(iSharding)
 
             // 发送请求，并获得异步响应
-            conns[iConn].send(req).thenApply(IRpcResponse::getOrThrow)
+            conns[iConn].send(req, requestTimeoutMillis).thenApply(IRpcResponse::getOrThrow)
         }
 
         // 3 等待全部分片请求的响应结果

@@ -22,8 +22,9 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-14 6:11 PM
  */
-class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
-                             public val channel: Channel /* netty channel, 仅用于在[NettyResponseHandler.channelInactive()]中删掉该channel对应的异步响应记录 */
+class NettyRpcResponseFuture(req: IRpcRequest, /* 请求 */
+                             public val channel: Channel, /* netty channel, 仅用于在[NettyResponseHandler.channelInactive()]中删掉该channel对应的异步响应记录 */
+                             requestTimeoutMillis: Long /* 请求超时 */
 ) : RpcResponseFuture(req) {
 
     /**
@@ -31,9 +32,9 @@ class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
      */
     protected var timeout: Timeout = CommonMilliTimer.newTimeout(object : TimerTask {
         override fun run(timeout: Timeout) {
-            handleExpired()
+            handleExpired(requestTimeoutMillis)
         }
-    }, req.requestTimeoutMillis, TimeUnit.MILLISECONDS)
+    }, requestTimeoutMillis, TimeUnit.MILLISECONDS)
 
     init{
         // 记录异步响应，以便响应到来时设置结果
@@ -42,13 +43,14 @@ class NettyRpcResponseFuture(req: IRpcRequest /* 请求 */,
 
     /**
      * 处理超时
+     * @param requestTimeoutMillis 超时时间
      */
-    protected fun handleExpired() {
+    protected fun handleExpired(requestTimeoutMillis: Long) {
         clientLogger.error("请求[{}]超时", reqId)
         // 1 删除异步响应的记录
         NettyResponseHandler.removeResponseFuture(reqId)
         // 2 设置响应结果: 超时异常
-        super.completeExceptionally(RpcClientException("请求[$reqId]超时: ${req.requestTimeoutMillis} MILLISECONDS"))
+        super.completeExceptionally(RpcClientException("请求[$reqId]超时: ${requestTimeoutMillis} MILLISECONDS"))
     }
 
     /**

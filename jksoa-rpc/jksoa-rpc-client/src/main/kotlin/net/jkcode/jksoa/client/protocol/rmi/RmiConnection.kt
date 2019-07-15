@@ -32,9 +32,10 @@ class RmiConnection(url: Url): BaseConnection(url){
      * 客户端发送请求
      *
      * @param req
+     * @param requestTimeoutMillis 请求超时
      * @return
      */
-    public override fun send(req: IRpcRequest): IRpcResponseFuture {
+    public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
         try{
             // 1 获得referer
             val referer = RefererLoader.get(req.serviceId)

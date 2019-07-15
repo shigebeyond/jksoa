@@ -16,16 +16,18 @@ interface IRpcRequestDispatcher {
      *   将该请求发给任一节点
      *
      * @param req 请求
+     * @param requestTimeoutMillis 请求超时
      * @return 异步结果
      */
-    fun dispatch(req: IRpcRequest): CompletableFuture<Any?>
+    fun dispatch(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): CompletableFuture<Any?>
 
     /**
      * 分发一个分片的请求
      *    将请求分成多片, 然后逐片分发给对应的节点
      *
      * @param shdReq 分片的请求
+     * @param requestTimeoutMillis 请求超时
      * @return 多个异步结果
      */
-    fun dispatchSharding(shdReq: IShardingRpcRequest): List<CompletableFuture<Any?>>
+    fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long = shdReq.requestTimeoutMillis): List<CompletableFuture<Any?>>
 }

@@ -48,9 +48,10 @@ class NettyConnection(public val channel: Channel, url: Url = channel.buildUrl("
      * 客户端发送请求
      *
      * @param req
+     * @param requestTimeoutMillis 请求超时
      * @return
      */
-    public override fun send(req: IRpcRequest): IRpcResponseFuture {
+    public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
         clientLogger.debug("NettyConnection发送请求: {}", req)
 
         // 1 发送请求
@@ -71,14 +72,14 @@ class NettyConnection(public val channel: Channel, url: Url = channel.buildUrl("
         // 2 在debug环境下提前创建好异步响应
         // 当client调用本机server时, client很快收到响应
         // 而在debug环境下, 在代码 writeFuture.awaitUninterruptibly() 执行之前就收到响应了, 如果在该代码之后才创建并记录异步响应, 则无法识别并处理早已收到的响应
-        val resFuture: NettyRpcResponseFuture? = if(Application.isDebug) NettyRpcResponseFuture(req, channel) else null
+        val resFuture: NettyRpcResponseFuture? = if(Application.isDebug) NettyRpcResponseFuture(req, channel, requestTimeoutMillis) else null
 
         // 3 阻塞等待发送完成，有超时
         val result = writeFuture.awaitUninterruptibly(req.requestTimeoutMillis, TimeUnit.MILLISECONDS)
 
         // 3.1 发送成功
         if (result && writeFuture.isSuccess())
-            return if(resFuture != null) resFuture else NettyRpcResponseFuture(req, channel) // 返回异步响应
+            return if(resFuture != null) resFuture else NettyRpcResponseFuture(req, channel, requestTimeoutMillis) // 返回异步响应
 
         // 3.2 超时
         if (writeFuture.cause() == null){

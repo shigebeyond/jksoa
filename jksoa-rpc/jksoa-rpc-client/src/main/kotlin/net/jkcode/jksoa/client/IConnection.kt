@@ -27,7 +27,8 @@ interface IConnection: Closeable {
      * 客户端发送请求
      *
      * @param req
+     * @param requestTimeoutMillis 请求超时
      * @return
      */
-    fun send(req: IRpcRequest): IRpcResponseFuture
+    fun send(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): IRpcResponseFuture
 }

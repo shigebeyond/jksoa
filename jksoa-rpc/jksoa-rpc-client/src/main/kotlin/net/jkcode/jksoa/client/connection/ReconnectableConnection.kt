@@ -101,13 +101,14 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
      * 客户端发送请求
      *
      * @param req
+     * @param requestTimeoutMillis 请求超时
      * @return
      */
-    public override fun send(req: IRpcRequest): IRpcResponseFuture {
+    public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
         lastSendTime = currMillis()
 
         // 发送请求
-        return getOrReConnect().send(req)
+        return getOrReConnect().send(req, requestTimeoutMillis)
     }
 
     /**
