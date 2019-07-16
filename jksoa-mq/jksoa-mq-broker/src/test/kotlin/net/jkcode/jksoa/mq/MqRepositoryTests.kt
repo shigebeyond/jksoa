@@ -11,7 +11,7 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-16 6:44 PM
  */
-class MqRepositoryTest {
+class MqRepositoryTests {
 
     val topic = "topic1"
 

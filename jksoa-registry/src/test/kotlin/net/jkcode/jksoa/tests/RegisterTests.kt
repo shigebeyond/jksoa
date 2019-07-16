@@ -20,8 +20,14 @@ class RegisterTests {
 
     // 服务发现监听器
     private val discoveryListener = object : IDiscoveryListener {
+        /**
+         * 服务标识，即接口类全名
+         */
+        override val serviceId: String
+            get() = this@RegisterTests.serviceId
+
         // 处理服务地址变化
-        override fun handleServiceUrlsChange(serviceId: String, urls: List<Url>) {
+        override fun handleServiceUrlsChange(urls: List<Url>) {
             println("服务[$serviceId]地址变化：" + urls)
         }
 
