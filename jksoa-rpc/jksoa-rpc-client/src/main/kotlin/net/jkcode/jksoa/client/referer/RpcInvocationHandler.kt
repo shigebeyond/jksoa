@@ -4,6 +4,7 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IRequestInterceptor
 import net.jkcode.jkmvc.common.ThreadLocalInheritableThreadPool
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.guard.MethodGuard
@@ -33,7 +34,7 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
     /**
      * 请求分发者
      */
-    private val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance("default")
+    private val dispatcher: IRpcRequestDispatcher = RpcRequestDispatcher
 
     init{
         // 修改 CompletableFuture.asyncPool 属性为 ThreadLocalInheritableThreadPool.commonPool

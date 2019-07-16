@@ -43,9 +43,12 @@ abstract class IConnectionHub: IDiscoveryListener {
         public fun instance(serviceClass: Class<*>): IConnectionHub{
             return instances.getOrPutOnce(serviceClass) {
                 val annotation = serviceClass.remoteService
+                if(annotation == null)
+                    throw IllegalArgumentException("Service Class must has annotation @remoteService")
+
                 // 1 获得 IConnectionHub实现类
-                var clazz = annotation?.connectionHubClass
-                if (clazz == null || clazz == Void::class || clazz == Unit::class)
+                var clazz = annotation.connectionHubClass
+                if (clazz == Void::class || clazz == Unit::class)
                     clazz = ConnectionHub::class
 
                 // 检查是否 IConnectionHub子类
@@ -63,8 +66,8 @@ abstract class IConnectionHub: IDiscoveryListener {
                 // 设置服务标识
                 inst.serviceId = serviceClass.name
                 // 设置均衡负载器
-                var loadBalancer = annotation?.loadBalancer
-                if (loadBalancer != null && loadBalancer != "")
+                var loadBalancer = annotation.loadBalancer
+                if (loadBalancer != "")
                     inst.loadBalancer = ILoadBalancer.instance(loadBalancer)
 
                 return inst

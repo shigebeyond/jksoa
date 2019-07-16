@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
-class RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
+object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
 
     /**
      * 客户端配置

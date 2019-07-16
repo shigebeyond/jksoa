@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.tests
 
 import net.jkcode.jkmvc.common.*
-import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.client.protocol.netty.NettyClient
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.common.ShardingRpcRequest
@@ -145,7 +145,7 @@ class ClientTests {
             arrayOf("第${i}个分片的参数") // ISimpleService::echo 的实参
         }
         val job = ShardingRpcRequest(ISimpleService::echo, args)
-        val dispatcher = IRpcRequestDispatcher.instance("default")
+        val dispatcher = RpcRequestDispatcher
         val futures = dispatcher.dispatchSharding(job)
         futures.print()
     }

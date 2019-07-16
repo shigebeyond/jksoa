@@ -15,14 +15,6 @@ import java.util.concurrent.CompletableFuture
  */
 interface IRpcRequestDispatcher {
 
-    // 可配置的单例
-    companion object: NamedConfiguredSingletons<IRpcRequestDispatcher>() {
-        /**
-         * 单例类的配置，内容是哈希 <单例名 to 单例类>
-         */
-        public override val instsConfig: IConfig = Config.instance("dispatcher", "yaml")
-    }
-
     /**
      * 分发一个请求
      *   将该请求发给任一节点

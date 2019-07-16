@@ -22,9 +22,9 @@ class NettyMessageEncoder : MessageToByteEncoder<Any>() {
     public val config = Config.instance("client", "yaml")
 
     /**
-     * 序列化
+     * 序列器
      */
-    public val serializer: ISerializer = ISerializer.instance(config["serializeType"]!!)
+    public val serializer: ISerializer = ISerializer.instance(config["serializer"]!!)
 
     /**
      * 编码要发送的消息

@@ -1,11 +1,11 @@
 package net.jkcode.jksoa.mq.consumer.client
 
+import io.netty.channel.ChannelHandler
 import net.jkcode.jksoa.client.protocol.netty.NettyClient
 import net.jkcode.jksoa.client.protocol.netty.NettyResponseHandler
 import net.jkcode.jksoa.mq.consumer.MqConsumer
 import net.jkcode.jksoa.server.protocol.netty.NettyRequestHandler
 import net.jkcode.jksoa.server.provider.ProviderLoader
-import io.netty.channel.ChannelHandler
 
 /**
  * consumer中的mq客户端
