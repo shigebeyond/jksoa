@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.broker
 
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
+import net.jkcode.jksoa.client.protocol.netty.buildUrl
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.repository.LsmMessageRepository
 import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
@@ -96,7 +97,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
         // 记录连接
         val ctx = RpcContext.current().ctx
         val channel = ctx.channel()
-        val conn = NettyConnection(channel)
+        val conn = NettyConnection(channel, channel.buildUrl("mqNetty"))
         connHub.add(topic, group, conn)
 
         // channel关闭时删除连接

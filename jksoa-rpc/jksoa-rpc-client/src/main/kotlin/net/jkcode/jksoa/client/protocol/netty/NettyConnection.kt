@@ -1,5 +1,7 @@
 package net.jkcode.jksoa.client.protocol.netty
 
+import io.netty.channel.Channel
+import io.netty.util.AttributeKey
 import net.jkcode.jkmvc.common.Application
 import net.jkcode.jksoa.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
@@ -7,8 +9,6 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
-import io.netty.channel.Channel
-import io.netty.util.AttributeKey
 import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 
@@ -28,7 +28,7 @@ public fun Channel.buildUrl(protocol: String): Url {
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-class NettyConnection(public val channel: Channel, url: Url = channel.buildUrl("netty"), weight: Int = 1) : BaseConnection(url, weight) {
+class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : BaseConnection(url, weight) {
 
     companion object{
 

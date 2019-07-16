@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang
  * @create 2019-1-9 下午7:37
  **/
-@RemoteService
+@RemoteService(protocol = "mqNetty")
 interface IMqConsumer {
 
     /**
