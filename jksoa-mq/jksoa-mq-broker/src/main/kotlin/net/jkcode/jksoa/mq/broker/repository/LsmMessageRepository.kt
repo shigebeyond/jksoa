@@ -105,37 +105,40 @@ class LsmMessageRepository(
      * 队列存储
      *   key是消息id, value是消息
      */
-    protected val queueStore: Store<Long, Message> by lazy{
-        // 创建存储
-        val storeDir = File(rootDir, "queue")
-        StoreBuilder(storeDir, LongSerializer(), FstObjectSerializer() as Serializer<Message>)
-                .setMaxVolatileGenerationSize((8 * 1024 * 1024).toLong())
-                .setStorageType(storageType)
-                .setCodec(codec)
-                .build()
-    }
+    protected lateinit var queueStore: Store<Long, Message>
 
     /**
      * 进度存储, 有2种情况
      *    1. 如果特定的key == "_maxId", 则value是当前队列的最大消息id
      *    2. 否则, key为分组名, value是读进度对应的消息id
      */
-    protected val progressStore: Store<String, Long> by lazy{
-        // 创建存储
-        val storeDir = File(rootDir, "progress")
-        StoreBuilder(storeDir, StringSerializer(), LongSerializer())
-                .setMaxVolatileGenerationSize((8 * 1024 * 1024).toLong())
-                .setStorageType(storageType)
-                .setCodec(codec)
-                .build()
-    }
+    protected lateinit var progressStore: Store<String, Long>
 
     /**
      * 最大的消息id
      */
-    protected val maxId: AtomicLong by lazy{
+    protected lateinit var maxId: AtomicLong
+
+    init {
+        // 创建队列存储
+        val queueStoreDir = File(rootDir, "queue")
+        queueStore = StoreBuilder(queueStoreDir, LongSerializer(), FstObjectSerializer() as Serializer<Message>)
+                .setMaxVolatileGenerationSize((8 * 1024 * 1024).toLong())
+                .setStorageType(storageType)
+                .setCodec(codec)
+                .build()
+
+        // 创建进度存储
+        val progressStoreDir = File(rootDir, "progress")
+        progressStore = StoreBuilder(progressStoreDir, StringSerializer(), LongSerializer())
+                .setMaxVolatileGenerationSize((8 * 1024 * 1024).toLong())
+                .setStorageType(storageType)
+                .setCodec(codec)
+                .build()
+
+        // 初始化最大的消息id
         val startId:Long? = progressStore.get(maxIdProgressKey)
-        AtomicLong(if(startId == null) 0L else startId)
+        maxId = AtomicLong(if(startId == null) 0L else startId)
     }
 
     /**
