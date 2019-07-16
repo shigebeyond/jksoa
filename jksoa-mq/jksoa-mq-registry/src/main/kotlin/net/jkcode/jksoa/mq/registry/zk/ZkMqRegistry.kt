@@ -1,8 +1,10 @@
-package net.jkcode.jksoa.mq.broker
+package net.jkcode.jksoa.mq.registry.zk
 
 import net.jkcode.jkmvc.orm.toJson
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.mq.common.IMqBroker
+import net.jkcode.jksoa.mq.registry.IZkMqRegistry
+import net.jkcode.jksoa.mq.registry.TopicAssigner
 import net.jkcode.jksoa.registry.IRegistry
 import net.jkcode.jksoa.registry.zk.ZkRegistry
 
@@ -13,7 +15,7 @@ import net.jkcode.jksoa.registry.zk.ZkRegistry
  * @author shijianhang<772910474@qq.com>
  * @date 2019-7-12 11:22 AM
  */
-object ZkMqRegistry: ZkMqDiscovery() {
+object ZkMqRegistry: ZkMqDiscovery(), IZkMqRegistry {
 
     /**
      * rpc的注册中心
@@ -26,24 +28,19 @@ object ZkMqRegistry: ZkMqDiscovery() {
      * @param topic
      * @return
      */
-    public fun registerTopic(topic: String) {
+    override fun registerTopic(topic: String) {
         // 读topic分配
         val assignment = discover()
 
+        // 读所有broker
+        val brokers = rpcRegistry.discover(IMqBroker::class.qualifiedName!!)
+
         // 分配者给topic分配broker
-        val assigner = TopicAssigner(assignment, getAllBrokers())
+        val assigner = TopicAssigner(assignment, brokers)
         assigner.assignTopic(topic)
 
         // 写topic分配
         zkClient.writeData(topic2brokerPath, assignment.toJson())
-    }
-
-    /**
-     * 获得所有的broker
-     * @return
-     */
-    private fun getAllBrokers(): List<Url> {
-        return rpcRegistry.discover(IMqBroker::class.qualifiedName!!)
     }
 
     /**
@@ -52,7 +49,7 @@ object ZkMqRegistry: ZkMqDiscovery() {
      * @param topic
      * @return
      */
-    public fun unregisterTopic(topic: String) {
+    override fun unregisterTopic(topic: String) {
         // 读topic分配
         val assignment = discover()
 
@@ -74,7 +71,7 @@ object ZkMqRegistry: ZkMqDiscovery() {
      * @param normalBrokers 正常的broker
      * @return
      */
-    public fun unregisterBroker(removedBroker: Url, normalBrokers: List<Url>) {
+    override fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>) {
         // 读topic分配
         val assignment = discover()
 
@@ -82,7 +79,7 @@ object ZkMqRegistry: ZkMqDiscovery() {
         val assigner = TopicAssigner(assignment, normalBrokers)
 
         // 1 根据broker来删除topic
-        val freeTopics = assigner.removeTopicsByBroker(removedBroker.serverName)
+        val freeTopics = assigner.removeTopicsByBroker(removedBroker)
 
         // 2 给topic分配broker
         for(topic in freeTopics)

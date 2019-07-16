@@ -86,11 +86,13 @@ abstract class IConnectionHub: IDiscoveryListener {
      * 服务标识，即接口类全名
      */
     public override var serviceId: String = ""
+        protected set
 
     /**
      * 均衡负载算法
      */
     public var loadBalancer: ILoadBalancer = ILoadBalancer.instance(config["loadbalancer"]!!)
+        protected set
 
     /**
      * 选择一个连接

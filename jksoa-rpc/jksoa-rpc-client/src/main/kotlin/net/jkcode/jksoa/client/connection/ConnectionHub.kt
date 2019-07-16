@@ -18,12 +18,12 @@ import kotlin.collections.HashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-13 3:18 PM
  */
-class ConnectionHub: IConnectionHub() {
+open class ConnectionHub: IConnectionHub() {
 
     /**
      * 连接池： <协议ip端口 to 连接>
      */
-    private val connections: ConcurrentHashMap<String, IConnection> = ConcurrentHashMap()
+    protected val connections: ConcurrentHashMap<String, IConnection> = ConcurrentHashMap()
 
     /**
      * 处理服务地址变化
@@ -65,23 +65,35 @@ class ConnectionHub: IConnectionHub() {
 
         // 5 新加的地址
         for (key in addKeys){
-            clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, newUrls[key])
-            val url = newUrls[key]!!
-            oldUrls[key] = ReusableConnection(url, url.getParameter("weight", 1)!!) // 创建连接
+            handleServiceUrlAdd(newUrls[key]!!)
         }
 
         // 6 删除的地址
-        for(key in removeKeys){
-            val url = oldUrls.remove(key)!!
-            clientLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
-            url.close() // 关闭连接
-        }
+        for(key in removeKeys)
+            handleServiceUrlRemove(key)
 
         // 7 更新的地址
-        for(url in updateUrls) {
-            clientLogger.debug("ConnectionHub处理服务[{}]更新地址: {}", serviceId, url)
+        for(url in updateUrls)
             handleParametersChange(url)
-        }
+    }
+
+    /**
+     * 处理服务地址新增
+     * @param url
+     */
+    protected fun handleServiceUrlAdd(url: Url) {
+        clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
+        connections[url.serverName] = ReusableConnection(url, url.getParameter("weight", 1)!!) // 创建连接
+    }
+
+    /**
+     * 处理服务地址删除
+     * @param url
+     */
+    protected open fun handleServiceUrlRemove(serverName: String) {
+        val url = connections.remove(serverName)!!
+        clientLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
+        url.close() // 关闭连接
     }
 
     /**

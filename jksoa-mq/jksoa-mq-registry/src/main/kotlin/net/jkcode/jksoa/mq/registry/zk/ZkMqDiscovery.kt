@@ -1,9 +1,12 @@
-package net.jkcode.jksoa.mq.broker
+package net.jkcode.jksoa.mq.registry.zk
 
 import com.alibaba.fastjson.JSON
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.mq.registry.IMqDiscovery
+import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
+import net.jkcode.jksoa.mq.registry.TopicAssignment
 import net.jkcode.jksoa.registry.RegistryException
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
@@ -16,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-7-12 11:22 AM
  */
-open class ZkMqDiscovery {
+open class ZkMqDiscovery : IMqDiscovery {
     /**
      * 路径前缀
      */
@@ -47,7 +50,7 @@ open class ZkMqDiscovery {
      *
      * @param listener 监听器
      */
-    public fun subscribe(listener: IMqDiscoveryListener){
+    override fun subscribe(listener: IMqDiscoveryListener){
         try{
             clientLogger.info("ZkMqDiscovery监听topic分配变化")
 
@@ -67,7 +70,7 @@ open class ZkMqDiscovery {
      *
      * @param listener 监听器
      */
-    public fun unsubscribe(listener: IMqDiscoveryListener){
+    override fun unsubscribe(listener: IMqDiscoveryListener){
         try{
             // 取消监听节点的数据变化
             val dataListener = dataListeners.get(listener)
@@ -82,7 +85,7 @@ open class ZkMqDiscovery {
      *
      * @return 服务地址
      */
-    public fun discover(): TopicAssignment {
+    override fun discover(): TopicAssignment {
         try {
             // 获得节点数据
             val json = zkClient.readData(topic2brokerPath) as String

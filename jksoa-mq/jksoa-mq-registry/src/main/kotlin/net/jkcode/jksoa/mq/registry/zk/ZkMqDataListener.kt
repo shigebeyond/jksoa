@@ -1,9 +1,7 @@
-package net.jkcode.jksoa.mq.broker
+package net.jkcode.jksoa.mq.registry.zk
 
-import com.alibaba.fastjson.JSON
-import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.registerLogger
-import net.jkcode.jksoa.registry.IDiscoveryListener
+import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import org.I0Itec.zkclient.IZkDataListener
 
 /**

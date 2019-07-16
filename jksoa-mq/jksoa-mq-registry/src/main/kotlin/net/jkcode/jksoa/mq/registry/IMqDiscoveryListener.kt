@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.broker
+package net.jkcode.jksoa.mq.registry
 
 /**
  * 处理topic分配变化

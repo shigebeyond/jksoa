@@ -42,10 +42,11 @@
 2. 支持分布式任务调度
 
 # 1.4
-1. 支持mq雏形
+1. 支持mq雏形, 基于rpc来发送消息, broker负责将消息存到db中
 
 # 1.5
 1. 将包`com.jksoa`重命名为`net.jkcode.jksoa`
+
 2. 支持限流: 支持令牌桶/计数器限流算法, 支持客户端与服务端双向限流, 支持在方法级注解配置
 
 # 1.6
@@ -79,4 +80,14 @@
 
 # 1.8
 
-1. 实现mq
+1. rpc service声明不在继承IService接口, 直接使用注解@RemoteService
+
+2. 完善均衡负载
+
+3. 重构mq
+
+3.1 broker负责将消息存到lsmtree文件中
+
+3.2 实现mq的注册中心, 支持topic分配信息的保存与分发
+
+3.3 引入broker leader来负责topic的分配

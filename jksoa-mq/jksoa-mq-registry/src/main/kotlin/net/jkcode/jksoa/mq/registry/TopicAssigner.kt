@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.broker
+package net.jkcode.jksoa.mq.registry
 
 import net.jkcode.jksoa.common.Url
 import java.util.*
@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author shijianhang<772910474@qq.com>
  * @date 2019-7-12 11:22 AM
  */
-class TopicAssigner(public val assignment: TopicAssignment, brokers: List<Url>){
+class TopicAssigner(public val assignment: TopicAssignment, brokers: Collection<Url>){
 
     companion object{
         /**
