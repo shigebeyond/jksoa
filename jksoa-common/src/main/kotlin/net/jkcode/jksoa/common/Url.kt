@@ -139,16 +139,6 @@ data class Url(public override var protocol: String /* 协议 */,
     }
 
     /**
-     * 转为包含新的路径+参数信息的url
-     * @param path 路径 = 服务标识 = 接口类名
-     * @param parameters 参数
-     * @return
-     */
-    public fun withPathPart(path: String, parameters: Map<String, Any?> = emptyMap()): Url {
-        return Url(protocol, host, port, path, parameters)
-    }
-
-    /**
      * 解析url
      *
      * @param url

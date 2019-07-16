@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.job.job.remote
 
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.invocation.IShardingInvocation
 import net.jkcode.jksoa.job.IJob
@@ -21,7 +22,8 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : IJob, IShardingInv
         /**
          * 请求分发者
          */
-        protected val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance("default")
+        protected val dispatcher: IRpcRequestDispatcher = RpcRequestDispatcher
+
     }
 
     /**

@@ -27,8 +27,8 @@ class MyTests {
     @Test
     fun testServerName(){
         val url = Url("http", "localhost", 8080)
-        println(url)
-        println(url.serverName)
+        println(url) // http://localhost:8080
+        println(url.serverName) // http:localhost:8080
     }
 
     @Test
