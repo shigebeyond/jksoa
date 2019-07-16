@@ -64,7 +64,7 @@ open class ZkDiscovery: IDiscovery {
                 return;
 
             // 3 更新服务地址 -- 只处理单个listener，其他旧的listeners早就处理过
-            listener.handleServiceUrlsChange(serviceId, urls)
+            listener.handleServiceUrlsChange(urls)
 
             // 4 监听子节点的数据变化
             val list = ArrayList<ZkDataListener>()
