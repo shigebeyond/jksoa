@@ -84,10 +84,18 @@
 
 2. 完善均衡负载
 
-3. 重构mq
+3. 完善 @RemoteService 注解, 添加属性 connectionHubClass 支持自定义连接管理, 添加属性 loadBalancer 支持自定义均衡负载
 
-3.1 broker负责将消息存到lsmtree文件中
+4. rpc支持双工, 详见client.yaml/server.yaml中的配置项 duplex
 
-3.2 实现mq的注册中心, 支持topic分配信息的保存与分发
+5. 重构mq
 
-3.3 引入broker leader来负责topic的分配
+5.1 broker负责将消息存到lsmtree文件中
+
+5.2 实现mq的注册中心, 支持topic分配信息的保存与分发
+
+5.3 引入broker leader来负责topic的分配
+
+5.4 实现 IConsumerConnectionHub, 用于在broker端管理consumer连接
+
+5.5 实现 BrokerConnectionHub, 用于在client端管理broker连接
