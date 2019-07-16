@@ -11,17 +11,18 @@ import net.jkcode.jksoa.common.annotation.RemoteService
 interface IMqBrokerLeader {
 
     /**
-     * 创建主题
+     * 注册主题
      * @param topic 主题
      * @return
      */
-    fun createTopic(topic: String)
+    fun registerTopic(topic: String)
 
     /**
-     * 创建分组
-     * @param group 分组
+     * 注销topic
+     *
+     * @param topic
      * @return
      */
-    fun createGroup(group: String)
+    fun unregisterTopic(topic: String)
 
 }

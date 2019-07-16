@@ -4,7 +4,6 @@ import net.jkcode.jkmvc.common.CommonSecondTimer
 import net.jkcode.jkmvc.common.newPeriodic
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.mqLogger
 import net.jkcode.jksoa.mq.consumer.IMqHandler
 import net.jkcode.jksoa.mq.consumer.subscriber.MqSubscriber
 import java.util.concurrent.TimeUnit

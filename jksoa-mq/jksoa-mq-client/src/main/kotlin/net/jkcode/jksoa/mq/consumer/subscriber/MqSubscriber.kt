@@ -10,7 +10,6 @@ import net.jkcode.jksoa.mq.common.MqException
 import net.jkcode.jksoa.mq.common.mqLogger
 import net.jkcode.jksoa.mq.consumer.IMqHandler
 import net.jkcode.jksoa.mq.consumer.puller.MqPullerTimer
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 /**

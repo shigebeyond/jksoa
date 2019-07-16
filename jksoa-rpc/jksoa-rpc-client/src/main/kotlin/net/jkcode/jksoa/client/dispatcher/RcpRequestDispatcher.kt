@@ -5,7 +5,6 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IPlugin
 import net.jkcode.jkmvc.common.get
 import net.jkcode.jksoa.client.IConnection
-import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.referer.RefererLoader
 import net.jkcode.jksoa.common.IRpcRequest

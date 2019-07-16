@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.common
 
 import net.jkcode.jksoa.common.annotation.RemoteService
+import net.jkcode.jksoa.mq.consumer.client.connection.BrokerConnectionHub
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -8,7 +9,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
-@RemoteService
+@RemoteService(connectionHubClass = BrokerConnectionHub::class)
 interface IMqBroker {
 
     /****************** 生产者调用 *****************/

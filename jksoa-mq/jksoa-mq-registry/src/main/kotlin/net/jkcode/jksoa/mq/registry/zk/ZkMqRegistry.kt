@@ -3,7 +3,7 @@ package net.jkcode.jksoa.mq.registry.zk
 import net.jkcode.jkmvc.orm.toJson
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.mq.common.IMqBroker
-import net.jkcode.jksoa.mq.registry.IZkMqRegistry
+import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssigner
 import net.jkcode.jksoa.registry.IRegistry
 import net.jkcode.jksoa.registry.zk.ZkRegistry
@@ -15,7 +15,7 @@ import net.jkcode.jksoa.registry.zk.ZkRegistry
  * @author shijianhang<772910474@qq.com>
  * @date 2019-7-12 11:22 AM
  */
-object ZkMqRegistry: ZkMqDiscovery(), IZkMqRegistry {
+object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
 
     /**
      * rpc的注册中心
@@ -28,7 +28,8 @@ object ZkMqRegistry: ZkMqDiscovery(), IZkMqRegistry {
      * @param topic
      * @return
      */
-    override fun registerTopic(topic: String) {
+    @Synchronized
+    public override fun registerTopic(topic: String) {
         // 读topic分配
         val assignment = discover()
 
@@ -49,7 +50,8 @@ object ZkMqRegistry: ZkMqDiscovery(), IZkMqRegistry {
      * @param topic
      * @return
      */
-    override fun unregisterTopic(topic: String) {
+    @Synchronized
+    public override fun unregisterTopic(topic: String) {
         // 读topic分配
         val assignment = discover()
 
@@ -65,13 +67,14 @@ object ZkMqRegistry: ZkMqDiscovery(), IZkMqRegistry {
     }
 
     /**
-     * 注销broker = 将removedBroker上的topic重新分配给normalBrokers
+     * 注销broker = 将该broker上的topic重新分配给其他broker
      *
      * @param removedBroker 被删除的broker
      * @param normalBrokers 正常的broker
      * @return
      */
-    override fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>) {
+    @Synchronized
+    public override fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>) {
         // 读topic分配
         val assignment = discover()
 

@@ -1,6 +1,8 @@
 package net.jkcode.jksoa.mq.broker
 
 import net.jkcode.jksoa.mq.common.IMqBrokerLeader
+import net.jkcode.jksoa.mq.registry.IMqRegistry
+import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 
 /**
  * 消息中转者的leader
@@ -10,24 +12,27 @@ import net.jkcode.jksoa.mq.common.IMqBrokerLeader
 class MqBrokerLeader : IMqBrokerLeader {
 
     /**
-     * 创建主题
+     * 注册中心
+     */
+    protected val registry: IMqRegistry = ZkMqRegistry
+
+    /**
+     * 注册主题
      * @param topic 主题
      * @return
      */
-    @Synchronized
-    public override fun createTopic(topic: String) {
-
+    public override fun registerTopic(topic: String) {
+        registry.registerTopic(topic)
     }
 
     /**
-     * 创建分组
-     * @param group 分组
+     * 注销topic
+     *
+     * @param topic
      * @return
      */
-    @Synchronized
-    public override fun createGroup(group: String) {
-
+    public override fun unregisterTopic(topic: String) {
+        registry.unregisterTopic(topic)
     }
-
 
 }

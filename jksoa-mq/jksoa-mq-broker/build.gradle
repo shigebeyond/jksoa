@@ -2,7 +2,7 @@ dependencies{
     // other project
     compile project(':jkmvc-orm')
     compile project(':jksoa-rpc:jksoa-rpc-server')
-    compile project(':jksoa-mq:jksoa-mq-common')
+    compile project(':jksoa-mq:jksoa-mq-registry')
 
     // lsm kv store
     compile 'com.indeed:lsmtree-core:1.0.7'
