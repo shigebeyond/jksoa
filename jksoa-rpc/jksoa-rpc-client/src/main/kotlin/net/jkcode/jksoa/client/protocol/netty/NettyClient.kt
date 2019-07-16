@@ -98,7 +98,7 @@ open class NettyClient: IRpcClient, ClosingOnShutdown() {
                 val handler = clazz.newInstance() as ChannelHandler
                 handlers.add(handler)
             }catch (e: ClassNotFoundException){
-                clientLogger.error("双工模式下找不到类[NettyRequestHandler]")
+                clientLogger.info("双工模式下找不到类[NettyRequestHandler], 变为单工模式")
             }
         }
 
