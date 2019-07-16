@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.common
 
 import net.jkcode.jksoa.common.annotation.RemoteService
-import java.util.concurrent.CompletableFuture
+import net.jkcode.jksoa.mq.connection.ConsumerConnectionHub
 
 /**
  * 消息消费者
@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang
  * @create 2019-1-9 下午7:37
  **/
-@RemoteService(loadBalancer = "mqPush") // 消息推送的均衡负载: 1 无序消息: 随机选择 2 有序消息: 一致性哈希
+@RemoteService(connectionHubClass = ConsumerConnectionHub::class)
 interface IMqConsumer {
 
     /**

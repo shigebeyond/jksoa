@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.consumer.connection
+package net.jkcode.jksoa.mq.connection
 
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.connection.ConnectionHub
@@ -13,7 +13,7 @@ import net.jkcode.jksoa.mq.registry.TopicAssignment
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 
 /**
- * 中转者连接集中器
+ * client端的broker连接集中器
  *    仅用在 IMqBroker 接口中, 该接口的所有方法第一个参数要不是 msg: Message, 要不就是 topic: String
  *    select()时要根据topic来选择对应的broker
  *

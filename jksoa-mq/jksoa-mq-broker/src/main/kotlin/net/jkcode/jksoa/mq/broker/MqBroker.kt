@@ -1,12 +1,13 @@
 package net.jkcode.jksoa.mq.broker
 
+import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.client.protocol.netty.buildUrl
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.repository.LsmMessageRepository
-import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
-import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
+import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.common.IMqBroker
+import net.jkcode.jksoa.mq.common.IMqConsumer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqLogger
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
@@ -85,7 +86,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
     /**
      * 消费者连接集中器
      */
-    internal val connHub: IConsumerConnectionHub = ConsumerConnectionHub
+    internal val connHub: IConsumerConnectionHub = IConnectionHub.instance(IMqConsumer::class.java) as IConsumerConnectionHub
 
     /**
      * 接受consumer的订阅主题

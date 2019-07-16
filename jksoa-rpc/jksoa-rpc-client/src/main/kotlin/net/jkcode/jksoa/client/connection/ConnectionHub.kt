@@ -123,9 +123,9 @@ open class ConnectionHub: IConnectionHub() {
         // 2 按均衡负载策略，来选择连接
         val conn = loadBalancer.select(conns, req)
         if(conn == null)
-            throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
+            throw RpcClientException("远程服务[${req.serviceId}]无提供者节点")
 
-        clientLogger.debug("ConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
+        clientLogger.debug("IConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
         return conn
     }
 
@@ -136,7 +136,7 @@ open class ConnectionHub: IConnectionHub() {
      */
     public override fun selectAll(): Collection<IConnection> {
         if(connections.isEmpty())
-            throw RpcClientException("没有找到远程服务[${serviceId}]")
+            throw RpcClientException("远程服务[${serviceId}]无提供者节点")
 
         return connections.values
     }

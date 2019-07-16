@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.mq.broker.pusher
 
 import net.jkcode.jksoa.common.RpcRequest
-import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
-import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
+import net.jkcode.jksoa.mq.connection.ConsumerConnectionHub
+import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.common.IMqConsumer
 import net.jkcode.jksoa.mq.common.Message
 
