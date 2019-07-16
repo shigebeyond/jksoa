@@ -86,7 +86,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
     /**
      * 消费者连接集中器
      */
-    internal val connHub: IConsumerConnectionHub = IConnectionHub.instance(IMqConsumer::class.java) as IConsumerConnectionHub
+    protected val connHub: IConsumerConnectionHub = IConnectionHub.instance(IMqConsumer::class.java) as IConsumerConnectionHub
 
     /**
      * 接受consumer的订阅主题

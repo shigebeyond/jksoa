@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.mq.broker.pusher
 
+import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.common.RpcRequest
-import net.jkcode.jksoa.mq.connection.ConsumerConnectionHub
-import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.common.IMqConsumer
 import net.jkcode.jksoa.mq.common.Message
 
@@ -14,23 +14,17 @@ import net.jkcode.jksoa.mq.common.Message
 object MqPusher : IMqPusher {
 
     /**
-     * 消费者连接集中器
+     * 请求分发者
      */
-    internal val connHub: IConsumerConnectionHub = ConsumerConnectionHub
+    private val dispatcher: IRpcRequestDispatcher = RpcRequestDispatcher
 
     /**
      * 给消费者推送消息
      * @param msg
      */
     public override fun push(msg: Message){
-        // 1 找到订阅过该主题的连接
         val req = RpcRequest(IMqConsumer::pushMessage, arrayOf<Any?>(msg))
-        val conn = connHub.select(req)
-        if(conn == null)
-            return
-
-        // 2 发请求: 推送消息
-        conn.send(req)
+        dispatcher.dispatch(req)
     }
 
 }
