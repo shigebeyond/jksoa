@@ -1,21 +1,20 @@
-package net.jkcode.jksoa.mq.broker.server.connection
+package net.jkcode.jksoa.mq.connection
 
-import io.netty.channel.Channel
+import net.jkcode.jkmvc.common.ConsistentHash
 import net.jkcode.jkmvc.common.getOrPutOnce
+import net.jkcode.jkmvc.common.randomInt
 import net.jkcode.jksoa.client.IConnection
-import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcClientException
-import net.jkcode.jksoa.loadbalance.ILoadBalancer
 import net.jkcode.jksoa.mq.common.Message
-import java.net.InetSocketAddress
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 消费者连接集中器
- *   消费者订阅主题+分组时, 收集该连接, 以便向其推送消息
+ * broker端的consumer连接集中器
+ *   1. 消费者订阅主题+分组时, 收集该连接, 以便向其推送消息
+ *   2. 消息推送的均衡负载: 1 无序消息: 随机选择 2 有序消息: 一致性哈希
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:04 PM
@@ -25,7 +24,7 @@ class ConsumerConnectionHub : IConsumerConnectionHub() {
     /**
      * 消费者的连接池: <主题 to <分组 to 连接>>
      */
-    private val connections: ConcurrentHashMap<String, ConcurrentHashMap<String, MutableList<IConnection>>> = ConcurrentHashMap()
+    protected val connections: ConcurrentHashMap<String, ConcurrentHashMap<String, MutableList<IConnection>>> = ConcurrentHashMap()
 
     /**
      * 添加连接
@@ -72,13 +71,20 @@ class ConsumerConnectionHub : IConsumerConnectionHub() {
     public override fun select(req: IRpcRequest): IConnection{
         val msg = req.args.first() as Message
 
-        // 找到该主题+分组绑定的连接
+        // 1 找到该主题+分组绑定的连接
         val conns = connections.get(msg.topic)?.get(msg.group) // <主题 to <分组 to 连接>>
         if(conns == null || conns.isEmpty())
             throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
 
-        // 选一个连接
-        return loadBalancer.select(conns, req)
+        // 2 消息推送的均衡负载: 1 无序消息: 随机选择 2 有序消息: 一致性哈希
+        // 2.1 无序: 随机选个连接
+        if(msg.subjectId == 0L) {
+            val i = randomInt(conns.size)
+            return conns[i]
+        }
+
+        // 2.2 有序: 一致性哈希
+        return ConsistentHash(3, 100, conns).get(msg.subjectId)!!
     }
 
     /**

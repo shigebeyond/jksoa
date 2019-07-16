@@ -1,11 +1,10 @@
-package net.jkcode.jksoa.mq.broker.server.connection
+package net.jkcode.jksoa.mq.connection
 
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.connection.IConnectionHub
-import net.jkcode.jksoa.common.IRpcRequest
 
 /**
- * 消费者连接集中器
+ * broker端的consumer连接集中器
  *   消费者订阅主题+分组时, 收集该连接, 以便向其推送消息
  *
  * @author shijianhang<772910474@qq.com>
