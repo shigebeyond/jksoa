@@ -9,14 +9,13 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang
  * @create 2019-1-9 下午7:37
  **/
-@RemoteService(protocol = "mqNetty")
+@RemoteService
 interface IMqConsumer {
 
     /**
      * 接收broker推送的消息
      * @param msg 消息
-     * @return
      */
-    fun pushMessage(msg: Message): CompletableFuture<Unit>
+    fun pushMessage(msg: Message)
 
 }

@@ -2,8 +2,6 @@
 client: # 客户端的实现类
     rmi: net.jkcode.jksoa.client.protocol.rmi.RmiClient
     netty: net.jkcode.jksoa.client.protocol.netty.NettyClient
-    mqNetty: net.jkcode.jksoa.mq.consumer.client.MqNettyClient # mq协议, 但兼容netty协议
 server: # 服务端的实现类
     rmi: net.jkcode.jksoa.server.protocol.rmi.RmiServer
     netty: net.jkcode.jksoa.server.protocol.netty.NettyServer
-    mqNetty: net.jkcode.jksoa.mq.broker.server.MqNettyServer # mq协议, 但兼容netty协议

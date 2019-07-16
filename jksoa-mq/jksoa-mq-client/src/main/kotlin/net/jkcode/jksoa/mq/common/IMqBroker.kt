@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
-@RemoteService(connectionHubClass = BrokerConnectionHub::class, protocol = "mqNetty")
+@RemoteService(connectionHubClass = BrokerConnectionHub::class)
 interface IMqBroker {
 
     /****************** 生产者调用 *****************/

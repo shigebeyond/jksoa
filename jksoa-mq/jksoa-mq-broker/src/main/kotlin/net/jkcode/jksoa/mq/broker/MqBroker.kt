@@ -97,7 +97,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
         // 记录连接
         val ctx = RpcContext.current().ctx
         val channel = ctx.channel()
-        val conn = NettyConnection(channel, channel.buildUrl("mqNetty"))
+        val conn = NettyConnection(channel, channel.buildUrl("netty"))
         connHub.add(topic, group, conn)
 
         // channel关闭时删除连接
