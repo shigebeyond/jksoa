@@ -7,6 +7,12 @@ import net.jkcode.jksoa.mq.broker.server.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.broker.server.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.mqLogger
+import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
+import net.jkcode.jksoa.mq.registry.IMqRegistry
+import net.jkcode.jksoa.mq.registry.TopicAssignment
+import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
+import net.jkcode.jksoa.server.IRpcServer
 import net.jkcode.jksoa.server.RpcContext
 import java.util.concurrent.CompletableFuture
 
@@ -15,7 +21,32 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
-class MqBroker : IMqBroker {
+class MqBroker: IMqBroker, IMqDiscoveryListener {
+
+    /****************** 初始化存储 *****************/
+    /**
+     * 注册中心
+     */
+    protected val registry: IMqRegistry = ZkMqRegistry
+
+    init {
+        // 监听topic分配情况变化
+        mqLogger.debug("Mq broker监听topic分配情况变化, 以便初始化分到的topic的存储")
+        registry.subscribe(this)
+    }
+
+    /**
+     * 处理topic分配变化
+     *
+     * @param assignment
+     */
+    public override fun handleTopic2BrokerChange(assignment: TopicAssignment) {
+        // 遇到分配给当前broker的topic, 需要初始化存储
+        val myBroker = IRpcServer.current()?.serverName
+        for((topic, broker) in assignment)
+            if(broker == myBroker) // 当前topic分给当前broker
+                LsmMessageRepository.createRepositoryIfAbsent(topic) // 初始化存储
+    }
 
     /****************** 生产者调用 *****************/
     /**
@@ -43,7 +74,7 @@ class MqBroker : IMqBroker {
         // 逐个topic存储
         for((topic, msgs2) in topic2Msgs){
             // 根据topic获得仓库
-            val repository = LsmMessageRepository.getOrCreateRepository(topic)
+            val repository = LsmMessageRepository.getRepository(topic)
             // 逐个消息存储
             repository.saveMessages(msgs2)
         }
@@ -85,7 +116,7 @@ class MqBroker : IMqBroker {
      */
     public override fun pullMessages(topic: String, group: String, limit: Int): CompletableFuture<List<Message>> {
         // 根据topic获得仓库
-        val repository = LsmMessageRepository.getOrCreateRepository(topic)
+        val repository = LsmMessageRepository.getRepository(topic)
         // 查询消息
         val msgs = repository.getMessagesByGroup(group, limit)
         return CompletableFuture.completedFuture(msgs)
@@ -101,7 +132,7 @@ class MqBroker : IMqBroker {
      */
     public override fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Boolean> {
         // 根据topic获得仓库
-        val repository = LsmMessageRepository.getOrCreateRepository(topic)
+        val repository = LsmMessageRepository.getRepository(topic)
         // 删除消息
         repository.deleteMsg(id)
         return CompletableFuture.completedFuture(true)

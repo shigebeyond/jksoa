@@ -12,6 +12,8 @@ import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jkmvc.common.getProperty
 import net.jkcode.jksoa.mq.broker.common.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.MqException
+import net.jkcode.jksoa.server.IRpcServer
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
@@ -58,13 +60,39 @@ class LsmMessageRepository(
          */
         protected val repositories: ConcurrentHashMap<String, LsmMessageRepository> = ConcurrentHashMap()
 
+        init{
+            // 加载旧的仓库
+            val dir = File(dataDir)
+            val topics = dir.list()
+            // TODO: topic目录的判断要更严禁些, 要确定他是否真的存有队列数据
+            for(topic in topics)
+                repositories.put(topic, LsmMessageRepository(topic))
+        }
+
         /**
-         * 根据topic获得仓库
+         * 根据topic创建仓库
+         * @param topic
+         * @return
          */
-        public fun getOrCreateRepository(topic: String): LsmMessageRepository {
-            return repositories.getOrPutOnce(topic) {
+        public fun createRepositoryIfAbsent(topic: String): LsmMessageRepository {
+            return repositories.getOrPutOnce(topic){
                 LsmMessageRepository(topic)
             }
+        }
+
+        /**
+         * 根据topic获得仓库
+         * @param topic
+         * @return
+         */
+        public fun getRepository(topic: String): LsmMessageRepository {
+            val result = repositories[topic]
+            if(result == null) {
+                val myBroker = IRpcServer.current()?.serverName
+                throw MqException("Broker [$myBroker] has no queue for topic [$topic]")
+            }
+
+            return result
         }
     }
 
