@@ -64,6 +64,11 @@ abstract class IRpcServer: Closeable {
     val serverUrl: Url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!)
 
     /**
+     * 服务器url
+     */
+    val serverName = serverUrl.serverName
+
+    /**
      * 服务器名
      */
     val name: String

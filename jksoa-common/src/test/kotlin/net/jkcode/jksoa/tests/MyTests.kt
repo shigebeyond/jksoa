@@ -25,6 +25,13 @@ class MyTests {
     }
 
     @Test
+    fun testServerName(){
+        val url = Url("http", "localhost", 8080)
+        println(url)
+        println(url.serverName)
+    }
+
+    @Test
     fun testUrlParse(){
         val url = Url("mysql://127.0.0.1:3306/test?username=root&password=root")
         //val url = Url("mysql://127.0.0.1:3306/?username=root&password=root")

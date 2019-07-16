@@ -209,7 +209,7 @@ data class Url(public override var protocol: String /* 协议 */,
         if(path.isNotEmpty())
             str.append("/").append(path)
         // 参数
-        if(withQuery) {
+        if(withQuery && parameters.isNotEmpty()) {
             str.append('?')
             buildQueryString(str)
         }
