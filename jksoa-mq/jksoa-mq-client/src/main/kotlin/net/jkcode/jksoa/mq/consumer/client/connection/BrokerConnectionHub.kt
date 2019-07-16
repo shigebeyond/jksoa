@@ -31,21 +31,21 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
      * topic分配情况
      */
     @Volatile
-    protected var assign: TopicAssignment = EmptyTopicAssignment
+    protected var assignment: TopicAssignment = EmptyTopicAssignment
 
     init{
         // 监听topic分配情况变化
-        mqLogger.debug("Mq client监听topic分配情况变化")
+        mqLogger.debug("Mq client监听topic分配情况变化, 以便识别topic对应的broker")
         registry.subscribe(this)
     }
 
     /**
      * 处理topic分配变化
      *
-     * @param assign
+     * @param assignment
      */
-    public override fun handleTopic2BrokerChange(assign: TopicAssignment) {
-        this.assign = assign
+    public override fun handleTopic2BrokerChange(assignment: TopicAssignment) {
+        this.assignment = assignment
     }
 
     /**
@@ -73,7 +73,7 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
                     else
                         arg as String
         // 获得topic对应的broker
-        val broker = assign[topic]
+        val broker = assignment[topic]
         if(broker == null)
             throw MqException("Topic [$topic] belongs to no broker!!")
 

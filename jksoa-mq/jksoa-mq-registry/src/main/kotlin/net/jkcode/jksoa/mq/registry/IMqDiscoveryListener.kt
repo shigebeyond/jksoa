@@ -11,8 +11,8 @@ interface IMqDiscoveryListener {
     /**
      * 处理topic分配变化
      *
-     * @param assign
+     * @param assignment
      */
-    fun handleTopic2BrokerChange(assign: TopicAssignment)
+    fun handleTopic2BrokerChange(assignment: TopicAssignment)
 
 }
