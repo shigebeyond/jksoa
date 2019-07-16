@@ -1,12 +1,12 @@
 package net.jkcode.jksoa.mq.registry.zk
 
-import com.alibaba.fastjson.JSON
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.mq.registry.IMqDiscovery
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.TopicAssignment
+import net.jkcode.jksoa.mq.registry.json2TopicAssignment
 import net.jkcode.jksoa.registry.RegistryException
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
@@ -96,12 +96,4 @@ open class ZkMqDiscovery : IMqDiscovery {
 
     }
 
-    /**
-     * json转topic分配情况
-     * @param json
-     * @return
-     */
-    public fun json2TopicAssignment(json: String): TopicAssignment {
-        return JSON.parseObject(json) as TopicAssignment
-    }
 }

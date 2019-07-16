@@ -65,8 +65,9 @@ class LsmMessageRepository(
             val dir = File(dataDir)
             val topics = dir.list()
             // TODO: topic目录的判断要更严禁些, 要确定他是否真的存有队列数据
-            for(topic in topics)
-                repositories.put(topic, LsmMessageRepository(topic))
+            if(topics != null)
+                for(topic in topics)
+                    repositories.put(topic, LsmMessageRepository(topic))
         }
 
         /**

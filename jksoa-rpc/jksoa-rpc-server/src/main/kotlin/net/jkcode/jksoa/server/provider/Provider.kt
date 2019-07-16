@@ -52,9 +52,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */, public val r
     public override val serviceUrl:Url by lazy{
         // ip端口
         val serverUrl = IRpcServer.current()!!.serverUrl
-        // 协议: 虽然server也有定义协议, 但是以service中定义的为准
-        val protocol = `interface`.remoteService!!.protocol
-        Url(protocol, serverUrl.host, serverUrl.port, `interface`.name, config.getMap("parameters", emptyMap<String, Any?>())!!);
+        Url(serverUrl.protocol, serverUrl.host, serverUrl.port, `interface`.name, config.getMap("parameters", emptyMap<String, Any?>())!!);
     }
 
     /**

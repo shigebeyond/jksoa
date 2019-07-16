@@ -1,10 +1,9 @@
 package net.jkcode.jksoa.mq.registry.zk
 
-import net.jkcode.jkmvc.orm.toJson
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssigner
+import net.jkcode.jksoa.mq.registry.toJson
 import net.jkcode.jksoa.registry.IRegistry
 import net.jkcode.jksoa.registry.zk.ZkRegistry
 
@@ -34,7 +33,9 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
         val assignment = discover()
 
         // 读所有broker
-        val brokers = rpcRegistry.discover(IMqBroker::class.qualifiedName!!)
+        //val serviceId: String = IMqBroker::class.qualifiedName!! // 没依赖, 不能直接引用
+        val serviceId: String = "net.jkcode.jksoa.mq.common.IMqBroker"
+        val brokers = rpcRegistry.discover(serviceId)
 
         // 分配者给topic分配broker
         val assigner = TopicAssigner(assignment, brokers)

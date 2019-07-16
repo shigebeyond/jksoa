@@ -2,6 +2,7 @@ package net.jkcode.jksoa.mq.registry.zk
 
 import net.jkcode.jksoa.common.registerLogger
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
+import net.jkcode.jksoa.mq.registry.json2TopicAssignment
 import org.I0Itec.zkclient.IZkDataListener
 
 /**
@@ -20,7 +21,7 @@ class ZkMqDataListener(public val discoveryListener: IMqDiscoveryListener): IZkD
     public override fun handleDataChange(dataPath: String, data: Any) {
         try {
             // 处理topic分配更新
-            val assign = ZkMqRegistry.json2TopicAssignment(data as String)
+            val assign = json2TopicAssignment(data as String)
             discoveryListener.handleTopic2BrokerChange(assign)
             registerLogger.info("处理zk节点[{}]数据变化事件，数据为: {}", dataPath, data)
         }catch(e: Exception){
@@ -34,5 +35,6 @@ class ZkMqDataListener(public val discoveryListener: IMqDiscoveryListener): IZkD
      */
     @Synchronized
     public override fun handleDataDeleted(dataPath: String) {
+        // TODO
     }
 }
