@@ -1,4 +1,5 @@
 # 服务端配置
+duplex: false # 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
 protocol: netty # 协议
 #host: 192.168.0.17 # ip
 port: 9080 # 端口

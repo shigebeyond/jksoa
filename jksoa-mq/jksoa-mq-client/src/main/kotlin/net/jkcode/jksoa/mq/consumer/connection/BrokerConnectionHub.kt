@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.consumer.client.connection
+package net.jkcode.jksoa.mq.consumer.connection
 
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.connection.ConnectionHub

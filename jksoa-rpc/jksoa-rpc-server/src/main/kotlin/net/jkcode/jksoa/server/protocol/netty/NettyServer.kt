@@ -11,10 +11,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.timeout.IdleStateHandler
 import io.netty.util.concurrent.DefaultThreadFactory
 import net.jkcode.jkmvc.common.Config
+import net.jkcode.jksoa.client.protocol.netty.NettyResponseHandler
 import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageDecoder
 import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageEncoder
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.IRpcServer
+import java.util.*
 
 /**
  * netty服务端
@@ -119,10 +121,19 @@ open class NettyServer : IRpcServer() {
     }
 
     /**
-     * 自定义子channel处理器
+     * 自定义channel处理器
      */
-    protected open fun customChildChannelHandlers(): Array<ChannelHandler>{
-        return arrayOf(NettyRequestHandler()) // 处理请求
+    protected fun customChildChannelHandlers(): List<ChannelHandler>{
+        val handlers = LinkedList<ChannelHandler>()
+
+        // 处理请求
+        handlers.add(NettyRequestHandler())
+
+        if(config["duplex"]!!)  // 双工
+            // 处理响应, 如在mq项目中让broker调用consumer, 并处理consumer的响应
+            handlers.add(NettyResponseHandler())
+
+        return handlers
     }
 
     /**

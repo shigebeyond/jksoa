@@ -4,6 +4,7 @@ import net.jkcode.jksoa.mq.common.IMqConsumer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.consumer.puller.MqPullerTimer
 import net.jkcode.jksoa.mq.consumer.subscriber.IMqSubscriber
+import net.jkcode.jksoa.server.provider.ProviderLoader
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -14,7 +15,13 @@ import java.util.concurrent.CompletableFuture
  **/
 class MqConsumer : IMqConsumer {
 
-    companion object: IMqSubscriber by MqPullerTimer
+    companion object: IMqSubscriber by MqPullerTimer{
+
+        init {
+            // 提供消费者服务, 但不用注册到注册中心
+            ProviderLoader.addClass(MqConsumer::class.java, false)
+        }
+    }
 
     /**
      * 接收broker推送的消息

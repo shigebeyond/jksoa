@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.common
 
 import net.jkcode.jksoa.common.annotation.RemoteService
-import net.jkcode.jksoa.mq.consumer.client.connection.BrokerConnectionHub
+import net.jkcode.jksoa.mq.consumer.connection.BrokerConnectionHub
 import java.util.concurrent.CompletableFuture
 
 /**

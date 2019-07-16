@@ -15,6 +15,7 @@ import net.jkcode.jksoa.client.protocol.netty.codec.NettyMessageEncoder
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
+import java.util.*
 
 
 /**
@@ -83,8 +84,25 @@ open class NettyClient: IRpcClient, ClosingOnShutdown() {
     /**
      * 自定义channel处理器
      */
-    protected open fun customChannelHandlers(): Array<ChannelHandler>{
-        return arrayOf(NettyResponseHandler()) // 处理响应
+    protected fun customChannelHandlers(): List<ChannelHandler>{
+        val handlers = LinkedList<ChannelHandler>()
+
+        // 处理响应
+        handlers.add(NettyResponseHandler())
+
+        if(config["duplex"]!!) { // 双工
+            // 处理请求, 如在mq项目中让broker调用consumer
+            //handlers.add(NettyRequestHandler())
+            try {
+                val clazz = Class.forName("net.jkcode.jksoa.server.protocol.netty.NettyRequestHandler")
+                val handler = clazz.newInstance() as ChannelHandler
+                handlers.add(handler)
+            }catch (e: ClassNotFoundException){
+                clientLogger.error("双工模式下找不到类[NettyRequestHandler]")
+            }
+        }
+
+        return handlers
     }
 
     /**
