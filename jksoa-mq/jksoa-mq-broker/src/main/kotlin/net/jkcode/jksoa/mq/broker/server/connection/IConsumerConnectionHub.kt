@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.broker.server.connection
 
 import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.common.IRpcRequest
 
 /**
@@ -10,7 +11,7 @@ import net.jkcode.jksoa.common.IRpcRequest
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:04 PM
  */
-internal interface IConsumerConnectionHub {
+abstract class IConsumerConnectionHub: IConnectionHub() {
 
     /**
      * 添加连接
@@ -19,7 +20,7 @@ internal interface IConsumerConnectionHub {
      * @param group
      * @param conn
      */
-    fun add(topic: String, group: String, conn: IConnection)
+    public abstract fun add(topic: String, group: String, conn: IConnection)
 
     /**
      * 删除连接
@@ -29,13 +30,5 @@ internal interface IConsumerConnectionHub {
      * @param conn
      * @return
      */
-    fun remove(topic: String, group: String, conn: IConnection): Boolean
-
-    /**
-     * 选择一个连接
-     *
-     * @param req
-     * @return
-     */
-    fun select(req: IRpcRequest): IConnection?
+    public abstract fun remove(topic: String, group: String, conn: IConnection): Boolean
 }

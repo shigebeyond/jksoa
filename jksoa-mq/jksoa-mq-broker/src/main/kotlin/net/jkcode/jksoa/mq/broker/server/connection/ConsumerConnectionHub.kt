@@ -6,6 +6,7 @@ import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.loadbalance.ILoadBalancer
 import net.jkcode.jksoa.mq.common.Message
 import java.net.InetSocketAddress
@@ -19,12 +20,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:04 PM
  */
-internal object ConsumerConnectionHub : IConsumerConnectionHub {
-
-    /**
-     * 均衡负载算法
-     */
-    private val balancer: ILoadBalancer = MqLoadBalancer()
+class ConsumerConnectionHub : IConsumerConnectionHub() {
 
     /**
      * 消费者的连接池: <主题 to <分组 to 连接>>
@@ -73,15 +69,42 @@ internal object ConsumerConnectionHub : IConsumerConnectionHub {
      * @param req
      * @return
      */
-    public override fun select(req: IRpcRequest): IConnection?{
+    public override fun select(req: IRpcRequest): IConnection{
         val msg = req.args.first() as Message
 
         // 找到该主题+分组绑定的连接
         val conns = connections.get(msg.topic)?.get(msg.group) // <主题 to <分组 to 连接>>
         if(conns == null || conns.isEmpty())
-            return null
+            throw RpcClientException("远程服务[${req.serviceId}]无可用的连接")
 
         // 选一个连接
-        return balancer.select(conns, req)
+        return loadBalancer.select(conns, req)
+    }
+
+    /**
+     * 选择全部连接
+     *
+     * @return
+     */
+    public override fun selectAll(): Collection<IConnection> {
+        throw UnsupportedOperationException("not implemented")
+    }
+
+    /**
+     * 处理服务地址变化
+     *
+     * @param urls 服务地址
+     */
+    public override fun handleServiceUrlsChange(urls: List<Url>) {
+        throw UnsupportedOperationException("not implemented")
+    }
+
+    /**
+     * 处理服务配置参数（服务地址的参数）变化
+     *
+     * @param url
+     */
+    public override fun handleParametersChange(url: Url) {
+        throw UnsupportedOperationException("not implemented")
     }
 }

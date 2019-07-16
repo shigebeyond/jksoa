@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang
  * @create 2019-1-9 下午7:37
  **/
-@RemoteService
+@RemoteService(loadBalancer = "mqPush") // 消息推送的均衡负载: 1 无序消息: 随机选择 2 有序消息: 一致性哈希
 interface IMqConsumer {
 
     /**

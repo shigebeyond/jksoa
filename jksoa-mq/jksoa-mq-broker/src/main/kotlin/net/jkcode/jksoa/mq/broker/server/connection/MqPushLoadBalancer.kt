@@ -9,14 +9,14 @@ import net.jkcode.jksoa.loadbalance.ILoadBalancer
 import net.jkcode.jksoa.mq.common.Message
 
 /**
- * 消息的均衡负载算法
+ * 消息推送的均衡负载算法
  *   1 无序消息: 随机选择 2 有序消息: 一致性哈希
  *   仅用在 ConsumerConnectionHub
  *
  * @author shijianhang
  * @create 2019-02-18 下午9:21
  **/
-internal class MqLoadBalancer : ILoadBalancer {
+class MqPushLoadBalancer : ILoadBalancer {
 
     /**
      * 选择连接
