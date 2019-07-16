@@ -2,6 +2,7 @@ package net.jkcode.jksoa.mq.common
 
 import net.jkcode.jkmvc.common.generateId
 import java.util.*
+import java.io.Serializable
 
 /**
  * 消息
@@ -13,7 +14,7 @@ data class Message(public val topic: String /* 主题 */,
                    public val data: Any? /* 数据 */,
                    public val group: String = "*" /* 分组, 如果是*, 则标识广播所有分组 */,
                    public val subjectId: Long = 0 /* 业务实体编号, 如订单号, 用于标识一系列的顺序消息 */
-) {
+): Serializable {
 
     /**
      * 消息id, 但只在broker端保存时生成, 保证在同一个topic下有序
@@ -23,4 +24,11 @@ data class Message(public val topic: String /* 主题 */,
         protected set
 
     public constructor(topic: String , data: Any? , subjectId: Long): this(topic, data, "*", subjectId)
+
+    /**
+     * 由于id不在data class field中, 因此要重写
+     */
+    public override fun toString(): String {
+        return "Message(id=$id, topic=$topic, data=$data, group=$group, subjectId=$subjectId)"
+    }
 }

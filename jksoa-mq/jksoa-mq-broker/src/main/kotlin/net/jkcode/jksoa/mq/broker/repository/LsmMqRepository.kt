@@ -9,7 +9,7 @@ import com.indeed.util.serialization.Serializer
 import com.indeed.util.serialization.StringSerializer
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.getOrPutOnce
-import net.jkcode.jkmvc.common.getProperty
+import net.jkcode.jkmvc.common.getWritableFinalField
 import net.jkcode.jksoa.mq.broker.common.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
@@ -17,7 +17,6 @@ import net.jkcode.jksoa.server.IRpcServer
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
-import kotlin.reflect.KMutableProperty1
 
 /**
  * 消息的仓库
@@ -28,11 +27,11 @@ import kotlin.reflect.KMutableProperty1
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-13 5:16 PM
  */
-class LsmMessageRepository(
+class LsmMqRepository(
         protected val topic: String, // 主题
         storageType: StorageType = StorageType.INLINE,
         codec: CompressionCodec? = null
-) : IMessageRepository {
+) : IMqRepository {
 
     companion object{
         /**
@@ -48,7 +47,7 @@ class LsmMessageRepository(
         /**
          * 消息的id属性
          */
-        protected val idProp = Message::class.getProperty("id") as KMutableProperty1<Message, Any?>
+        protected val idProp = Message::class.java.getWritableFinalField("id")
 
         /**
          * 最大消息id在进度存储中的键名
@@ -58,7 +57,7 @@ class LsmMessageRepository(
         /**
          * <topic, 仓库>
          */
-        protected val repositories: ConcurrentHashMap<String, LsmMessageRepository> = ConcurrentHashMap()
+        protected val repositories: ConcurrentHashMap<String, LsmMqRepository> = ConcurrentHashMap()
 
         init{
             // 加载旧的仓库
@@ -67,7 +66,7 @@ class LsmMessageRepository(
             // TODO: topic目录的判断要更严禁些, 要确定他是否真的存有队列数据
             if(topics != null)
                 for(topic in topics)
-                    repositories.put(topic, LsmMessageRepository(topic))
+                    repositories.put(topic, LsmMqRepository(topic))
         }
 
         /**
@@ -75,9 +74,9 @@ class LsmMessageRepository(
          * @param topic
          * @return
          */
-        public fun createRepositoryIfAbsent(topic: String): LsmMessageRepository {
+        public fun createRepositoryIfAbsent(topic: String): LsmMqRepository {
             return repositories.getOrPutOnce(topic){
-                LsmMessageRepository(topic)
+                LsmMqRepository(topic)
             }
         }
 
@@ -86,7 +85,7 @@ class LsmMessageRepository(
          * @param topic
          * @return
          */
-        public fun getRepository(topic: String): LsmMessageRepository {
+        public fun getRepository(topic: String): LsmMqRepository {
             val result = repositories[topic]
             if(result == null) {
                 val myBroker = IRpcServer.current()?.serverName
@@ -143,13 +142,13 @@ class LsmMessageRepository(
     }
 
     /**
-     * 批量保存消息
+     * 批量保存多个消息
      * @param msgs
      */
     public override fun saveMessages(msgs: List<Message>){
         for(msg in msgs) {
             // 由broker端生成消息id, 保证在同一个topic下有序
-            if(msg.id != 0L)
+            if(msg.id == 0L)
                 idProp.set(msg, maxId.incrementAndGet())
             // 保存消息
             queueStore.put(msg.id, msg)
@@ -164,14 +163,15 @@ class LsmMessageRepository(
     }
 
     /**
-     * 根据范围查询消息
+     * 根据范围查询多个消息
      * @param startId 开始的id
      * @param limit
+     * @param inclusive 是否包含开始的id
      * @return
      */
-    public override fun getMessagesByRange(startId: Long, limit: Int): List<Message> {
+    public override fun getMessagesByRange(startId: Long, limit: Int, inclusive: Boolean): List<Message> {
         // 获得按key有序的迭代器
-        val itr = queueStore.iterator(startId, true)
+        val itr = queueStore.iterator(startId, inclusive)
         var i = 0
         val result = ArrayList<Message>()
         while (itr.hasNext() && i < limit) {
@@ -183,14 +183,14 @@ class LsmMessageRepository(
     }
 
     /**
-     * 根据分组查询消息
+     * 根据分组查询多个消息
      * @param startId 开始的id
      * @param limit
      * @return
      */
     public override fun getMessagesByGroup(group: String, limit: Int): List<Message>{
         val startId:Long? = progressStore.get(group)
-        val result = getMessagesByRange(if(startId == null) 0L else startId, limit)
+        val result = getMessagesByRange(if(startId == null) 0L else startId, limit, false)
         if(!result.isEmpty()){
             // 保存该分组的读进度
             progressStore.put(group, result.last().id)
@@ -201,12 +201,22 @@ class LsmMessageRepository(
     }
 
     /**
-     * 删除消息
+     * 查询单个消息
      * @param id
      * @return
      */
-    public override fun deleteMsg(id: Long) {
+    public override fun getMessage(id: Long): Message? {
+        return queueStore.get(id)
+    }
+
+    /**
+     * 删除单个消息
+     * @param id
+     * @return
+     */
+    public override fun deleteMessage(id: Long) {
         queueStore.delete(id)
+        queueStore.sync()
     }
 
 }

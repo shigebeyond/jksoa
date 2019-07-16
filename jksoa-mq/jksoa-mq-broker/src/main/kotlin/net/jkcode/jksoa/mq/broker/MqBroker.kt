@@ -4,7 +4,7 @@ import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.client.protocol.netty.buildUrl
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
-import net.jkcode.jksoa.mq.broker.repository.LsmMessageRepository
+import net.jkcode.jksoa.mq.broker.repository.LsmMqRepository
 import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.IMqConsumer
@@ -47,7 +47,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
         val myBroker = IRpcServer.current()?.serverName
         for((topic, broker) in assignment)
             if(broker == myBroker) // 当前topic分给当前broker
-                LsmMessageRepository.createRepositoryIfAbsent(topic) // 初始化存储
+                LsmMqRepository.createRepositoryIfAbsent(topic) // 初始化存储
     }
 
     /****************** 生产者调用 *****************/
@@ -76,7 +76,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
         // 逐个topic存储
         for((topic, msgs2) in topic2Msgs){
             // 根据topic获得仓库
-            val repository = LsmMessageRepository.getRepository(topic)
+            val repository = LsmMqRepository.getRepository(topic)
             // 逐个消息存储
             repository.saveMessages(msgs2)
         }
@@ -118,7 +118,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
      */
     public override fun pullMessages(topic: String, group: String, limit: Int): CompletableFuture<List<Message>> {
         // 根据topic获得仓库
-        val repository = LsmMessageRepository.getRepository(topic)
+        val repository = LsmMqRepository.getRepository(topic)
         // 查询消息
         val msgs = repository.getMessagesByGroup(group, limit)
         return CompletableFuture.completedFuture(msgs)
@@ -134,9 +134,9 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
      */
     public override fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Boolean> {
         // 根据topic获得仓库
-        val repository = LsmMessageRepository.getRepository(topic)
+        val repository = LsmMqRepository.getRepository(topic)
         // 删除消息
-        repository.deleteMsg(id)
+        repository.deleteMessage(id)
         return CompletableFuture.completedFuture(true)
     }
 
