@@ -41,11 +41,6 @@ class RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
     public val plugins: List<IPlugin> = pluginConfig.classes2Instances("rpcClientPlugins")
 
     /**
-     * rpc连接集中器
-     */
-    public val connHub: IConnectionHub = ConnectionHub
-
-    /**
      * 分片策略
      */
     public val shardingStrategy: IShardingStrategy = IShardingStrategy.instance(config["shardingStrategy"]!!)
@@ -77,6 +72,7 @@ class RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      * @return 异步结果
      */
     public override fun dispatch(req: IRpcRequest, requestTimeoutMillis: Long): CompletableFuture<Any?> {
+        val connHub: IConnectionHub = IConnectionHub.instance(req.serviceId)
         return FailoveRpcResponseFuture(config["maxTryTimes"]!!){
             clientLogger.debug(" ------ dispatch request ------ ")
             // 1 选择连接
@@ -96,9 +92,10 @@ class RcpRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      * @return 多个结果
      */
     public override fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long): List<CompletableFuture<Any?>> {
+        val connHub: IConnectionHub = IConnectionHub.instance(shdReq.serviceId)
         // 1 分片
         // 获得所有连接(节点)
-        val conns = connHub.selectAll(shdReq.serviceId)
+        val conns = connHub.selectAll()
         val connSize = conns.size
         // 请求分片, 每片对应连接(节点)序号
         val shardingSize = shdReq.shardingSize

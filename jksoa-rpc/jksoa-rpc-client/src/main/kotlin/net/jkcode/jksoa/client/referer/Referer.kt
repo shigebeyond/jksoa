@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.client.referer
 
 import net.jkcode.jksoa.client.IReferer
-import net.jkcode.jksoa.client.connection.ConnectionHub
+import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.registry.IRegistry
@@ -71,7 +71,7 @@ class Referer(public override val `interface`:Class<*> /* 接口类 */,
         if(!local) {
             // 监听服务变化
             clientLogger.debug("Referer监听服务[{}]变化", serviceId)
-            registry.subscribe(serviceId, ConnectionHub)
+            registry.subscribe(serviceId, IConnectionHub.instance(`interface`))
         }
     }
 
@@ -81,7 +81,7 @@ class Referer(public override val `interface`:Class<*> /* 接口类 */,
     public override fun close() {
         if(!local) {
             clientLogger.info("Referer.close(): 取消监听服务变化")
-            registry.unsubscribe(serviceId, ConnectionHub)
+            registry.unsubscribe(serviceId, IConnectionHub.instance(`interface`))
         }
     }
 }

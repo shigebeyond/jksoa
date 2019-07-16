@@ -2,6 +2,7 @@ package net.jkcode.jksoa.common.annotation
 
 import net.jkcode.jksoa.common.exception.RpcClientException
 import java.lang.reflect.Method
+import kotlin.reflect.KClass
 
 /**
  * 服务元数据的注解
@@ -12,7 +13,8 @@ import java.lang.reflect.Method
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RemoteService(public val version: Int = 0, // 接口版本
                                public val onlyLeader: Boolean = false, // 是否选举leader, 该服务接口只暴露唯一一个选为leader的server
-                               public val dispatcher: String = "default" // 请求分发者
+                               public val loadBalancer: String = "", // 均衡负载器类型, 默认是 client.yaml 中的配置项 loadbalancer,
+                               public val connectionHubClass: KClass<*> = Void::class // rpc连接集中器的实现类, 用于在服务发现时管理连接, 如果值为 Void::class, 则使用 ConnectionHub::class
 )
 
 /**
