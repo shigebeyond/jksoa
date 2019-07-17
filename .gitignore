@@ -6,4 +6,4 @@ out/
 jetty/
 logs/
 tmp/
-
+zookeeper.out
