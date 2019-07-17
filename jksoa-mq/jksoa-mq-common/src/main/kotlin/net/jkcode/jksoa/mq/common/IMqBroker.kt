@@ -27,7 +27,7 @@ interface IMqBroker {
      * @param group 分组
      * @return
      */
-    fun subscribeTopic(topic: String, group: String): CompletableFuture<Void>
+    fun subscribeTopic(topic: String, group: String): CompletableFuture<Unit>
 
     /**
      * 接受consumer的拉取消息
@@ -45,6 +45,6 @@ interface IMqBroker {
      * @param e 消费异常
      * @return
      */
-    fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Boolean>
+    fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Unit>
 
 }

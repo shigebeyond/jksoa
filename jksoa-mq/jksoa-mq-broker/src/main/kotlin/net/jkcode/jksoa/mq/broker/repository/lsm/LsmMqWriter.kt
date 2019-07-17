@@ -42,6 +42,7 @@ abstract class LsmMqWriter : LsmMqReader() {
             object: CounterFlusher(100, 100) {
                 // 处理刷盘
                 override fun handleFlush(): Boolean {
+                    // println("定量定时sync")
                     // 同步到磁盘
                     queueStore.sync()
                     return true
@@ -80,22 +81,24 @@ abstract class LsmMqWriter : LsmMqReader() {
     /**
      * 保存单个消息
      * @param msg
+     * @return
      */
-    public override fun saveMessage(msg: Message){
+    public override fun saveMessage(msg: Message): CompletableFuture<Unit> {
         putMessage(msg)
 
-        trySync(1)
+        return trySync(1)
     }
 
     /**
      * 批量保存多个消息
      * @param msgs
+     * @return
      */
-    public override fun batchSaveMessages(msgs: List<Message>){
+    public override fun batchSaveMessages(msgs: List<Message>): CompletableFuture<Unit> {
         for(msg in msgs)
             putMessage(msg)
 
-        trySync(msgs.size)
+        return trySync(msgs.size)
     }
 
     /**
@@ -103,20 +106,21 @@ abstract class LsmMqWriter : LsmMqReader() {
      * @param id
      * @return
      */
-    public override fun deleteMessage(id: Long) {
+    public override fun deleteMessage(id: Long): CompletableFuture<Unit> {
         queueStore.delete(id)
 
-        trySync(1)
+        return trySync(1)
     }
 
     /**
      * 批量删除多个消息
      * @param id
+     * @return
      */
-    public override fun batchDeleteMessages(ids: List<Long>){
+    public override fun batchDeleteMessages(ids: List<Long>): CompletableFuture<Unit> {
         for(id in ids)
             queueStore.delete(id)
 
-        trySync(ids.size)
+        return trySync(ids.size)
     }
 }

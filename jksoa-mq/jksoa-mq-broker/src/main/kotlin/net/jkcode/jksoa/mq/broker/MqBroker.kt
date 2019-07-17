@@ -1,16 +1,15 @@
 package net.jkcode.jksoa.mq.broker
 
-import net.jkcode.jkmvc.common.VoidFuture
+import net.jkcode.jkmvc.common.UnitFuture
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.client.protocol.netty.buildUrl
-import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
-import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.IMqConsumer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqLogger
+import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssignment
@@ -53,34 +52,15 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
 
     /****************** 生产者调用 *****************/
     /**
-     * 消息合并器
-     *    消息入队, 合并存储
-     */
-    protected val msgCombiner = GroupRunCombiner(100, 100, this::saveMessages)
-
-    /**
      * 接收producer发过来的消息
      * @param msg 消息
      * @return
      */
     public override fun putMessage(msg: Message): CompletableFuture<Unit> {
-        return msgCombiner.add(msg)
-    }
-
-    /**
-     * 批量保存消息
-     * @param msgs
-     */
-    protected fun saveMessages(msgs: List<Message>){
-        // 按topic分组
-        val topic2Msgs = msgs.groupBy { it.topic }
-        // 逐个topic存储
-        for((topic, msgs2) in topic2Msgs){
-            // 根据topic获得仓库
-            val repository = LsmMqRepository.getRepository(topic)
-            // 逐个消息存储
-            repository.batchSaveMessages(msgs2)
-        }
+        // 根据topic获得仓库
+        val repository = LsmMqRepository.getRepository(msg.topic)
+        // 逐个消息存储
+        return repository.saveMessage(msg)
     }
 
     /****************** 消费者调用 *****************/
@@ -95,7 +75,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
      * @param group 分组
      * @return
      */
-    public override fun subscribeTopic(topic: String, group: String): CompletableFuture<Void> {
+    public override fun subscribeTopic(topic: String, group: String): CompletableFuture<Unit> {
         // 记录连接
         val ctx = RpcContext.current().ctx
         val channel = ctx.channel()
@@ -107,7 +87,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
             connHub.remove(topic, group, conn)
         }
 
-        return VoidFuture
+        return UnitFuture
     }
 
     /**
@@ -128,17 +108,22 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
 
     /**
      * 接受consumer的反馈消息消费结果
+     *    无异常则删除, 有异常则扔到延迟队列中
      * @param topic 主题
      * @param id 消息标识
      * @param e 消费异常
      * @return
      */
-    public override fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Boolean> {
+    public override fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Unit> {
         // 根据topic获得仓库
         val repository = LsmMqRepository.getRepository(topic)
-        // 删除消息
-        repository.deleteMessage(id)
-        return CompletableFuture.completedFuture(true)
+
+        // 无异常则删除
+        if(e != null)
+            return repository.deleteMessage(id)
+
+        //有异常则扔到延迟队列中
+
     }
 
 }

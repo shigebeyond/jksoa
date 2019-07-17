@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.broker.repository
 
 import net.jkcode.jksoa.mq.common.Message
+import java.util.concurrent.CompletableFuture
 
 /**
  * 消息的仓库
@@ -38,24 +39,28 @@ interface IMqRepository {
     /**
      * 保存单个消息
      * @param msg
+     * @return
      */
-    fun saveMessage(msg: Message)
+    fun saveMessage(msg: Message): CompletableFuture<Unit>
 
     /**
      * 批量保存多个消息
      * @param msgs
+     * @return
      */
-    fun batchSaveMessages(msgs: List<Message>)
+    fun batchSaveMessages(msgs: List<Message>): CompletableFuture<Unit>
 
     /**
      * 删除单个消息
      * @param id
+     * @return
      */
-    fun deleteMessage(id: Long)
+    fun deleteMessage(id: Long): CompletableFuture<Unit>
 
     /**
      * 批量删除多个消息
      * @param id
+     * @return
      */
-    fun batchDeleteMessages(ids: List<Long>)
+    fun batchDeleteMessages(ids: List<Long>): CompletableFuture<Unit>
 }
