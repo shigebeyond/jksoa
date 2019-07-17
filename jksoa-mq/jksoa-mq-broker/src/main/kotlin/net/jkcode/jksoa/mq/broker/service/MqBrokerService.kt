@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.broker
+package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jkmvc.common.UnitFuture
 import net.jkcode.jksoa.client.connection.IConnectionHub
@@ -6,11 +6,10 @@ import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.client.protocol.netty.buildUrl
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMqRepository
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
-import net.jkcode.jksoa.mq.common.IMqBroker
-import net.jkcode.jksoa.mq.common.IMqConsumer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqLogger
 import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
+import net.jkcode.jksoa.mq.consumer.service.IMqConsumerService
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssignment
@@ -24,7 +23,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
-class MqBroker: IMqBroker, IMqDiscoveryListener {
+class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
 
     /****************** 监听topic分配, 并初始化topic存储 *****************/
     /**
@@ -68,7 +67,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
     /**
      * 消费者连接集中器
      */
-    protected val connHub: IConsumerConnectionHub = IConnectionHub.instance(IMqConsumer::class.java) as IConsumerConnectionHub
+    protected val connHub: IConsumerConnectionHub = IConnectionHub.instance(IMqConsumerService::class.java) as IConsumerConnectionHub
 
     /**
      * 接受consumer的订阅主题

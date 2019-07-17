@@ -4,7 +4,7 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.selectExecutor
 import net.jkcode.jksoa.client.referer.Referer
-import net.jkcode.jksoa.mq.common.IMqBroker
+import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
 import net.jkcode.jksoa.mq.common.mqLogger
@@ -37,7 +37,7 @@ open class MqSubscriber: IMqSubscriber {
     /**
      * 消息中转者
      */
-    protected val broker = Referer.getRefer<IMqBroker>()
+    protected val broker = Referer.getRefer<IMqBrokerService>()
 
     /**
      * 消息处理器: <主题 to 处理器>

@@ -28,7 +28,7 @@ open class ZkMqDiscovery : IMqDiscovery {
     /**
      * topic分配所在路径
      */
-    public val topic2brokerPath: String = PathPrefix + "topic2broker/"
+    public val topic2brokerPath: String = PathPrefix + "topic2broker"
 
     /**
      * 注册中心配置

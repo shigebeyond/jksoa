@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.common
+package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jksoa.common.annotation.RemoteService
 
@@ -8,7 +8,7 @@ import net.jkcode.jksoa.common.annotation.RemoteService
  * @date 2019-01-10 8:41 PM
  */
 @RemoteService(onlyLeader = true)
-interface IMqBrokerLeader {
+interface IMqBrokerLeaderService {
 
     /**
      * 注册主题

@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.mq
 
 import net.jkcode.jksoa.client.referer.Referer
-import net.jkcode.jksoa.mq.common.IMqBroker
-import net.jkcode.jksoa.mq.common.IMqBrokerLeader
+import net.jkcode.jksoa.mq.broker.service.IMqBrokerLeaderService
+import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.producer.IMqProducer
 
@@ -16,12 +16,12 @@ object MqProducer : IMqProducer {
     /**
      * 消息中转者
      */
-    private val brokerLeader = Referer.getRefer<IMqBrokerLeader>()
+    private val brokerLeader = Referer.getRefer<IMqBrokerLeaderService>()
 
     /**
      * 消息中转者
      */
-    private val broker = Referer.getRefer<IMqBroker>()
+    private val broker = Referer.getRefer<IMqBrokerService>()
 
     /**
      * 注册主题

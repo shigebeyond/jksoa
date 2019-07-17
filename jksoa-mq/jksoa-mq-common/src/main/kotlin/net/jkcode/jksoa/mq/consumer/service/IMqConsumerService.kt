@@ -1,6 +1,7 @@
-package net.jkcode.jksoa.mq.common
+package net.jkcode.jksoa.mq.consumer.service
 
 import net.jkcode.jksoa.common.annotation.RemoteService
+import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.connection.ConsumerConnectionHub
 
 /**
@@ -10,7 +11,7 @@ import net.jkcode.jksoa.mq.connection.ConsumerConnectionHub
  * @create 2019-1-9 下午7:37
  **/
 @RemoteService(connectionHubClass = ConsumerConnectionHub::class)
-interface IMqConsumer {
+interface IMqConsumerService {
 
     /**
      * 接收broker推送的消息
