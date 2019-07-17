@@ -1,16 +1,15 @@
 package net.jkcode.jksoa.mq.broker.repository.lsm
 
-import com.indeed.lsmtree.core.StorageType
 import com.indeed.lsmtree.core.StoreBuilder
-import com.indeed.util.compress.CompressionCodec
 import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.Serializer
 import com.indeed.util.serialization.StringSerializer
-import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.getOrPutOnce
+import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.common.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
+import net.jkcode.jksoa.mq.registry.TopicRegex
 import net.jkcode.jksoa.server.IRpcServer
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -27,21 +26,10 @@ import java.util.concurrent.atomic.AtomicLong
  */
 class LsmMqRepository(
         protected val topic: String, // 主题
-        protected override val autoSync: Boolean = false, // 是否自动同步到磁盘
-        storageType: StorageType = StorageType.INLINE,
-        codec: CompressionCodec? = null
+        protected override val autoSync: Boolean = false // 是否自动同步到磁盘
 ) : LsmMqWriter() {
 
     companion object{
-        /**
-         * 中转者者配置
-         */
-        public val config = Config.instance("broker", "yaml")
-
-        /**
-         * 数据存储目录
-         */
-        public val dataDir: String = config["dataDir"]!!
 
         /**
          * <topic, 仓库>
@@ -50,12 +38,24 @@ class LsmMqRepository(
 
         init{
             // 加载旧的仓库
-            val dir = File(dataDir)
+            val dir = File(BrokerConfig.dataDir)
             val topics = dir.list()
-            // TODO: topic目录的判断要更严禁些, 要确定他是否真的存有队列数据
             if(topics != null)
                 for(topic in topics)
-                    repositories.put(topic, LsmMqRepository(topic))
+                    if(isTopicStoreDirectory(File(dir, topic)))
+                        repositories.put(topic, LsmMqRepository(topic))
+        }
+
+        /**
+         * 检查是否是主题存储的目录
+         * @param dir
+         * @return
+         */
+        private fun isTopicStoreDirectory(dir: File): Boolean {
+            return TopicRegex.matches(dir.name) // 主题名
+                    && dir.isDirectory
+                    && File(dir, "queue").isDirectory // 队列存储子目录
+                    && File(dir, "progress").isDirectory // 进度存储子目录
         }
 
         /**
@@ -88,24 +88,33 @@ class LsmMqRepository(
     /**
      * 该topic下的根目录
      */
-    protected val rootDir = dataDir + File.separatorChar + topic
+    protected val rootDir = BrokerConfig.dataDir + File.separatorChar + topic
 
+    /**
+     * 队列存储子目录: queue
+     */
+    protected val queueDir = rootDir + File.separatorChar + "queue"
+
+    /**
+     * 进度存储子目录: progress
+     */
+    protected val progressDir = rootDir + File.separatorChar + "progress"
 
     init {
         // 创建队列存储
-        val queueStoreDir = File(rootDir, "queue") // 子目录是queue
+        val queueStoreDir = File(queueDir) // 子目录是queue
         queueStore = StoreBuilder(queueStoreDir, LongSerializer(), FstObjectSerializer() as Serializer<Message>) // key是消息id, value是消息
-                .setMaxVolatileGenerationSize((8 * 1024 * 1024).toLong())
-                .setStorageType(storageType)
-                .setCodec(codec)
+                .setMaxVolatileGenerationSize(BrokerConfig.maxVolatileGenerationSize)
+                .setStorageType(BrokerConfig.storageType)
+                .setCodec(BrokerConfig.compressionCodec)
                 .build()
 
         // 创建进度存储
-        val progressStoreDir = File(rootDir, "progress") // 子目录是progress
+        val progressStoreDir = File(progressDir) // 子目录是progress
         progressStore = StoreBuilder(progressStoreDir, StringSerializer(), LongSerializer()) // key为分组名, value是读进度对应的消息id
-                .setMaxVolatileGenerationSize((8 * 1024 * 1024).toLong())
-                .setStorageType(storageType)
-                .setCodec(codec)
+                .setMaxVolatileGenerationSize(BrokerConfig.maxVolatileGenerationSize)
+                .setStorageType(BrokerConfig.storageType)
+                .setCodec(BrokerConfig.compressionCodec)
                 .build()
 
         // 初始化最大的消息id
