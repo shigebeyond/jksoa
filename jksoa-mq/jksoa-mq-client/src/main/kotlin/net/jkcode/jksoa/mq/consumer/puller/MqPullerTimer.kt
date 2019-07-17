@@ -16,7 +16,11 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
 
-
+    /**
+     * 是否拉模式
+     *    实现拉模式: 有拉取的定时器
+     */
+    public override val isPuller: Boolean = true
 
     /**
      * 是否已启动
@@ -29,7 +33,7 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
      * @param handler
      */
     public override fun subscribeTopic(topic: String, handler: IMqHandler){
-        super.subscribeTopic(topic, handler)
+        super<MqSubscriber>.subscribeTopic(topic, handler)
 
         if(started.compareAndSet(false, true)) {
             // 选举领导者: 一个组内只有一个拉取者
@@ -55,7 +59,7 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
      * 拉取消息
      * @param topic
      */
-    public override fun pull(topic: String) {
+    private fun pull(topic: String) {
         commonPool.execute() {
             var msgs: List<Message>
             do {
