@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.guard.combiner
 
+import net.jkcode.jkmvc.flusher.RequestQueueFlusher
 import java.util.*
 import java.util.concurrent.CompletableFuture
 

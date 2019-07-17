@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.guard
 
 import net.jkcode.jkmvc.common.makeThreads
-import net.jkcode.jksoa.guard.combiner.RequestQueueFlusher
+import net.jkcode.jkmvc.flusher.RequestQueueFlusher
 import org.junit.Test
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -23,8 +23,11 @@ class RequestQueueFlusherTest{
     fun testAdd(){
         val futures = LinkedList<CompletableFuture<*>>()
         makeThreads(10){i ->
-            val future = queue.add(i)
-            futures.add(future)
+            for(j in 0..100) {
+                val future = queue.add(i)
+                futures.add(future)
+                Thread.sleep(100)
+            }
         }
         CompletableFuture.allOf(*futures.toTypedArray()).get()
         println("over")
