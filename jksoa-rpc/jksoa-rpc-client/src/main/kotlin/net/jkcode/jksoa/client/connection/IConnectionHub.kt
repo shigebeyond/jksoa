@@ -98,7 +98,7 @@ abstract class IConnectionHub: IDiscoveryListener {
         protected set
 
     /**
-     * 选择一个连接
+     * 根据请求选择一个连接
      *
      * @param req
      * @return
@@ -106,9 +106,10 @@ abstract class IConnectionHub: IDiscoveryListener {
     public abstract fun select(req: IRpcRequest): IConnection
 
     /**
-     * 选择全部连接
+     * 根据请求选择多个连接
      *
-     * @return
+     * @param req 请求, 如果为null则返回全部连接, 否则返回跟该请求相关的连接
+     * @return 返回多个连接
      */
-    public abstract fun selectAll(): Collection<IConnection>
+    public abstract fun selectAll(req: IRpcRequest? = null): Collection<IConnection>
 }

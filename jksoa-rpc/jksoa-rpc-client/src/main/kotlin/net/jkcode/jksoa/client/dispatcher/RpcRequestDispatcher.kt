@@ -63,8 +63,8 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
     }
 
     /**
-     * 分发一个请求
-     *   将该请求发给任一节点
+     * 分发一个请求到任一节点
+     *    调用 IConnectionHub.select(req) 来获得单个节点(连接)
      *
      * @param req 请求
      * @param requestTimeoutMillis 请求超时
@@ -83,8 +83,29 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
     }
 
     /**
-     * 分发一个分片的请求
+     * 分发一个请求到所有节点
+     *    调用 IConnectionHub.selectAll(req) 来获得所有节点(连接)
+     *
+     * @param req 请求
+     * @param requestTimeoutMillis 请求超时
+     * @return 异步结果
+     */
+    public override fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long): List<CompletableFuture<Any?>> {
+        val connHub: IConnectionHub = IConnectionHub.instance(req.serviceId)
+
+        // 获得所有连接(节点)
+        val conns = connHub.selectAll(req)
+
+        // 2 发送请求，并获得异步响应
+        return conns.map { conn ->
+            conn.send(req, requestTimeoutMillis).thenApply(IRpcResponse::getOrThrow)
+        }
+    }
+
+    /**
+     * 分发一个分片的请求到全部节点
      *    将请求分成多片, 然后逐片分发给对应的节点
+     *    调用 IConnectionHub.selectAll(null) 来获得所有节点(连接)
      *
      * @param shdReq 分片的rpc请求
      * @param requestTimeoutMillis 请求超时
@@ -107,16 +128,13 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
         clientLogger.info(msg)
 
         // 2 逐个分片构建并发送rpc请求
-        val resFutures = shd2Conns.mapIndexed { iSharding, iConn ->
+        return shd2Conns.mapIndexed { iSharding, iConn ->
             // 构建请求
             val req = shdReq.buildRpcRequest(iSharding)
 
             // 发送请求，并获得异步响应
             conns[iConn].send(req, requestTimeoutMillis).thenApply(IRpcResponse::getOrThrow)
         }
-
-        // 3 等待全部分片请求的响应结果
-        return resFutures
     }
 
     /**

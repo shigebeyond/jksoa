@@ -16,8 +16,8 @@ import java.util.concurrent.CompletableFuture
 interface IRpcRequestDispatcher {
 
     /**
-     * 分发一个请求
-     *   将该请求发给任一节点
+     * 分发一个请求到任一节点
+     *    调用 IConnectionHub.select(req) 来获得单个节点(连接)
      *
      * @param req 请求
      * @param requestTimeoutMillis 请求超时
@@ -26,8 +26,19 @@ interface IRpcRequestDispatcher {
     fun dispatch(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): CompletableFuture<Any?>
 
     /**
+     * 分发一个请求到所有节点
+     *    调用 IConnectionHub.selectAll(req) 来获得所有节点(连接)
+     *
+     * @param req 请求
+     * @param requestTimeoutMillis 请求超时
+     * @return 异步结果
+     */
+    fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): List<CompletableFuture<Any?>>
+
+    /**
      * 分发一个分片的请求
      *    将请求分成多片, 然后逐片分发给对应的节点
+     *    调用 IConnectionHub.selectAll(null) 来获得所有节点(连接)
      *
      * @param shdReq 分片的请求
      * @param requestTimeoutMillis 请求超时

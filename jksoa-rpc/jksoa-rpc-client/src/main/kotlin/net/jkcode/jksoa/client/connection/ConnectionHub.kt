@@ -4,7 +4,7 @@ import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
-import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.exception.RpcNoConnectionException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.HashMap
@@ -111,32 +111,33 @@ open class ConnectionHub: IConnectionHub() {
     }
 
     /**
-     * 选择一个连接
+     * 根据请求选择一个连接
      *
      * @param req
      * @return
      */
     public override fun select(req: IRpcRequest): IConnection {
         // 1 获得可用连接
-        val conns = selectAll()
+        val conns = selectAll(req)
 
         // 2 按均衡负载策略，来选择连接
         val conn = loadBalancer.select(conns, req)
         if(conn == null)
-            throw RpcClientException("远程服务[${req.serviceId}]无提供者节点")
+            throw RpcNoConnectionException("远程服务[${req.serviceId}]无提供者节点")
 
         clientLogger.debug("IConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
         return conn
     }
 
     /**
-     * 获得全部连接
+     * 根据请求选择多个连接
      *
-     * @return
+     * @param req 请求, 如果为null则返回全部连接, 否则返回跟该请求相关的连接
+     * @return 全部连接
      */
-    public override fun selectAll(): Collection<IConnection> {
+    public override fun selectAll(req: IRpcRequest?): Collection<IConnection> {
         if(connections.isEmpty())
-            throw RpcClientException("远程服务[${serviceId}]无提供者节点")
+            throw RpcNoConnectionException("远程服务[${serviceId}]无提供者节点")
 
         return connections.values
     }

@@ -59,7 +59,7 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
     }
 
     /**
-     * 选择一个连接
+     * 根据请求选择一个连接
      *
      * @param req
      * @return
@@ -86,11 +86,12 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
     }
 
     /**
-     * 获得全部连接
+     * 根据请求选择多个连接
      *
+     * @param req 请求, 如果为null则返回全部连接, 否则返回跟该请求相关的连接
      * @return
      */
-    public override fun selectAll(): Collection<IConnection> {
+    public override fun selectAll(req: IRpcRequest?): Collection<IConnection> {
         throw UnsupportedOperationException("Topic对borker有粘性, 不能简单的统一操作所有broker")
     }
 
