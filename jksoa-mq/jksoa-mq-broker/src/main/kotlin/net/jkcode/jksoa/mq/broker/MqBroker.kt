@@ -4,6 +4,7 @@ import net.jkcode.jkmvc.common.UnitFuture
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.client.protocol.netty.buildUrl
+import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMqRepository
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
 import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.IMqConsumer
@@ -25,7 +26,7 @@ import java.util.concurrent.CompletableFuture
  */
 class MqBroker: IMqBroker, IMqDiscoveryListener {
 
-    /****************** 初始化存储 *****************/
+    /****************** 监听topic分配, 并初始化topic存储 *****************/
     /**
      * 注册中心
      */
@@ -123,7 +124,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
             return repository.deleteMessage(id)
 
         //有异常则扔到延迟队列中
-
+        return LsmDelayMqRepository.addDelayMessageId(topic, id)
     }
 
 }
