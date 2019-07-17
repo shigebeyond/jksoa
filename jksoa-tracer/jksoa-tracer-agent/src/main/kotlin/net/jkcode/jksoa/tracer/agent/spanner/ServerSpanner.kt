@@ -34,7 +34,7 @@ class ServerSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 		tracer.clear()
 
 		// 待发送span入队
-		return spanCombine.add(span)
+		return spanCombiner.add(span)
 	}
 
 }

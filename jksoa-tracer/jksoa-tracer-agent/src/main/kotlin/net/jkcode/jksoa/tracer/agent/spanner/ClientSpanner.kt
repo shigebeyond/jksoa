@@ -31,7 +31,7 @@ open class ClientSpanner(tracer: Tracer, span: Span): ISpanner(tracer, span) {
 			span.addCrAnnotation()
 
 		// 待发送span入队
-		return spanCombine.add(span)
+		return spanCombiner.add(span)
 	}
 
 }

@@ -4,6 +4,7 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssigner
 import net.jkcode.jksoa.mq.registry.toJson
+import net.jkcode.jksoa.mq.registry.TopicRegex
 import net.jkcode.jksoa.registry.IRegistry
 import net.jkcode.jksoa.registry.zk.ZkRegistry
 
@@ -29,6 +30,9 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
      */
     @Synchronized
     public override fun registerTopic(topic: String) {
+        if(!TopicRegex.matches(topic))
+            throw IllegalArgumentException("Invalid topic name: $topic")
+
         // 读topic分配
         val assignment = discover()
 

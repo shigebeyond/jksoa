@@ -25,7 +25,7 @@ abstract class ISpanner(public val tracer: Tracer, public val span: Span){
 		 * 待发送span合并器
 		 *    span入队, 合并发送
 		 */
-		internal val spanCombine = GroupRunCombiner(100, 100, this::sendSpans)
+		internal val spanCombiner = GroupRunCombiner(100, 100, this::sendSpans)
 
 		/**
 		 * 发送span
