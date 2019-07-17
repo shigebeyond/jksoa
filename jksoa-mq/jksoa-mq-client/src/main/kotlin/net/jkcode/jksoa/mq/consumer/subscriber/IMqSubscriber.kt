@@ -13,19 +13,6 @@ import java.util.concurrent.CompletableFuture
 interface IMqSubscriber {
 
     /**
-     * 是否拉模式
-     *    推的实现是 MqSubscriber, 会向中转者订阅主题, 然后中转者就会向你推消息
-     *    拉的实现是 MqPullerTimer, 有拉取的定时器
-     */
-    val isPuller: Boolean
-
-    /**
-     * 是否推模式
-     */
-    val isPush: Boolean
-        get() = !isPuller
-
-    /**
      * 已订阅的主题
      */
     val subscribedTopics: Collection<String>

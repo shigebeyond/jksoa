@@ -43,21 +43,22 @@ class MqClientTests {
     }
 
     /**
-     * 测试消息消费
+     * 测试推模式的消息消费
      */
     @Test
-    fun testConsumer(){
+    fun testPushConsumer(){
         // 订阅主题
-        MqConsumer.subscribeTopic(topic, handler)
+        MqConsumer(false).subscribeTopic(topic, handler)
     }
 
     /**
-     * 测试消息拉取者
+     * 测试拉模式的消息消费
      */
     @Test
-    fun testPuller(){
-        MqPullerTimer.subscribeTopic(topic, handler)
-        MqPullerTimer.start()
+    fun testPullConsumer(){
+        // 订阅主题
+        MqConsumer(true).subscribeTopic(topic, handler)
+
         Thread.sleep(10000)
     }
 }

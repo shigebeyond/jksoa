@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-24 10:42 PM
  */
-open class MqSubscriber: IMqSubscriber {
+object MqSubscriber: IMqSubscriber {
 
     /**
      * 消费者配置
@@ -27,12 +27,6 @@ open class MqSubscriber: IMqSubscriber {
      * 消息处理的线程池
      */
     public val commonPool: DefaultEventExecutorGroup = DefaultEventExecutorGroup(config["threadNum"]!!)
-
-    /**
-     * 是否拉模式
-     *    实现推模式: 会向中转者订阅主题, 然后中转者就会向你推消息
-     */
-    public override val isPuller: Boolean = false
 
     /**
      * 消息中转者
@@ -60,9 +54,6 @@ open class MqSubscriber: IMqSubscriber {
 
         // 添加处理器
         handlers[topic] = handler
-        // 如果是推模式, 向中转者订阅主题, 然后中转者就会向你推消息
-        if(isPush)
-            broker.subscribeTopic(topic, config["group"]!!)
     }
 
     /**
