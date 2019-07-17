@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.mq.consumer.puller
 
+import net.jkcode.jkmvc.common.AtomicStarter
 import net.jkcode.jkmvc.common.CommonSecondTimer
 import net.jkcode.jkmvc.common.newPeriodic
 import net.jkcode.jksoa.leader.ZkLeaderElection
@@ -7,7 +8,6 @@ import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.consumer.IMqHandler
 import net.jkcode.jksoa.mq.consumer.subscriber.MqSubscriber
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * 消费拉取者
@@ -23,9 +23,9 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
     public override val isPuller: Boolean = true
 
     /**
-     * 是否已启动
+     * 启动者
      */
-    private val started: AtomicBoolean = AtomicBoolean(false)
+    private val starter = AtomicStarter()
 
     /**
      * 订阅主题 -- 启动定时器
@@ -35,13 +35,14 @@ object MqPullerTimer: IMqPullerTimer, MqSubscriber() {
     public override fun subscribeTopic(topic: String, handler: IMqHandler){
         super<MqSubscriber>.subscribeTopic(topic, handler)
 
-        if(started.compareAndSet(false, true)) {
+        starter.startOnce {
             // 选举领导者: 一个组内只有一个拉取者
             val election = ZkLeaderElection("mqPuller/" + config["group"]!!)
             election.run() {
                 start()
             }
         }
+
     }
 
     /**

@@ -1,17 +1,8 @@
 package net.jkcode.jksoa.common.loader
 
-import net.jkcode.jkmvc.common.ClassScanner
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.common.classPath2class
-import net.jkcode.jkmvc.common.commonLogger
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.common.annotation.remoteService
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.collections.Collection
-import kotlin.collections.HashMap
-import kotlin.collections.MutableMap
-import kotlin.collections.any
 import kotlin.collections.set
-import kotlin.collections.toSet
 
 /**
  * 加载服务类
@@ -23,9 +14,9 @@ import kotlin.collections.toSet
 abstract class ServiceClassLoader<T: IServiceClass>(protected val isProvider: Boolean /* 是否是加载服务提供者 */) : ClassScanner() {
 
     /**
-     * 是否已加载
+     * 启动者
      */
-    private val loaded: AtomicBoolean = AtomicBoolean(false)
+    protected val starter = AtomicStarter()
 
     /**
      * 服务类缓存
@@ -47,7 +38,7 @@ abstract class ServiceClassLoader<T: IServiceClass>(protected val isProvider: Bo
      */
     public fun load(){
         commonLogger.debug(" ------ load service: {} ------ ", this.javaClass)
-        if(loaded.compareAndSet(false, true)) {
+        starter.startOnce {
             // 系统的service包
             addPackage("net.jkcode.jksoa.service")
             // 用户定义的service包
