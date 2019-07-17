@@ -53,17 +53,21 @@ class MqRepositoryTests {
 
     @Test
     fun testDeleteMessage(){
-        // 找一个
-        val id = repository.getMessagesByRange(0, 1).first().id
-        val msg = repository.getMessage(id)!!
-        println("find one message: " + msg)
-
-        // 删除
-        repository.deleteMessage(msg.id)
-        println("delete message: " + msg.id)
+        // 新建
+        val msg = Message(topic, currMillis(), group)
+        repository.saveMessage(msg)
+        val id = msg.id
 
         // 读取
         val msg2 = repository.getMessage(id)
         println("find one message: " + msg2)
+
+        // 删除
+        repository.deleteMessage(id)
+        println("delete message: " + id)
+
+        // 读取
+        val msg3 = repository.getMessage(id)
+        println("find one message: " + msg3)
     }
 }

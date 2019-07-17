@@ -30,18 +30,23 @@ abstract class LsmMqWriter : LsmMqReader() {
     /**
      * 是否自动同步到磁盘
      */
-    protected var autoSync: Boolean = false
+    protected abstract val autoSync: Boolean
 
     /**
      * 定量刷盘, 提升刷盘效率
      */
-    protected val syncCounter: CounterFlusher? = if(autoSync) null else object: CounterFlusher(100, 100) {
-        // 处理刷盘
-        override fun handleFlush(): Boolean {
-            // 同步到磁盘
-            queueStore.sync()
-            return true
-        }
+    protected val syncCounter: CounterFlusher? by lazy{
+        if(autoSync)
+            null
+        else
+            object: CounterFlusher(100, 100) {
+                // 处理刷盘
+                override fun handleFlush(): Boolean {
+                    // 同步到磁盘
+                    queueStore.sync()
+                    return true
+                }
+            }
     }
 
     /**

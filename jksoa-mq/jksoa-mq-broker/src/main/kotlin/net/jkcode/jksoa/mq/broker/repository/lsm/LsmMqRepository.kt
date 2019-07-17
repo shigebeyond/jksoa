@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong
  */
 class LsmMqRepository(
         protected val topic: String, // 主题
+        protected override val autoSync: Boolean = false, // 是否自动同步到磁盘
         storageType: StorageType = StorageType.INLINE,
         codec: CompressionCodec? = null
 ) : LsmMqWriter() {
