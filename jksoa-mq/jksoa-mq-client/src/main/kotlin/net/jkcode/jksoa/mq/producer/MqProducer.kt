@@ -1,7 +1,8 @@
 package net.jkcode.jksoa.mq
 
 import net.jkcode.jksoa.client.referer.Referer
-import net.jkcode.jksoa.mq.broker.IMqBroker
+import net.jkcode.jksoa.mq.common.IMqBroker
+import net.jkcode.jksoa.mq.common.IMqBrokerLeader
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.producer.IMqProducer
 
@@ -15,7 +16,31 @@ object MqProducer : IMqProducer {
     /**
      * 消息中转者
      */
+    private val brokerLeader = Referer.getRefer<IMqBrokerLeader>()
+
+    /**
+     * 消息中转者
+     */
     private val broker = Referer.getRefer<IMqBroker>()
+
+    /**
+     * 注册主题
+     * @param topic 主题
+     * @return
+     */
+    public override fun registerTopic(topic: String){
+        brokerLeader.registerTopic(topic)
+    }
+
+    /**
+     * 注销topic
+     *
+     * @param topic
+     * @return
+     */
+    public override fun unregisterTopic(topic: String){
+        brokerLeader.unregisterTopic(topic)
+    }
 
     /**
      * 生产消息

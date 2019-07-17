@@ -9,6 +9,22 @@ import net.jkcode.jksoa.mq.common.Message
  */
 interface IMqProducer {
 
+
+    /**
+     * 注册主题
+     * @param topic 主题
+     * @return
+     */
+    fun registerTopic(topic: String)
+
+    /**
+     * 注销topic
+     *
+     * @param topic
+     * @return
+     */
+    fun unregisterTopic(topic: String)
+
     /**
      * 发送消息
      * @param msg 消息

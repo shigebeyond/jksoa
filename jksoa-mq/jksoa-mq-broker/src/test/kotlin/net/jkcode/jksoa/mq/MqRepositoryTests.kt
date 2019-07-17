@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq
 
-import net.jkcode.jkmvc.common.currMillis
+import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
 import net.jkcode.jksoa.mq.common.Message
 import org.junit.Test
@@ -24,7 +24,7 @@ class MqRepositoryTests {
         // 新建消息
         val msgs = LinkedList<Message>()
         for(i in 0..100) {
-            val msg = Message(topic, currMillis(), group)
+            val msg = Message(topic, randomString(7), group)
             msgs.add(msg)
         }
 
@@ -54,7 +54,7 @@ class MqRepositoryTests {
     @Test
     fun testDeleteMessage(){
         // 新建
-        val msg = Message(topic, currMillis(), group)
+        val msg = Message(topic, randomString(7), group)
         repository.saveMessage(msg)
         val id = msg.id
 
