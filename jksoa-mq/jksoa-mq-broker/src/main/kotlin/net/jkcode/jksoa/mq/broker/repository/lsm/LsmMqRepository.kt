@@ -1,7 +1,6 @@
-package net.jkcode.jksoa.mq.broker.repository
+package net.jkcode.jksoa.mq.broker.repository.lsm
 
 import com.indeed.lsmtree.core.StorageType
-import com.indeed.lsmtree.core.Store
 import com.indeed.lsmtree.core.StoreBuilder
 import com.indeed.util.compress.CompressionCodec
 import com.indeed.util.serialization.LongSerializer
@@ -9,7 +8,6 @@ import com.indeed.util.serialization.Serializer
 import com.indeed.util.serialization.StringSerializer
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.getOrPutOnce
-import net.jkcode.jkmvc.common.getWritableFinalField
 import net.jkcode.jksoa.mq.broker.common.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
@@ -31,7 +29,7 @@ class LsmMqRepository(
         protected val topic: String, // 主题
         storageType: StorageType = StorageType.INLINE,
         codec: CompressionCodec? = null
-) : IMqRepository {
+) : LsmMqWriter() {
 
     companion object{
         /**
@@ -43,11 +41,6 @@ class LsmMqRepository(
          * 数据存储目录
          */
         public val dataDir: String = config["dataDir"]!!
-
-        /**
-         * 消息的id属性
-         */
-        protected val idProp = Message::class.java.getWritableFinalField("id")
 
         /**
          * <topic, 仓库>
@@ -96,24 +89,6 @@ class LsmMqRepository(
      */
     protected val rootDir = dataDir + File.separatorChar + topic
 
-    /**
-     * 队列存储
-     *   子目录是queue
-     *   key是消息id, value是消息
-     */
-    protected lateinit var queueStore: Store<Long, Message>
-
-    /**
-     * 进度存储
-     *   子目录是progress
-     *   key为分组名, value是读进度对应的消息id
-     */
-    protected lateinit var progressStore: Store<String, Long>
-
-    /**
-     * 最大的消息id
-     */
-    protected lateinit var maxId: AtomicLong
 
     init {
         // 创建队列存储
@@ -135,84 +110,6 @@ class LsmMqRepository(
         // 初始化最大的消息id
         val startId:Long? = queueStore.last()?.value?.id
         maxId = AtomicLong(if(startId == null) 0L else startId)
-    }
-
-    /*************************** 读 **************************/
-    /**
-     * 根据范围查询多个消息
-     * @param startId 开始的id
-     * @param limit
-     * @param inclusive 是否包含开始的id
-     * @return
-     */
-    public override fun getMessagesByRange(startId: Long, limit: Int, inclusive: Boolean): List<Message> {
-        // 获得按key有序的迭代器
-        val itr = queueStore.iterator(startId, inclusive)
-        var i = 0
-        val result = ArrayList<Message>()
-        while (itr.hasNext() && i < limit) {
-            val entry = itr.next()
-            result.add(entry.value)
-            i++
-        }
-        return result
-    }
-
-    /**
-     * 根据分组查询多个消息
-     * @param startId 开始的id
-     * @param limit
-     * @return
-     */
-    public override fun getMessagesByGroup(group: String, limit: Int): List<Message>{
-        // 读该分组的进度
-        val startId:Long? = progressStore.get(group)
-        // 读消息
-        val result = getMessagesByRange(if(startId == null) 0L else startId, limit, false)
-        if(!result.isEmpty()){
-            // 保存该分组的读进度
-            progressStore.put(group, result.last().id)
-            // 同步进度文件
-            progressStore.sync()
-        }
-        return result
-    }
-
-    /**
-     * 查询单个消息
-     * @param id
-     * @return
-     */
-    public override fun getMessage(id: Long): Message? {
-        return queueStore.get(id)
-    }
-
-    /*************************** 读 **************************/
-    /**
-     * 批量保存多个消息
-     * @param msgs
-     */
-    public override fun saveMessages(msgs: List<Message>){
-        for(msg in msgs) {
-            // 由broker端生成消息id, 保证在同一个topic下有序
-            if(msg.id == 0L)
-                idProp.set(msg, maxId.incrementAndGet())
-            // 保存消息
-            queueStore.put(msg.id, msg)
-        }
-
-        // 同步文件
-        queueStore.sync()
-    }
-
-    /**
-     * 删除单个消息
-     * @param id
-     * @return
-     */
-    public override fun deleteMessage(id: Long) {
-        queueStore.delete(id)
-        queueStore.sync()
     }
 
 }

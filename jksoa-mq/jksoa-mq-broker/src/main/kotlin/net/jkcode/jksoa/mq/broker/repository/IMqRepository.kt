@@ -36,14 +36,26 @@ interface IMqRepository {
 
     /*************************** 写 **************************/
     /**
+     * 保存单个消息
+     * @param msg
+     */
+    fun saveMessage(msg: Message)
+
+    /**
      * 批量保存多个消息
      * @param msgs
      */
-    fun saveMessages(msgs: List<Message>)
+    fun batchSaveMessages(msgs: List<Message>)
 
     /**
      * 删除单个消息
      * @param id
      */
     fun deleteMessage(id: Long)
+
+    /**
+     * 批量删除多个消息
+     * @param id
+     */
+    fun batchDeleteMessages(ids: List<Long>)
 }

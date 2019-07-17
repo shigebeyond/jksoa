@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq
 
 import net.jkcode.jkmvc.common.currMillis
-import net.jkcode.jksoa.mq.broker.repository.LsmMqRepository
+import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
 import net.jkcode.jksoa.mq.common.Message
 import org.junit.Test
 import java.util.*
@@ -29,7 +29,7 @@ class MqRepositoryTests {
         }
 
         // 保存消息, 生成id
-        repository.saveMessages(msgs)
+        repository.batchSaveMessages(msgs)
         println("保存消息: " + msgs)
     }
 

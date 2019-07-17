@@ -1,10 +1,11 @@
 package net.jkcode.jksoa.mq.broker
 
+import net.jkcode.jkmvc.common.VoidFuture
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.client.protocol.netty.buildUrl
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
-import net.jkcode.jksoa.mq.broker.repository.LsmMqRepository
+import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
 import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.common.IMqBroker
 import net.jkcode.jksoa.mq.common.IMqConsumer
@@ -78,7 +79,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
             // 根据topic获得仓库
             val repository = LsmMqRepository.getRepository(topic)
             // 逐个消息存储
-            repository.saveMessages(msgs2)
+            repository.batchSaveMessages(msgs2)
         }
     }
 
@@ -106,7 +107,7 @@ class MqBroker: IMqBroker, IMqDiscoveryListener {
             connHub.remove(topic, group, conn)
         }
 
-        return CompletableFuture.completedFuture(null)
+        return VoidFuture
     }
 
     /**
