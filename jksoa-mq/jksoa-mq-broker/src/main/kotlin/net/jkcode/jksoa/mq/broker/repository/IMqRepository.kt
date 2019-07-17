@@ -8,12 +8,8 @@ import net.jkcode.jksoa.mq.common.Message
  * @date 2019-07-13 5:16 PM
  */
 interface IMqRepository {
-    /**
-     * 批量保存多个消息
-     * @param msgs
-     */
-    fun saveMessages(msgs: List<Message>)
 
+    /*************************** 读 **************************/
     /**
      * 根据范围查询多个消息
      * @param startId 开始的id
@@ -37,6 +33,13 @@ interface IMqRepository {
      * @return
      */
     fun getMessage(id: Long): Message?
+
+    /*************************** 写 **************************/
+    /**
+     * 批量保存多个消息
+     * @param msgs
+     */
+    fun saveMessages(msgs: List<Message>)
 
     /**
      * 删除单个消息

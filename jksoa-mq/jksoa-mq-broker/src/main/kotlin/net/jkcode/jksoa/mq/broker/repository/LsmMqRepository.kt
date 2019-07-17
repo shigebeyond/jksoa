@@ -50,11 +50,6 @@ class LsmMqRepository(
         protected val idProp = Message::class.java.getWritableFinalField("id")
 
         /**
-         * 最大消息id在进度存储中的键名
-         */
-        protected val maxIdProgressKey = "_maxId"
-
-        /**
          * <topic, 仓库>
          */
         protected val repositories: ConcurrentHashMap<String, LsmMqRepository> = ConcurrentHashMap()
@@ -103,14 +98,15 @@ class LsmMqRepository(
 
     /**
      * 队列存储
+     *   子目录是queue
      *   key是消息id, value是消息
      */
     protected lateinit var queueStore: Store<Long, Message>
 
     /**
-     * 进度存储, 有2种情况
-     *    1. 如果特定的key == "_maxId", 则value是当前队列的最大消息id
-     *    2. 否则, key为分组名, value是读进度对应的消息id
+     * 进度存储
+     *   子目录是progress
+     *   key为分组名, value是读进度对应的消息id
      */
     protected lateinit var progressStore: Store<String, Long>
 
@@ -121,47 +117,27 @@ class LsmMqRepository(
 
     init {
         // 创建队列存储
-        val queueStoreDir = File(rootDir, "queue")
-        queueStore = StoreBuilder(queueStoreDir, LongSerializer(), FstObjectSerializer() as Serializer<Message>)
+        val queueStoreDir = File(rootDir, "queue") // 子目录是queue
+        queueStore = StoreBuilder(queueStoreDir, LongSerializer(), FstObjectSerializer() as Serializer<Message>) // key是消息id, value是消息
                 .setMaxVolatileGenerationSize((8 * 1024 * 1024).toLong())
                 .setStorageType(storageType)
                 .setCodec(codec)
                 .build()
 
         // 创建进度存储
-        val progressStoreDir = File(rootDir, "progress")
-        progressStore = StoreBuilder(progressStoreDir, StringSerializer(), LongSerializer())
+        val progressStoreDir = File(rootDir, "progress") // 子目录是progress
+        progressStore = StoreBuilder(progressStoreDir, StringSerializer(), LongSerializer()) // key为分组名, value是读进度对应的消息id
                 .setMaxVolatileGenerationSize((8 * 1024 * 1024).toLong())
                 .setStorageType(storageType)
                 .setCodec(codec)
                 .build()
 
         // 初始化最大的消息id
-        val startId:Long? = progressStore.get(maxIdProgressKey)
+        val startId:Long? = queueStore.last()?.value?.id
         maxId = AtomicLong(if(startId == null) 0L else startId)
     }
 
-    /**
-     * 批量保存多个消息
-     * @param msgs
-     */
-    public override fun saveMessages(msgs: List<Message>){
-        for(msg in msgs) {
-            // 由broker端生成消息id, 保证在同一个topic下有序
-            if(msg.id == 0L)
-                idProp.set(msg, maxId.incrementAndGet())
-            // 保存消息
-            queueStore.put(msg.id, msg)
-        }
-
-        // 保存最大消息id
-        progressStore.put(maxIdProgressKey, maxId.get())
-
-        // 同步文件
-        queueStore.sync()
-        progressStore.sync()
-    }
-
+    /*************************** 读 **************************/
     /**
      * 根据范围查询多个消息
      * @param startId 开始的id
@@ -189,7 +165,9 @@ class LsmMqRepository(
      * @return
      */
     public override fun getMessagesByGroup(group: String, limit: Int): List<Message>{
+        // 读该分组的进度
         val startId:Long? = progressStore.get(group)
+        // 读消息
         val result = getMessagesByRange(if(startId == null) 0L else startId, limit, false)
         if(!result.isEmpty()){
             // 保存该分组的读进度
@@ -207,6 +185,24 @@ class LsmMqRepository(
      */
     public override fun getMessage(id: Long): Message? {
         return queueStore.get(id)
+    }
+
+    /*************************** 读 **************************/
+    /**
+     * 批量保存多个消息
+     * @param msgs
+     */
+    public override fun saveMessages(msgs: List<Message>){
+        for(msg in msgs) {
+            // 由broker端生成消息id, 保证在同一个topic下有序
+            if(msg.id == 0L)
+                idProp.set(msg, maxId.incrementAndGet())
+            // 保存消息
+            queueStore.put(msg.id, msg)
+        }
+
+        // 同步文件
+        queueStore.sync()
     }
 
     /**
