@@ -4,8 +4,8 @@ import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.mq.MqProducer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.consumer.IMqHandler
-import net.jkcode.jksoa.mq.consumer.MqConsumer
-import net.jkcode.jksoa.mq.consumer.puller.MqPullerTimer
+import net.jkcode.jksoa.mq.consumer.MqPullConsumer
+import net.jkcode.jksoa.mq.consumer.MqPushConsumer
 import org.junit.Test
 
 /**
@@ -39,7 +39,7 @@ class MqClientTests {
     @Test
     fun testProductor(){
         // 生产消息
-        MqProducer.produce(Message(topic, randomString(7), group))
+        MqProducer.send(Message(topic, randomString(7), group))
     }
 
     /**
@@ -48,7 +48,7 @@ class MqClientTests {
     @Test
     fun testPushConsumer(){
         // 订阅主题
-        MqConsumer(false).subscribeTopic(topic, handler)
+        MqPushConsumer.subscribeTopic(topic, handler)
     }
 
     /**
@@ -57,7 +57,7 @@ class MqClientTests {
     @Test
     fun testPullConsumer(){
         // 订阅主题
-        MqConsumer(true).subscribeTopic(topic, handler)
+        MqPullConsumer.subscribeTopic(topic, handler)
 
         Thread.sleep(10000)
     }

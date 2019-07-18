@@ -46,7 +46,7 @@ object MqProducer : IMqProducer {
      * 生产消息
      * @param msg 消息
      */
-    public override fun produce(msg: Message){
+    public override fun send(msg: Message){
         // 通过中转者来分发消息
         broker.putMessage(msg)
     }

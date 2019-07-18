@@ -1,9 +1,6 @@
-package net.jkcode.jksoa.mq.consumer.subscriber
+package net.jkcode.jksoa.mq.consumer
 
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.consumer.IMqHandler
-import net.jkcode.jksoa.mq.consumer.LambdaMqHandler
-import java.util.concurrent.CompletableFuture
 
 /**
  * 消息订阅者

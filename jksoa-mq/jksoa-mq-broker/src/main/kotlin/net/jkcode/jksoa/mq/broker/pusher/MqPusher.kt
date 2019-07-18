@@ -4,7 +4,7 @@ import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
-import net.jkcode.jksoa.mq.consumer.service.IMqConsumerService
+import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
 import net.jkcode.jksoa.mq.common.Message
 
 /**
@@ -24,7 +24,7 @@ object MqPusher : IMqPusher {
      * @param msg
      */
     public override fun push(msg: Message){
-        val req = RpcRequest(IMqConsumerService::pushMessage, arrayOf<Any?>(msg))
+        val req = RpcRequest(IMqPushConsumerService::pushMessage, arrayOf<Any?>(msg))
         try {
             // 广播给消息相关的分组(单个or多个), 调用 ConsumerConnectionHub.selectAll(req) 来获得跟主题相关的每个分组选一个consumer连接
             dispatcher.dispatchAll(req)

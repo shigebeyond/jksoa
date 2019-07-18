@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.consumer.subscriber
+package net.jkcode.jksoa.mq.consumer
 
 import io.netty.util.concurrent.DefaultEventExecutorGroup
 import net.jkcode.jkmvc.common.Config
@@ -8,11 +8,12 @@ import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
 import net.jkcode.jksoa.mq.common.mqLogger
-import net.jkcode.jksoa.mq.consumer.IMqHandler
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 消息订阅者
+ *    消息订阅的真正实现, MqPullConsumer与MqPushConsumer都使用他来代理实现
+ *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-24 10:42 PM
  */
@@ -31,12 +32,12 @@ object MqSubscriber: IMqSubscriber {
     /**
      * 消息中转者
      */
-    protected val broker = Referer.getRefer<IMqBrokerService>()
+    private val broker = Referer.getRefer<IMqBrokerService>()
 
     /**
      * 消息处理器: <主题 to 处理器>
      */
-    protected val handlers: ConcurrentHashMap<String, IMqHandler> = ConcurrentHashMap();
+    private val handlers: ConcurrentHashMap<String, IMqHandler> = ConcurrentHashMap();
 
     /**
      * 已订阅的主题
@@ -72,7 +73,7 @@ object MqSubscriber: IMqSubscriber {
     public override fun handleMessage(msg: Message){
         // 异步处理: 选择线程
         val executor = if(msg.subjectId == 0L)
-                            commonPool
+            commonPool
                         else
                             commonPool.selectExecutor(msg.subjectId) // 根据 subjectId 选择固定的线程, 以便实现consumer进程内部的消息有序
         executor.execute {

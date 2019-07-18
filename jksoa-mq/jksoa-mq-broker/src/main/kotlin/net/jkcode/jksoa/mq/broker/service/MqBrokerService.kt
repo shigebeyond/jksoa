@@ -9,7 +9,7 @@ import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqLogger
 import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
-import net.jkcode.jksoa.mq.consumer.service.IMqConsumerService
+import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssignment
@@ -67,7 +67,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
     /**
      * 消费者连接集中器
      */
-    protected val connHub: IConsumerConnectionHub = IConnectionHub.instance(IMqConsumerService::class.java) as IConsumerConnectionHub
+    protected val connHub: IConsumerConnectionHub = IConnectionHub.instance(IMqPushConsumerService::class.java) as IConsumerConnectionHub
 
     /**
      * 接受consumer的订阅主题

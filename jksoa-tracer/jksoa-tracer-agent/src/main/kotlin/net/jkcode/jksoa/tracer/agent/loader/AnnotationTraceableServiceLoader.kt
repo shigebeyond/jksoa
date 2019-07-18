@@ -16,7 +16,7 @@ import java.util.*
 class AnnotationTraceableServiceLoader : ITraceableServiceLoader()  {
 
     /**
-     * http配置
+     * agent配置
      */
     public val config = Config.instance("agent", "yaml")
 
