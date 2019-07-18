@@ -16,6 +16,7 @@ interface IMqSubscriber {
 
     /**
      * 订阅主题
+     *    不允许重复订阅同一个主题
      * @param topic 主题
      * @param handler
      */
@@ -23,6 +24,7 @@ interface IMqSubscriber {
 
     /**
      * 订阅主题
+     *    不允许重复订阅同一个主题
      * @param topic 主题
      * @param lambda
      */

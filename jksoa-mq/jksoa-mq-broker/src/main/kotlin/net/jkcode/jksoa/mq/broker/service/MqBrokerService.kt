@@ -112,9 +112,10 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
      * @param topic 主题
      * @param id 消息标识
      * @param e 消费异常
+     * @param group 分组
      * @return
      */
-    public override fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Unit> {
+    public override fun feedbackMessage(topic: String, id: Long, e: Throwable?, group: String): CompletableFuture<Unit> {
         // 根据topic获得仓库
         val repository = LsmMqRepository.getRepository(topic)
 

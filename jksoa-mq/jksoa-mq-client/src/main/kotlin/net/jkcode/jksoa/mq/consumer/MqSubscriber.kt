@@ -46,6 +46,7 @@ object MqSubscriber: IMqSubscriber {
 
     /**
      * 订阅主题
+     *   不允许重复订阅同一个主题
      * @param topic 主题
      * @param handler
      */
@@ -85,7 +86,7 @@ object MqSubscriber: IMqSubscriber {
                 e = ex
             }finally {
                 // 反馈消息消费结果
-                broker.feedbackMessage(msg.topic, msg.id, e)
+                broker.feedbackMessage(msg.topic, msg.id, e, MqPushConsumer.config["group"]!!)
                 if(e != null) { // 处理异常
                     e.printStackTrace()
                     mqLogger.error("消费消息出错: 消息={}, 异常={}", msg, e.message)

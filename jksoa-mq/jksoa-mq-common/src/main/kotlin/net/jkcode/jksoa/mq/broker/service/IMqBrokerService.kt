@@ -28,7 +28,7 @@ interface IMqBrokerService {
      * @param group 分组
      * @return
      */
-    fun subscribeTopic(topic: String, group: String): CompletableFuture<Unit>
+    fun subscribeTopic(topic: String, group: String = "default"): CompletableFuture<Unit>
 
     /**
      * 接受consumer的拉取消息
@@ -37,15 +37,16 @@ interface IMqBrokerService {
      * @param limit 拉取记录数
      * @return
      */
-    fun pullMessages(topic: String, group: String, limit: Int = 100): CompletableFuture<List<Message>>
+    fun pullMessages(topic: String, group: String = "default", limit: Int = 100): CompletableFuture<List<Message>>
 
     /**
      * 接受consumer的反馈消息消费结果
      * @param topic 主题
      * @param id 消息标识
      * @param e 消费异常
+     * @param group 分组
      * @return
      */
-    fun feedbackMessage(topic: String, id: Long, e: Throwable?): CompletableFuture<Unit>
+    fun feedbackMessage(topic: String, id: Long, e: Throwable?, group: String = "default"): CompletableFuture<Unit>
 
 }
