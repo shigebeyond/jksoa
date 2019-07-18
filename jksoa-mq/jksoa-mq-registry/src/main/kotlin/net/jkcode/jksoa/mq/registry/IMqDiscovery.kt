@@ -8,6 +8,7 @@ package net.jkcode.jksoa.mq.registry
  * @date 2019-7-12 11:22 AM
  */
 interface IMqDiscovery {
+
     /**
      * 监听topic分配变化
      *

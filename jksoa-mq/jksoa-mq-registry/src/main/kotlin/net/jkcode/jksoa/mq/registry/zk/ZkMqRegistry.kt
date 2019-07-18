@@ -10,6 +10,7 @@ import net.jkcode.jksoa.registry.zk.ZkRegistry
 
 /**
  * 基于zookeeper的mq注册中心
+ *   topic分配信息存zk, 本地不缓存
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -35,10 +36,13 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
 
         // 读topic分配
         val assignment = discover()
+        // 已分配过
+        if(assignment.containsKey(topic))
+            return true
 
         // 读所有broker
-        //val serviceId: String = IMqBroker::class.qualifiedName!! // 没依赖, 不能直接引用
-        val serviceId: String = "net.jkcode.jksoa.mq.common.IMqBroker"
+        //val serviceId: String = IMqBrokerService::class.qualifiedName!! // 没依赖, 不能直接引用
+        val serviceId: String = "net.jkcode.jksoa.mq.broker.service.IMqBrokerService"
         val brokers = rpcRegistry.discover(serviceId)
         // 没有broker可分配
         if(brokers.isEmpty())

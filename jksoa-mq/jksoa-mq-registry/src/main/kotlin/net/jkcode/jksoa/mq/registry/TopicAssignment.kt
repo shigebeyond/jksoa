@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.serializer.SerializerFeature
 
 // topic分配情况: <topic, serverName>, serverName就是协议ip端口
-typealias TopicAssignment = HashMap<String, String>
+typealias TopicAssignment = MutableMap<String, String>
 
 // 空的topic分配情况
 val EmptyTopicAssignment = HashMap<String, String>()

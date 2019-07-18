@@ -8,13 +8,13 @@ import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.TopicAssignment
 import net.jkcode.jksoa.mq.registry.json2TopicAssignment
 import net.jkcode.jksoa.registry.RegistryException
-import net.jkcode.jksoa.registry.zk.ZkRegistry
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 基于zookeeper的mq服务发现
+ *    topic分配信息存zk, 本地不缓存
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -57,7 +57,7 @@ open class ZkMqDiscovery : IMqDiscovery {
      *
      * @param listener 监听器
      */
-    override fun subscribe(listener: IMqDiscoveryListener){
+    public override fun subscribe(listener: IMqDiscoveryListener){
         try{
             clientLogger.info("ZkMqDiscovery监听topic分配变化")
 
@@ -77,7 +77,7 @@ open class ZkMqDiscovery : IMqDiscovery {
      *
      * @param listener 监听器
      */
-    override fun unsubscribe(listener: IMqDiscoveryListener){
+    public override fun unsubscribe(listener: IMqDiscoveryListener){
         try{
             // 取消监听节点的数据变化
             val dataListener = dataListeners.get(listener)
@@ -92,12 +92,12 @@ open class ZkMqDiscovery : IMqDiscovery {
      *
      * @return 服务地址
      */
-    override fun discover(): TopicAssignment {
+    public override fun discover(): TopicAssignment {
         try {
             // 获得节点数据
             val json = zkClient.readData(topic2brokerPath) as String?
             if(json == null)
-                return TopicAssignment()
+                return HashMap()
 
             return json2TopicAssignment(json)
         } catch (e: Throwable) {

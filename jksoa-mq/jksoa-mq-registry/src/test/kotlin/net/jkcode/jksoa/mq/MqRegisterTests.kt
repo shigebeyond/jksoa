@@ -11,7 +11,7 @@ import org.junit.Test
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM
  */
-class RegisterTests {
+class MqRegisterTests {
 
     val registry = ZkMqRegistry
 
@@ -31,16 +31,22 @@ class RegisterTests {
         println("是否有效topic：$topic1 => $m" )
     }
 
+    fun printDiscover(){
+        println(registry.discover())
+    }
+
     @Test
     fun testRegisterTopic(){
         val f = registry.registerTopic(topic1) // false表示没有broker可分配
         println("注册topic：$topic1 => $f")
+        printDiscover()
     }
 
     @Test
     fun testUnregisterTopic(){
         val f = registry.unregisterTopic(topic1) // false表示topic根本就没有分配过
         println("注销topic：$topic1 => $f")
+        printDiscover()
     }
 
     @Test
