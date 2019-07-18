@@ -29,7 +29,7 @@ class MqRepositoryTests {
         }
 
         // 保存消息, 生成id
-        repository.batchSaveMessages(msgs).get()
+        repository.batchPutMessages(msgs).get()
         println("保存消息: " + msgs)
     }
 
@@ -55,7 +55,7 @@ class MqRepositoryTests {
     fun testDeleteMessage(){
         // 新建
         val msg = Message(topic, randomString(7), group)
-        repository.saveMessage(msg).get()
+        repository.putMessage(msg).get()
         val id = msg.id
 
         // 读取

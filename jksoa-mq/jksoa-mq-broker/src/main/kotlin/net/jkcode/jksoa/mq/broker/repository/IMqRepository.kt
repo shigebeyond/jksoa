@@ -38,17 +38,17 @@ interface IMqRepository {
     /*************************** 写 **************************/
     /**
      * 保存单个消息
-     * @param msg
-     * @return
+     * @param msg 消息
+     * @return 消息id
      */
-    fun saveMessage(msg: Message): CompletableFuture<Unit>
+    fun putMessage(msg: Message): CompletableFuture<Long>
 
     /**
      * 批量保存多个消息
-     * @param msgs
-     * @return
+     * @param msgs 消息
+     * @return 消息id
      */
-    fun batchSaveMessages(msgs: List<Message>): CompletableFuture<Unit>
+    fun batchPutMessages(msgs: List<Message>): CompletableFuture<Array<Long>>
 
     /**
      * 删除单个消息

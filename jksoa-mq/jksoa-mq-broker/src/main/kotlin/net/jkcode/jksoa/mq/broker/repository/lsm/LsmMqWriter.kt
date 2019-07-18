@@ -2,6 +2,7 @@ package net.jkcode.jksoa.mq.broker.repository.lsm
 
 import net.jkcode.jkmvc.common.UnitFuture
 import net.jkcode.jkmvc.common.getWritableFinalField
+import net.jkcode.jkmvc.common.mapToArray
 import net.jkcode.jkmvc.flusher.CounterFlusher
 import net.jkcode.jksoa.mq.common.Message
 import java.util.concurrent.CompletableFuture
@@ -71,35 +72,38 @@ abstract class LsmMqWriter : LsmMqReader() {
      * 添加消息, 会生成消息id
      * @param msg
      */
-    protected fun putMessage(msg: Message) {
+    protected fun doPutMessage(msg: Message): Long {
         // 由broker端生成消息id, 保证在同一个topic下有序
         if (msg.id == 0L)
             idProp.set(msg, maxId.incrementAndGet())
+
         // 保存消息
         queueStore.put(msg.id, msg)
+        return msg.id
     }
 
     /**
      * 保存单个消息
-     * @param msg
-     * @return
+     * @param msg 消息
+     * @return 消息id
      */
-    public override fun saveMessage(msg: Message): CompletableFuture<Unit> {
-        putMessage(msg)
+    public override fun putMessage(msg: Message): CompletableFuture<Long> {
+        val id = doPutMessage(msg)
 
-        return trySync(1)
+        return trySync(1).thenApply { id }
     }
 
     /**
      * 批量保存多个消息
-     * @param msgs
-     * @return
+     * @param msgs 消息
+     * @return 消息id
      */
-    public override fun batchSaveMessages(msgs: List<Message>): CompletableFuture<Unit> {
-        for(msg in msgs)
-            putMessage(msg)
+    public override fun batchPutMessages(msgs: List<Message>): CompletableFuture<Array<Long>> {
+        val ids = msgs.mapToArray { msg ->
+            doPutMessage(msg)
+        }
 
-        return trySync(msgs.size)
+        return trySync(msgs.size).thenApply { ids }
     }
 
     /**

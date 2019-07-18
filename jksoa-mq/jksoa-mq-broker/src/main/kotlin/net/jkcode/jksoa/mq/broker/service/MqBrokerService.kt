@@ -60,7 +60,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
         // 根据topic获得仓库
         val repository = LsmMqRepository.getRepository(msg.topic)
         // 逐个消息存储
-        return repository.saveMessage(msg)
+        return repository.putMessage(msg)
     }
 
     /****************** 消费者调用 *****************/
