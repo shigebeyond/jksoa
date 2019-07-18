@@ -70,7 +70,7 @@ abstract class IConnectionHub: IDiscoveryListener {
                 if (loadBalancer != "")
                     inst.loadBalancer = ILoadBalancer.instance(loadBalancer)
 
-                return inst
+                inst
             }
         }
 
