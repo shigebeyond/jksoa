@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-11 12:24 PM
  */
-class ZkSequenceIdGenerator protected constructor(public override val group: String /* 组名 */) : ClosingOnShutdown(), ISequenceIdGenerator {
+class ZkSequenceIdGenerator protected constructor(public override val module: String /* 模块 */) : ClosingOnShutdown(), ISequenceIdGenerator {
 
     companion object {
         /**
@@ -59,7 +59,7 @@ class ZkSequenceIdGenerator protected constructor(public override val group: Str
     /**
      * zk的父节点路径
      */
-    protected val parentPath: String = "$RootPath/$group"
+    protected val parentPath: String = "$RootPath/$module"
 
     /**
      * 成员数据

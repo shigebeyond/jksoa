@@ -18,7 +18,7 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
-class ZkSequentialLeaderElection(public override val group: String /* 组名 */,
+class ZkSequentialLeaderElection(public override val module: String /* 模块 */,
                                  public override val memberData: String = Application.fullWorkerId /* 成员数据 */
 ) : ILeaderElection, ClosingOnShutdown() {
 
@@ -42,7 +42,7 @@ class ZkSequentialLeaderElection(public override val group: String /* 组名 */,
     /**
      * zk的父节点路径
      */
-    protected val parentPath: String = "${RootPath}/$group"
+    protected val parentPath: String = "${RootPath}/$module"
 
     /****************************** 监听处理 *******************************/
     /**
@@ -112,7 +112,7 @@ class ZkSequentialLeaderElection(public override val group: String /* 组名 */,
 
         // 创建顺序节点
         val path = zkClient.createEphemeralSequential(parentPath + "/", memberData)
-        commonLogger.debug("组[{}]的竞选节点[{}]的路径: {}", group, memberData, path)
+        commonLogger.debug("模块[{}]的竞选节点[{}]的路径: {}", module, memberData, path)
 
         // 识别领导者
         identifyLeaderNode(path, callback)
@@ -135,7 +135,7 @@ class ZkSequentialLeaderElection(public override val group: String /* 组名 */,
         // 检查本机是否是最小的
         val i = childrenNos.indexOf(no)
         if (i == 0) {
-            commonLogger.debug("组[{}]的节点[{}]被选为领导者", group, memberData)
+            commonLogger.debug("模块[{}]的节点[{}]被选为领导者", module, memberData)
             // 成功回调
             callback()
             return true
@@ -159,7 +159,7 @@ class ZkSequentialLeaderElection(public override val group: String /* 组名 */,
         }
         val preChildNo = childrenNos.get(i - 1)
         prePath = "$parentPath/$preChildNo"
-        commonLogger.debug("组[{}]的落选节点[{}]订阅前一个节点: {}", group, memberData, prePath)
+        commonLogger.debug("模块[{}]的落选节点[{}]订阅前一个节点: {}", module, memberData, prePath)
         zkClient.subscribeDataChanges(prePath, preDataListener)
         return false
     }

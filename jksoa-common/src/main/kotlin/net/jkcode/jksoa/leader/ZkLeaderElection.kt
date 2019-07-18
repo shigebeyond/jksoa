@@ -17,7 +17,7 @@ import org.I0Itec.zkclient.exception.ZkNodeExistsException
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
-class ZkLeaderElection(public override val group: String /* 组名 */,
+class ZkLeaderElection(public override val module: String /* 模块 */,
                        public override val memberData: String = Application.fullWorkerId /* 数据 */
 ) : ILeaderElection, ClosingOnShutdown() {
 
@@ -51,7 +51,7 @@ class ZkLeaderElection(public override val group: String /* 组名 */,
     /**
      * zk的节点路径
      */
-    protected val path: String = "${RootPath}/$group"
+    protected val path: String = "${RootPath}/$module"
 
     /****************************** 监听处理 *******************************/
     /**
@@ -109,7 +109,7 @@ class ZkLeaderElection(public override val group: String /* 组名 */,
         try {
             // 创建临时节点
             zkClient.createEphemeral(path, memberData)
-            commonLogger.debug("组[{}]的当选leader为[{}]", group, memberData)
+            commonLogger.debug("模块[{}]的当选leader为[{}]", module, memberData)
             // 成功回调
             callback()
         } catch (e: ZkNodeExistsException) {

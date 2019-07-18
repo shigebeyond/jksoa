@@ -11,7 +11,7 @@ interface ILeaderElection {
     /**
      * 组名
      */
-    val group: String
+    val module: String
 
     /**
      * 成员数据, 每个候选人节点都尽量持有不同的数据, 如服务地址

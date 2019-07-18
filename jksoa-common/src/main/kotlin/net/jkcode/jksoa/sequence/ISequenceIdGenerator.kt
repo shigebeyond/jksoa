@@ -10,9 +10,9 @@ package net.jkcode.jksoa.sequence
 interface ISequenceIdGenerator {
 
     /**
-     * 组名
+     * 模块
      */
-    val group: String
+    val module: String
 
     /**
      * 获得成员序号
