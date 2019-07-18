@@ -7,12 +7,12 @@ import net.jkcode.jksoa.client.protocol.netty.buildUrl
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMqRepository
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.mqLogger
 import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssignment
+import net.jkcode.jksoa.mq.registry.mqLogger
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import net.jkcode.jksoa.server.IRpcServer
 import net.jkcode.jksoa.server.RpcContext

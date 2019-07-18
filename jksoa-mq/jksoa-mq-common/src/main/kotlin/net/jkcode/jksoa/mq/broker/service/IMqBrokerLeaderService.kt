@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jksoa.common.annotation.RemoteService
+import net.jkcode.jksoa.mq.registry.TopicAssignment
 
 /**
  * 消息中转者的leader
@@ -9,6 +10,13 @@ import net.jkcode.jksoa.common.annotation.RemoteService
  */
 @RemoteService(onlyLeader = true)
 interface IMqBrokerLeaderService {
+
+    /**
+     * 发现topic分配
+     *
+     * @return <topic, broker>
+     */
+    fun discover(): TopicAssignment
 
     /**
      * 注册主题

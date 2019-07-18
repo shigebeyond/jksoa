@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jksoa.mq.registry.IMqRegistry
+import net.jkcode.jksoa.mq.registry.TopicAssignment
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 
 /**
@@ -14,6 +15,15 @@ class MqBrokerLeaderService : IMqBrokerLeaderService {
      * 注册中心
      */
     protected val registry: IMqRegistry = ZkMqRegistry
+
+    /**
+     * 发现topic分配
+     *
+     * @return <topic, broker>
+     */
+    public override fun discover(): TopicAssignment{
+        return registry.discover()
+    }
 
     /**
      * 注册主题

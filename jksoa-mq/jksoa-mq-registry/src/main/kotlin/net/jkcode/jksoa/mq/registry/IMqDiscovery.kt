@@ -26,7 +26,7 @@ interface IMqDiscovery {
     /**
      * 发现topic分配
      *
-     * @return 服务地址
+     * @return <topic, broker>
      */
     fun discover(): TopicAssignment
 }

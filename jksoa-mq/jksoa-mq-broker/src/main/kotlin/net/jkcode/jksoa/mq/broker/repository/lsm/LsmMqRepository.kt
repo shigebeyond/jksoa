@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong
  */
 class LsmMqRepository(
         protected val topic: String, // 主题
-        protected override val autoSync: Boolean = false // 是否自动同步到磁盘
+        protected override val autoSync: Boolean = BrokerConfig.autoSync // 是否自动同步到磁盘
 ) : LsmMqWriter() {
 
     companion object{

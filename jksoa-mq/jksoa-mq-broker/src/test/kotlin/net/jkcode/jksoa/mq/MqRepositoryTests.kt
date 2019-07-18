@@ -23,13 +23,13 @@ class MqRepositoryTests {
     fun testSaveMessage(){
         // 新建消息
         val msgs = LinkedList<Message>()
-        for(i in 0..100) {
+        for(i in 0 until 100) {
             val msg = Message(topic, randomString(7), group)
             msgs.add(msg)
         }
 
         // 保存消息, 生成id
-        repository.batchSaveMessages(msgs)
+        repository.batchSaveMessages(msgs).get()
         println("保存消息: " + msgs)
     }
 
@@ -55,7 +55,7 @@ class MqRepositoryTests {
     fun testDeleteMessage(){
         // 新建
         val msg = Message(topic, randomString(7), group)
-        repository.saveMessage(msg)
+        repository.saveMessage(msg).get()
         val id = msg.id
 
         // 读取
@@ -63,7 +63,7 @@ class MqRepositoryTests {
         println("find one message: " + msg2)
 
         // 删除
-        repository.deleteMessage(id)
+        repository.deleteMessage(id).get()
         println("delete message: " + id)
 
         // 读取

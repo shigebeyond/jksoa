@@ -41,8 +41,9 @@ abstract class LsmMqWriter : LsmMqReader() {
         else
             object: CounterFlusher(100, 100) {
                 // 处理刷盘
-                override fun handleFlush(): Boolean {
-                    // println("定量定时sync")
+                override fun handleFlush(reqCount: Long): Boolean {
+                    // print(if(reqCount < flushSize) "定时" else "定量")
+                    // println("sync, 操作计数 from [$reqCount] to [${requestCount()}] ")
                     // 同步到磁盘
                     queueStore.sync()
                     return true

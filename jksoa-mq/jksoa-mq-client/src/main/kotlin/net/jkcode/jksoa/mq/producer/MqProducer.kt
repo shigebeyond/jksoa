@@ -14,14 +14,14 @@ import net.jkcode.jksoa.mq.producer.IMqProducer
 object MqProducer : IMqProducer {
 
     /**
-     * 消息中转者
+     * 消息中转者的leader
      */
-    private val brokerLeader = Referer.getRefer<IMqBrokerLeaderService>()
+    private val brokerLeaderService = Referer.getRefer<IMqBrokerLeaderService>()
 
     /**
      * 消息中转者
      */
-    private val broker = Referer.getRefer<IMqBrokerService>()
+    private val brokerService = Referer.getRefer<IMqBrokerService>()
 
     /**
      * 注册主题
@@ -29,7 +29,7 @@ object MqProducer : IMqProducer {
      * @return
      */
     public override fun registerTopic(topic: String){
-        brokerLeader.registerTopic(topic)
+        brokerLeaderService.registerTopic(topic)
     }
 
     /**
@@ -39,7 +39,7 @@ object MqProducer : IMqProducer {
      * @return
      */
     public override fun unregisterTopic(topic: String){
-        brokerLeader.unregisterTopic(topic)
+        brokerLeaderService.unregisterTopic(topic)
     }
 
     /**
@@ -48,7 +48,7 @@ object MqProducer : IMqProducer {
      */
     public override fun send(msg: Message){
         // 通过中转者来分发消息
-        broker.putMessage(msg)
+        brokerService.putMessage(msg)
     }
 
 }

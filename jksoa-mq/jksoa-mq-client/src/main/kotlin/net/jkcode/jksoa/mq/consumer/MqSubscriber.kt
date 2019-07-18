@@ -7,7 +7,7 @@ import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.MqException
-import net.jkcode.jksoa.mq.common.mqLogger
+import net.jkcode.jksoa.mq.registry.mqLogger
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -32,7 +32,7 @@ object MqSubscriber: IMqSubscriber {
     /**
      * 消息中转者
      */
-    private val broker = Referer.getRefer<IMqBrokerService>()
+    private val brokerService = Referer.getRefer<IMqBrokerService>()
 
     /**
      * 消息处理器: <主题 to 处理器>
@@ -86,7 +86,7 @@ object MqSubscriber: IMqSubscriber {
                 e = ex
             }finally {
                 // 反馈消息消费结果
-                broker.feedbackMessage(msg.topic, msg.id, e, MqPushConsumer.config["group"]!!)
+                brokerService.feedbackMessage(msg.topic, msg.id, e, MqPushConsumer.config["group"]!!)
                 if(e != null) { // 处理异常
                     e.printStackTrace()
                     mqLogger.error("消费消息出错: 消息={}, 异常={}", msg, e.message)

@@ -30,6 +30,11 @@ object BrokerConfig {
     public val dataDir: String = config["dataDir"]!!
 
     /**
+     * 是否自动同步
+     */
+    public val autoSync: Boolean = config["autoSync"]!!
+
+    /**
      * 易变代存储的最大大小，单位 B K M G T
      */
     public val maxVolatileGenerationSize: Long = fileSize2Bytes(config["maxVolatileGenerationSize"]!!)

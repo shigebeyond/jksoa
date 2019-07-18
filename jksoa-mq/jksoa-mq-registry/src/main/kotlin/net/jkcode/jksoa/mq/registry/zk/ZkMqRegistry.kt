@@ -1,10 +1,7 @@
 package net.jkcode.jksoa.mq.registry.zk
 
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.mq.registry.IMqRegistry
-import net.jkcode.jksoa.mq.registry.TopicAssigner
-import net.jkcode.jksoa.mq.registry.toJson
-import net.jkcode.jksoa.mq.registry.TopicRegex
+import net.jkcode.jksoa.mq.registry.*
 import net.jkcode.jksoa.registry.IRegistry
 import net.jkcode.jksoa.registry.zk.ZkRegistry
 
@@ -53,7 +50,9 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
         assigner.assignTopic(topic)
 
         // 写topic分配
-        zkClient.writeData(topic2brokerPath, assignment.toJson())
+        val json = assignment.toJson()
+        zkClient.writeData(topic2brokerPath, json)
+        mqLogger.info("给topic[{}]分配broker: {}", topic, json)
         return true
     }
 

@@ -25,7 +25,7 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
     /**
      * 消息中转者
      */
-    private val broker = Referer.getRefer<IMqBrokerService>()
+    private val brokerService = Referer.getRefer<IMqBrokerService>()
 
     /**
      * 启动者
@@ -71,7 +71,7 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
             var msgs: List<Message>
             do {
                 // 拉取消息
-                msgs = broker.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!).get()
+                msgs = brokerService.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!).get()
                 // 处理消息 + 主动更新消息状态
                 for (msg in msgs) {
                     // 异步处理消息

@@ -15,7 +15,7 @@ class MqRegisterTests {
 
     val registry = ZkMqRegistry
 
-    val topic1 = "topic1"
+    val topic = "topic1"
 
     // topic分配变化监听器
     private val discoveryListener = object : IMqDiscoveryListener {
@@ -27,25 +27,25 @@ class MqRegisterTests {
 
     @Test
     fun testTopic() {
-        val m = TopicRegex.matches(topic1)
-        println("是否有效topic：$topic1 => $m" )
+        val m = TopicRegex.matches(topic)
+        println("是否有效topic：$topic => $m" )
     }
 
     fun printDiscover(){
-        println(registry.discover())
+        println("topic分配情况: " + registry.discover())
     }
 
     @Test
     fun testRegisterTopic(){
-        val f = registry.registerTopic(topic1) // false表示没有broker可分配
-        println("注册topic：$topic1 => $f")
+        val f = registry.registerTopic(topic) // false表示没有broker可分配
+        println("注册topic：$topic => $f")
         printDiscover()
     }
 
     @Test
     fun testUnregisterTopic(){
-        val f = registry.unregisterTopic(topic1) // false表示topic根本就没有分配过
-        println("注销topic：$topic1 => $f")
+        val f = registry.unregisterTopic(topic) // false表示topic根本就没有分配过
+        println("注销topic：$topic => $f")
         printDiscover()
     }
 

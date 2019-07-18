@@ -10,6 +10,7 @@ import net.jkcode.jksoa.common.Url
  * @date 2019-7-12 11:22 AM
  */
 interface IMqRegistry: IMqDiscovery {
+
     /**
      * 注册topic = 给topic分配broker
      *

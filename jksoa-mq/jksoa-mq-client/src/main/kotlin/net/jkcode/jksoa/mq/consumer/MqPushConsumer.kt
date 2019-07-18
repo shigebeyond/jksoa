@@ -22,7 +22,7 @@ object MqPushConsumer : IMqPushConsumer, IMqSubscriber by MqSubscriber {
     /**
      * 消息中转者
      */
-    private val broker = Referer.getRefer<IMqBrokerService>()
+    private val brokerService = Referer.getRefer<IMqBrokerService>()
 
     init {
         // 提供推送消费者服务, 但不用注册到注册中心
@@ -39,6 +39,6 @@ object MqPushConsumer : IMqPushConsumer, IMqSubscriber by MqSubscriber {
         MqSubscriber.subscribeTopic(topic, handler)
 
         // 推模式: 向中转者订阅主题, 然后中转者就会向你推消息, 推送处理见 MqConsumerService
-        broker.subscribeTopic(topic, config["group"]!!)
+        brokerService.subscribeTopic(topic, config["group"]!!)
     }
 }
