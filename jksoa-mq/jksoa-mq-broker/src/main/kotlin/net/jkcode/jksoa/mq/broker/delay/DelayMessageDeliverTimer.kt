@@ -5,7 +5,7 @@ import io.netty.util.TimerTask
 import net.jkcode.jkmvc.common.CommonMilliTimer
 import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
-import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMqRepository
+import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMessageRepository
 import java.util.concurrent.TimeUnit
 
 /**
@@ -22,7 +22,7 @@ object DelayMqDeliverTimer {
         CommonMilliTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
                 // 获得延迟消息
-                val msgs = LsmDelayMqRepository.pollExpiredDelayMessages()
+                val msgs = LsmDelayMessageRepository.pollExpiredDelayMessages()
                 // 遍历消息来发送
                 for(msg in msgs)
                     MqPusher.push(msg)

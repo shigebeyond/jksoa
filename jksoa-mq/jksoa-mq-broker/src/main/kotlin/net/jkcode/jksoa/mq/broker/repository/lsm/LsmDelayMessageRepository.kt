@@ -95,7 +95,7 @@ object LsmDelayMqRepository : IDelayMqRepository {
             val mids = entry.value // 延迟消息id列表
             for((topic, id) in mids){
                 // 根据topic获得仓库
-                val repository = LsmMqRepository.getRepository(topic)
+                val repository = LsmMessageRepository.getRepository(topic)
                 // 查询消息
                 val msg = repository.getMessage(id)
                 if(msg != null)
