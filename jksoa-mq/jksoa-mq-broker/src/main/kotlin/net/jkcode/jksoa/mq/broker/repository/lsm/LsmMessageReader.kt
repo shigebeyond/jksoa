@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.broker.repository.lsm
 
 import com.indeed.lsmtree.core.Store
-import net.jkcode.jksoa.mq.broker.repository.IMqRepository
+import net.jkcode.jksoa.mq.broker.repository.IMessageRepository
 import net.jkcode.jksoa.mq.common.Message
 
 /**
@@ -9,7 +9,7 @@ import net.jkcode.jksoa.mq.common.Message
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-17 9:59 AM
  */
-abstract class LsmMqReader : IMqRepository {
+abstract class LsmMessageReader : IMessageRepository {
 
     /**
      * 队列存储

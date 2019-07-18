@@ -24,17 +24,17 @@ import java.util.concurrent.atomic.AtomicLong
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-13 5:16 PM
  */
-class LsmMqRepository(
+class LsmMessageRepository(
         protected val topic: String, // 主题
         protected override val autoSync: Boolean = BrokerConfig.autoSync // 是否自动同步到磁盘
-) : LsmMqWriter() {
+) : LsmMessageWriter() {
 
     companion object{
 
         /**
          * <topic, 仓库>
          */
-        protected val repositories: ConcurrentHashMap<String, LsmMqRepository> = ConcurrentHashMap()
+        protected val repositories: ConcurrentHashMap<String, LsmMessageRepository> = ConcurrentHashMap()
 
         init{
             // 加载旧的仓库
@@ -43,7 +43,7 @@ class LsmMqRepository(
             if(topics != null)
                 for(topic in topics)
                     if(isTopicStoreDirectory(File(dir, topic)))
-                        repositories.put(topic, LsmMqRepository(topic))
+                        repositories.put(topic, LsmMessageRepository(topic))
         }
 
         /**
@@ -63,9 +63,9 @@ class LsmMqRepository(
          * @param topic
          * @return
          */
-        public fun createRepositoryIfAbsent(topic: String): LsmMqRepository {
+        public fun createRepositoryIfAbsent(topic: String): LsmMessageRepository {
             return repositories.getOrPutOnce(topic){
-                LsmMqRepository(topic)
+                LsmMessageRepository(topic)
             }
         }
 
@@ -74,7 +74,7 @@ class LsmMqRepository(
          * @param topic
          * @return
          */
-        public fun getRepository(topic: String): LsmMqRepository {
+        public fun getRepository(topic: String): LsmMessageRepository {
             val result = repositories[topic]
             if(result == null) {
                 val myBroker = IRpcServer.current()?.serverName

@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicLong
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-17 10:01 AM
  */
-abstract class LsmMqWriter : LsmMqReader() {
+abstract class LsmMessageWriter : LsmMessageReader() {
 
     companion object{
         /**

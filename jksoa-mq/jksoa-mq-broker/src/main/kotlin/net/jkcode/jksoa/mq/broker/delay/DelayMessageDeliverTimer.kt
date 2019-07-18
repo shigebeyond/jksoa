@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-17 5:17 PM
  */
-object DelayMqDeliverTimer {
+object DelayMessageDeliverTimer {
 
     /**
      * 启动定时发送
@@ -25,7 +25,7 @@ object DelayMqDeliverTimer {
                 val msgs = LsmDelayMessageRepository.pollExpiredDelayMessages()
                 // 遍历消息来发送
                 for(msg in msgs)
-                    MqPusher.push(msg)
+                    MqPusher.pushMessage(msg)
 
                 start()
             }

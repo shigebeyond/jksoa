@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-17 12:41 PM
  */
-interface IDelayMqRepository {
+interface IDelayMessageRepository {
 
     /**
      * 添加延迟的消息id

@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-13 5:16 PM
  */
-interface IMqRepository {
+interface IMessageRepository {
 
     /*************************** 读 **************************/
     /**

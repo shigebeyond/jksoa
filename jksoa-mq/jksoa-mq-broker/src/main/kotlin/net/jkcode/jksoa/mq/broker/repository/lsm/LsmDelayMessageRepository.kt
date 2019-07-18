@@ -7,7 +7,7 @@ import com.indeed.util.serialization.Serializer
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.common.FstObjectSerializer
-import net.jkcode.jksoa.mq.broker.repository.IDelayMqRepository
+import net.jkcode.jksoa.mq.broker.repository.IDelayMessageRepository
 import net.jkcode.jksoa.mq.common.Message
 import java.io.File
 import java.util.concurrent.CompletableFuture
@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-17 12:41 PM
  */
-object LsmDelayMqRepository : IDelayMqRepository {
+object LsmDelayMessageRepository : IDelayMessageRepository {
 
     /**
      * 延迟队列名
