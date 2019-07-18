@@ -2,6 +2,7 @@ package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jksoa.common.annotation.RemoteService
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.MqException
 import net.jkcode.jksoa.mq.connection.BrokerConnectionHub
 import java.util.concurrent.CompletableFuture
 
@@ -15,11 +16,35 @@ interface IMqBrokerService {
 
     /****************** 生产者调用 *****************/
     /**
-     * 接收producer发过来的消息
+     * 接收producer发过来的单个消息
      * @param msg 消息
-     * @return
+     * @return 消息id
      */
-    fun putMessage(msg: Message): CompletableFuture<Unit>
+    fun putMessage(msg: Message): CompletableFuture<Long>
+
+    /**
+     * 批量接收producer发过来的多个消息
+     * @param topic 主题
+     * @param msgs 同一个主题的多个消息
+     * @return 消息id
+     */
+    fun putMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>>{
+        // 检查消息是否是同一个主题
+        val sameTopic = msgs.all { it.topic == topic }
+        if(!sameTopic)
+            throw MqException("批量接收多个消息出错: 多个消息不是同一个主题")
+
+        return innerPutMessages(topic, msgs)
+    }
+
+    /**
+     * 批量接收producer发过来的多个消息
+     *    client端不要调用该方法, 请使用 putMessages()
+     * @param topic 主题
+     * @param msgs 同一个主题的多个消息
+     * @return 消息id
+     */
+    fun innerPutMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>>
 
     /****************** 消费者调用 *****************/
     /**
@@ -47,6 +72,6 @@ interface IMqBrokerService {
      * @param group 分组
      * @return
      */
-    fun feedbackMessage(topic: String, id: Long, e: Throwable?, group: String = "default"): CompletableFuture<Unit>
+    fun feedbackMessage(topic: String, id: Long, e: Throwable? = null, group: String = "default"): CompletableFuture<Unit>
 
 }

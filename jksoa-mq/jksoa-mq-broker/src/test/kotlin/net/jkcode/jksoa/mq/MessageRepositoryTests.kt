@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq
 
 import net.jkcode.jkmvc.common.randomString
-import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
+import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMessageRepository
 import net.jkcode.jksoa.mq.common.Message
 import org.junit.Test
 import java.util.*
@@ -11,16 +11,16 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-16 6:44 PM
  */
-class MqRepositoryTests {
+class MessageRepositoryTests {
 
     val topic = "topic1"
 
     val group = "group1"
 
-    val repository = LsmMqRepository.createRepositoryIfAbsent(topic)
+    val repository = LsmMessageRepository.createRepositoryIfAbsent(topic)
 
     @Test
-    fun testSaveMessage(){
+    fun testBatchPutMessages(){
         // 新建消息
         val msgs = LinkedList<Message>()
         for(i in 0 until 100) {
@@ -29,7 +29,7 @@ class MqRepositoryTests {
         }
 
         // 保存消息, 生成id
-        repository.batchPutMessages(msgs).get()
+        val ids = repository.batchPutMessages(msgs).get()
         println("保存消息: " + msgs)
     }
 
@@ -52,11 +52,10 @@ class MqRepositoryTests {
     }
 
     @Test
-    fun testDeleteMessage(){
+    fun testPutAndDeleteMessage(){
         // 新建
         val msg = Message(topic, randomString(7), group)
-        repository.putMessage(msg).get()
-        val id = msg.id
+        val id = repository.putMessage(msg).get()
 
         // 读取
         val msg2 = repository.getMessage(id)

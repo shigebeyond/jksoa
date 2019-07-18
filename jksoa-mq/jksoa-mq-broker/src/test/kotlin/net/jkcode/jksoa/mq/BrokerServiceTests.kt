@@ -3,7 +3,6 @@ package net.jkcode.jksoa.mq
 import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.mq.broker.service.MqBrokerService
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.server.IRpcServer
 import org.junit.Test
 
 /**
@@ -23,8 +22,24 @@ class BrokerServiceTests {
     val brokerService = MqBrokerService()
 
     @Test
-    fun testServer(){
+    fun testPutMessage(){
         val msg = Message(topic, randomString(7), group)
-        brokerService.putMessage(msg)
+        val id = brokerService.putMessage(msg).get()
+        println("接收消息: $msg")
     }
+
+    @Test
+    fun testPullMessages(){
+        val msgs = brokerService.pullMessages(topic, group, 2).get()
+        println("领取消息: $msgs")
+    }
+
+    @Test
+    fun testFeedbackMessage(){
+        val msg = brokerService.pullMessages(topic, group, 1).get().first()
+        brokerService.feedbackMessage(topic, msg.id).get()
+        println("反馈消息")
+    }
+
+
 }

@@ -66,7 +66,7 @@ class MessageIterator(protected val idItr: MessageIdIterator) : AbstractIterator
         val (topic, id) = super.next() as MessageId
 
         // 根据topic获得仓库
-        val repository = LsmMqRepository.getRepository(topic)
+        val repository = LsmMessageRepository.getRepository(topic)
         // 查询消息
         return repository.getMessage(id)
     }

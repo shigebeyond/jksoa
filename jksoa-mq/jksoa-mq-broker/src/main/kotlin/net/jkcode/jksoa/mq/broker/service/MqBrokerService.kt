@@ -4,9 +4,13 @@ import net.jkcode.jkmvc.common.UnitFuture
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.client.protocol.netty.buildUrl
-import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMqRepository
-import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMqRepository
+import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
+import net.jkcode.jksoa.mq.broker.delay.DelayMessageDeliverTimer
+import net.jkcode.jksoa.mq.broker.pusher.MqPusher
+import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMessageRepository
+import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMessageRepository
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.MqException
 import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
@@ -35,6 +39,10 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
         // 监听topic分配情况变化
         mqLogger.debug("Mq broker监听topic分配情况变化, 以便初始化分到的topic的存储")
         registry.subscribe(this)
+
+        // 启动延迟消息发送的定时器
+        mqLogger.debug("Mq broker启动延迟消息发送的定时器")
+        DelayMessageDeliverTimer.start()
     }
 
     /**
@@ -47,20 +55,61 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
         val myBroker = IRpcServer.current()?.serverName
         for((topic, broker) in assignment)
             if(broker == myBroker) // 当前topic分给当前broker
-                LsmMqRepository.createRepositoryIfAbsent(topic) // 初始化存储
+                LsmMessageRepository.createRepositoryIfAbsent(topic) // 初始化存储
     }
 
     /****************** 生产者调用 *****************/
     /**
-     * 接收producer发过来的消息
-     * @param msg 消息
-     * @return
+     * 消息推送合并器
      */
-    public override fun putMessage(msg: Message): CompletableFuture<Unit> {
+    private val pushCombiner = GroupRunCombiner(100, 100, this::pushMessages)
+
+    /**
+     * 推送消息
+     * @param msgs
+     */
+    protected fun pushMessages(msgs: List<Message>){
+        MqPusher.pushMessages(msgs)
+    }
+
+    /**
+     * 接收producer发过来的单个消息
+     * @param msg 消息
+     * @return 消息id
+     */
+    public override fun putMessage(msg: Message): CompletableFuture<Long> {
         // 根据topic获得仓库
-        val repository = LsmMqRepository.getRepository(msg.topic)
+        val repository = LsmMessageRepository.getRepository(msg.topic)
         // 逐个消息存储
-        return repository.putMessage(msg)
+        val future = repository.putMessage(msg)
+        future.thenRun {
+            // 推送消息
+            pushCombiner.add(msg)
+        }
+        return future
+    }
+
+    /**
+     * 批量接收producer发过来的多个消息
+     * @param topic 主题
+     * @param msgs 同一个主题的多个消息
+     * @return 消息id
+     */
+    public override fun innerPutMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>> {
+        // 检查消息是否是同一个主题
+        val sameTopic = msgs.all { it.topic == topic }
+        if(!sameTopic)
+            throw MqException("批量接收多个消息出错: 多个消息不是同一个主题")
+
+        // 根据topic获得仓库
+        val repository = LsmMessageRepository.getRepository(topic)
+        // 逐个消息存储
+        val future = repository.batchPutMessages(msgs)
+        future.thenRun {
+            // 推送消息
+            pushCombiner.addAll(msgs)
+        }
+        return future
     }
 
     /****************** 消费者调用 *****************/
@@ -99,7 +148,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
      */
     public override fun pullMessages(topic: String, group: String, limit: Int): CompletableFuture<List<Message>> {
         // 根据topic获得仓库
-        val repository = LsmMqRepository.getRepository(topic)
+        val repository = LsmMessageRepository.getRepository(topic)
         // 查询消息
         val msgs = repository.getMessagesByGroup(group, limit)
         return CompletableFuture.completedFuture(msgs)
@@ -117,14 +166,14 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
      */
     public override fun feedbackMessage(topic: String, id: Long, e: Throwable?, group: String): CompletableFuture<Unit> {
         // 根据topic获得仓库
-        val repository = LsmMqRepository.getRepository(topic)
+        val repository = LsmMessageRepository.getRepository(topic)
 
         // 无异常则删除
         if(e != null)
             return repository.deleteMessage(id)
 
         //有异常则扔到延迟队列中
-        return LsmDelayMqRepository.addDelayMessageId(topic, id)
+        return LsmDelayMessageRepository.addDelayMessageId(topic, id)
     }
 
 }

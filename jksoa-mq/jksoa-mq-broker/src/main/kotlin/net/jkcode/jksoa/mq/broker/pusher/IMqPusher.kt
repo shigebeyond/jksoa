@@ -8,9 +8,16 @@ import net.jkcode.jksoa.mq.common.Message
  * @date 2019-02-21 9:41 PM
  */
 interface IMqPusher {
+
     /**
-     * 给消费者推送消息
+     * 给消费者推送单个消息
      * @param msg
      */
-    fun push(msg: Message)
+    fun pushMessage(msg: Message)
+
+    /**
+     * 给消费者推送多个消息
+     * @param msgs
+     */
+    fun pushMessages(msgs: List<Message>)
 }
