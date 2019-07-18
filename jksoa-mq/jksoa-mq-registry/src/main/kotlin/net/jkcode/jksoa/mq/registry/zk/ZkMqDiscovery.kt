@@ -8,6 +8,7 @@ import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.TopicAssignment
 import net.jkcode.jksoa.mq.registry.json2TopicAssignment
 import net.jkcode.jksoa.registry.RegistryException
+import net.jkcode.jksoa.registry.zk.ZkRegistry
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
 import java.util.concurrent.ConcurrentHashMap
@@ -44,6 +45,12 @@ open class ZkMqDiscovery : IMqDiscovery {
      * zk节点数据监听器
      */
     protected val dataListeners = ConcurrentHashMap<IMqDiscoveryListener, ZkMqDataListener>()
+
+    init {
+        // 创建topic分配的节点
+        if (!zkClient.exists(topic2brokerPath))
+            zkClient.createPersistent(topic2brokerPath, true)
+    }
 
     /**
      * 监听topic分配变化
@@ -88,7 +95,10 @@ open class ZkMqDiscovery : IMqDiscovery {
     override fun discover(): TopicAssignment {
         try {
             // 获得节点数据
-            val json = zkClient.readData(topic2brokerPath) as String
+            val json = zkClient.readData(topic2brokerPath) as String?
+            if(json == null)
+                return TopicAssignment()
+
             return json2TopicAssignment(json)
         } catch (e: Throwable) {
             throw RegistryException("发现topic分配失败：${e.message}", e)

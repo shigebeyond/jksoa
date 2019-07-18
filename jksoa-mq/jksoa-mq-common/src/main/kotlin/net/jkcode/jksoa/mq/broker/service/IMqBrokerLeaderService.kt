@@ -13,16 +13,16 @@ interface IMqBrokerLeaderService {
     /**
      * 注册主题
      * @param topic 主题
-     * @return
+     * @return false表示没有broker可分配
      */
-    fun registerTopic(topic: String)
+    fun registerTopic(topic: String): Boolean
 
     /**
-     * 注销topic
+     * 注销主题
      *
      * @param topic
-     * @return
+     * @return false表示topic根本就没有分配过
      */
-    fun unregisterTopic(topic: String)
+    fun unregisterTopic(topic: String): Boolean
 
 }

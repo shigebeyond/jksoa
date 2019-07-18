@@ -26,10 +26,10 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
      * 注册topic = 给topic分配broker
      *
      * @param topic
-     * @return
+     * @return false表示没有broker可分配
      */
     @Synchronized
-    public override fun registerTopic(topic: String) {
+    public override fun registerTopic(topic: String): Boolean {
         if(!TopicRegex.matches(topic))
             throw IllegalArgumentException("Invalid topic name: $topic")
 
@@ -40,6 +40,9 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
         //val serviceId: String = IMqBroker::class.qualifiedName!! // 没依赖, 不能直接引用
         val serviceId: String = "net.jkcode.jksoa.mq.common.IMqBroker"
         val brokers = rpcRegistry.discover(serviceId)
+        // 没有broker可分配
+        if(brokers.isEmpty())
+            return false
 
         // 分配者给topic分配broker
         val assigner = TopicAssigner(assignment, brokers)
@@ -47,28 +50,30 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
 
         // 写topic分配
         zkClient.writeData(topic2brokerPath, assignment.toJson())
+        return true
     }
 
     /**
      * 注销topic
      *
      * @param topic
-     * @return
+     * @return false表示topic根本就没有分配过
      */
     @Synchronized
-    public override fun unregisterTopic(topic: String) {
+    public override fun unregisterTopic(topic: String): Boolean {
         // 读topic分配
         val assignment = discover()
 
         // 已注销
         if(!assignment.containsKey(topic))
-            return
+            return false
 
         // 删除topic
         assignment.remove(topic)
 
         // 写topic分配
         zkClient.writeData(topic2brokerPath, assignment.toJson())
+        return true
     }
 
     /**
@@ -76,12 +81,17 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
      *
      * @param removedBroker 被删除的broker
      * @param normalBrokers 正常的broker
-     * @return
+     * @return false表示没有topic或broker可分配
      */
     @Synchronized
-    public override fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>) {
+    public override fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>): Boolean {
+        if(normalBrokers.isEmpty())
+            return false
+
         // 读topic分配
         val assignment = discover()
+        if(assignment.isEmpty())
+            return false
 
         // 分配者
         val assigner = TopicAssigner(assignment, normalBrokers)
@@ -95,5 +105,6 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
 
         // 写topic分配
         zkClient.writeData(topic2brokerPath, assignment.toJson())
+        return true
     }
 }

@@ -18,20 +18,20 @@ class MqBrokerLeaderService : IMqBrokerLeaderService {
     /**
      * 注册主题
      * @param topic 主题
-     * @return
+     * @return false表示没有broker可分配
      */
-    public override fun registerTopic(topic: String) {
-        registry.registerTopic(topic)
+    public override fun registerTopic(topic: String): Boolean {
+        return registry.registerTopic(topic)
     }
 
     /**
      * 注销topic
      *
      * @param topic
-     * @return
+     * @return false表示topic根本就没有分配过
      */
-    public override fun unregisterTopic(topic: String) {
-        registry.unregisterTopic(topic)
+    public override fun unregisterTopic(topic: String): Boolean {
+        return registry.unregisterTopic(topic)
     }
 
 }

@@ -14,24 +14,24 @@ interface IMqRegistry: IMqDiscovery {
      * 注册topic = 给topic分配broker
      *
      * @param topic
-     * @return
+     * @return false表示没有broker可分配
      */
-    fun registerTopic(topic: String)
+    fun registerTopic(topic: String): Boolean
 
     /**
      * 注销topic
      *
      * @param topic
-     * @return
+     * @return false表示topic根本就没有分配过
      */
-    fun unregisterTopic(topic: String)
+    fun unregisterTopic(topic: String): Boolean
 
     /**
      * 注销broker = 将该broker上的topic重新分配给其他broker
      *
      * @param removedBroker 被删除的broker
      * @param normalBrokers 正常的broker
-     * @return
+     * @return false表示没有topic或broker可分配
      */
-    fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>)
+    fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>): Boolean
 }
