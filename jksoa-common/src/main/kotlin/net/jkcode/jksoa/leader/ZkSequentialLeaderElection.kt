@@ -18,8 +18,8 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-11 12:24 PM
  */
-class ZkEphemeralLeaderElection(public override val teamName: String /* 团队名 */,
-                                public override val data: String = Application.fullWorkerId /* 数据 */
+class ZkSequentialLeaderElection(public override val group: String /* 组名 */,
+                                 public override val memberData: String = Application.fullWorkerId /* 成员数据 */
 ) : ILeaderElection, ClosingOnShutdown() {
 
     companion object {
@@ -42,7 +42,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
     /**
      * zk的父节点路径
      */
-    protected val parentPath: String = "${RootPath}/$teamName"
+    protected val parentPath: String = "${RootPath}/$group"
 
     /****************************** 监听处理 *******************************/
     /**
@@ -111,8 +111,8 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
             }
 
         // 创建顺序节点
-        val path = zkClient.createEphemeralSequential(parentPath + "/", data)
-        commonLogger.debug("团队[{}]的竞选节点[{}]的路径: {}", teamName, data, path)
+        val path = zkClient.createEphemeralSequential(parentPath + "/", memberData)
+        commonLogger.debug("组[{}]的竞选节点[{}]的路径: {}", group, memberData, path)
 
         // 识别领导者
         identifyLeaderNode(path, callback)
@@ -135,7 +135,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
         // 检查本机是否是最小的
         val i = childrenNos.indexOf(no)
         if (i == 0) {
-            commonLogger.debug("团队[{}]的节点[{}]被选为领导者", teamName, data)
+            commonLogger.debug("组[{}]的节点[{}]被选为领导者", group, memberData)
             // 成功回调
             callback()
             return true
@@ -159,7 +159,7 @@ class ZkEphemeralLeaderElection(public override val teamName: String /* 团队�
         }
         val preChildNo = childrenNos.get(i - 1)
         prePath = "$parentPath/$preChildNo"
-        commonLogger.debug("团队[{}]的落选节点[{}]订阅前一个节点: {}", teamName, data, prePath)
+        commonLogger.debug("组[{}]的落选节点[{}]订阅前一个节点: {}", group, memberData, prePath)
         zkClient.subscribeDataChanges(prePath, preDataListener)
         return false
     }

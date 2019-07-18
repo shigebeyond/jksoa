@@ -9,14 +9,14 @@ package net.jkcode.jksoa.leader
 interface ILeaderElection {
 
     /**
-     * 团队名
+     * 组名
      */
-    val teamName: String
+    val group: String
 
     /**
-     * 数据, 每个候选人节点都尽量持有不同的数据, 如服务地址
+     * 成员数据, 每个候选人节点都尽量持有不同的数据, 如服务地址
      */
-    val data: String
+    val memberData: String
 
     /**
      * 监听选举结果 / listen to the election result

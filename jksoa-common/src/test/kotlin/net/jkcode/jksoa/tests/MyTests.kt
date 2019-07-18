@@ -5,6 +5,7 @@ import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.example.ISimpleService
 import net.jkcode.jksoa.leader.ZkLeaderElection
+import net.jkcode.jksoa.sequence.ZkSequenceIdGenerator
 import org.junit.Test
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -47,6 +48,14 @@ class MyTests {
         val func = ISimpleService::echo
         // 对应的是java方法签名是包含默认参数类型的
         println(func.javaMethod)
+    }
+
+    @Test
+    fun testSequence(){
+        val g = ZkSequenceIdGenerator.instance("group1")
+        println(g.getSequenceId("mem1"))
+        println(g.getSequenceId("mem2"))
+        println(g.getSequenceId("mem3"))
     }
 
     @Test
