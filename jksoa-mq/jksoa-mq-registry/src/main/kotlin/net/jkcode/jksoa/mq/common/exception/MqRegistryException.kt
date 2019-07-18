@@ -1,11 +1,11 @@
-package net.jkcode.jksoa.mq.common
+package net.jkcode.jksoa.mq.common.exception
 
 import net.jkcode.jkmvc.common.JkException
 
 /**
- * 消息异常
+ * 注册异常
  */
-class MqException : JkException {
+class MqRegistryException : JkException {
     public constructor(message: String) : super(message) {
     }
 

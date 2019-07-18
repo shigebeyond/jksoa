@@ -3,6 +3,7 @@ package net.jkcode.jksoa.mq
 import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.mq.broker.service.MqBrokerService
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.server.IRpcServer
 import org.junit.Test
 
 /**
@@ -20,6 +21,11 @@ class BrokerServiceTests {
      * 消息中转者
      */
     val brokerService = MqBrokerService()
+
+    @Test
+    fun testServer(){
+        IRpcServer.instance("netty").start()
+    }
 
     @Test
     fun testPutMessage(){

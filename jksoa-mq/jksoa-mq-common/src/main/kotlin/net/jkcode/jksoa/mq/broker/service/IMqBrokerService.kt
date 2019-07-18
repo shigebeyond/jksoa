@@ -2,7 +2,7 @@ package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jksoa.common.annotation.RemoteService
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.MqException
+import net.jkcode.jksoa.mq.common.exception.MqBrokerException
 import net.jkcode.jksoa.mq.connection.BrokerConnectionHub
 import java.util.concurrent.CompletableFuture
 
@@ -32,7 +32,7 @@ interface IMqBrokerService {
         // 检查消息是否是同一个主题
         val sameTopic = msgs.all { it.topic == topic }
         if(!sameTopic)
-            throw MqException("批量接收多个消息出错: 多个消息不是同一个主题")
+            throw MqBrokerException("批量接收多个消息出错: 多个消息不是同一个主题")
 
         return innerPutMessages(topic, msgs)
     }

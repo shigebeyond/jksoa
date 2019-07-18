@@ -10,13 +10,13 @@ import net.jkcode.jksoa.mq.broker.pusher.MqPusher
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMessageRepository
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMessageRepository
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.MqException
+import net.jkcode.jksoa.mq.common.exception.MqBrokerException
 import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssignment
-import net.jkcode.jksoa.mq.registry.mqLogger
+import net.jkcode.jksoa.mq.common.mqBrokerLogger
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import net.jkcode.jksoa.server.IRpcServer
 import net.jkcode.jksoa.server.RpcContext
@@ -33,15 +33,15 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
     /**
      * 注册中心
      */
-    protected val registry: IMqRegistry = ZkMqRegistry
+    protected val mqRegistry: IMqRegistry = ZkMqRegistry
 
     init {
         // 监听topic分配情况变化
-        mqLogger.debug("Mq broker监听topic分配情况变化, 以便初始化分到的topic的存储")
-        registry.subscribe(this)
+        mqBrokerLogger.debug("Mq broker监听topic分配情况变化, 以便初始化分到的topic的存储")
+        mqRegistry.subscribe(this)
 
         // 启动延迟消息发送的定时器
-        mqLogger.debug("Mq broker启动延迟消息发送的定时器")
+        mqBrokerLogger.debug("Mq broker启动延迟消息发送的定时器")
         DelayMessageDeliverTimer.start()
     }
 
@@ -99,7 +99,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
         // 检查消息是否是同一个主题
         val sameTopic = msgs.all { it.topic == topic }
         if(!sameTopic)
-            throw MqException("批量接收多个消息出错: 多个消息不是同一个主题")
+            throw MqBrokerException("批量接收多个消息出错: 多个消息不是同一个主题")
 
         // 根据topic获得仓库
         val repository = LsmMessageRepository.getRepository(topic)

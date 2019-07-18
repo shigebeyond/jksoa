@@ -4,8 +4,12 @@ import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.MqException
-import net.jkcode.jksoa.mq.registry.*
+import net.jkcode.jksoa.mq.common.exception.MqClientException
+import net.jkcode.jksoa.mq.common.mqClientLogger
+import net.jkcode.jksoa.mq.registry.EmptyTopicAssignment
+import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
+import net.jkcode.jksoa.mq.registry.IMqRegistry
+import net.jkcode.jksoa.mq.registry.TopicAssignment
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 
 /**
@@ -21,7 +25,7 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
     /**
      * 注册中心
      */
-    protected val registry: IMqRegistry = ZkMqRegistry
+    protected val mqRegistry: IMqRegistry = ZkMqRegistry
 
     /**
      * topic分配情况
@@ -31,8 +35,8 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
 
     init{
         // 监听topic分配情况变化
-        mqLogger.debug("Mq client监听topic分配情况变化, 以便识别topic对应的broker")
-        registry.subscribe(this)
+        mqClientLogger.debug("Mq client监听topic分配情况变化, 以便识别topic对应的broker")
+        mqRegistry.subscribe(this)
     }
 
     /**
@@ -41,6 +45,7 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
      * @param assignment
      */
     public override fun handleTopic2BrokerChange(assignment: TopicAssignment) {
+        mqClientLogger.debug("BrokerConnectionHub 处理topic分配变化: {}", assignment)
         this.assignment = assignment
     }
 
@@ -51,7 +56,7 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
     protected override fun handleServiceUrlRemove(serverName: String) {
         super.handleServiceUrlRemove(serverName)
         // 注销broker: 将该broker上的topic重新分配给其他broker
-        registry.unregisterBroker(serverName, connections.map { it.value.url })
+        mqRegistry.unregisterBroker(serverName, connections.map { it.value.url })
     }
 
     /**
@@ -71,12 +76,12 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
         // 获得topic对应的broker
         val broker = assignment[topic]
         if(broker == null)
-            throw MqException("Topic [$topic] belongs to no broker!!")
+            throw MqClientException("Topic [$topic] belongs to no broker!!")
 
         // 获得broker的连接
         val conn = connections[broker]
         if(conn == null)
-            throw MqException("没有获得broker[$broker]的连接, 可能是topic分配情况与broker列表没有同步")
+            throw MqClientException("没有获得broker[$broker]的连接, 可能是topic分配情况与broker列表没有同步")
 
         return conn
     }

@@ -2,7 +2,7 @@ package net.jkcode.jksoa.mq
 
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.TopicAssignment
-import net.jkcode.jksoa.mq.registry.TopicRegex
+import net.jkcode.jksoa.mq.common.TopicRegex
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import org.junit.Test
 
@@ -13,7 +13,7 @@ import org.junit.Test
  */
 class MqRegisterTests {
 
-    val registry = ZkMqRegistry
+    val mqRegistry = ZkMqRegistry
 
     val topic = "topic1"
 
@@ -32,32 +32,32 @@ class MqRegisterTests {
     }
 
     fun printDiscover(){
-        println("topic分配情况: " + registry.discover())
+        println("topic分配情况: " + mqRegistry.discover())
     }
 
     @Test
     fun testRegisterTopic(){
-        val f = registry.registerTopic(topic) // false表示没有broker可分配
+        val f = mqRegistry.registerTopic(topic) // false表示没有broker可分配
         println("注册topic：$topic => $f")
         printDiscover()
     }
 
     @Test
     fun testUnregisterTopic(){
-        val f = registry.unregisterTopic(topic) // false表示topic根本就没有分配过
+        val f = mqRegistry.unregisterTopic(topic) // false表示topic根本就没有分配过
         println("注销topic：$topic => $f")
         printDiscover()
     }
 
     @Test
     fun testSubscribe(){
-        registry.subscribe(discoveryListener)
+        mqRegistry.subscribe(discoveryListener)
         println("订阅topic分配情况")
     }
 
     @Test
     fun testUnsubscribe(){
-        registry.unsubscribe(discoveryListener)
+        mqRegistry.unsubscribe(discoveryListener)
         println("退订topic分配情况")
     }
 

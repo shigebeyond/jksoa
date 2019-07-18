@@ -3,11 +3,11 @@ package net.jkcode.jksoa.mq.registry.zk
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.mq.common.exception.MqRegistryException
 import net.jkcode.jksoa.mq.registry.IMqDiscovery
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.TopicAssignment
 import net.jkcode.jksoa.mq.registry.json2TopicAssignment
-import net.jkcode.jksoa.registry.RegistryException
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
 import java.util.concurrent.ConcurrentHashMap
@@ -53,6 +53,14 @@ open class ZkMqDiscovery : IMqDiscovery {
     }
 
     /**
+     * 获得监听器
+     * @return
+     */
+    public override fun discoveryListeners(): Collection<IMqDiscoveryListener> {
+        return dataListeners.keys
+    }
+
+    /**
      * 监听topic分配变化
      *
      * @param listener 监听器
@@ -68,7 +76,7 @@ open class ZkMqDiscovery : IMqDiscovery {
             // 记录监听器，以便取消监听时使用
             dataListeners.put(listener, dataListener)
         } catch (e: Throwable) {
-            throw RegistryException("ZkMqDiscovery监听topic分配变化失败：${e.message}", e)
+            throw MqRegistryException("ZkMqDiscovery监听topic分配变化失败：${e.message}", e)
         }
     }
 
@@ -83,7 +91,7 @@ open class ZkMqDiscovery : IMqDiscovery {
             val dataListener = dataListeners.get(listener)
             zkClient.unsubscribeDataChanges(topic2brokerPath, dataListener)
         } catch (e: Throwable) {
-            throw RegistryException("ZkMqDiscovery取消监听topic分配变化失败：${e.message}", e)
+            throw MqRegistryException("ZkMqDiscovery取消监听topic分配变化失败：${e.message}", e)
         }
     }
 
@@ -101,7 +109,7 @@ open class ZkMqDiscovery : IMqDiscovery {
 
             return json2TopicAssignment(json)
         } catch (e: Throwable) {
-            throw RegistryException("发现topic分配失败：${e.message}", e)
+            throw MqRegistryException("发现topic分配失败：${e.message}", e)
         }
 
     }

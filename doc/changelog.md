@@ -99,3 +99,5 @@
 5.4 实现 IConsumerConnectionHub, 用于在broker端管理consumer连接
 
 5.5 实现 BrokerConnectionHub, 用于在client端管理broker连接
+
+6. 添加序列号生成器: 基于zk的持久顺序节点来实现

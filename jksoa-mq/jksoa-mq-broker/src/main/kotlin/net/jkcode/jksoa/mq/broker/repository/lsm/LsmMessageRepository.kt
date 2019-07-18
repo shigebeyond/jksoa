@@ -8,8 +8,8 @@ import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.common.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.MqException
-import net.jkcode.jksoa.mq.registry.TopicRegex
+import net.jkcode.jksoa.mq.common.exception.MqBrokerException
+import net.jkcode.jksoa.mq.common.TopicRegex
 import net.jkcode.jksoa.server.IRpcServer
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -78,7 +78,7 @@ class LsmMessageRepository(
             val result = repositories[topic]
             if(result == null) {
                 val myBroker = IRpcServer.current()?.serverName
-                throw MqException("Broker [$myBroker] has no queue for topic [$topic]")
+                throw MqBrokerException("Broker [$myBroker] has no queue for topic [$topic]")
             }
 
             return result

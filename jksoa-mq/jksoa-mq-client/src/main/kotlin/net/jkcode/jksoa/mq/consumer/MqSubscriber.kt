@@ -6,8 +6,8 @@ import net.jkcode.jkmvc.common.selectExecutor
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.MqException
-import net.jkcode.jksoa.mq.registry.mqLogger
+import net.jkcode.jksoa.mq.common.exception.MqClientException
+import net.jkcode.jksoa.mq.common.mqClientLogger
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -52,7 +52,7 @@ object MqSubscriber: IMqSubscriber {
      */
     public override fun subscribeTopic(topic: String, handler: IMqHandler){
         if(handlers.containsKey(topic))
-            throw MqException("Duplicate subcribe to the same topic")
+            throw MqClientException("Duplicate subcribe to the same topic")
 
         // 添加处理器
         handlers[topic] = handler
@@ -89,7 +89,7 @@ object MqSubscriber: IMqSubscriber {
                 brokerService.feedbackMessage(msg.topic, msg.id, e, MqPushConsumer.config["group"]!!)
                 if(e != null) { // 处理异常
                     e.printStackTrace()
-                    mqLogger.error("消费消息出错: 消息={}, 异常={}", msg, e.message)
+                    mqClientLogger.error("消费消息出错: 消息={}, 异常={}", msg, e.message)
                 }
             }
 

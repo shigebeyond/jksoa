@@ -3,6 +3,7 @@ package net.jkcode.jksoa.mq.tests
 import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.mq.MqProducer
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.exception.MqClientException
 import net.jkcode.jksoa.mq.consumer.IMqHandler
 import net.jkcode.jksoa.mq.consumer.MqPullConsumer
 import net.jkcode.jksoa.mq.consumer.MqPushConsumer
@@ -26,20 +27,19 @@ class MqClientTests {
     }
 
     /**
-     * 测试注册主题
-     */
-    @Test
-    fun testRegisterTopic(){
-        MqProducer.registerTopic(topic)
-    }
-
-    /**
      * 测试消息生产
      */
     @Test
     fun testProductor(){
+        // 注册
+        val b = MqProducer.registerTopic(topic)
+        if(!b)
+            throw MqClientException("没有broker可分配")
+
         // 生产消息
-        MqProducer.send(Message(topic, randomString(7), group))
+        val msg = Message(topic, randomString(7), group)
+        val id = MqProducer.send(msg).get()
+        println("生产消息: $msg")
     }
 
     /**

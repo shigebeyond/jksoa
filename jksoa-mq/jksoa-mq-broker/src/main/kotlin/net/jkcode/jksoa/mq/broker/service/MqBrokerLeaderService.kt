@@ -14,7 +14,7 @@ class MqBrokerLeaderService : IMqBrokerLeaderService {
     /**
      * 注册中心
      */
-    protected val registry: IMqRegistry = ZkMqRegistry
+    protected val mqRegistry: IMqRegistry = ZkMqRegistry
 
     /**
      * 发现topic分配
@@ -22,7 +22,7 @@ class MqBrokerLeaderService : IMqBrokerLeaderService {
      * @return <topic, broker>
      */
     public override fun discover(): TopicAssignment{
-        return registry.discover()
+        return mqRegistry.discover()
     }
 
     /**
@@ -31,7 +31,7 @@ class MqBrokerLeaderService : IMqBrokerLeaderService {
      * @return false表示没有broker可分配
      */
     public override fun registerTopic(topic: String): Boolean {
-        return registry.registerTopic(topic)
+        return mqRegistry.registerTopic(topic)
     }
 
     /**
@@ -41,7 +41,7 @@ class MqBrokerLeaderService : IMqBrokerLeaderService {
      * @return false表示topic根本就没有分配过
      */
     public override fun unregisterTopic(topic: String): Boolean {
-        return registry.unregisterTopic(topic)
+        return mqRegistry.unregisterTopic(topic)
     }
 
 }
