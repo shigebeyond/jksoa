@@ -169,7 +169,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
         val repository = LsmMessageRepository.getRepository(topic)
 
         // 无异常则删除
-        if(e != null)
+        if(e == null)
             return repository.deleteMessage(id)
 
         //有异常则扔到延迟队列中
