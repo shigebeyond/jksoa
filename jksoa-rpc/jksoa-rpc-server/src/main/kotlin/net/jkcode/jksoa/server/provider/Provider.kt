@@ -57,24 +57,28 @@ class Provider(public override val clazz: Class<*> /* 实现类 */, public val r
 
     /**
      * 服务实例
+     *   延迟实例化, 如果注解onlyLeader为true, 则必须当选leader才实例化
      */
-    public override val service: Any = BeanSingletons.instance(clazz)
+    public override lateinit var service: Any
 
     init{
+        // 创建+注册服务
         if(`interface`.remoteService?.onlyLeader ?: false){ // 要选举leader
-            // 先选举leader才注册服务
+            // 先选举leader才创建+注册服务
             val election = ZkLeaderElection(serviceId)
             election.run(){
-                registerService()
+                createAndRegisterService()
             }
-        }else // 直接注册服务
-            registerService()
+        }else // 直接创建+注册服务
+            createAndRegisterService()
     }
 
     /**
-     * 注册服务
+     * 创建+注册服务
      */
-    protected fun registerService() {
+    protected fun createAndRegisterService() {
+        service = BeanSingletons.instance(clazz)
+
         if (registerable) {
             serverLogger.info("Provider注册服务: {}", serviceUrl)
             // 1 注册注册中心的服务
