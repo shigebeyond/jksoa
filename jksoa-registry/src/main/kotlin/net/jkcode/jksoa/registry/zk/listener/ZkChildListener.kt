@@ -30,11 +30,6 @@ class ZkChildListener(
     protected val servicePath = Url.serviceId2serviceRegistryPath(serviceId)
 
     /**
-     * 连接池： <协议ip端口 to 连接>
-     */
-    protected val urls: ConcurrentHashMap<String, Url> = ConcurrentHashMap()
-
-    /**
      * zk节点数据监听器: <协议ip端口 to zk数据监听器>>
      */
     protected val dataListeners: ConcurrentHashMap<String, ZkDataListener> = ConcurrentHashMap()
@@ -63,78 +58,34 @@ class ZkChildListener(
     }
 
     /**
-     * 处理服务地址变化
-     *
-     * @param serviceId 服务标识
-     * @param urls 服务地址
+     * 处理服务地址新增
+     * @param url
+     * @param allUrls
      */
-    public fun handleServiceUrlsChange(urls: List<Url>){
-        var addKeys:Set<String> = emptySet() // 新加的url
-        var removeKeys:Set<String> = emptySet() // 新加的url
-        var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
+    public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
+        super.handleServiceUrlAdd(url, allUrls)
 
-        // 1 构建新的服务地址
-        val newUrls = HashMap<String, Url>()
-        for (url in urls) {
-            newUrls[url.serverName] = url
-        }
+        //监听子节点的数据变化
+        addDataListener(url)
+    }
 
-        // 2 获得旧的服务地址
-        var oldUrls:MutableMap<String, Url> = this.urls
+    /**
+     * 处理服务地址删除
+     * @param url
+     * @param allUrls
+     */
+    public override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
+        super.handleServiceUrlRemove(serverName, allUrls)
 
-        // 3 比较新旧服务地址，分别获得增删改的地址
-        if(oldUrls.isEmpty()) {
-            // 全是新加地址
-            addKeys = newUrls.keys
-        }else{
-            // 获得新加的地址
-            addKeys = newUrls.keys.subtract(oldUrls.keys)
-
-            // 获得删除的地址
-            removeKeys = oldUrls.keys.subtract(newUrls.keys)
-
-            // 获得更新的地址
-            for(key in newUrls.keys.intersect(oldUrls.keys)){
-                if(newUrls[key] != oldUrls[key]!!)
-                    updateUrls.add(newUrls[key]!!)
-            }
-        }
-
-        // 5 新加的地址
-        for (key in addKeys){
-            val url = newUrls[key]!!
-            this.urls[key] = url
-
-            // 5.1 处理服务地址新增
-            handleServiceUrlAdd(url, this.urls.values)
-
-            // 5.2 监听子节点的数据变化
-            addDataListener(url)
-        }
-
-        // 6 删除的地址
-        for(key in removeKeys) {
-            this.urls.remove(key)
-
-            // 6.1 处理服务地址删除
-            handleServiceUrlRemove(key, this.urls.values)
-
-            // 6.2 取消监听子节点的数据变化
-            removeDataListener(key)
-        }
-
-        // 7 更新的地址
-        for(url in updateUrls) {
-            this.urls[url.serverName] = url
-            handleParametersChange(url)
-        }
+        // 取消监听子节点的数据变化
+        removeDataListener(serverName)
     }
 
     /**
      * 对服务地址节点添加数据监听器
      * @param url
      */
-    public fun addDataListener(url: Url) {
+    protected fun addDataListener(url: Url) {
         val dataListener = ZkDataListener(url, this)
         zkClient.subscribeDataChanges(url.serverRegistryPath, dataListener);
         dataListeners[url.serverName] = dataListener
@@ -144,7 +95,7 @@ class ZkChildListener(
      * 对服务地址节点删除数据监听器
      * @param key
      */
-    public fun removeDataListener(key: String) {
+    protected fun removeDataListener(key: String) {
         val dataListener = dataListeners.remove(key)!!
         val path = dataListener.url.serverRegistryPath
         zkClient.unsubscribeDataChanges(path, dataListener)
