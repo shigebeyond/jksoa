@@ -48,6 +48,7 @@ open class ZkDiscovery: IDiscovery {
      * 对于 ZkChildListener
      *    继承了DiscoveryListenerContainer, 维护与代理多个 IDiscoveryListener
      *    实现了IZkChildListener, 处理zk子节点变化
+     *    自发监听zk
      */
     protected val childListeners = ConcurrentHashMap<String, ZkChildListener>()
 
@@ -122,7 +123,8 @@ open class ZkDiscovery: IDiscovery {
                 currentChilds = zkClient.getChildren(rootPath)
 
             val urls = zkClient.nodeChilds2Urls(rootPath, currentChilds)
-            // 更新服务地址
+
+            // 处理服务地址变化, 从而触发 IDiscoveryListener
             childListeners[serviceId]!!.handleServiceUrlsChange(urls)
             return urls
         } catch (e: Throwable) {

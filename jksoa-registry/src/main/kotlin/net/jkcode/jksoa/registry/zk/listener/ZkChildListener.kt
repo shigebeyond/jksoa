@@ -40,6 +40,19 @@ class ZkChildListener(
     }
 
     /**
+     * 关闭: 清理监听器
+     */
+    public override fun close() {
+        // 取消zk子节点监听
+        zkClient.unsubscribeChildChanges(servicePath, this)
+
+        // 清理数据监听器
+        // ConcurrentHashMap支持边遍历边删除, HashMap不支持
+        for(key in dataListeners.keys)
+            removeDataListener(key)
+    }
+
+    /**
      * 处理zk中子节点变化事件
      *
      * @param parentPath
@@ -48,7 +61,7 @@ class ZkChildListener(
     @Synchronized
     public override fun handleChildChange(parentPath: String, currentChilds: List<String>) {
         try {
-            // 更新服务地址
+            // 处理服务地址变化, 从而触发 IDiscoveryListener
             handleServiceUrlsChange(zkClient.nodeChilds2Urls(parentPath, currentChilds))
             registerLogger.info("处理zk[{}]子节点变化事件, 子节点为: {}", parentPath, currentChilds)
         }catch(e: Exception){
@@ -101,17 +114,5 @@ class ZkChildListener(
         zkClient.unsubscribeDataChanges(path, dataListener)
     }
 
-    /**
-     * 关闭: 清理监听器
-     */
-    public override fun close() {
-        // 取消zk子节点监听
-        zkClient.unsubscribeChildChanges(servicePath, this)
-
-        // 清理数据监听器
-        // ConcurrentHashMap支持边遍历边删除, HashMap不支持
-        for(key in dataListeners.keys)
-            removeDataListener(key)
-    }
 
 }

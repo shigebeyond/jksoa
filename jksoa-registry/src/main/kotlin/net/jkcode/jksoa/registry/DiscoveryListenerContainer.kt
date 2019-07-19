@@ -53,7 +53,7 @@ open class DiscoveryListenerContainer(
     }
 
     /**
-     * 处理服务地址变化
+     * 处理服务地址变化: 对比本地服务地址, 从而识别服务地址的增删改, 从而触发 IDiscoveryListener 的增删改方法
      *
      * @param serviceId 服务标识
      * @param urls 服务地址

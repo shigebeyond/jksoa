@@ -7,7 +7,6 @@ import net.jkcode.jksoa.mq.common.exception.MqRegistryException
 import net.jkcode.jksoa.mq.registry.*
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 基于zookeeper的mq服务发现
@@ -40,14 +39,22 @@ open class ZkMqDiscovery : IMqDiscovery {
     public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
 
     /**
-     * zk节点数据监听器
+     * zk节点数据监听器, 自发监听zk
+     *
+     * 对于 ZkMqDataListener
+     *    继承了MqDiscoveryListenerContainer, 维护与代理多个 IMqDiscoveryListener
+     *    实现了IZkDataListener, 处理zk数据变化
      */
-    protected val dataListeners = ConcurrentHashMap<IMqDiscoveryListener, ZkMqDataListener>()
+    protected lateinit var dataListener: ZkMqDataListener
 
     init {
         // 创建topic分配的节点
         if (!zkClient.exists(topic2brokerPath))
             zkClient.createPersistent(topic2brokerPath, true)
+
+        // 创建zk数据监听器
+        dataListener = ZkMqDataListener(zkClient)
+        dataListener.start()
     }
 
     /**
@@ -55,7 +62,7 @@ open class ZkMqDiscovery : IMqDiscovery {
      * @return
      */
     public override fun discoveryListeners(): Collection<IMqDiscoveryListener> {
-        return dataListeners.keys
+        return dataListener
     }
 
     /**
@@ -75,12 +82,8 @@ open class ZkMqDiscovery : IMqDiscovery {
         try{
             clientLogger.info("ZkMqDiscovery监听topic分配变化")
 
-            // 监听节点的数据变化
-            val dataListener = ZkMqDataListener(listener)
-            zkClient.subscribeDataChanges(topic2brokerPath, dataListener);
-
-            // 记录监听器，以便取消监听时使用
-            dataListeners.put(listener, dataListener)
+            // 添加监听器
+            this.dataListener.add(listener)
         } catch (e: Throwable) {
             throw MqRegistryException("ZkMqDiscovery监听topic分配变化失败：${e.message}", e)
         }
@@ -93,9 +96,10 @@ open class ZkMqDiscovery : IMqDiscovery {
      */
     public override fun unsubscribe(listener: IMqDiscoveryListener){
         try{
-            // 取消监听节点的数据变化
-            val dataListener = dataListeners.get(listener)
-            zkClient.unsubscribeDataChanges(topic2brokerPath, dataListener)
+            // 删除监听器
+            dataListener.remove(listener)
+            if(dataListener.isEmpty())
+                dataListener.close()
         } catch (e: Throwable) {
             throw MqRegistryException("ZkMqDiscovery取消监听topic分配变化失败：${e.message}", e)
         }
