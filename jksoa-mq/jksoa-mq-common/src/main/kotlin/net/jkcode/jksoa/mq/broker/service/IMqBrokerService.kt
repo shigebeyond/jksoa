@@ -2,7 +2,6 @@ package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jksoa.common.annotation.RemoteService
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.exception.MqBrokerException
 import net.jkcode.jksoa.mq.connection.BrokerConnectionHub
 import java.util.concurrent.CompletableFuture
 
@@ -24,27 +23,13 @@ interface IMqBrokerService {
 
     /**
      * 批量接收producer发过来的多个消息
+     *    优化: client在调用前先校验消息是否是同一个主题, 实现见 BrokerConnectionHub.checkBeforePutMessages()
+     *
      * @param topic 主题
      * @param msgs 同一个主题的多个消息
      * @return 消息id
      */
-    fun putMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>>{
-        // 检查消息是否是同一个主题
-        val sameTopic = msgs.all { it.topic == topic }
-        if(!sameTopic)
-            throw MqBrokerException("批量接收多个消息出错: 多个消息不是同一个主题")
-
-        return innerPutMessages(topic, msgs)
-    }
-
-    /**
-     * 批量接收producer发过来的多个消息
-     *    client端不要调用该方法, 请使用 putMessages()
-     * @param topic 主题
-     * @param msgs 同一个主题的多个消息
-     * @return 消息id
-     */
-    fun innerPutMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>>
+    fun putMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>>
 
     /****************** 消费者调用 *****************/
     /**

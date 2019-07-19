@@ -1,16 +1,20 @@
 package net.jkcode.jksoa.mq.connection
 
+import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.connection.ConnectionHub
 import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.exception.MqBrokerException
 import net.jkcode.jksoa.mq.common.exception.MqClientException
 import net.jkcode.jksoa.mq.common.mqClientLogger
 import net.jkcode.jksoa.mq.registry.EmptyTopicAssignment
+import net.jkcode.jksoa.mq.registry.IMqDiscovery
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
-import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssignment
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
+import kotlin.reflect.jvm.javaMethod
 
 /**
  * client端的broker连接集中器
@@ -23,9 +27,9 @@ import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
 
     /**
-     * 注册中心
+     * 服务发现
      */
-    protected val mqRegistry: IMqRegistry = ZkMqRegistry
+    protected val mqDiscovery: IMqDiscovery = ZkMqRegistry
 
     /**
      * topic分配情况
@@ -36,7 +40,7 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
     init{
         // 监听topic分配情况变化
         mqClientLogger.debug("Mq client监听topic分配情况变化, 以便识别topic对应的broker")
-        mqRegistry.subscribe(this)
+        mqDiscovery.subscribe(this)
     }
 
     /**
@@ -50,13 +54,23 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
     }
 
     /**
-     * 处理服务地址删除
-     * @param url
+     * 批量接收消息的方法
      */
-    protected override fun handleServiceUrlRemove(serverName: String) {
-        super.handleServiceUrlRemove(serverName)
-        // 注销broker: 将该broker上的topic重新分配给其他broker
-        mqRegistry.unregisterBroker(serverName, connections.map { it.value.url })
+    protected val putMessagesMethod = IMqBrokerService::putMessages.javaMethod!!.getSignature()
+
+    /**
+     * 在调用批量接收消息的方法时, 校验消息是否是同一个主题
+     * @param req
+     */
+    protected fun checkBeforePutMessages(req: IRpcRequest) {
+        if (req.methodSignature == putMessagesMethod) {
+            val topic = req.args[0] as String
+            val msgs = req.args[1] as List<Message>
+            // 校验消息是否是同一个主题
+            val sameTopic = msgs.all { it.topic == topic }
+            if (!sameTopic)
+                throw MqBrokerException("批量接收多个消息出错: 多个消息不是同一个主题")
+        }
     }
 
     /**
@@ -66,19 +80,23 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
      * @return
      */
     public override fun select(req: IRpcRequest): IConnection {
-        // 获得topic
+        // 在调用批量接收消息的方法时, 校验消息是否是同一个主题
+        checkBeforePutMessages(req)
+
+        // 1 获得topic
         // 仅用在 IMqBroker 接口中, 该接口的所有方法第一个参数要不是 msg: Message, 要不就是 topic: String
         val arg = req.args.first()
         val topic = if(arg is Message)
                         arg.topic
                     else
                         arg as String
-        // 获得topic对应的broker
+
+        // 2 获得topic对应的broker
         val broker = assignment[topic]
         if(broker == null)
             throw MqClientException("Topic [$topic] belongs to no broker!!")
 
-        // 获得broker的连接
+        // 3 获得broker的连接
         val conn = connections[broker]
         if(conn == null)
             throw MqClientException("没有获得broker[$broker]的连接, 可能是topic分配情况与broker列表没有同步")
