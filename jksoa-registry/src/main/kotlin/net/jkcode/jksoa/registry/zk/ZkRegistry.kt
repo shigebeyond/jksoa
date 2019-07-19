@@ -10,6 +10,17 @@ import org.apache.zookeeper.Watcher
 /**
  * 基于zookeeper的注册中心
  *
+ * zk目录结构如下:
+ * ```
+ * 	jksoa
+ * 		net.jkcode.jksoa.example.ISimpleService # 服务标识 = 类名
+ * 			netty:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
+ * 			netty:192.168.0.1:8080
+ * 		net.jkcode.jksoa.example.ISystemService
+ * 			netty:192.168.0.1:8080
+ * 			netty:192.168.0.1:8080
+ * ```
+ *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 11:22 AM

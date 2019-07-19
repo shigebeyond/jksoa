@@ -52,7 +52,7 @@ class MyTests {
 
     @Test
     fun testSequence(){
-        val g = ZkSequenceIdGenerator.instance("group1")
+        val g = ZkSequenceIdGenerator.instance("module1")
         println(g.getSequenceId("mem1"))
         println(g.getSequenceId("mem2"))
         println(g.getSequenceId("mem3"))
