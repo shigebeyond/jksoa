@@ -95,7 +95,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
      * @param msgs 同一个主题的多个消息
      * @return 消息id
      */
-    public override fun innerPutMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>> {
+    public override fun putMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>> {
         // 检查消息是否是同一个主题
         val sameTopic = msgs.all { it.topic == topic }
         if(!sameTopic)

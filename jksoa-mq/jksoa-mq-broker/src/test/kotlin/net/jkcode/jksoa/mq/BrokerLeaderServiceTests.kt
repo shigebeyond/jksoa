@@ -1,6 +1,8 @@
 package net.jkcode.jksoa.mq
 
 import net.jkcode.jksoa.mq.broker.service.MqBrokerLeaderService
+import net.jkcode.jksoa.mq.registry.IMqRegistry
+import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import net.jkcode.jksoa.server.IRpcServer
 import org.junit.Test
 
@@ -18,6 +20,10 @@ class BrokerLeaderServiceTests {
      */
     val brokerLeaderService = MqBrokerLeaderService()
 
+    /**
+     * 注册中心
+     */
+    protected val mqRegistry: IMqRegistry = ZkMqRegistry
 
     @Test
     fun testServer(){
@@ -39,6 +45,6 @@ class BrokerLeaderServiceTests {
     }
 
     fun printDiscover(){
-        println("topic分配情况: " + brokerLeaderService.discover())
+        println("topic分配情况: " + mqRegistry.discover())
     }
 }
