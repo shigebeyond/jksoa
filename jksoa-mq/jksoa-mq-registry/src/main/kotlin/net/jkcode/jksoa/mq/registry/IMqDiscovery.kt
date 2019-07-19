@@ -10,12 +10,6 @@ package net.jkcode.jksoa.mq.registry
 interface IMqDiscovery {
 
     /**
-     * 获得监听器
-     * @return
-     */
-    fun discoveryListeners(): Collection<IMqDiscoveryListener>
-
-    /**
      * 监听topic分配变化
      *
      * @param listener 监听器

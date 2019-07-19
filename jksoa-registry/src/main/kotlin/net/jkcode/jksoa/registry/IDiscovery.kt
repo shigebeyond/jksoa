@@ -12,13 +12,6 @@ import net.jkcode.jksoa.common.Url
 interface IDiscovery {
 
     /**
-     * 获得监听器
-     * @param serviceId
-     * @return
-     */
-    fun discoveryListeners(serviceId: String): Collection<IDiscoveryListener>
-
-    /**
      * 监听服务变化
      *
      * @param serviceId 服务标识

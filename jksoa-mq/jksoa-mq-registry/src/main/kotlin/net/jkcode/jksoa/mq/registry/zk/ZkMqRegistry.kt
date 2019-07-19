@@ -133,7 +133,7 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
         mqRegisterLogger.info("topic分配结束: {}", json)
 
         // 主动触发本地监听器
-        triggerLocalListener(assignment)
+        dataListener.handleTopic2BrokerChange(assignment)
     }
 
 

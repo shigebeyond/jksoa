@@ -14,14 +14,17 @@ import java.io.Closeable
  * @author shijianhang<772910474@qq.com>
  * @date 2019-7-12 11:22 AM
  **/
-class ZkMqDataListener(public val zkClient: ZkClient) : IZkDataListener, MqDiscoveryListenerContainer(), Closeable {
+class ZkMqDataListener(
+        public val zkClient: ZkClient,
+        public val path: String // zk节点路径
+) : IZkDataListener, MqDiscoveryListenerContainer(), Closeable {
 
     /**
      * 开始监听
      */
     public fun start() {
         // 添加zk监听
-        zkClient.subscribeDataChanges(ZkMqRegistry.topic2brokerPath, this);
+        zkClient.subscribeDataChanges(path, this);
     }
 
     /**
@@ -29,7 +32,7 @@ class ZkMqDataListener(public val zkClient: ZkClient) : IZkDataListener, MqDisco
      */
     public override fun close() {
         // 取消zk监听
-        zkClient.unsubscribeDataChanges(ZkMqRegistry.topic2brokerPath, this)
+        zkClient.unsubscribeDataChanges(path, this)
     }
 
     /**

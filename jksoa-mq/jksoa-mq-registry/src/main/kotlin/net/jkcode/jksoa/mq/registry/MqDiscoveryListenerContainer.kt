@@ -20,7 +20,7 @@ open class MqDiscoveryListenerContainer(
     /**
      * 缓存topic分配信息
      */
-    protected val assignment: TopicAssignment = EmptyTopicAssignment
+    protected var assignment: TopicAssignment = EmptyTopicAssignment
 
     /**
      * 处理topic分配变化
@@ -32,6 +32,8 @@ open class MqDiscoveryListenerContainer(
         if(this.assignment.equals(assignment))
             return
 
+        // 触发变化
+        this.assignment = assignment
         for(l in list)
             l.handleTopic2BrokerChange(assignment)
     }

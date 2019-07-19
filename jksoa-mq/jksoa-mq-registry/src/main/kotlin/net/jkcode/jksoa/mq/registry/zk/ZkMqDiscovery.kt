@@ -53,24 +53,8 @@ open class ZkMqDiscovery : IMqDiscovery {
             zkClient.createPersistent(topic2brokerPath, true)
 
         // 创建zk数据监听器
-        dataListener = ZkMqDataListener(zkClient)
+        dataListener = ZkMqDataListener(zkClient, topic2brokerPath)
         dataListener.start()
-    }
-
-    /**
-     * 获得监听器
-     * @return
-     */
-    public override fun discoveryListeners(): Collection<IMqDiscoveryListener> {
-        return dataListener
-    }
-
-    /**
-     * 触发本地监听器
-     */
-    public fun triggerLocalListener(assignment: TopicAssignment) {
-        for (l in ZkMqRegistry.discoveryListeners())
-            l.handleTopic2BrokerChange(assignment)
     }
 
     /**
@@ -114,10 +98,12 @@ open class ZkMqDiscovery : IMqDiscovery {
         try {
             // 获得节点数据
             val json = zkClient.readData(topic2brokerPath) as String?
-            if(json == null)
-                return HashMap()
+            val assignment = if(json == null) HashMap() else json2TopicAssignment(json)
 
-            return json2TopicAssignment(json)
+            // 主动触发本地监听器
+            dataListener.handleTopic2BrokerChange(assignment)
+
+            return assignment
         } catch (e: Throwable) {
             throw MqRegistryException("发现topic分配失败：${e.message}", e)
         }

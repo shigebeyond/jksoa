@@ -53,15 +53,6 @@ open class ZkDiscovery: IDiscovery {
     protected val childListeners = ConcurrentHashMap<String, ZkChildListener>()
 
     /**
-     * 获得监听器
-     * @param serviceId
-     * @return
-     */
-    public override fun discoveryListeners(serviceId: String): Collection<IDiscoveryListener> {
-        return childListeners[serviceId] ?: emptyList()
-    }
-
-    /**
      * 监听服务变化
      *
      * @param serviceId 服务标识
