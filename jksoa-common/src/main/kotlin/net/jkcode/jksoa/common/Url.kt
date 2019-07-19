@@ -2,6 +2,7 @@ package net.jkcode.jksoa.common
 
 import net.jkcode.jkmvc.common.getAndConvert
 import net.jkcode.jkmvc.common.joinHashCode
+import java.net.InetSocketAddress
 
 /**
  * url与字符串互转的工具类
@@ -9,7 +10,7 @@ import net.jkcode.jkmvc.common.joinHashCode
  * @author shijianhang
  * @create 2017-12-12 下午10:27
  **/
-data class Url(public override var protocol: String /* 协议 */,
+open class Url(public override var protocol: String /* 协议 */,
                public override var host: String /* ip */,
                public override var port: Int /* 端口 */,
                public override var path: String /* 路径 = 服务标识 = 接口类名 */ = "",
@@ -17,7 +18,7 @@ data class Url(public override var protocol: String /* 协议 */,
 ) : IUrl {
 
     /**
-     * 解析url字符串
+     * 解析参数
      * @param protocol
      * @param host
      * @param port
@@ -32,6 +33,13 @@ data class Url(public override var protocol: String /* 协议 */,
      */
     public constructor(url: String) : this("", "", -1) {
         parseUrl(url)
+    }
+
+    /**
+     * 解析地址
+     * @param addr 地址
+     */
+    public constructor(protocol: String, addr: InetSocketAddress) : this(protocol, addr.hostName, addr.port){
     }
 
     companion object{

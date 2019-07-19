@@ -52,9 +52,9 @@ class MqBrokerLeaderService : IMqBrokerLeaderService, IDiscoveryListener {
      * @param url
      * @param allUrls
      */
-    public override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
+    public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
         // 注销broker: 将该broker上的topic重新分配给其他broker
-        mqRegistry.unregisterBroker(serverName, allUrls)
+        mqRegistry.unregisterBroker(url, allUrls)
     }
 
     /**

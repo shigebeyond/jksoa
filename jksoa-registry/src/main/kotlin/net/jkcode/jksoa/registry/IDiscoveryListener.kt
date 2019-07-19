@@ -27,7 +27,7 @@ interface IDiscoveryListener {
      * @param url
      * @param allUrls
      */
-    fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>)
+    fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>)
 
     /**
      * 处理服务配置参数（服务地址的参数）变化

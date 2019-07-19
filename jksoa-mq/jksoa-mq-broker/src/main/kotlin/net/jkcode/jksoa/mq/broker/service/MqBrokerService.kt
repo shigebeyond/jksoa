@@ -2,8 +2,6 @@ package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jkmvc.common.UnitFuture
 import net.jkcode.jksoa.client.connection.IConnectionHub
-import net.jkcode.jksoa.client.protocol.netty.NettyConnection
-import net.jkcode.jksoa.client.protocol.netty.buildUrl
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.delay.DelayMessageDeliverTimer
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
@@ -11,12 +9,12 @@ import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMessageRepository
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMessageRepository
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqBrokerException
-import net.jkcode.jksoa.mq.connection.IConsumerConnectionHub
+import net.jkcode.jksoa.mq.common.mqBrokerLogger
+import net.jkcode.jksoa.mq.connection.ConsumerUrl
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssignment
-import net.jkcode.jksoa.mq.common.mqBrokerLogger
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import net.jkcode.jksoa.server.IRpcServer
 import net.jkcode.jksoa.server.RpcContext
@@ -116,7 +114,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
     /**
      * 消费者连接集中器
      */
-    protected val connHub: IConsumerConnectionHub = IConnectionHub.instance(IMqPushConsumerService::class.java) as IConsumerConnectionHub
+    protected val connHub: IConnectionHub = IConnectionHub.instance(IMqPushConsumerService::class.java)
 
     /**
      * 接受consumer的订阅主题
@@ -125,15 +123,15 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
      * @return
      */
     public override fun subscribeTopic(topic: String, group: String): CompletableFuture<Unit> {
-        // 记录连接
+        // 添加连接
         val ctx = RpcContext.current().ctx
         val channel = ctx.channel()
-        val conn = NettyConnection(channel, channel.buildUrl("netty"))
-        connHub.add(topic, group, conn)
+        val consumerUrl = ConsumerUrl(topic, group, channel)
+        connHub.handleServiceUrlAdd(consumerUrl, emptyList())
 
         // channel关闭时删除连接
         channel.closeFuture().addListener {
-            connHub.remove(topic, group, conn)
+            connHub.handleServiceUrlRemove(consumerUrl, emptyList())
         }
 
         return UnitFuture

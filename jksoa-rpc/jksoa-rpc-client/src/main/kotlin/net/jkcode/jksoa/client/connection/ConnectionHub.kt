@@ -38,10 +38,10 @@ open class ConnectionHub: IConnectionHub() {
      * @param url
      * @param allUrls
      */
-    public override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
-        val url = connections.remove(serverName)!!
+    public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
+        val conn = connections.remove(url.serverName)!!
         clientLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
-        url.close() // 关闭连接
+        conn.close() // 关闭连接
     }
 
     /**

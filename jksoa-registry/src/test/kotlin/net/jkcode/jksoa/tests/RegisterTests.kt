@@ -33,8 +33,8 @@ class RegisterTests {
         }
 
         // 处理服务地址删除
-        override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
-            println("服务[$serviceId]地址删除：" + serverName)
+        override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
+            println("服务[$serviceId]地址删除：" + url)
         }
 
         // 处理服务参数变化

@@ -4,6 +4,7 @@ import net.jkcode.jkmvc.common.ConsistentHash
 import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jkmvc.common.randomInt
 import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
@@ -20,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:04 PM
  */
-class ConsumerConnectionHub : IConsumerConnectionHub() {
+class ConsumerConnectionHub : IConnectionHub() {
 
     /**
      * 消费者的连接池: <主题 to <分组 to 连接>>
@@ -28,44 +29,48 @@ class ConsumerConnectionHub : IConsumerConnectionHub() {
     protected val connections: ConcurrentHashMap<String, ConcurrentHashMap<String, MutableList<IConnection>>> = ConcurrentHashMap()
 
     /**
-     * 添加连接
+     * 处理服务配置参数（服务地址的参数）变化
      *
-     * @param topic
-     * @param group
-     * @param conn
+     * @param url
      */
-    public override fun add(topic: String, group: String, conn: IConnection){
-        // 添加连接: 绑定主题+分组+连接
-        val conns = connections.getOrPutOnce(topic) {
-            // <主题 to 分组连接>
-            ConcurrentHashMap()
-        }.getOrPutOnce(group) {
-            // <分组 to 连接>
-            ArrayList()
-        }
-        conns.add(conn)
+    public override fun handleParametersChange(url: Url) {
+        throw UnsupportedOperationException("not implemented")
     }
 
     /**
-     * 删除连接
-     *
-     * @param topic
-     * @param group
-     * @param conn
-     * @return
+     * 处理服务地址新增
+     * @param url
+     * @param allUrls
      */
-    public override fun remove(topic: String, group: String, conn: IConnection): Boolean {
-        // 找到该主题+分组绑定的连接
-        val conns = connections.get(topic)?.get(group) // <主题 to <分组 to 连接>>
-        if(conns == null || conns.isEmpty())
-            return false
+    public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
+        val consumerUrl = url as ConsumerUrl
+        // 添加连接: 绑定主题+分组+连接
+        val conns = connections.getOrPutOnce(consumerUrl.topic) {
+            // <主题 to 分组连接>
+            ConcurrentHashMap()
+        }.getOrPutOnce(consumerUrl.group) {
+            // <分组 to 连接>
+            ArrayList()
+        }
+        conns.add(consumerUrl.conn)
+    }
 
-        val result = conns.remove(conn)
+    /**
+     * 处理服务地址删除
+     * @param url
+     * @param allUrls
+     */
+    public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
+        val consumerUrl = url as ConsumerUrl
+        // 找到该主题+分组绑定的连接
+        val conns = connections.get(consumerUrl.topic)?.get(consumerUrl.group) // <主题 to <分组 to 连接>>
+        if(conns == null || conns.isEmpty())
+            return
+
+        conns.remove(consumerUrl.conn)
         // 如果该分组的连接为空, 则删除该分组
         if(conns.isEmpty())
-            connections.get(topic)!!.remove(group)
-
-        return result
+            connections.get(consumerUrl.topic)!!.remove(consumerUrl.group)
     }
 
     /**
@@ -133,34 +138,6 @@ class ConsumerConnectionHub : IConsumerConnectionHub() {
         return groupConns.map { (group, conns) ->
             ConsistentHash(3, 100, conns).get(msg.subjectId)!!
         }
-    }
-
-    /********************* 只为了兼容 IConnectionHub 接口, 没有其他作用, 因为consumer的服务地址发现不通过注册中心来维护 ************************/
-    /**
-     * 处理服务配置参数（服务地址的参数）变化
-     *
-     * @param url
-     */
-    public override fun handleParametersChange(url: Url) {
-        throw UnsupportedOperationException("not implemented")
-    }
-
-    /**
-     * 处理服务地址新增
-     * @param url
-     * @param allUrls
-     */
-    override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
-        throw UnsupportedOperationException("not implemented")
-    }
-
-    /**
-     * 处理服务地址删除
-     * @param url
-     * @param allUrls
-     */
-    override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
-        throw UnsupportedOperationException("not implemented")
     }
 
 }

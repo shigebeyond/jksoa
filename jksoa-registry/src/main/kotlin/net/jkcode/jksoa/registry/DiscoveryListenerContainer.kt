@@ -38,9 +38,9 @@ open class DiscoveryListenerContainer(
      * @param url
      * @param allUrls
      */
-    public override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
+    public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
         for(l in list)
-            l.handleServiceUrlRemove(serverName, allUrls)
+            l.handleServiceUrlRemove(url, allUrls)
     }
 
     /**
@@ -99,8 +99,8 @@ open class DiscoveryListenerContainer(
 
         // 6 删除的地址
         for(key in removeKeys) {
-            this.urls.remove(key)
-            handleServiceUrlRemove(key, this.urls.values)
+            val url = this.urls.remove(key)!!
+            handleServiceUrlRemove(url, this.urls.values)
         }
 
         // 7 更新的地址

@@ -7,9 +7,7 @@ import net.jkcode.jksoa.registry.zk.nodeChilds2Urls
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient
 import java.io.Closeable
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.HashMap
 
 /**
  * zk中子节点变化监听器
@@ -87,11 +85,11 @@ class ZkChildListener(
      * @param url
      * @param allUrls
      */
-    public override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
-        super.handleServiceUrlRemove(serverName, allUrls)
+    public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
+        super.handleServiceUrlRemove(url, allUrls)
 
         // 取消监听子节点的数据变化
-        removeDataListener(serverName)
+        removeDataListener(url.serverName)
     }
 
     /**

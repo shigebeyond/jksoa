@@ -87,7 +87,7 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
      * @return false表示没有topic或broker可分配
      */
     @Synchronized
-    public override fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>): Boolean {
+    public override fun unregisterBroker(removedBroker: Url, normalBrokers: Collection<Url>): Boolean {
         if(normalBrokers.isEmpty())
             return false
 
@@ -100,7 +100,7 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
         val assigner = TopicAssigner(assignment, normalBrokers)
 
         // 1 根据broker来删除topic
-        val freeTopics = assigner.removeTopicsByBroker(removedBroker)
+        val freeTopics = assigner.removeTopicsByBroker(removedBroker.serverName)
 
         // 2 给topic分配broker
         for(topic in freeTopics)

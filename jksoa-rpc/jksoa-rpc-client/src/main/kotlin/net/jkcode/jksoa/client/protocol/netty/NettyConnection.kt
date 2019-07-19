@@ -9,17 +9,7 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
-import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
-
-/**
- * 根据channel来构建url
- * @return
- */
-public fun Channel.buildUrl(protocol: String): Url {
-    val addr = this.remoteAddress() as InetSocketAddress
-    return Url(protocol, addr.hostName, addr.port)
-}
 
 /**
  * netty连接

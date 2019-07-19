@@ -34,7 +34,7 @@ interface IMqRegistry: IMqDiscovery {
      * @param normalBrokers 正常的broker
      * @return false表示没有topic或broker可分配
      */
-    fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>): Boolean
+    fun unregisterBroker(removedBroker: Url, normalBrokers: Collection<Url>): Boolean
 
     /**
      * 注册分组
