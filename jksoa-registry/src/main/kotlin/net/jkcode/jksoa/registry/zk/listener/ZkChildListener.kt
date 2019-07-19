@@ -2,7 +2,7 @@ package net.jkcode.jksoa.registry.zk.listener
 
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.registerLogger
-import net.jkcode.jksoa.registry.IDiscoveryListener
+import net.jkcode.jksoa.registry.DiscoveryListenerContainer
 import net.jkcode.jksoa.registry.zk.nodeChilds2Urls
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient
@@ -13,11 +13,21 @@ import kotlin.collections.HashMap
 
 /**
  * zk中子节点变化监听器
+ *    继承了DiscoveryListenerContainer, 维护与代理多个 IDiscoveryListener
+ *    实现了IZkChildListener, 处理zk子节点变化
  *
  * @author shijianhang
  * @create 2017-12-13 下午10:56
  **/
-class ZkChildListener(public val discoveryListener: IDiscoveryListener, public val zkClient: ZkClient): IZkChildListener, Closeable {
+class ZkChildListener(
+        public val zkClient: ZkClient,
+        serviceId: String // 服务标识，即接口类全名
+): IZkChildListener, Closeable, DiscoveryListenerContainer(serviceId) {
+
+    /**
+     * 服务路径
+     */
+    protected val servicePath = Url.serviceId2serviceRegistryPath(serviceId)
 
     /**
      * 连接池： <协议ip端口 to 连接>
@@ -28,6 +38,11 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener, public v
      * zk节点数据监听器: <协议ip端口 to zk数据监听器>>
      */
     protected val dataListeners: ConcurrentHashMap<String, ZkDataListener> = ConcurrentHashMap()
+
+    init {
+        // 添加zk子节点监听
+        zkClient.subscribeChildChanges(servicePath, this)
+    }
 
     /**
      * 处理zk中子节点变化事件
@@ -91,7 +106,7 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener, public v
             this.urls[key] = url
 
             // 5.1 处理服务地址新增
-            discoveryListener.handleServiceUrlAdd(url, this.urls.values)
+            handleServiceUrlAdd(url, this.urls.values)
 
             // 5.2 监听子节点的数据变化
             addDataListener(url)
@@ -102,7 +117,7 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener, public v
             this.urls.remove(key)
 
             // 6.1 处理服务地址删除
-            discoveryListener.handleServiceUrlRemove(key, this.urls.values)
+            handleServiceUrlRemove(key, this.urls.values)
 
             // 6.2 取消监听子节点的数据变化
             removeDataListener(key)
@@ -111,7 +126,7 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener, public v
         // 7 更新的地址
         for(url in updateUrls) {
             this.urls[url.serverName] = url
-            discoveryListener.handleParametersChange(url)
+            handleParametersChange(url)
         }
     }
 
@@ -120,7 +135,7 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener, public v
      * @param url
      */
     public fun addDataListener(url: Url) {
-        val dataListener = ZkDataListener(url, discoveryListener)
+        val dataListener = ZkDataListener(url, this)
         zkClient.subscribeDataChanges(url.serverRegistryPath, dataListener);
         dataListeners[url.serverName] = dataListener
     }
@@ -136,13 +151,16 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener, public v
     }
 
     /**
-     * 关闭: 清理数据监听器
+     * 关闭: 清理监听器
      */
     public override fun close() {
+        // 取消zk子节点监听
+        zkClient.unsubscribeChildChanges(servicePath, this)
+
+        // 清理数据监听器
         // ConcurrentHashMap支持边遍历边删除, HashMap不支持
         for(key in dataListeners.keys)
             removeDataListener(key)
     }
-
 
 }

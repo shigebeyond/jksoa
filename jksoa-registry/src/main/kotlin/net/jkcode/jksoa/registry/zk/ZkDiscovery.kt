@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
  * zk目录结构如下:
  * ```
  * 	jksoa
- * 		net.jkcode.jksoa.example.ISimpleService # 服务标识 = 类名
+ * 		net.jkcode.jksoa.example.ISimpleService # 服务标识 = 接口类名
  * 			netty:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
  * 			netty:192.168.0.1:8080
  * 		net.jkcode.jksoa.example.ISystemService
@@ -43,9 +43,13 @@ open class ZkDiscovery: IDiscovery {
     public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
 
     /**
-     * zk子节点监听器: <服务标识 to <服务监听器 to zk监听器>>
+     * zk子节点监听器: <服务标识 to zk子节点监听器>
+     *
+     * 对于 ZkChildListener
+     *    继承了DiscoveryListenerContainer, 维护与代理多个 IDiscoveryListener
+     *    实现了IZkChildListener, 处理zk子节点变化
      */
-    protected val childListeners = ConcurrentHashMap<String, ConcurrentHashMap<IDiscoveryListener, ZkChildListener>>()
+    protected val childListeners = ConcurrentHashMap<String, ZkChildListener>()
 
     /**
      * 获得监听器
@@ -53,7 +57,7 @@ open class ZkDiscovery: IDiscovery {
      * @return
      */
     public override fun discoveryListeners(serviceId: String): Collection<IDiscoveryListener> {
-        return childListeners[serviceId]?.keys ?: emptyList()
+        return childListeners[serviceId] ?: emptyList()
     }
 
     /**
@@ -65,21 +69,15 @@ open class ZkDiscovery: IDiscovery {
     public override fun subscribe(serviceId: String, listener: IDiscoveryListener){
         try{
             clientLogger.info("ZkDiscovery监听服务[{}]变化", serviceId)
-            val servicePath = Url.serviceId2serviceRegistryPath(serviceId)
-            // 1 监听子节点
-            val childListener = ZkChildListener(listener, zkClient)
-            childListeners.getOrPut(serviceId){ // 记录监听器，以便取消监听时使用
-                ConcurrentHashMap()
-            }.put(listener, childListener)
-            zkClient.subscribeChildChanges(servicePath, childListener)
+            // 获得zk子节点监听器
+            val childListener = childListeners.getOrPut(serviceId){ // 记录监听器，以便取消监听时使用
+                ZkChildListener(zkClient, serviceId)
+            }
+            // 添加服务发现的监听器
+            childListener.add(listener)
 
             // 2 发现服务：获得子节点
             val urls = discover(serviceId)
-            if(urls.isEmpty())
-                return;
-
-            // 3 更新服务地址 -- 只处理单个listener，其他旧的listeners早就处理过
-            childListener.handleServiceUrlsChange(urls)
         } catch (e: Throwable) {
             throw RegistryException("ZkDiscovery监听服务[$serviceId]变化失败：${e.message}", e)
         }
@@ -94,12 +92,16 @@ open class ZkDiscovery: IDiscovery {
     public override fun unsubscribe(serviceId: String, listener: IDiscoveryListener){
         try{
             clientLogger.info("ZkDiscovery取消监听服务[{}]变化", serviceId)
-            val servicePath = Url.serviceId2serviceRegistryPath(serviceId)
-            // 取消监听子节点
-            val childListener = childListeners[serviceId]!![listener]!!
-            zkClient.unsubscribeChildChanges(servicePath, childListener)
-            // 关闭: 清理数据监听器
-            childListener.close()
+            // 获得zk子节点监听器
+            val childListener = childListeners[serviceId]!!
+            // 删除服务发现的监听器
+            childListener.remove(listener)
+            if(childListener.isEmpty()) {
+                // 关闭: 清理监听器
+                childListener.close()
+                // 删除zk子节点监听器
+                childListeners.remove(serviceId)
+            }
         } catch (e: Throwable) {
             throw RegistryException("ZkDiscovery取消监听服务[$serviceId]变化失败：${e.message}", e)
         }
@@ -119,7 +121,10 @@ open class ZkDiscovery: IDiscovery {
             if (zkClient.exists(rootPath))
                 currentChilds = zkClient.getChildren(rootPath)
 
-            return zkClient.nodeChilds2Urls(rootPath, currentChilds)
+            val urls = zkClient.nodeChilds2Urls(rootPath, currentChilds)
+            // 更新服务地址
+            childListeners[serviceId]!!.handleServiceUrlsChange(urls)
+            return urls
         } catch (e: Throwable) {
             throw RegistryException("发现服务[$serviceId]失败：${e.message}", e)
         }
