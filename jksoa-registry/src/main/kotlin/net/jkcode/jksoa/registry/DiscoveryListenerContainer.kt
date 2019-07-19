@@ -7,7 +7,8 @@ import java.util.concurrent.ConcurrentHashMap
 /**
  * 服务发现的监听器的容器：监听某个服务的地址变化
  *    维护与代理多个 IDiscoveryListener
- *    自身缓存了服务地址, 通过 handleServiceUrlsChange() 来做本地服务地址对比, 从而识别服务地址的增删改, 从而触发 IDiscoveryListener 的增删改方法
+ *    自身缓存了服务地址, 通过 handleServiceUrlsChange(新服务地址) 来做本地服务地址对比, 从而识别服务地址的增删改, 从而触发 IDiscoveryListener 的增删改方法
+ *    如在 ZkChildListener 的实现中通过监听服务路径下的zk子节点变化, 从而触发 handleServiceUrlsChange(新服务地址), 进而触发 IDiscoveryListener
  *
  * @author shijianhang
  * @create 2017-12-13 下午10:38
