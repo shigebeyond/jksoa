@@ -112,6 +112,17 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
     }
 
     /**
+     * 注册分组
+     *    订阅/取消订阅主题, 都可以调用该方法来实现
+     *
+     * @param group 分组名
+     * @param subscribedTopics 订阅的主题
+     */
+    public override fun registerGroup(group: String, subscribedTopics: List<String>){
+
+    }
+
+    /**
      * 写topic分配
      * @param assignment
      */
@@ -122,8 +133,8 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
         mqRegisterLogger.info("topic分配结束: {}", json)
 
         // 主动触发本地监听器
-        for (l in discoveryListeners())
-            l.handleTopic2BrokerChange(assignment)
+        triggerLocalListener(assignment)
     }
+
 
 }

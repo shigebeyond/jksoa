@@ -4,10 +4,7 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.mq.common.exception.MqRegistryException
-import net.jkcode.jksoa.mq.registry.IMqDiscovery
-import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
-import net.jkcode.jksoa.mq.registry.TopicAssignment
-import net.jkcode.jksoa.mq.registry.json2TopicAssignment
+import net.jkcode.jksoa.mq.registry.*
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
 import java.util.concurrent.ConcurrentHashMap
@@ -21,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @date 2019-7-12 11:22 AM
  */
 open class ZkMqDiscovery : IMqDiscovery {
+
     /**
      * 路径前缀
      */
@@ -58,6 +56,14 @@ open class ZkMqDiscovery : IMqDiscovery {
      */
     public override fun discoveryListeners(): Collection<IMqDiscoveryListener> {
         return dataListeners.keys
+    }
+
+    /**
+     * 触发本地监听器
+     */
+    public fun triggerLocalListener(assignment: TopicAssignment) {
+        for (l in ZkMqRegistry.discoveryListeners())
+            l.handleTopic2BrokerChange(assignment)
     }
 
     /**

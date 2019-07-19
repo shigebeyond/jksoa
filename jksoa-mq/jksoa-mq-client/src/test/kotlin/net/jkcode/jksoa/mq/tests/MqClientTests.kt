@@ -27,20 +27,28 @@ class MqClientTests {
     }
 
     /**
+     * 测试注册主题
+     */
+    public fun testRegisterTopic() {
+        // 注册
+        val b = MqProducer.registerTopic(topic)
+        if (!b)
+            throw MqClientException("没有broker可分配")
+
+        println("注册主题: $topic")
+    }
+
+    /**
      * 测试消息生产
      */
     @Test
     fun testProductor(){
-        // 注册
-        val b = MqProducer.registerTopic(topic)
-        if(!b)
-            throw MqClientException("没有broker可分配")
-
         // 生产消息
         val msg = Message(topic, randomString(7), group)
         val id = MqProducer.send(msg).get()
         println("生产消息: $msg")
     }
+
 
     /**
      * 测试推模式的消息消费
@@ -49,6 +57,8 @@ class MqClientTests {
     fun testPushConsumer(){
         // 订阅主题
         MqPushConsumer.subscribeTopic(topic, handler)
+
+        Thread.sleep(10000)
     }
 
     /**
@@ -61,4 +71,20 @@ class MqClientTests {
 
         Thread.sleep(10000)
     }
+
+    /**
+     * 测试推模式的消息消费
+     */
+    @Test
+    fun testProductAndConsume(){
+        // 注册主题
+        testRegisterTopic()
+
+        // 注册消息者
+        testPushConsumer()
+
+        // 生产消息
+        testProductor()
+    }
+
 }

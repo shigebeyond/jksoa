@@ -35,4 +35,13 @@ interface IMqRegistry: IMqDiscovery {
      * @return false表示没有topic或broker可分配
      */
     fun unregisterBroker(removedBroker: String, normalBrokers: Collection<Url>): Boolean
+
+    /**
+     * 注册分组
+     *    订阅/取消订阅主题, 都可以调用该方法来实现
+     *
+     * @param group 分组名
+     * @param subscribedTopics 订阅的主题
+     */
+    fun registerGroup(group: String, subscribedTopics: List<String>)
 }
