@@ -15,6 +15,15 @@ import java.util.concurrent.ConcurrentHashMap
  * 序列号生成器: 基于zk的持久顺序节点来实现
  * 　　为成员生成唯一的序列号
  *
+ * zk目录结构如下:
+ * ```
+ * sequence
+ * 	module1 # 模块的根节点
+ * 		_first-0 # 第一个节点, 仅用于占住0序号
+ * 		mem1-0000000001 # 其他节点: 成员名-序号
+ * 		mem2-0000000002
+ * 		mem3-0000000003
+ * ```
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-11 12:24 PM
  */
@@ -81,7 +90,8 @@ class ZkSequenceIdGenerator protected constructor(public override val module: St
         // 1 创建根节点
         if (!zkClient.exists(parentPath))
             try{
-                zkClient.createPersistent(parentPath, true)
+                // 第一个节点是_first-0, 仅用于占住0序号
+                zkClient.createPersistent(parentPath + "/_first-0", true)
             } catch (e: ZkNodeExistsException) {
                 // do nothing
             }
