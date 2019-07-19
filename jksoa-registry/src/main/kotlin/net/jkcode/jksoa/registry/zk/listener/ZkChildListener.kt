@@ -1,14 +1,12 @@
 package net.jkcode.jksoa.registry.zk.listener
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.registerLogger
 import net.jkcode.jksoa.registry.IDiscoveryListener
-import net.jkcode.jksoa.zk.ZkClientFactory
 import net.jkcode.jksoa.registry.zk.nodeChilds2Urls
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient
+import java.io.Closeable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.HashMap
@@ -19,25 +17,17 @@ import kotlin.collections.HashMap
  * @author shijianhang
  * @create 2017-12-13 下午10:56
  **/
-class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChildListener {
-
-    companion object {
-
-        /**
-         * 注册中心配置
-         */
-        public val config: IConfig = Config.instance("registry", "yaml")
-
-        /**
-         * zk客户端
-         */
-        public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
-    }
+class ZkChildListener(public val discoveryListener: IDiscoveryListener, public val zkClient: ZkClient): IZkChildListener, Closeable {
 
     /**
      * 连接池： <协议ip端口 to 连接>
      */
     protected val urls: ConcurrentHashMap<String, Url> = ConcurrentHashMap()
+
+    /**
+     * zk节点数据监听器: <协议ip端口 to zk数据监听器>>
+     */
+    protected val dataListeners: ConcurrentHashMap<String, ZkDataListener> = ConcurrentHashMap()
 
     /**
      * 处理zk中子节点变化事件
@@ -49,7 +39,6 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChil
     public override fun handleChildChange(parentPath: String, currentChilds: List<String>) {
         try {
             // 更新服务地址
-            val serviceId = Url.serviceRegistryPath2serviceId(parentPath)
             handleServiceUrlsChange(zkClient.nodeChilds2Urls(parentPath, currentChilds))
             registerLogger.info("处理zk[{}]子节点变化事件, 子节点为: {}", parentPath, currentChilds)
         }catch(e: Exception){
@@ -99,14 +88,24 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChil
         // 5 新加的地址
         for (key in addKeys){
             val url = newUrls[key]!!
-            this.urls[url.serverName] = url
+            this.urls[key] = url
+
+            // 5.1 处理服务地址新增
             discoveryListener.handleServiceUrlAdd(url, this.urls.values)
+
+            // 5.2 监听子节点的数据变化
+            addDataListener(url)
         }
 
         // 6 删除的地址
         for(key in removeKeys) {
             this.urls.remove(key)
+
+            // 6.1 处理服务地址删除
             discoveryListener.handleServiceUrlRemove(key, this.urls.values)
+
+            // 6.2 取消监听子节点的数据变化
+            removeDataListener(key)
         }
 
         // 7 更新的地址
@@ -115,5 +114,35 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChil
             discoveryListener.handleParametersChange(url)
         }
     }
+
+    /**
+     * 对服务地址节点添加数据监听器
+     * @param url
+     */
+    public fun addDataListener(url: Url) {
+        val dataListener = ZkDataListener(url, discoveryListener)
+        zkClient.subscribeDataChanges(url.serverRegistryPath, dataListener);
+        dataListeners[url.serverName] = dataListener
+    }
+
+    /**
+     * 对服务地址节点删除数据监听器
+     * @param key
+     */
+    public fun removeDataListener(key: String) {
+        val dataListener = dataListeners.remove(key)!!
+        val path = dataListener.url.serverRegistryPath
+        zkClient.unsubscribeDataChanges(path, dataListener)
+    }
+
+    /**
+     * 关闭: 清理数据监听器
+     */
+    public override fun close() {
+        // ConcurrentHashMap支持边遍历边删除, HashMap不支持
+        for(key in dataListeners.keys)
+            removeDataListener(key)
+    }
+
 
 }

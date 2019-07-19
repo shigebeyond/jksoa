@@ -48,17 +48,12 @@ open class ZkDiscovery: IDiscovery {
     protected val childListeners = ConcurrentHashMap<String, ConcurrentHashMap<IDiscoveryListener, ZkChildListener>>()
 
     /**
-     * zk节点数据监听器: <服务标识 to <服务监听器 to zk监听器>>
-     */
-    protected val dataListeners = ConcurrentHashMap<String, ConcurrentHashMap<IDiscoveryListener, List<ZkDataListener>>>()
-
-    /**
      * 获得监听器
      * @param serviceId
      * @return
      */
     public override fun discoveryListeners(serviceId: String): Collection<IDiscoveryListener> {
-        return dataListeners[serviceId]?.keys ?: emptyList()
+        return childListeners[serviceId]?.keys ?: emptyList()
     }
 
     /**
@@ -72,7 +67,7 @@ open class ZkDiscovery: IDiscovery {
             clientLogger.info("ZkDiscovery监听服务[{}]变化", serviceId)
             val servicePath = Url.serviceId2serviceRegistryPath(serviceId)
             // 1 监听子节点
-            val childListener = ZkChildListener(listener)
+            val childListener = ZkChildListener(listener, zkClient)
             childListeners.getOrPut(serviceId){ // 记录监听器，以便取消监听时使用
                 ConcurrentHashMap()
             }.put(listener, childListener)
@@ -85,17 +80,6 @@ open class ZkDiscovery: IDiscovery {
 
             // 3 更新服务地址 -- 只处理单个listener，其他旧的listeners早就处理过
             childListener.handleServiceUrlsChange(urls)
-
-            // 4 监听子节点的数据变化
-            val list = ArrayList<ZkDataListener>()
-            for (url in urls){
-                val dataListener = ZkDataListener(url, listener)
-                list.add(dataListener)
-                zkClient.subscribeDataChanges(url.serverRegistryPath, dataListener);
-            }
-            dataListeners.getOrPut(serviceId){ // 记录监听器，以便取消监听时使用
-                ConcurrentHashMap()
-            }.put(listener, list)
         } catch (e: Throwable) {
             throw RegistryException("ZkDiscovery监听服务[$serviceId]变化失败：${e.message}", e)
         }
@@ -111,16 +95,11 @@ open class ZkDiscovery: IDiscovery {
         try{
             clientLogger.info("ZkDiscovery取消监听服务[{}]变化", serviceId)
             val servicePath = Url.serviceId2serviceRegistryPath(serviceId)
-            // 1 取消监听子节点
-            zkClient.unsubscribeChildChanges(servicePath, childListeners[serviceId]!![listener]!!)
-            
-            // 2 取消监听子节点的数据变化
-            val list = dataListeners.get(serviceId)?.get(listener)
-            if(list != null) // 可能没有子节点, 也就没有数据监听器
-                for(dataListener in list){
-                    val path = dataListener.url.serverRegistryPath
-                    zkClient.unsubscribeDataChanges(path, dataListener)
-                }
+            // 取消监听子节点
+            val childListener = childListeners[serviceId]!![listener]!!
+            zkClient.unsubscribeChildChanges(servicePath, childListener)
+            // 关闭: 清理数据监听器
+            childListener.close()
         } catch (e: Throwable) {
             throw RegistryException("ZkDiscovery取消监听服务[$serviceId]变化失败：${e.message}", e)
         }

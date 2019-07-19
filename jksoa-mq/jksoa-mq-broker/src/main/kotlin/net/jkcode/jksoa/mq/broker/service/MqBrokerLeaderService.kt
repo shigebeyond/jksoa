@@ -9,6 +9,9 @@ import net.jkcode.jksoa.registry.zk.ZkRegistry
 
 /**
  * 消息中转者的leader
+ *    1. 监听broker服务节点变化, 以便重新分配topic
+ *    2. 注册/注销topic
+ *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
@@ -62,7 +65,7 @@ class MqBrokerLeaderService : IMqBrokerLeaderService, IDiscoveryListener {
         // do thing
     }
 
-    /********************* 注册topic分配情况 **********************/
+    /********************* 注册/注销topic **********************/
     /**
      * 注册主题
      * @param topic 主题
