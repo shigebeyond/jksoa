@@ -3,6 +3,8 @@ package net.jkcode.jksoa.mq.broker.repository.lsm
 import com.indeed.lsmtree.core.Store
 import net.jkcode.jksoa.mq.broker.repository.IMessageRepository
 import net.jkcode.jksoa.mq.common.Message
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * 消息的仓库 -- 读处理
@@ -17,6 +19,13 @@ abstract class LsmMessageReader : IMessageRepository {
      *   key是消息id, value是消息
      */
     protected lateinit var queueStore: Store<Long, Message>
+
+    /**
+     * 索引存储
+     *   子目录是index
+     *   key是消息id, value是待消费的分组id比特集合
+     */
+    protected lateinit var indexStore: Store<Long, BitSet>
 
     /**
      * 进度存储

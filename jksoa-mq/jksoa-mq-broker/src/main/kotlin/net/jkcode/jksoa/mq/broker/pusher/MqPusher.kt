@@ -26,7 +26,7 @@ object MqPusher : IMqPusher {
     public override fun pushMessage(msg: Message){
         val req = RpcRequest(IMqPushConsumerService::pushMessage, arrayOf<Any?>(msg))
         try {
-            // 广播给消息相关的分组(单个or多个), 调用 ConsumerConnectionHub.selectAll(req) 来获得跟主题相关的每个分组选一个consumer连接
+            // 多播给消息相关的分组, 调用 ConsumerConnectionHub.selectAll(req) 来获得跟主题相关的每个分组选一个consumer连接
             dispatcher.dispatchAll(req)
         }catch (e: RpcNoConnectionException){
             e.printStackTrace()

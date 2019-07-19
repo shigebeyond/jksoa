@@ -6,7 +6,7 @@ import com.indeed.util.serialization.Serializer
 import com.indeed.util.serialization.StringSerializer
 import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jksoa.mq.broker.BrokerConfig
-import net.jkcode.jksoa.mq.broker.common.FstObjectSerializer
+import net.jkcode.jksoa.mq.broker.serialize.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqBrokerException
 import net.jkcode.jksoa.mq.common.TopicRegex

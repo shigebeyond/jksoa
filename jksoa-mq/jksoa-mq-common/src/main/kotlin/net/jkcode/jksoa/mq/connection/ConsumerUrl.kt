@@ -3,6 +3,7 @@ package net.jkcode.jksoa.mq.connection
 import io.netty.channel.Channel
 import net.jkcode.jksoa.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.mq.consumer.group.GroupHelper
 import java.net.InetSocketAddress
 
 /**
@@ -15,9 +16,12 @@ import java.net.InetSocketAddress
  */
 data class ConsumerUrl(
         public val topic: String, // 主题
-        public val group: String, // 分组
+        public val groupId: Int, // 分组
         public val channel: Channel // 连接
 ): Url("netty", channel.remoteAddress() as InetSocketAddress) {
+
+    // 构造函数
+    public constructor(topic: String, group: String, channel: Channel): this(topic, GroupHelper.getGroupId(group), channel)
 
     /**
      * 连接

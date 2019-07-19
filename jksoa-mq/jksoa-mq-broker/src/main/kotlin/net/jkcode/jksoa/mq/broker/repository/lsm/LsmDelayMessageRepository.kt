@@ -6,7 +6,7 @@ import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.Serializer
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.BrokerConfig
-import net.jkcode.jksoa.mq.broker.common.FstObjectSerializer
+import net.jkcode.jksoa.mq.broker.serialize.FstObjectSerializer
 import net.jkcode.jksoa.mq.broker.repository.IDelayMessageRepository
 import net.jkcode.jksoa.mq.common.Message
 import java.io.File

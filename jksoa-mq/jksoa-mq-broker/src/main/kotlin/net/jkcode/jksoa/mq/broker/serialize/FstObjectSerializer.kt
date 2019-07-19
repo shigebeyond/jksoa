@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.broker.common
+package net.jkcode.jksoa.mq.broker.serialize
 
 import com.indeed.util.serialization.LengthVIntSerializer
 import com.indeed.util.serialization.Serializer
