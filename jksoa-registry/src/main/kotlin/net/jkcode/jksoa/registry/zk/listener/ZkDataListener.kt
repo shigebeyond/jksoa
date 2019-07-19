@@ -21,7 +21,7 @@ class ZkDataListener(public val url: Url, public val discoveryListener: IDiscove
         try {
             // 处理更新地址
             url.parameters = Url.parseParams(data as String)
-            discoveryListener.handleParametersChange(url, this.urls.values)
+            discoveryListener.handleParametersChange(url)
             registerLogger.info("处理zk节点[{}]数据变化事件，数据为: {}", dataPath, data)
         }catch(e: Exception){
             registerLogger.error("处理zk节点[$dataPath]数据变化事件失败", e)
@@ -37,7 +37,7 @@ class ZkDataListener(public val url: Url, public val discoveryListener: IDiscove
         try {
             // 处理更新地址
             url.parameters = emptyMap()
-            discoveryListener.handleParametersChange(url, this.urls.values)
+            discoveryListener.handleParametersChange(url)
             registerLogger.info("处理zk节点[{}]数据删除事件", dataPath)
         }catch(e: Exception){
             registerLogger.error("处理zk节点[$dataPath]数据删除事件失败", e)

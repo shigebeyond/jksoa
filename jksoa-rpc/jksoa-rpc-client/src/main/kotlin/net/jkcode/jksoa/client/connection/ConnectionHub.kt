@@ -48,9 +48,8 @@ open class ConnectionHub: IConnectionHub() {
      * 处理服务配置参数（服务地址的参数）变化
      *
      * @param url
-     * @param allUrls
      */
-    public override fun handleParametersChange(url: Url, allUrls: Collection<Url>): Unit{
+    public override fun handleParametersChange(url: Url): Unit{
         val serviceId = url.path
         clientLogger.debug("ConnectionHub处理服务[{}]参数变化: {}", serviceId, url.getQueryString())
         //重整负载参数

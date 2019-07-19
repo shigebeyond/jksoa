@@ -38,7 +38,7 @@ class RegisterTests {
         }
 
         // 处理服务参数变化
-        override fun handleParametersChange(url: Url, allUrls: Collection<Url>) {
+        override fun handleParametersChange(url: Url) {
             println("服务参数变化：" + url)
         }
     }

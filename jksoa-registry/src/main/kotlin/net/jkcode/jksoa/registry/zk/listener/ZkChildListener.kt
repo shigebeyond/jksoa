@@ -112,7 +112,7 @@ class ZkChildListener(public val discoveryListener: IDiscoveryListener): IZkChil
         // 7 更新的地址
         for(url in updateUrls) {
             this.urls[url.serverName] = url
-            discoveryListener.handleParametersChange(url, this.urls.values)
+            discoveryListener.handleParametersChange(url)
         }
     }
 

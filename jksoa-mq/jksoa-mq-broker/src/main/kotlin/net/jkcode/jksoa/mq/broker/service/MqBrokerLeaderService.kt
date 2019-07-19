@@ -57,9 +57,8 @@ class MqBrokerLeaderService : IMqBrokerLeaderService, IDiscoveryListener {
     /**
      * 处理服务配置参数（服务地址的参数）变化
      * @param url
-     * @param allUrls
      */
-    public override fun handleParametersChange(url: Url, allUrls: Collection<Url>) {
+    public override fun handleParametersChange(url: Url) {
         // do thing
     }
 

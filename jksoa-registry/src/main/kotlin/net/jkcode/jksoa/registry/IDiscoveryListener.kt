@@ -32,7 +32,6 @@ interface IDiscoveryListener {
     /**
      * 处理服务配置参数（服务地址的参数）变化
      * @param url
-     * @param allUrls
      */
-    fun handleParametersChange(url: Url, allUrls: Collection<Url>): Unit
+    fun handleParametersChange(url: Url): Unit
 }
