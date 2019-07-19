@@ -36,7 +36,9 @@ object MqProducer : IMqProducer {
      * @return false表示没有broker可分配
      */
     public override fun registerTopic(topic: String): Boolean {
-        return brokerLeaderService.registerTopic(topic)
+        return brokerLeaderService.registerTopic(topic).also {
+
+        }
     }
 
     /**

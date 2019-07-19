@@ -5,9 +5,7 @@ import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.HashMap
 
 /**
  * 某个service的rpc连接集中器
@@ -26,62 +24,11 @@ open class ConnectionHub: IConnectionHub() {
     protected val connections: ConcurrentHashMap<String, IConnection> = ConcurrentHashMap()
 
     /**
-     * 处理服务地址变化
-     *
-     * @param serviceId 服务标识
-     * @param urls 服务地址
-     */
-    public override fun handleServiceUrlsChange(urls: List<Url>){
-        var addKeys:Set<String> = emptySet() // 新加的url
-        var removeKeys:Set<String> = emptySet() // 新加的url
-        var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
-
-        // 1 构建新的服务地址
-        val newUrls = HashMap<String, Url>()
-        for (url in urls) {
-            newUrls[url.serverName] = url
-        }
-
-        // 2 获得旧的服务地址
-        var oldUrls:MutableMap<String, IConnection> = connections
-
-        // 3 比较新旧服务地址，分别获得增删改的地址
-        if(oldUrls.isEmpty()) {
-            // 全是新加地址
-            addKeys = newUrls.keys
-        }else{
-            // 获得新加的地址
-            addKeys = newUrls.keys.subtract(oldUrls.keys)
-
-            // 获得删除的地址
-            removeKeys = oldUrls.keys.subtract(newUrls.keys)
-
-            // 获得更新的地址
-            for(key in newUrls.keys.intersect(oldUrls.keys)){
-                if(newUrls[key] != oldUrls[key]!!.url)
-                    updateUrls.add(newUrls[key]!!)
-            }
-        }
-
-        // 5 新加的地址
-        for (key in addKeys){
-            handleServiceUrlAdd(newUrls[key]!!)
-        }
-
-        // 6 删除的地址
-        for(key in removeKeys)
-            handleServiceUrlRemove(key)
-
-        // 7 更新的地址
-        for(url in updateUrls)
-            handleParametersChange(url)
-    }
-
-    /**
      * 处理服务地址新增
      * @param url
+     * @param allUrls
      */
-    protected fun handleServiceUrlAdd(url: Url) {
+    public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
         clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
         connections[url.serverName] = ReusableConnection(url, url.getParameter("weight", 1)!!) // 创建连接
     }
@@ -89,8 +36,9 @@ open class ConnectionHub: IConnectionHub() {
     /**
      * 处理服务地址删除
      * @param url
+     * @param allUrls
      */
-    protected open fun handleServiceUrlRemove(serverName: String) {
+    public override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
         val url = connections.remove(serverName)!!
         clientLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
         url.close() // 关闭连接
@@ -100,14 +48,13 @@ open class ConnectionHub: IConnectionHub() {
      * 处理服务配置参数（服务地址的参数）变化
      *
      * @param url
+     * @param allUrls
      */
-    public override fun handleParametersChange(url: Url): Unit{
+    public override fun handleParametersChange(url: Url, allUrls: Collection<Url>): Unit{
         val serviceId = url.path
         clientLogger.debug("ConnectionHub处理服务[{}]参数变化: {}", serviceId, url.getQueryString())
         //重整负载参数
-        connections.forEach { key, conn ->
-            conn.weight = url.getParameter("weight", 1)!!
-        }
+        connections[url.serverName]!!.weight = url.getParameter("weight", 1)!!
     }
 
     /**

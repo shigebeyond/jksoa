@@ -16,16 +16,23 @@ interface IDiscoveryListener {
     val serviceId: String
 
     /**
-     * 处理服务地址变化
-     *
-     * @param urls 服务地址
+     * 处理服务地址新增
+     * @param url
+     * @param allUrls
      */
-    fun handleServiceUrlsChange(urls: List<Url>)
+    fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>)
+
+    /**
+     * 处理服务地址删除
+     * @param url
+     * @param allUrls
+     */
+    fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>)
 
     /**
      * 处理服务配置参数（服务地址的参数）变化
-     *
      * @param url
+     * @param allUrls
      */
-    fun handleParametersChange(url: Url): Unit
+    fun handleParametersChange(url: Url, allUrls: Collection<Url>): Unit
 }

@@ -20,19 +20,25 @@ class RegisterTests {
 
     // 服务发现监听器
     private val discoveryListener = object : IDiscoveryListener {
+
         /**
          * 服务标识，即接口类全名
          */
         override val serviceId: String
             get() = this@RegisterTests.serviceId
 
-        // 处理服务地址变化
-        override fun handleServiceUrlsChange(urls: List<Url>) {
-            println("服务[$serviceId]地址变化：" + urls)
+        // 处理服务地址新增
+        override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
+            println("服务[$serviceId]地址新增：" + url)
+        }
+
+        // 处理服务地址删除
+        override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
+            println("服务[$serviceId]地址删除：" + serverName)
         }
 
         // 处理服务参数变化
-        override fun handleParametersChange(url: Url) {
+        override fun handleParametersChange(url: Url, allUrls: Collection<Url>) {
             println("服务参数变化：" + url)
         }
     }

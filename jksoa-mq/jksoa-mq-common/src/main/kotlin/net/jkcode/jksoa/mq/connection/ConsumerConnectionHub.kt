@@ -149,7 +149,7 @@ class ConsumerConnectionHub : IConsumerConnectionHub() {
      *
      * @param url
      */
-    public override fun handleParametersChange(url: Url) {
+    public override fun handleParametersChange(url: Url, allUrls: Collection<Url>) {
         throw UnsupportedOperationException("not implemented")
     }
 }
