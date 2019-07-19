@@ -15,7 +15,7 @@ class BrokerServiceTests {
 
     val topic = "topic1"
 
-    val group = "group1"
+    val group = "default"
 
     /**
      * 消息中转者

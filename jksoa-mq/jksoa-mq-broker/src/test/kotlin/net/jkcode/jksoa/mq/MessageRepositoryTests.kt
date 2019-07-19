@@ -15,7 +15,7 @@ class MessageRepositoryTests {
 
     val topic = "topic1"
 
-    val group = "group1"
+    val group = "default"
 
     val repository = LsmMessageRepository.createRepositoryIfAbsent(topic)
 

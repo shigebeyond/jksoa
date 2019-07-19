@@ -18,7 +18,7 @@ class MqClientTests {
 
     val topic = "topic1"
 
-    val group = "group1"
+    val group = "default"
 
     val handler = object: IMqHandler {
         override fun handleMessage(msg: Message) {
@@ -57,8 +57,6 @@ class MqClientTests {
     fun testPushConsumer(){
         // 订阅主题
         MqPushConsumer.subscribeTopic(topic, handler)
-
-        Thread.sleep(10000)
     }
 
     /**
@@ -68,8 +66,6 @@ class MqClientTests {
     fun testPullConsumer(){
         // 订阅主题
         MqPullConsumer.subscribeTopic(topic, handler)
-
-        Thread.sleep(10000)
     }
 
     /**
@@ -85,6 +81,9 @@ class MqClientTests {
 
         // 生产消息
         testProductor()
+
+
+        Thread.sleep(100000)
     }
 
 }
