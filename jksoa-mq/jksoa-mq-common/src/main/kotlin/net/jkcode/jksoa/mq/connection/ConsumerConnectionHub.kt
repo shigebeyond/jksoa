@@ -135,21 +135,32 @@ class ConsumerConnectionHub : IConsumerConnectionHub() {
         }
     }
 
-    /**
-     * 处理服务地址变化
-     *
-     * @param urls 服务地址
-     */
-    public override fun handleServiceUrlsChange(urls: List<Url>) {
-        throw UnsupportedOperationException("not implemented")
-    }
-
+    /********************* 只为了兼容 IConnectionHub 接口, 没有其他作用, 因为consumer的服务地址发现不通过注册中心来维护 ************************/
     /**
      * 处理服务配置参数（服务地址的参数）变化
      *
      * @param url
      */
-    public override fun handleParametersChange(url: Url, allUrls: Collection<Url>) {
+    public override fun handleParametersChange(url: Url) {
         throw UnsupportedOperationException("not implemented")
     }
+
+    /**
+     * 处理服务地址新增
+     * @param url
+     * @param allUrls
+     */
+    override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
+        throw UnsupportedOperationException("not implemented")
+    }
+
+    /**
+     * 处理服务地址删除
+     * @param url
+     * @param allUrls
+     */
+    override fun handleServiceUrlRemove(serverName: String, allUrls: Collection<Url>) {
+        throw UnsupportedOperationException("not implemented")
+    }
+
 }
