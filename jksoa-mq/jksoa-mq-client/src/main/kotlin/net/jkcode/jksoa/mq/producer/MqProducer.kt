@@ -6,6 +6,9 @@ import net.jkcode.jksoa.mq.broker.service.IMqBrokerLeaderService
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.producer.IMqProducer
+import net.jkcode.jksoa.mq.registry.IMqDiscovery
+import net.jkcode.jksoa.mq.registry.IMqRegistry
+import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -19,6 +22,11 @@ object MqProducer : IMqProducer {
      * 消息的id属性
      */
     private val idProp = Message::class.java.getWritableFinalField("id")
+
+    /**
+     * 服务发现
+     */
+    private val mqDiscovery: IMqDiscovery = ZkMqRegistry
 
     /**
      * 消息中转者的leader
@@ -37,7 +45,8 @@ object MqProducer : IMqProducer {
      */
     public override fun registerTopic(topic: String): Boolean {
         return brokerLeaderService.registerTopic(topic).also {
-
+            if(it)  // 刷新本地的topic分配信息
+                mqDiscovery.discover()
         }
     }
 
@@ -48,7 +57,10 @@ object MqProducer : IMqProducer {
      * @return false表示topic根本就没有分配过
      */
     public override fun unregisterTopic(topic: String): Boolean {
-        return brokerLeaderService.unregisterTopic(topic)
+        return brokerLeaderService.unregisterTopic(topic).also {
+            if(it) // 刷新本地的topic分配信息
+                mqDiscovery.discover()
+        }
     }
 
     /**
