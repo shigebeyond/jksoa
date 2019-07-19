@@ -2,6 +2,7 @@ package net.jkcode.jksoa.client.protocol.netty
 
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
+import io.netty.channel.unix.Errors
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.common.RpcResponse
@@ -116,8 +117,10 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      * 处理channel发生异常事件
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        clientLogger.error("NettyRequestHandler捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
-        cause.printStackTrace()
+        clientLogger.error("NettyResponseHandlerr捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
+        // 当连接关闭时报错异常: io.netty.channel.unix.Errors$NativeIoException: epoll_ctl(..) failed: No such file or directory
+        if(cause is Errors.NativeIoException && cause.message == "epoll_ctl(..) failed: No such file or directory")
+            return
         super.exceptionCaught(ctx, cause)
     }
 }

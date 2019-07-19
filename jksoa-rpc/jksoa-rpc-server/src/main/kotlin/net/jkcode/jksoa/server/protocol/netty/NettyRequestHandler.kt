@@ -6,6 +6,7 @@ import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.server.handler.RpcRequestHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
+import io.netty.channel.unix.Errors
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
 import net.jkcode.jkmvc.common.CommonThreadPool
@@ -81,9 +82,11 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
      * 处理channel发生异常事件
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        // 当连接关闭时报错异常: io.netty.channel.unix.Errors$NativeIoException: epoll_ctl(..) failed: No such file or directory
         clientLogger.error("NettyRequestHandler捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
-        //cause.printStackTrace()
+        // 当连接关闭时报错异常: io.netty.channel.unix.Errors$NativeIoException: epoll_ctl(..) failed: No such file or directory
+        if(cause is Errors.NativeIoException && cause.message == "epoll_ctl(..) failed: No such file or directory")
+            return
+
         super.exceptionCaught(ctx, cause)
     }
 
