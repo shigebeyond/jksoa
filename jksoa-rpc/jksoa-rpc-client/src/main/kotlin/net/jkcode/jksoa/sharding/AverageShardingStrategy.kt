@@ -10,6 +10,38 @@ import net.jkcode.jkmvc.common.randomInt
  */
 class AverageShardingStrategy : IShardingStrategy {
 
+
+    /**
+     * 分片, 将 shardingNum 分成 nodeNum 份
+     * @param shardingNum 分片数
+     * @param nodeNum 节点数
+     * @return 每节点对应的分片序号的比特集
+     */
+    public override fun sharding(shardingNum: Int, nodeNum: Int): List<BitSet> {
+        val node2shd = Array<BitSet>(nodeNum)
+
+        // 1 整除的分片部分
+        val nodePerShd = shardingNum / nodeNum // 每节点的分片数, 称为一段
+        // 遍历每节点来分配
+        for(iNode in 0 util nodeNum){
+            val bs = BitSet()
+            // 分配一段的分片序号
+            for(iShd in (iNode * nodePerShd) until (iNode + 1) * nodePerShd)
+                bs.set(iShd)
+            node2shd[iNode] = bs
+        }
+
+        // 2 不能整除的分片部分
+        val assigedShdNum = nodePerShd *  nodeNum // 已分配分片数
+        // 遍历剩下分片来分配
+        var iNode = 0
+        for(iShd in assigedShdNum util shardingNum)
+            node2shd[iNode++].set(iShd)
+
+        return node2shd;
+
+    }
+
     /**
      * 分片, 将 shardingNum 分成 nodeNum 份
      * @param shardingNum 分片数
@@ -18,11 +50,8 @@ class AverageShardingStrategy : IShardingStrategy {
      */
     public override fun sharding(shardingNum: Int, nodeNum: Int): IntArray {
         val shd2Node = IntArray(shardingNum)
-        var i = 0
         //forEachNodeIndexWithRandomReversed(nodeNum){
         forEachNodeIndexWithRandomOffset(nodeNum){
-            shd2Node[i++] = it
-            i < shardingNum
         }
         return shd2Node
     }

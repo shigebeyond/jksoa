@@ -37,15 +37,18 @@ object MqPusher : IMqPusher {
         if(msg.groupIds.cardinality() == 0)
             throw IllegalArgumentException("未指定分组")
 
+        // 构建请求
         val req = RpcRequest(IMqPushConsumerService::pushMessage, arrayOf<Any?>(msg))
+        
+        // 获得连接集中器
         val connHub = IConnectionHub.instance(req.serviceId) as ConsumerConnectionHub
 
-        // 对每个分组发送消息
+        // 对每个分组发送请求
         return SetBitIterator(msg.groupIds).map { groupId ->
             // 发送请求, 支持失败重试
             RpcRequestDispatcher.sendFailover(req) { tryTimes: Int ->
                 // 该分组选一个连接
-                connHub.pickGroupConnection(groupId, msg)
+                connHub.selectGroupConnection(groupId, msg)
             }
         }
 

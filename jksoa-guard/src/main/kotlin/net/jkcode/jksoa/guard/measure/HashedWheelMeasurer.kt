@@ -83,40 +83,34 @@ class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
      * 桶的迭代器
      */
     protected inner class BucketIterator : Iterator<MetricBucket> {
-        protected var _curr = -1 // 当前序号
-        protected var _next = -1 // 下一序号
 
-        // 准备下一序号
-        protected fun prepareNext() {
-            if (_curr == _next) {
-                var i = _curr
-                while (++i < wheel.size) {
-                    if (!wheel[i].deprecated) // 未过期
-                        break
-                }
-                _next = i
+        protected var _next = prepareNext(-1) // 下一序号
+
+        /**
+         * 准备下一序号
+         * @param start 开始序号
+         * @return
+         */
+        protected fun prepareNext(start: Int) : Int {
+            var i = start
+            while (++i < wheel.size) {
+                if (!wheel[i].deprecated) // 未过期
+                    return i
             }
+            return -1
         }
 
         public override fun hasNext(): Boolean {
-            if(_next == wheel.size)
-                return false
-
-            // 准备下一序号
-            prepareNext()
-            return _next < wheel.size
+            return _next != -1;
         }
 
         public  override fun next(): MetricBucket {
-            try {
-                // 准备下一序号
-                if(_next < wheel.size)
-                    prepareNext()
-                _curr = _next
-                return wheel[_curr]
-            } catch (e: ArrayIndexOutOfBoundsException) {
-                throw NoSuchElementException()
-            }
+            if (_next == -1)
+                throw NoSuchElementException();
+
+            var curr = _next
+            _next = prepareNext() // 准备下一序号
+            return wheel[curr]
         }
     }
 
