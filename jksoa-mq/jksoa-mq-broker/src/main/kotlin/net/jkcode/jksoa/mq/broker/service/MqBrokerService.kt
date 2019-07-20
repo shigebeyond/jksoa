@@ -166,9 +166,9 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
         // 根据topic获得仓库
         val repository = LsmMessageRepository.getRepository(topic)
 
-        // 无异常则删除
+        // 无异常则完成
         if(e == null)
-            return repository.deleteMessage(id)
+            return repository.finishMessage(id, group)
 
         //有异常则扔到延迟队列中
         return LsmDelayMessageRepository.addDelayMessageId(topic, id)

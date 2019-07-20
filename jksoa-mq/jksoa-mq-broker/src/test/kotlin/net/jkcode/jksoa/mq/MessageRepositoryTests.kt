@@ -62,7 +62,7 @@ class MessageRepositoryTests {
         println("find one message: " + msg2)
 
         // 删除
-        repository.deleteMessage(id).get()
+        repository.finishMessage(id, group).get()
         println("delete message: " + id)
 
         // 读取

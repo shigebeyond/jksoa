@@ -51,16 +51,24 @@ interface IMessageRepository {
     fun batchPutMessages(msgs: List<Message>): CompletableFuture<Array<Long>>
 
     /**
-     * 删除单个消息
+     * 完后与分组相关的单个消息
+     *    完成后, 该消息即与该分组解除(待消费)关系
+     *    所有分组都完成时, 删除该消息
+     *
      * @param id
+     * @param groupId
      * @return
      */
-    fun deleteMessage(id: Long): CompletableFuture<Unit>
+    fun finishMessage(id: Long, groupId: String): CompletableFuture<Unit>
 
     /**
-     * 批量删除多个消息
-     * @param id
+     * 批量完后与分组相关的多个消息
+     *    完成后, 该消息即与该分组解除(待消费)关系
+     *    所有分组都完成时, 删除该消息
+     *
+     * @param ids
+     * @param group
      * @return
      */
-    fun batchDeleteMessages(ids: List<Long>): CompletableFuture<Unit>
+    fun batchFinishMessages(ids: List<Long>, group: String): CompletableFuture<Unit>
 }

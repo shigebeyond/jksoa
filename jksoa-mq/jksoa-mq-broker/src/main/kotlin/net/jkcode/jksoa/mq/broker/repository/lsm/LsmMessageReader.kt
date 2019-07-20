@@ -31,9 +31,9 @@ abstract class LsmMessageReader : IMessageRepository {
     /**
      * 进度存储
      *   子目录是progress
-     *   key为分组名, value是读进度对应的消息id
+     *   key为分组id, value是读进度对应的消息id
      */
-    protected lateinit var progressStore: Store<String, Long>
+    protected lateinit var progressStore: Store<Int, Long>
 
     /**
      * 根据范围查询多个消息
@@ -90,12 +90,13 @@ abstract class LsmMessageReader : IMessageRepository {
      */
     public override fun getMessagesByGroup(group: String, limit: Int): List<Message>{
         // 读该分组的进度
-        val startId:Long? = progressStore.get(group)
+        val groupId: Int = GroupSequence.get(group)
+        val startId:Long? = progressStore.get(groupId)
         // 读消息
         val result = getMessagesByRangeAndGroup(if(startId == null) 0L else startId, group, limit, false)
         if(!result.isEmpty()){
             // 保存该分组的读进度
-            progressStore.put(group, result.last().id)
+            progressStore.put(groupId, result.last().id)
             // 同步进度文件
             progressStore.sync()
         }
