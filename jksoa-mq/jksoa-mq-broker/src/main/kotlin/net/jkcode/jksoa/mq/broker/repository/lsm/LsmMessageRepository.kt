@@ -1,16 +1,16 @@
 package net.jkcode.jksoa.mq.broker.repository.lsm
 
 import com.indeed.lsmtree.core.StoreBuilder
+import com.indeed.util.serialization.IntSerializer
 import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.Serializer
-import com.indeed.util.serialization.StringSerializer
 import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.serialize.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
-import net.jkcode.jksoa.mq.common.exception.MqBrokerException
 import net.jkcode.jksoa.mq.common.TopicRegex
 import net.jkcode.jksoa.mq.common.TopicSequence
+import net.jkcode.jksoa.mq.common.exception.MqBrokerException
 import net.jkcode.jksoa.server.IRpcServer
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong
  * 消息的仓库
  *    使用lsmtree实现的kv存储, 来保存队列+进度
  *    1. 队列存储: 子目录是queue, key是消息id, value是消息
- *    2. 进度存储: 子目录是progress, key为分组名, value是读进度对应的消息id
+ *    2. 进度存储: 子目录是progress, key为分组id, value是读进度对应的消息id
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-13 5:16 PM
@@ -122,7 +122,7 @@ class LsmMessageRepository(
 
         // 创建进度存储
         val progressStoreDir = File(progressDir) // 子目录是progress
-        progressStore = StoreBuilder(progressStoreDir, StringSerializer(), LongSerializer()) // key为分组名, value是读进度对应的消息id
+        progressStore = StoreBuilder(progressStoreDir, IntSerializer(), LongSerializer()) // key为分组id, value是读进度对应的消息id
                 .setMaxVolatileGenerationSize(BrokerConfig.maxVolatileGenerationSize)
                 .setStorageType(BrokerConfig.storageType)
                 .setCodec(BrokerConfig.compressionCodec)
