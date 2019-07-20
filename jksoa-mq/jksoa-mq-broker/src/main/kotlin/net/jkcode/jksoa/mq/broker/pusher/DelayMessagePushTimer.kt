@@ -1,10 +1,9 @@
-package net.jkcode.jksoa.mq.broker.delay
+package net.jkcode.jksoa.mq.broker.pusher
 
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import net.jkcode.jkmvc.common.CommonMilliTimer
 import net.jkcode.jksoa.mq.broker.BrokerConfig
-import net.jkcode.jksoa.mq.broker.pusher.MqPusher
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMessageRepository
 import java.util.concurrent.TimeUnit
 
@@ -13,7 +12,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-17 5:17 PM
  */
-object DelayMessageDeliverTimer {
+object DelayMessagePushTimer {
 
     /**
      * 启动定时发送

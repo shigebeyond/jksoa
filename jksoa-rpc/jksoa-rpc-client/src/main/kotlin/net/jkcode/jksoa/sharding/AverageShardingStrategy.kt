@@ -22,7 +22,7 @@ class AverageShardingStrategy : IShardingStrategy {
         //forEachNodeIndexWithRandomReversed(nodeNum){
         forEachNodeIndexWithRandomOffset(nodeNum){
             shd2Node[i++] = it
-            i != shardingNum
+            i < shardingNum
         }
         return shd2Node
     }

@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.broker.pusher
 
 import net.jkcode.jksoa.mq.common.Message
+import java.util.concurrent.CompletableFuture
 
 /**
  * 消费推送者
@@ -12,8 +13,9 @@ interface IMqPusher {
     /**
      * 给消费者推送单个消息
      * @param msg
+     * @return
      */
-    fun pushMessage(msg: Message)
+    fun pushMessage(msg: Message): List<CompletableFuture<Any?>>
 
     /**
      * 给消费者推送多个消息

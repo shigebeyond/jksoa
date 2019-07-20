@@ -111,7 +111,10 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
      * @return
      */
     public override fun selectAll(req: IRpcRequest?): Collection<IConnection> {
-        throw UnsupportedOperationException("Topic对borker有粘性, 不能简单的统一操作所有broker")
+        if(req == null)
+            throw UnsupportedOperationException("Topic对borker有粘性, 不能简单的统一操作所有broker")
+
+        return listOf(select(req))
     }
 
 }

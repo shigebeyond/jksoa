@@ -19,6 +19,10 @@ import java.util.concurrent.CompletableFuture
 /**
  * 请求分发者
  *    作为请求的唯一出口, 统一调用 RefererLoader.load() 来扫描加载识别服务
+ *    dispatch()/dispatchAll()/dispatchSharding()均支持失败重试, 但是重试策略很简单, 就是随便选个连接`connHub.select(req)`重发请求,
+ *    如果重发对连接有特别要求(如连接有状态/粘性)则不要使用该类, 要自行实现分发, 当然`connHub.select(req)`也可以做特殊的刷选来满足需求
+ *
+ *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
@@ -85,7 +89,7 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      * @param connSelector 连接选择器, 参数是 tryTimes, 据此来明确失败重试时的连接选择策略
      * @return 异步结果
      */
-    private fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long, connSelector: (tryTimes: Int) -> IConnection): CompletableFuture<Any?> {
+    public fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis, connSelector: (tryTimes: Int) -> IConnection): CompletableFuture<Any?> {
         return FailoverRpcResponseFuture(config["maxTryTimes"]!!) { tryTimes: Int ->
             clientLogger.debug(" ------ dispatch request ------ ")
             // 1 选择连接
@@ -95,7 +99,6 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
             conn.send(req, requestTimeoutMillis)
         }.thenApply(IRpcResponse::getOrThrow)
     }
-
 
     /**
      * 分发一个请求到所有节点

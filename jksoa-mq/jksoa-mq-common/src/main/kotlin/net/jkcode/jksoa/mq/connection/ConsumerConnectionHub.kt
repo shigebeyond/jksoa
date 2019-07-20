@@ -125,7 +125,7 @@ class ConsumerConnectionHub : IConnectionHub() {
      * @param msg
      * @return
      */
-    protected fun pickGroupConnection(groupId: Int, msg: Message): IConnection {
+    public fun pickGroupConnection(groupId: Int, msg: Message): IConnection {
         // 1 找到该主题+分组绑定的连接
         val conns = connections.get(msg.topic)?.get(groupId) // <主题 to <分组 to 连接>>
         if (conns == null || conns.isEmpty())

@@ -1,36 +1,54 @@
 package net.jkcode.jksoa.mq.broker.pusher
 
+import net.jkcode.jkmvc.bit.SetBitIterator
+import net.jkcode.jkmvc.common.map
+import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RpcRequestDispatcher
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcRequest
+import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
+import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
+import java.util.concurrent.CompletableFuture
 
 /**
  * 消费推送者
+ *    在mq broker推送给consumer时, 对每个分组选一个连接来推送, 某个分组推送失败后, 下次还是选该分组的其他连接
+ *    因此不能使用 RpcRequestDispatcher.dispatchAll() 来推送
+ *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:41 PM
  */
 object MqPusher : IMqPusher {
 
     /**
-     * 请求分发者
-     */
-    private val dispatcher: IRpcRequestDispatcher = RpcRequestDispatcher
-
-    /**
      * 给消费者推送单个消息
      * @param msg
+     * @return
      */
-    public override fun pushMessage(msg: Message){
+    public override fun pushMessage(msg: Message): List<CompletableFuture<Any?>> {
+        // 获得分组
+        if(msg.groupIds.cardinality() == 0)
+            throw IllegalArgumentException("未指定分组")
+
         val req = RpcRequest(IMqPushConsumerService::pushMessage, arrayOf<Any?>(msg))
-        try {
-            // 多播给消息相关的分组, 调用 ConsumerConnectionHub.selectAll(req) 来获得跟主题相关的每个分组选一个consumer连接
-            dispatcher.dispatchAll(req)
-        }catch (e: RpcNoConnectionException){
-            e.printStackTrace()
+        val connHub = IConnectionHub.instance(req.serviceId) as ConsumerConnectionHub
+
+        // 对每个分组发送消息
+        return SetBitIterator(msg.groupIds).map { groupId ->
+            // 发送请求, 支持失败重试
+            RpcRequestDispatcher.sendFailover(req) { tryTimes: Int ->
+                // 该分组选一个连接
+                connHub.pickGroupConnection(groupId, msg)
+            }
         }
+
     }
 
     /**

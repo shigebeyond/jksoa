@@ -3,7 +3,7 @@ package net.jkcode.jksoa.mq.broker.service
 import net.jkcode.jkmvc.common.UnitFuture
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
-import net.jkcode.jksoa.mq.broker.delay.DelayMessageDeliverTimer
+import net.jkcode.jksoa.mq.broker.pusher.DelayMessagePushTimer
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMessageRepository
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMessageRepository
@@ -40,7 +40,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
 
         // 启动延迟消息发送的定时器
         mqBrokerLogger.debug("Mq broker启动延迟消息发送的定时器")
-        DelayMessageDeliverTimer.start()
+        DelayMessagePushTimer.start()
     }
 
     /**
