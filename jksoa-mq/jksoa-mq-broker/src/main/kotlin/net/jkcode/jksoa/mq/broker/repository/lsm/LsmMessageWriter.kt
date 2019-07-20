@@ -79,6 +79,7 @@ abstract class LsmMessageWriter : LsmMessageReader() {
 
         // 保存消息
         queueStore.put(msg.id, msg)
+        indexStore.put(msg.id, msg.groupIds)
         return msg.id
     }
 
@@ -113,6 +114,7 @@ abstract class LsmMessageWriter : LsmMessageReader() {
      */
     public override fun deleteMessage(id: Long): CompletableFuture<Unit> {
         queueStore.delete(id)
+        indexStore.delete(id)
 
         return trySync(1)
     }
@@ -123,8 +125,10 @@ abstract class LsmMessageWriter : LsmMessageReader() {
      * @return
      */
     public override fun batchDeleteMessages(ids: List<Long>): CompletableFuture<Unit> {
-        for(id in ids)
+        for(id in ids) {
             queueStore.delete(id)
+            indexStore.delete(id)
+        }
 
         return trySync(ids.size)
     }

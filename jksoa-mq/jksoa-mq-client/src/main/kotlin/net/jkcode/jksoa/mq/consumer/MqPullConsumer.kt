@@ -71,7 +71,7 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
             var msgs: List<Message>
             do {
                 // 拉取消息
-                msgs = brokerService.pullMessages(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!).get()
+                msgs = brokerService.pullMessagesByGroup(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!).get()
                 // 处理消息 + 主动更新消息状态
                 for (msg in msgs) {
                     // 异步处理消息

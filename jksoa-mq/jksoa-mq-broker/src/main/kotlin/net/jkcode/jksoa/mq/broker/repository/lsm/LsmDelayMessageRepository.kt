@@ -6,9 +6,10 @@ import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.Serializer
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.BrokerConfig
-import net.jkcode.jksoa.mq.broker.serialize.FstObjectSerializer
 import net.jkcode.jksoa.mq.broker.repository.IDelayMessageRepository
+import net.jkcode.jksoa.mq.broker.serialize.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.TopicSequence
 import java.io.File
 import java.util.concurrent.CompletableFuture
 
@@ -64,7 +65,8 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
      * @return
      */
     public override fun addDelayMessageId(topic: String, id: Long): CompletableFuture<Unit> {
-        return idCombiner.add(topic to id)
+        val topicId: Int = TopicSequence.get(topic)
+        return idCombiner.add(topicId to id)
     }
 
     /**

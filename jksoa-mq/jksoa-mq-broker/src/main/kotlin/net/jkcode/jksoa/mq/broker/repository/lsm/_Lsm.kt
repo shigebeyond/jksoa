@@ -6,9 +6,9 @@ import org.apache.commons.collections.iterators.AbstractIteratorDecorator
 import java.util.*
 
 /**
- * 消息id = topic + 消息id
+ * 消息id = topicId + 消息id
  */
-typealias MessageId = Pair<String, Long>
+typealias MessageId = Pair<Int, Long>
 
 /**
  * 消息id实体的迭代器 转 消息id迭代器
@@ -63,10 +63,10 @@ class MessageIterator(protected val idItr: MessageIdIterator) : AbstractIterator
      * @return
      */
     public override fun next(): Message? {
-        val (topic, id) = super.next() as MessageId
+        val (topicId, id) = super.next() as MessageId
 
         // 根据topic获得仓库
-        val repository = LsmMessageRepository.getRepository(topic)
+        val repository = LsmMessageRepository.getRepository(topicId)
         // 查询消息
         return repository.getMessage(id)
     }

@@ -47,7 +47,7 @@ interface IMqBrokerService {
      * @param limit 拉取记录数
      * @return
      */
-    fun pullMessages(topic: String, group: String = "default", limit: Int = 100): CompletableFuture<List<Message>>
+    fun pullMessagesByGroup(topic: String, group: String = "default", limit: Int = 100): CompletableFuture<List<Message>>
 
     /**
      * 接受consumer的反馈消息消费结果

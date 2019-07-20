@@ -2,6 +2,7 @@ package net.jkcode.jksoa.mq.broker.repository.lsm
 
 import com.indeed.lsmtree.core.Store
 import net.jkcode.jksoa.mq.broker.repository.IMessageRepository
+import net.jkcode.jksoa.mq.common.GroupSequence
 import net.jkcode.jksoa.mq.common.Message
 import java.util.*
 import kotlin.collections.ArrayList
@@ -42,14 +43,41 @@ abstract class LsmMessageReader : IMessageRepository {
      * @return
      */
     public override fun getMessagesByRange(startId: Long, limit: Int, inclusive: Boolean): List<Message> {
-        // 获得按key有序的迭代器
+        // 获得按key有序的消息迭代器
         val itr = queueStore.iterator(startId, inclusive)
         var i = 0
         val result = ArrayList<Message>()
         while (itr.hasNext() && i < limit) {
-            val entry = itr.next()
-            result.add(entry.value)
+            val msg = itr.next().value
+            result.add(msg)
             i++
+        }
+        return result
+    }
+
+    /**
+     * 根据范围与分组查询多个消息
+     * @param startId 开始的id
+     * @param group 分组
+     * @param limit
+     * @param inclusive 是否包含开始的id
+     * @return
+     */
+    public fun getMessagesByRangeAndGroup(startId: Long, group: String, limit: Int, inclusive: Boolean): List<Message> {
+        val groupId: Int = GroupSequence.get(group)
+        // 获得按key有序的索引迭代器
+        val itr = indexStore.iterator(startId, inclusive)
+        var i = 0
+        val result = ArrayList<Message>()
+        while (itr.hasNext() && i < limit) {
+            val entry = itr.next()
+            val groupIds:BitSet = entry.value // 消息的分组
+            if(groupIds.get(groupId)) { // 包含目标分组
+                val id = entry.key
+                val msg = queueStore.get(id)!! // 查消息
+                result.add(msg)
+                i++
+            }
         }
         return result
     }
@@ -64,7 +92,7 @@ abstract class LsmMessageReader : IMessageRepository {
         // 读该分组的进度
         val startId:Long? = progressStore.get(group)
         // 读消息
-        val result = getMessagesByRange(if(startId == null) 0L else startId, limit, false)
+        val result = getMessagesByRangeAndGroup(if(startId == null) 0L else startId, group, limit, false)
         if(!result.isEmpty()){
             // 保存该分组的读进度
             progressStore.put(group, result.last().id)

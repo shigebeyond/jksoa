@@ -36,13 +36,13 @@ class BrokerServiceTests {
 
     @Test
     fun testPullMessages(){
-        val msgs = brokerService.pullMessages(topic, group, 2).get()
+        val msgs = brokerService.pullMessagesByGroup(topic, group, 2).get()
         println("领取消息: $msgs")
     }
 
     @Test
     fun testFeedbackMessage(){
-        val msg = brokerService.pullMessages(topic, group, 1).get().first()
+        val msg = brokerService.pullMessagesByGroup(topic, group, 1).get().first()
         brokerService.feedbackMessage(topic, msg.id).get()
         println("反馈消息")
     }

@@ -10,6 +10,7 @@ import net.jkcode.jksoa.mq.broker.serialize.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqBrokerException
 import net.jkcode.jksoa.mq.common.TopicRegex
+import net.jkcode.jksoa.mq.common.TopicSequence
 import net.jkcode.jksoa.server.IRpcServer
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -82,6 +83,16 @@ class LsmMessageRepository(
             }
 
             return result
+        }
+
+        /**
+         * 根据topicId获得仓库
+         * @param topicId
+         * @return
+         */
+        public fun getRepository(topicId: Int): LsmMessageRepository {
+            val topic = TopicSequence.get(topicId)
+            return getRepository(topic)
         }
     }
 

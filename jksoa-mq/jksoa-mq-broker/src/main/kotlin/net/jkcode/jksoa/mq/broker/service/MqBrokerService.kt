@@ -138,13 +138,13 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
     }
 
     /**
-     * 接受consumer的拉取消息
+     * 接受consumer的按分组来拉取消息
      * @param topic 主题
      * @param group 分组
      * @param limit 拉取记录数
      * @return
      */
-    public override fun pullMessages(topic: String, group: String, limit: Int): CompletableFuture<List<Message>> {
+    public override fun pullMessagesByGroup(topic: String, group: String, limit: Int): CompletableFuture<List<Message>> {
         // 根据topic获得仓库
         val repository = LsmMessageRepository.getRepository(topic)
         // 查询消息
