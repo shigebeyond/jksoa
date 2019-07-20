@@ -9,6 +9,7 @@ import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNodeExistsException
+import java.util.NoSuchElementException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -150,12 +151,12 @@ class ZkSequence protected constructor(public override val module: String /* 模
     }
 
     /**
-     * 获得成员序号
+     * 获得成员序号, 没有则抛异常
      * @param member
-     * @return -1表示不存在
+     * @return
      */
     public override fun get(member: String): Int{
-        return sequenceIds[member] ?: -1
+        return sequenceIds[member] ?: throw NoSuchElementException("模块[$module]中没有成员[$member]的序号")
     }
 
     /**

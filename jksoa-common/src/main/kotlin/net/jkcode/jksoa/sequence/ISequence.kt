@@ -22,9 +22,9 @@ interface ISequence {
     fun getOrCreate(member: String): Int
 
     /**
-     * 获得成员序号
+     * 获得成员序号, 没有则抛异常
      * @param member
-     * @return -1表示不存在
+     * @return
      */
     fun get(member: String): Int
 }
