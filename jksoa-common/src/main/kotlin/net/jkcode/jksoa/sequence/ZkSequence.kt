@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-11 12:24 PM
  */
-class ZkSequenceIdGenerator protected constructor(public override val module: String /* 模块 */) : ClosingOnShutdown(), ISequenceIdGenerator {
+class ZkSequence protected constructor(public override val module: String /* 模块 */) : ClosingOnShutdown(), ISequence {
 
     companion object {
         /**
@@ -53,14 +53,14 @@ class ZkSequenceIdGenerator protected constructor(public override val module: St
         /**
          * 单例池
          */
-        protected var conns: ConcurrentHashMap<String, ZkSequenceIdGenerator> = ConcurrentHashMap();
+        protected var insts: ConcurrentHashMap<String, ZkSequence> = ConcurrentHashMap();
 
         /**
          * 获得单例
          */
-        public fun instance(group: String): ZkSequenceIdGenerator {
-            return conns.getOrPutOnce(group) {
-                ZkSequenceIdGenerator(group)
+        public fun instance(group: String): ZkSequence {
+            return insts.getOrPutOnce(group) {
+                ZkSequence(group)
             }
         }
     }
@@ -133,9 +133,11 @@ class ZkSequenceIdGenerator protected constructor(public override val module: St
     }
 
     /**
-     * 获得成员序号
+     * 获得成员序号, 没有则创建
+     * @param member
+     * @return
      */
-    public override fun getSequenceId(member: String): Int {
+    public override fun getOrCreate(member: String): Int {
         // 没有序号, 则通过创建顺序节点来获得序号
         if(!sequenceIds.containsKey(member)) {
             // 创建顺序节点
@@ -145,6 +147,15 @@ class ZkSequenceIdGenerator protected constructor(public override val module: St
         }
 
         return sequenceIds[member]!!
+    }
+
+    /**
+     * 获得成员序号
+     * @param member
+     * @return -1表示不存在
+     */
+    public override fun get(member: String): Int{
+        return sequenceIds[member] ?: -1
     }
 
     /**
