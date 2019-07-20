@@ -11,7 +11,7 @@ import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.IShardingRpcRequest
 import net.jkcode.jksoa.common.clientLogger
-import net.jkcode.jksoa.common.future.FailoveRpcResponseFuture
+import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
 import net.jkcode.jksoa.sharding.IShardingStrategy
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -72,15 +72,30 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      */
     public override fun dispatch(req: IRpcRequest, requestTimeoutMillis: Long): CompletableFuture<Any?> {
         val connHub: IConnectionHub = IConnectionHub.instance(req.serviceId)
-        return FailoveRpcResponseFuture(config["maxTryTimes"]!!){
+        // 发送请求, 支持失败重试
+        return sendFailover(req, requestTimeoutMillis){ tryTimes: Int -> // 选择连接
+            connHub.select(req)
+        }
+    }
+
+    /**
+     * 发送请求, 支持失败重试
+     * @param req
+     * @param requestTimeoutMillis
+     * @param connSelector 连接选择器, 参数是 tryTimes, 据此来明确失败重试时的连接选择策略
+     * @return 异步结果
+     */
+    private fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long, connSelector: (tryTimes: Int) -> IConnection): CompletableFuture<Any?> {
+        return FailoverRpcResponseFuture(config["maxTryTimes"]!!) { tryTimes: Int ->
             clientLogger.debug(" ------ dispatch request ------ ")
             // 1 选择连接
-            val conn = connHub.select(req)
+            val conn = connSelector.invoke(tryTimes)
 
             // 2 发送请求，并获得异步响应
             conn.send(req, requestTimeoutMillis)
         }.thenApply(IRpcResponse::getOrThrow)
     }
+
 
     /**
      * 分发一个请求到所有节点
@@ -98,7 +113,13 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
 
         // 2 发送请求，并获得异步响应
         return conns.map { conn ->
-            conn.send(req, requestTimeoutMillis).thenApply(IRpcResponse::getOrThrow)
+            // 发送请求, 支持失败重试
+            sendFailover(req, requestTimeoutMillis){ tryTimes: Int -> // 选择连接
+                if(tryTimes == 0) // 第一次选分配好的连接
+                    conn
+                else // 第二次随便选
+                    connHub.select(req)
+            }
         }
     }
 
@@ -132,8 +153,13 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
             // 构建请求
             val req = shdReq.buildRpcRequest(iSharding)
 
-            // 发送请求，并获得异步响应
-            conns[iConn].send(req, requestTimeoutMillis).thenApply(IRpcResponse::getOrThrow)
+            // 发送请求, 支持失败重试
+            sendFailover(req, requestTimeoutMillis){ tryTimes: Int -> // 选择连接
+                if(tryTimes == 0) // 第一次选分配好的连接
+                    conns[iConn]
+                else // 第二次随便选
+                    connHub.select(req)
+            }
         }
     }
 
