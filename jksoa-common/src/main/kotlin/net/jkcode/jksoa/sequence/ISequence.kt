@@ -27,4 +27,11 @@ interface ISequence {
      * @return
      */
     fun get(member: String): Int
+
+    /**
+     * 根据序号获得成员, 没有则抛异常
+     * @param no
+     * @return
+     */
+    fun get(no: Int): String
 }

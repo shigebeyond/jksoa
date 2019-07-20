@@ -5,7 +5,7 @@ import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.example.ISimpleService
 import net.jkcode.jksoa.leader.ZkLeaderElection
-import net.jkcode.jksoa.sequence.ZkSequenceIdGenerator
+import net.jkcode.jksoa.sequence.ZkSequence
 import org.junit.Test
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -52,10 +52,10 @@ class MyTests {
 
     @Test
     fun testSequence(){
-        val g = ZkSequenceIdGenerator.instance("module1")
-        println(g.getSequenceId("mem1"))
-        println(g.getSequenceId("mem2"))
-        println(g.getSequenceId("mem3"))
+        val g = ZkSequence.instance("module1")
+        println(g.getOrCreate("mem1"))
+        println(g.getOrCreate("mem2"))
+        println(g.getOrCreate("mem3"))
     }
 
     @Test

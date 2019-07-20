@@ -77,10 +77,16 @@ class ZkSequence protected constructor(public override val module: String /* 模
     protected val memberData: String = Application.fullWorkerId
 
     /**
-     * 成员序号
+     * 成员映射序号
      *    member-> 00001
      */
-    protected var sequenceIds: ConcurrentHashMap<String, Int> = ConcurrentHashMap();
+    protected var mem2no: ConcurrentHashMap<String, Int> = ConcurrentHashMap();
+
+    /**
+     * 序号映射成员
+     *    00001 -> member
+     */
+    protected var no2mem: ConcurrentHashMap<Int, String> = ConcurrentHashMap();
 
     /**
      * 子节点变化监听器
@@ -99,14 +105,14 @@ class ZkSequence protected constructor(public override val module: String /* 模
 
         // 2 先查结果
         val childrenKeys = zkClient.getChildren(parentPath)
-        updateSequenceIds(childrenKeys)
+        updateSequences(childrenKeys)
 
         // 3 监听子节点变化
         childListener = object: IZkChildListener{
             // 处理zk中子节点变化事件
             override fun handleChildChange(parentPath: String, childPaths: List<String>) {
                 // 更新成员序号
-                updateSequenceIds(childPaths)
+                updateSequences(childPaths)
             }
         }
         zkClient.subscribeChildChanges(parentPath, childListener)
@@ -116,20 +122,21 @@ class ZkSequence protected constructor(public override val module: String /* 模
      * 根据子节点路径, 更新成员序号
      * @param childPaths 子节点路径
      */
-    protected fun updateSequenceIds(childPaths: List<String>) {
-        for (path in childPaths) {
-            updateSequenceId(path)
-        }
+    protected fun updateSequences(childPaths: List<String>) {
+        for (path in childPaths)
+            updateSequence(path)
     }
 
     /**
      * 根据子节点路径, 更新成员序号
      * @param childPath 子节点路径
      */
-    protected fun updateSequenceId(childPath: String) {
+    protected fun updateSequence(childPath: String) {
         if (childPath.contains(MemberPathDelimiter)) {
-            val (member, id) = childPath.split(MemberPathDelimiter)
-            sequenceIds.put(member, id.toInt())
+            val (member, noStr) = childPath.split(MemberPathDelimiter)
+            val no = noStr.toInt()
+            mem2no.put(member, no) // 成员->序号
+            no2mem.put(no, member) // 序号->成员
         }
     }
 
@@ -140,14 +147,14 @@ class ZkSequence protected constructor(public override val module: String /* 模
      */
     public override fun getOrCreate(member: String): Int {
         // 没有序号, 则通过创建顺序节点来获得序号
-        if(!sequenceIds.containsKey(member)) {
+        if(!mem2no.containsKey(member)) {
             // 创建顺序节点
             val path = zkClient.createPersistentSequential(parentPath + '/' + member + MemberPathDelimiter, memberData)
             val childPath = path.substring(parentPath.length + 1)
-            updateSequenceId(childPath)
+            updateSequence(childPath)
         }
 
-        return sequenceIds[member]!!
+        return mem2no[member]!!
     }
 
     /**
@@ -156,7 +163,16 @@ class ZkSequence protected constructor(public override val module: String /* 模
      * @return
      */
     public override fun get(member: String): Int{
-        return sequenceIds[member] ?: throw NoSuchElementException("模块[$module]中没有成员[$member]的序号")
+        return mem2no[member] ?: throw NoSuchElementException("模块[$module]中没有成员[$member]对应的序号")
+    }
+
+    /**
+     * 根据序号获得成员, 没有则抛异常
+     * @param no
+     * @return
+     */
+    public override fun get(no: Int): String{
+        return no2mem[no] ?: throw NoSuchElementException("模块[$module]中没有序号[$no]对应的成员")
     }
 
     /**
