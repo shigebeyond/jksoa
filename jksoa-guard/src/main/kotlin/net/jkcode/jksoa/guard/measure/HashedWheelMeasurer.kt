@@ -2,8 +2,8 @@ package net.jkcode.jksoa.guard.measure
 
 import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jkmvc.common.mapToArray
+import net.jkcode.jkmvc.iterator.ArrayFilteredIterator
 import net.jkcode.jksoa.client.combiner.annotation.Metric
-import java.util.*
 
 /**
  * 基于时间轮实现的计量器
@@ -82,35 +82,9 @@ class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
     /**
      * 桶的迭代器
      */
-    protected inner class BucketIterator : Iterator<MetricBucket> {
-
-        protected var _next = prepareNext(-1) // 下一序号
-
-        /**
-         * 准备下一序号
-         * @param start 开始序号
-         * @return
-         */
-        protected fun prepareNext(start: Int) : Int {
-            var i = start
-            while (++i < wheel.size) {
-                if (!wheel[i].deprecated) // 未过期
-                    return i
-            }
-            return -1
-        }
-
-        public override fun hasNext(): Boolean {
-            return _next != -1;
-        }
-
-        public  override fun next(): MetricBucket {
-            if (_next == -1)
-                throw NoSuchElementException();
-
-            var curr = _next
-            _next = prepareNext() // 准备下一序号
-            return wheel[curr]
+    protected inner class BucketIterator : ArrayFilteredIterator<HashedWheelBucket>(wheel) {
+        override fun filter(ele: HashedWheelBucket): Boolean {
+            return !ele.deprecated // 未过期
         }
     }
 
