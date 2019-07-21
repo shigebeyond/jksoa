@@ -8,6 +8,7 @@ import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqClientException
 import net.jkcode.jksoa.mq.common.mqClientLogger
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -27,22 +28,18 @@ object MqSubscriber: IMqSubscriber {
     /**
      * 消息处理的线程池
      */
-    public val commonPool: DefaultEventExecutorGroup = DefaultEventExecutorGroup(config["threadNum"]!!)
+    public val consumerThreadPool: DefaultEventExecutorGroup = DefaultEventExecutorGroup(config["threadNum"]!!)
+
 
     /**
-     * 消息中转者
+     * 消息执行者: <主题 to 执行者>
      */
-    private val brokerService = Referer.getRefer<IMqBrokerService>()
-
-    /**
-     * 消息处理器: <主题 to 处理器>
-     */
-    private val handlers: ConcurrentHashMap<String, IMqHandler> = ConcurrentHashMap();
+    private val exectors: ConcurrentHashMap<String, TopicMessagesExector> = ConcurrentHashMap();
 
     /**
      * 已订阅的主题
      */
-    public override val subscribedTopics: Collection<String> = handlers.keys
+    public override val subscribedTopics: Collection<String> = exectors.keys
 
     /**
      * 订阅主题
@@ -51,11 +48,11 @@ object MqSubscriber: IMqSubscriber {
      * @param handler
      */
     public override fun subscribeTopic(topic: String, handler: IMqHandler){
-        if(handlers.containsKey(topic))
+        if(exectors.containsKey(topic))
             throw MqClientException("Duplicate subcribe to the same topic")
 
-        // 添加处理器
-        handlers[topic] = handler
+        // 添加执行者
+        exectors[topic] = TopicMessagesExector(topic, handler)
     }
 
     /**
@@ -64,36 +61,25 @@ object MqSubscriber: IMqSubscriber {
      * @return
      */
     public override fun isTopicSubscribed(topic: String): Boolean {
-        return handlers.containsKey(topic)
+        return exectors.containsKey(topic)
     }
 
     /**
-     * 异步处理消息
+     * 异步消费消息
      * @param msg 消息
+     * @return
      */
-    public override fun handleMessage(msg: Message){
-        // 异步处理: 选择线程
-        val executor = if(msg.subjectId == 0L)
-            commonPool
-                        else
-                            commonPool.selectExecutor(msg.subjectId) // 根据 subjectId 选择固定的线程, 以便实现consumer进程内部的消息有序
-        executor.execute {
-            var e:Exception? = null
-            try {
-                // 调用对应处理器
-                handlers[msg.topic]!!.handleMessage(msg)
-            }catch (ex: Exception){
-                e = ex
-            }finally {
-                // 反馈消息消费结果
-                brokerService.feedbackMessage(msg.topic, msg.id, e, MqPushConsumer.config["group"]!!)
-                if(e != null) { // 处理异常
-                    e.printStackTrace()
-                    mqClientLogger.error("消费消息出错: 消息={}, 异常={}", msg, e.message)
-                }
-            }
+    public override fun consumeMessage(msg: Message): CompletableFuture<Unit> {
+        return exectors[msg.topic]!!.add(msg)
+    }
 
-        }
+    /**
+     * 异步消费消息
+     * @param msgs 消息
+     * @return
+     */
+    public override fun consumeMessages(topic: String, msgs: List<Message>): CompletableFuture<Unit> {
+        return exectors[topic]!!.addAll(msgs)
     }
 
 }

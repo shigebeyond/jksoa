@@ -56,7 +56,7 @@ object MqPusher : IMqPusher {
 
     /**
      * 给消费者推送多个消息
-     *    TODO: 支持真正的批量: 1 消息的分配 2 consumer端支持批量接收
+     *    TODO: 支持真正的批量: 但消息在连接上的分配是根据 <主题 to <分组 to 连接>> 来做, 这么分下来每个连接的量估计不大, 费力不讨好, 还不如在consumer中做批量消费
      * @param msgs
      */
     public override fun pushMessages(msgs: List<Message>){

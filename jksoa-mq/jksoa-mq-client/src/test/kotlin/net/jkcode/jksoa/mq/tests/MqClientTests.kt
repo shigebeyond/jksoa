@@ -21,7 +21,7 @@ class MqClientTests {
     val group = "default"
 
     val handler = object: IMqHandler {
-        override fun handleMessage(msg: Message) {
+        override fun consumeMessages(msg: Message) {
             println("收到消息: $msg")
         }
     }

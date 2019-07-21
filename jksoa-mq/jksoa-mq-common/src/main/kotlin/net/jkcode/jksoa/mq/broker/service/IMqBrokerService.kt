@@ -52,11 +52,11 @@ interface IMqBrokerService {
     /**
      * 接受consumer的反馈消息消费结果
      * @param topic 主题
-     * @param id 消息标识
+     * @param ids 消息标识
      * @param e 消费异常
      * @param group 分组
      * @return
      */
-    fun feedbackMessage(topic: String, id: Long, e: Throwable? = null, group: String = "default"): CompletableFuture<Unit>
+    fun feedbackMessages(topic: String, id: List<Long>, e: Throwable? = null, group: String = "default"): CompletableFuture<Unit>
 
 }

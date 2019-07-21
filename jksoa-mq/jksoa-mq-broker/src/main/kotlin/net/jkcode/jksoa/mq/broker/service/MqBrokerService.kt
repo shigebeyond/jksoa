@@ -157,12 +157,12 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
      * 接受consumer的反馈消息消费结果
      *    无异常则删除, 有异常则扔到延迟队列中
      * @param topic 主题
-     * @param id 消息标识
+     * @param ids 消息标识
      * @param e 消费异常
      * @param group 分组
      * @return
      */
-    public override fun feedbackMessage(topic: String, id: Long, e: Throwable?, group: String): CompletableFuture<Unit> {
+    public override fun feedbackMessages(topic: String, ids: List<Long>, e: Throwable?, group: String): CompletableFuture<Unit> {
         // 根据topic获得仓库
         val repository = LsmMessageRepository.getRepository(topic)
 

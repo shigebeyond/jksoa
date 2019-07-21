@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.consumer
 
 import net.jkcode.jksoa.mq.common.Message
+import java.util.concurrent.CompletableFuture
 
 /**
  * 消息订阅者
@@ -28,7 +29,7 @@ interface IMqSubscriber {
      * @param topic 主题
      * @param lambda
      */
-    fun subscribeTopic(topic: String, lambda: (Message) -> Unit){
+    fun subscribeTopic(topic: String, lambda: (List<Message>) -> Unit){
         subscribeTopic(topic, LambdaMqHandler(lambda))
     }
 
@@ -40,8 +41,15 @@ interface IMqSubscriber {
     fun isTopicSubscribed(topic: String): Boolean
 
     /**
-     * 异步处理消息
+     * 异步消费消息
      * @param msg 消息
      */
-    fun handleMessage(msg: Message)
+    fun consumeMessage(msg: Message): CompletableFuture<Unit>
+
+    /**
+     * 异步消费消息
+     * @param msgs 消息
+     * @return
+     */
+    fun consumeMessages(topic: String, msgs: List<Message>): CompletableFuture<Unit>
 }

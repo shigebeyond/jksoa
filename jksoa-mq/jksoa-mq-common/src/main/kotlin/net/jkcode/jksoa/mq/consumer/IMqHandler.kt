@@ -10,8 +10,8 @@ import net.jkcode.jksoa.mq.common.Message
 interface IMqHandler {
 
     /**
-     * 处理消息
-     * @param msg 消息
+     * 消费处理
+     * @param msgs 消息
      */
-    fun handleMessage(msg: Message)
+    fun consumeMessages(msgs: List<Message>)
 }

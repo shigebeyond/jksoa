@@ -1,7 +1,9 @@
 package net.jkcode.jksoa.mq.consumer
 
+import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
+import java.util.concurrent.CompletableFuture
 
 /**
  * 推送消费者的服务
@@ -15,9 +17,10 @@ class MqPushConsumerService : IMqPushConsumerService {
     /**
      * 接收broker推送的消息
      * @param msg 消息
+     * @return
      */
-    public override fun pushMessage(msg: Message){
-        return MqSubscriber.handleMessage(msg)
+    public override fun pushMessage(msg: Message): CompletableFuture<Unit> {
+        return MqSubscriber.consumeMessage(msg)
     }
 
 }

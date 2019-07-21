@@ -3,6 +3,7 @@ package net.jkcode.jksoa.mq.consumer.service
 import net.jkcode.jksoa.common.annotation.RemoteService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.connection.ConsumerConnectionHub
+import java.util.concurrent.CompletableFuture
 
 /**
  * 推送消费者的服务
@@ -17,7 +18,8 @@ interface IMqPushConsumerService {
     /**
      * 接收broker推送的消息
      * @param msg 消息
+     * @return
      */
-    fun pushMessage(msg: Message)
+    fun pushMessage(msg: Message): CompletableFuture<Unit>
 
 }
