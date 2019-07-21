@@ -3,6 +3,7 @@ package net.jkcode.jksoa.sharding
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
+import java.util.*
 
 /**
  * 分片策略
@@ -23,7 +24,7 @@ interface IShardingStrategy {
      * 分片, 将 shardingNum 分成 nodeNum 份
      * @param shardingNum 分片数
      * @param nodeNum 节点数
-     * @return 每片对应的节点序号
+     * @return 每节点对应的一组分片序号(比特集)
      */
-    fun sharding(shardingNum: Int, nodeNum: Int): IntArray
+    fun sharding(shardingNum: Int, nodeNum: Int): Array<BitSet>
 }
