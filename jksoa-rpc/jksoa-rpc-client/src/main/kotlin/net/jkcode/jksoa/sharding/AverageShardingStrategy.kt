@@ -17,7 +17,7 @@ class AverageShardingStrategy : IShardingStrategy {
      */
     public override fun sharding(shardingNum: Int, nodeNum: Int): Array<BitSet> {
         // 每节点对应的一组分片序号(比特集)
-        val shds = Array<BitSet>(nodeNum){
+        val node2shds = Array<BitSet>(nodeNum){
             BitSet()
         }
 
@@ -27,7 +27,7 @@ class AverageShardingStrategy : IShardingStrategy {
         for(iNode in 0 until nodeNum){
             // 分配一段的分片序号
             for(iShd in (iNode * nodePerShd) until (iNode + 1) * nodePerShd)
-                shds[iNode].set(iShd)
+                node2shds[iNode].set(iShd)
         }
 
         // 2 不能整除的分片部分
@@ -35,9 +35,9 @@ class AverageShardingStrategy : IShardingStrategy {
         // 遍历剩下分片来分配
         var iNode = 0
         for(iShd in assigedShdNum until shardingNum)
-            shds[iNode++].set(iShd)
+            node2shds[iNode++].set(iShd)
 
-        return shds
+        return node2shds
 
     }
 

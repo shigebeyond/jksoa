@@ -1,9 +1,7 @@
 package net.jkcode.jksoa.client.dispatcher
 
 import net.jkcode.jkmvc.closing.ClosingOnShutdown
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IPlugin
-import net.jkcode.jkmvc.common.get
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.client.IConnection
 import net.jkcode.jksoa.client.connection.IConnectionHub
 import net.jkcode.jksoa.client.referer.RefererLoader
@@ -138,51 +136,39 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
     public override fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long): List<CompletableFuture<Any?>> {
         val connHub: IConnectionHub = IConnectionHub.instance(shdReq.serviceId)
         // 1 分片
-        // 获得所有连接(节点)
-        val conns = connHub.selectAll()
+        val conns = connHub.selectAll() // 获得所有连接(节点)
         val connSize = conns.size
-        // 请求分片, 每片对应连接(节点)序号
         val shardingSize = shdReq.shardingSize
-        val shd2Conns = shardingStrategy.sharding(shardingSize, connSize)
-        // 记录分片结果
-        val conn2Shds = connection2Shardings(shd2Conns, conns)
-        val msg = conn2Shds.entries.joinToString(", ", "Sharding result from $shardingSize sharding to $connSize Node: ")  {
-            "${it.key} => ${it.value}"
+
+        // 请求分片, 每连接对应的一组分片序号(比特集)
+        val conn2Shds = shardingStrategy.sharding(shardingSize, connSize)
+
+        // 打印分片结果
+        var iConn = 0
+        val msg = conn2Shds.joinToString(", ", "Sharding result from $shardingSize sharding to $connSize Node: ")  { shds ->
+            "${conns[iConn++]} => ${shds.iterator().toDesc()}"
         }
         clientLogger.info(msg)
 
         // 2 逐个分片构建并发送rpc请求
-        return shd2Conns.mapIndexed { iSharding, iConn ->
-            // 构建请求
-            val req = shdReq.buildRpcRequest(iSharding)
+        val futures = ArrayList<CompletableFuture<Any?>>(shardingSize)
+        conn2Shds.forEachIndexed { iConn, shds ->
+            for(iSharding in shds.iterator()) {
+                // 构建请求
+                val req = shdReq.buildRpcRequest(iSharding)
 
-            // 发送请求, 支持失败重试
-            sendFailover(req, requestTimeoutMillis){ tryTimes: Int -> // 选择连接
-                if(tryTimes == 0) // 第一次选分配好的连接
-                    conns[iConn]
-                else // 第二次随便选
-                    connHub.select(req)
+                // 发送请求, 支持失败重试
+                val future = sendFailover(req, requestTimeoutMillis) { tryTimes: Int ->
+                    // 选择连接
+                    if (tryTimes == 0) // 第一次选分配好的连接
+                        conns[iConn]
+                    else // 第二次随便选
+                        connHub.select(req)
+                }
+                futures.add(future)
             }
         }
-    }
-
-    /**
-     * 构建连接(节点)对分片的映射
-     *
-     * @param shd2Conns
-     * @param conns
-     * @return
-     */
-    private fun connection2Shardings(shd2Conns: IntArray, conns: Collection<IConnection>): HashMap<IConnection, MutableList<Int>> {
-        val conn2Shds = HashMap<IConnection, MutableList<Int>>(conns.size)
-        shd2Conns.forEachIndexed { iSharding, iConn ->
-            val conn = conns[iConn]
-            val shardings = conn2Shds.getOrPut(conn) {
-                LinkedList()
-            }!!
-            shardings.add(iSharding)
-        }
-        return conn2Shds
+        return futures
     }
 
 }
