@@ -32,7 +32,7 @@ class TopicMessagesExector(
     /**
      * 批量消费消息
      */
-    public override fun handleRequests(msgs: Collection<Message>, reqs: Collection<Pair<Message, CompletableFuture<Unit>>>): CompletableFuture<*> {
+    public override fun handleRequests(msgs: List<Message>, reqs: Collection<Pair<Message, CompletableFuture<Unit>>>): CompletableFuture<*> {
         var e: Exception? = null
         try {
             // 消费处理

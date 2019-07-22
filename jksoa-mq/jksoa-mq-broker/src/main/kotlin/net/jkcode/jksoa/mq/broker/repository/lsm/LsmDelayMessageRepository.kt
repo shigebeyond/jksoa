@@ -70,6 +70,18 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
     }
 
     /**
+     * 添加延迟的消息id
+     * @param topic
+     * @param ids
+     * @return
+     */
+    public override fun addDelayMessageIds(topic: String, ids: List<Long>): CompletableFuture<Unit> {
+        val topicId: Int = TopicSequence.get(topic)
+        val mids = ids.map { topicId to it }
+        return idCombiner.addAll(mids)
+    }
+
+    /**
      * 批量保存延迟的消息id
      * @param ids
      */

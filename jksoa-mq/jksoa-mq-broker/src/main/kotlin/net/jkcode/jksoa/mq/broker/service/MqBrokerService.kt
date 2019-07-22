@@ -163,15 +163,15 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
      * @return
      */
     public override fun feedbackMessages(topic: String, ids: List<Long>, e: Throwable?, group: String): CompletableFuture<Unit> {
-        // 根据topic获得仓库
-        val repository = LsmMessageRepository.getRepository(topic)
-
         // 无异常则完成
-        if(e == null)
-            return repository.finishMessage(id, group)
+        if(e == null) {
+            // 根据topic获得仓库
+            val repository = LsmMessageRepository.getRepository(topic)
+            return repository.batchFinishMessages(ids, group)
+        }
 
         //有异常则扔到延迟队列中
-        return LsmDelayMessageRepository.addDelayMessageId(topic, id)
+        return LsmDelayMessageRepository.addDelayMessageIds(topic, ids)
     }
 
 }

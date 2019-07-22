@@ -29,7 +29,7 @@ interface IMqSubscriber {
      * @param topic 主题
      * @param lambda
      */
-    fun subscribeTopic(topic: String, lambda: (List<Message>) -> Unit){
+    fun subscribeTopic(topic: String, lambda: (Collection<Message>) -> Unit){
         subscribeTopic(topic, LambdaMqHandler(lambda))
     }
 

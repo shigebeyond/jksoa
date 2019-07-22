@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 open class GroupFutureRunCombiner<RequestArgumentType/* 请求参数类型 */> (
         flushSize: Int = 100 /* 触发刷盘的队列大小 */,
         flushTimeoutMillis: Long = 100 /* 触发刷盘的定时时间 */,
-        public val batchFutureRun:(Collection<RequestArgumentType>) -> CompletableFuture<Unit> /* 批量无值操作 */
+        public val batchFutureRun:(List<RequestArgumentType>) -> CompletableFuture<Unit> /* 批量无值操作 */
 ): UnitRequestQueueFlusher<RequestArgumentType>(flushSize, flushTimeoutMillis){
 
     /**
@@ -20,7 +20,7 @@ open class GroupFutureRunCombiner<RequestArgumentType/* 请求参数类型 */> (
      * @param reqs
      * @param req2ResFuture
      */
-    protected override fun handleRequests(reqs: Collection<RequestArgumentType>, req2ResFuture: Collection<Pair<RequestArgumentType, CompletableFuture<Unit>>>): CompletableFuture<*> {
+    protected override fun handleRequests(reqs: List<RequestArgumentType>, req2ResFuture: Collection<Pair<RequestArgumentType, CompletableFuture<Unit>>>): CompletableFuture<*> {
         // 执行批量操作
         return batchFutureRun.invoke(reqs)
     }

@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.mq.broker.repository
 
+import net.jkcode.jksoa.mq.broker.repository.lsm.MessageId
 import net.jkcode.jksoa.mq.common.Message
 import java.util.concurrent.CompletableFuture
 
@@ -17,6 +18,14 @@ interface IDelayMessageRepository {
      * @return
      */
     fun addDelayMessageId(topic: String, id: Long): CompletableFuture<Unit>
+
+    /**
+     * 添加延迟的消息id
+     * @param topic
+     * @param ids
+     * @return
+     */
+    fun addDelayMessageIds(topic: String, ids: List<Long>): CompletableFuture<Unit>
 
     /**
      * 取出到期的延迟消息

@@ -19,13 +19,13 @@ open class GroupFutureSupplierCombiner<RequestArgumentType /* 请求参数类型
         public val one2one: Boolean = true /* 请求对响应是一对一(ResponseType是非List), 还是一对多(ResponseType是List) */,
         flushSize: Int = 100 /* 触发刷盘的队列大小 */,
         flushTimeoutMillis: Long = 100 /* 触发刷盘的定时时间 */,
-        public val batchFutureSupplier:(Collection<RequestArgumentType>) -> CompletableFuture<Collection<BatchItemType>> /* 批量取值操作 */
+        public val batchFutureSupplier:(List<RequestArgumentType>) -> CompletableFuture<List<BatchItemType>> /* 批量取值操作 */
 ): RequestQueueFlusher<RequestArgumentType, ResponseType>(flushSize, flushTimeoutMillis){
 
     /**
      * 构造函数, 使用注解传参
      */
-    public constructor(annotation: GroupCombine, batchFutureSupplier:(Collection<RequestArgumentType>) -> CompletableFuture<Collection<BatchItemType>>):this(annotation.reqArgField, annotation.respField, annotation.one2one, annotation.flushSize, annotation.flushTimeoutMillis, batchFutureSupplier)
+    public constructor(annotation: GroupCombine, batchFutureSupplier:(List<RequestArgumentType>) -> CompletableFuture<List<BatchItemType>>):this(annotation.reqArgField, annotation.respField, annotation.one2one, annotation.flushSize, annotation.flushTimeoutMillis, batchFutureSupplier)
 
     /**
      * 处理刷盘的请求
@@ -34,9 +34,9 @@ open class GroupFutureSupplierCombiner<RequestArgumentType /* 请求参数类型
      * @param req2ResFuture
      * @return
      */
-    protected override fun handleRequests(reqs: Collection<RequestArgumentType>, req2ResFuture: Collection<Pair<RequestArgumentType, CompletableFuture<ResponseType>>>): CompletableFuture<*> {
+    protected override fun handleRequests(reqs: List<RequestArgumentType>, req2ResFuture: Collection<Pair<RequestArgumentType, CompletableFuture<ResponseType>>>): CompletableFuture<*> {
         // 1 执行批量操作
-        val resultFuture: CompletableFuture<Collection<BatchItemType>> = batchFutureSupplier.invoke(reqs)
+        val resultFuture: CompletableFuture<List<BatchItemType>> = batchFutureSupplier.invoke(reqs)
 
         // 2 设置异步响应
         resultFuture.thenAccept { result ->
@@ -56,15 +56,15 @@ open class GroupFutureSupplierCombiner<RequestArgumentType /* 请求参数类型
             var respGetter: (Any) -> Any? = getGetter(clazz, respField) // 返回值的getter
 
             // 根据请求参数来分组响应
-            var req2resp: Map<RequestArgumentType, Any?>
+            var req2res: Map<RequestArgumentType, Any?>
             var defaultReps: Any?
             if(one2one) { // 一对一
-                req2resp = result.associate {
+                req2res = result.associate {
                     reqArgGetter(it)!! to respGetter(it)
                 }
                 defaultReps = null
             }else { // 一对多
-                req2resp = result.groupBy(reqArgGetter, respGetter)
+                req2res = result.groupBy(reqArgGetter, respGetter)
                 defaultReps = emptyList<Any?>()
             }
 
@@ -72,11 +72,10 @@ open class GroupFutureSupplierCombiner<RequestArgumentType /* 请求参数类型
             // 设置异步响应
             req2ResFuture.forEach { (req, resFuture) ->
                 // 根据请求参数来获得响应
-                val resp = req2resp.getOrDefault(req, defaultReps) as ResponseType
-                resFuture.complete(resp)
+                val res = req2res.getOrDefault(req, defaultReps) as ResponseType
+                resFuture.complete(res)
             }
         }
-
 
         return resultFuture
     }

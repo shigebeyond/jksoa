@@ -76,11 +76,11 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
                 throw GuardException("${msg}不存在")
             // 检查方法参数
             val pt = batchMethod.parameterTypes
-            if (pt.size != 1 || !Collection::class.java.isAssignableFrom(pt.first()))
-                throw GuardException("${msg}必须有唯一的Collection类型的参数")
+            if (pt.size != 1 || !List::class.java.isAssignableFrom(pt.first()))
+                throw GuardException("${msg}必须有唯一的List类型的参数")
             // 检查方法返回值
-            if (!Collection::class.java.isAssignableFrom(batchMethod.returnType) && !CompletableFuture::class.java.isAssignableFrom(batchMethod.returnType))
-                throw GuardException("${msg}必须有的Collection或CompletableFuture<Collection>类型的返回值")
+            if (!List::class.java.isAssignableFrom(batchMethod.returnType) && !CompletableFuture::class.java.isAssignableFrom(batchMethod.returnType))
+                throw GuardException("${msg}必须有的List或CompletableFuture<List>类型的返回值")
 
             // 创建请求合并器
             GroupFutureSupplierCombiner<Any, Any?, Any>(annotation, toFutureSupplier(batchMethod))
