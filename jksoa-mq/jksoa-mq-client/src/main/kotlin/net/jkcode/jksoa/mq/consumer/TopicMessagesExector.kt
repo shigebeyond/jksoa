@@ -1,12 +1,11 @@
 package net.jkcode.jksoa.mq.consumer
 
-import net.jkcode.jkmvc.flusher.RequestQueueFlusher
+import net.jkcode.jkmvc.common.VoidFuture
+import net.jkcode.jkmvc.flusher.UnitRequestQueueFlusher
 import net.jkcode.jksoa.client.referer.Referer
-import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqClientLogger
-import java.util.ArrayList
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -19,7 +18,7 @@ import java.util.concurrent.CompletableFuture
 class TopicMessagesExector(
         public val topic: String, // 主题
         public val handler: IMqHandler // 消息处理器
-) : RequestQueueFlusher<Message, Unit>(100, 100) {
+) : UnitRequestQueueFlusher<Message>(100, 100) {
 
     companion object{
 
@@ -33,7 +32,7 @@ class TopicMessagesExector(
     /**
      * 批量消费消息
      */
-    public override fun handleFlush(msgs: List<Message>, reqs: ArrayList<Pair<Message, CompletableFuture<Unit>>>): Boolean {
+    public override fun handleRequests(msgs: Collection<Message>, reqs: Collection<Pair<Message, CompletableFuture<Unit>>>): CompletableFuture<*> {
         var e: Exception? = null
         try {
             // 消费处理
@@ -48,7 +47,7 @@ class TopicMessagesExector(
                 e.printStackTrace()
                 mqClientLogger.error("消费消息出错: 消息={}, 异常={}", msgs, e.message)
             }
-            return true
+            return VoidFuture
         }
     }
 

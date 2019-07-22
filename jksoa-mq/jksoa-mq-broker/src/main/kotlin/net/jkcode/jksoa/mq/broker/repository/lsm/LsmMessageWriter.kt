@@ -44,13 +44,12 @@ abstract class LsmMessageWriter : LsmMessageReader() {
         else
             object: CounterFlusher(100, 100) {
                 // 处理刷盘
-                override fun handleFlush(reqCount: Long): Boolean {
+                override fun handleRequests(reqCount: Int) {
                     // print(if(reqCount < flushSize) "定时" else "定量")
                     // println("sync, 操作计数 from [$reqCount] to [${requestCount()}] ")
                     // 同步到磁盘
                     queueStore.sync()
                     indexStore.sync()
-                    return true
                 }
             }
     }

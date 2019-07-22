@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.guard.combiner
 
-import net.jkcode.jkmvc.flusher.RequestQueueFlusher
-import java.util.ArrayList
+import net.jkcode.jkmvc.common.VoidFuture
+import net.jkcode.jkmvc.flusher.UnitRequestQueueFlusher
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -13,20 +13,20 @@ import java.util.concurrent.CompletableFuture
 class GroupRunCombiner<RequestArgumentType/* 请求参数类型 */>(
         flushSize: Int = 100 /* 触发刷盘的队列大小 */,
         flushTimeoutMillis: Long = 100 /* 触发刷盘的定时时间 */,
-        protected val batchRun:(List<RequestArgumentType>) -> Unit /* 批量无值操作 */
+        protected val batchRun:(Collection<RequestArgumentType>) -> Unit /* 批量无值操作 */
 //): GroupFutureRunCombiner<RequestArgumentType>(flushSize, flushTimeoutMillis, toFutureSupplier(batchRun)){ // 实现1: 继承GroupFutureRunCombiner, 操作转异步
-): RequestQueueFlusher<RequestArgumentType, Unit>(flushSize, flushTimeoutMillis){ // 实现2: 实现RequestQueueFlusher, 不转异步, 反正handleFlush()也是在线程池中执行
+): UnitRequestQueueFlusher<RequestArgumentType>(flushSize, flushTimeoutMillis){ // 实现2: 实现RequestQueueFlusher, 不转异步, 反正handleFlush()也是在线程池中执行
 
     /**
      * 处理刷盘的请求
      *     如果 同步 + ResponseType != Unit/Unit, 则需要你主动设置异步响应
-     * @param args
      * @param reqs
-     * @return 是否处理完毕, 同步处理返回true, 异步处理返回false
+     * @param req2ResFuture
+     * @return
      */
-    override fun handleFlush(args: List<RequestArgumentType>, reqs: ArrayList<Pair<RequestArgumentType, CompletableFuture<Unit>>>): Boolean {
-        batchRun.invoke(args)
-        return true
+    override fun handleRequests(reqs: Collection<RequestArgumentType>, req2ResFuture: Collection<Pair<RequestArgumentType, CompletableFuture<Unit>>>): CompletableFuture<*> {
+        batchRun.invoke(reqs)
+        return VoidFuture
     }
 
 }

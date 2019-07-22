@@ -13,5 +13,5 @@ interface IMqHandler {
      * 消费处理
      * @param msgs 消息
      */
-    fun consumeMessages(msgs: List<Message>)
+    fun consumeMessages(msgs: Collection<Message>)
 }
