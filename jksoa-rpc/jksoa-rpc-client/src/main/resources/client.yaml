@@ -11,3 +11,4 @@ connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
 maxTryTimes: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
 lazyConnect: false # 是否延迟创建连接, 用在 ReconnectableConnection
+pooledConnectionMaxTotal: 2 # 池化连接的最大数

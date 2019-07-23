@@ -30,9 +30,8 @@ object MqPusher : IMqPusher {
     /**
      * 给消费者推送单个消息
      * @param msg
-     * @return
      */
-    public override fun pushMessage(msg: Message): List<CompletableFuture<Any?>> {
+    public override fun pushMessage(msg: Message){
         // 获得分组
         if(msg.groupIds.cardinality() == 0)
             throw IllegalArgumentException("未指定分组")
@@ -44,7 +43,11 @@ object MqPusher : IMqPusher {
         val connHub = IConnectionHub.instance(req.serviceId) as ConsumerConnectionHub
 
         // 对每个分组发送请求
-        return SetBitIterator(msg.groupIds).map { groupId ->
+        for(groupId in SetBitIterator(msg.groupIds)) {
+            // 该分组无连接, 则不发送
+            if(!connHub.hasGroupConnection(groupId, msg))
+                return
+
             // 发送请求, 支持失败重试
             RpcRequestDispatcher.sendFailover(req) { tryTimes: Int ->
                 // 该分组选一个连接

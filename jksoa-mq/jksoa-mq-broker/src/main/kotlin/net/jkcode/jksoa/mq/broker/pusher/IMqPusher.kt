@@ -13,9 +13,8 @@ interface IMqPusher {
     /**
      * 给消费者推送单个消息
      * @param msg
-     * @return
      */
-    fun pushMessage(msg: Message): List<CompletableFuture<Any?>>
+    fun pushMessage(msg: Message)
 
     /**
      * 给消费者推送多个消息

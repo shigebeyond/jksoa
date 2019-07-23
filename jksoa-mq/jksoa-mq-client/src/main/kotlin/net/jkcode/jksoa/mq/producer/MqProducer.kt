@@ -7,7 +7,6 @@ import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.producer.IMqProducer
 import net.jkcode.jksoa.mq.registry.IMqDiscovery
-import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import java.util.concurrent.CompletableFuture
 

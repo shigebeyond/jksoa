@@ -7,6 +7,7 @@ import net.jkcode.jksoa.mq.common.exception.MqClientException
 import net.jkcode.jksoa.mq.consumer.IMqHandler
 import net.jkcode.jksoa.mq.consumer.MqPullConsumer
 import net.jkcode.jksoa.mq.consumer.MqPushConsumer
+import net.jkcode.jksoa.mq.consumer.MqSubscriber
 import org.junit.Test
 
 /**
@@ -21,13 +22,13 @@ class MqClientTests {
     val group = "default"
 
     val handler = object: IMqHandler {
-        override fun consumeMessages(msg: Message) {
-            println("收到消息: $msg")
+        override fun consumeMessages(msgs: Collection<Message>) {
+            println("收到消息: $msgs")
         }
     }
 
     /**
-     * 测试注册主题
+     * 测试注册主题 -- 提前注册
      */
     public fun testRegisterTopic() {
         // 注册
@@ -36,6 +37,16 @@ class MqClientTests {
             throw MqClientException("没有broker可分配")
 
         println("注册主题: $topic")
+    }
+
+    /**
+     * 测试注册分组 -- 提前注册
+     */
+    public fun testRegisterGroup() {
+        // 注册
+        MqSubscriber.registerGroup(group)
+
+        println("注册分组: $group")
     }
 
     /**

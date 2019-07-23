@@ -21,7 +21,7 @@ import net.jkcode.jksoa.server.IRpcServer
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 3:48 PM
  */
-class Provider(public override val clazz: Class<*> /* 实现类 */, public val registerable: Boolean /* 是否注册 */) : IProvider() {
+class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider() {
 
     companion object{
         /**
@@ -35,6 +35,13 @@ class Provider(public override val clazz: Class<*> /* 实现类 */, public val r
          */
         public val registry: IRegistry = ZkRegistry
     }
+
+    /**
+     * 是否注册 = 是否启动了server
+     *    只有启动了server, 暴露了服务端口才能注册
+     *    如果是纯粹的client(如mq consumer提供IMqPushConsumerService服务), 但不能向注册中心注册, 因为他没有暴露服务端口, 无法提供服务
+     */
+    public val registerable: Boolean = IRpcServer.current() != null
 
     /**
      * 接口类

@@ -11,6 +11,12 @@ import java.util.concurrent.CompletableFuture
 interface IMqSubscriber {
 
     /**
+     * 注册分组
+     * @param group 分组
+     */
+    fun registerGroup(group: String)
+
+    /**
      * 已订阅的主题
      */
     val subscribedTopics: Collection<String>

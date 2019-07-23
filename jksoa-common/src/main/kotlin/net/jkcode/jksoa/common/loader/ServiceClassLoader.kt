@@ -81,18 +81,17 @@ abstract class ServiceClassLoader<T: IServiceClass>(protected val isProvider: Bo
                                         else
                                             clazz.remoteService != null // 自身是接口
         if(isRemoteService)
-            addClass(clazz, true) // 收集类
+            addClass(clazz) // 收集类
     }
 
     /**
      * 收集Service类
      *
      * @param clazz 类
-     * @param registerable 是否注册
      */
-    public fun addClass(clazz: Class<*>, registerable: Boolean) {
+    public fun addClass(clazz: Class<*>) {
         // 创建服务类元数据
-        val serviceClass = createServiceClass(clazz, registerable)
+        val serviceClass = createServiceClass(clazz)
         // 缓存服务提供者，key是服务标识，即接口类全名
         if (serviceClass != null)
             //serviceClasses[clazz.name] = serviceClass // wrong: key是接口类, 而不是当前类
@@ -103,8 +102,7 @@ abstract class ServiceClassLoader<T: IServiceClass>(protected val isProvider: Bo
      * 创建服务类元数据
      *
      * @param clazz 对ProviderLoader是实现类, 对RefererLoader是接口类
-     * @param registerable 是否注册
      * @return
      */
-    protected abstract fun createServiceClass(clazz: Class<*>, registerable: Boolean): T?
+    protected abstract fun createServiceClass(clazz: Class<*>): T?
 }

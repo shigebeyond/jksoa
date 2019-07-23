@@ -2,12 +2,10 @@ package net.jkcode.jksoa.mq.consumer
 
 import io.netty.util.concurrent.DefaultEventExecutorGroup
 import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.selectExecutor
 import net.jkcode.jksoa.client.referer.Referer
-import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
+import net.jkcode.jksoa.mq.broker.service.IMqBrokerLeaderService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqClientException
-import net.jkcode.jksoa.mq.common.mqClientLogger
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
@@ -26,10 +24,14 @@ object MqSubscriber: IMqSubscriber {
     public val config = Config.instance("consumer", "yaml")
 
     /**
+     * 消息中转者的leader
+     */
+    private val brokerLeaderService = Referer.getRefer<IMqBrokerLeaderService>()
+
+    /**
      * 消息处理的线程池
      */
     public val consumerThreadPool: DefaultEventExecutorGroup = DefaultEventExecutorGroup(config["threadNum"]!!)
-
 
     /**
      * 消息执行者: <主题 to 执行者>
@@ -40,6 +42,14 @@ object MqSubscriber: IMqSubscriber {
      * 已订阅的主题
      */
     public override val subscribedTopics: Collection<String> = exectors.keys
+
+    /**
+     * 注册分组
+     * @param group 分组
+     */
+    public override fun registerGroup(group: String){
+        brokerLeaderService.registerGroup(group)
+    }
 
     /**
      * 订阅主题

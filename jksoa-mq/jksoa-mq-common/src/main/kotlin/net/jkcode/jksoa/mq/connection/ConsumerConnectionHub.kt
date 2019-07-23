@@ -120,6 +120,17 @@ class ConsumerConnectionHub : IConnectionHub() {
     }
 
     /**
+     * 是否有指定分组的连接
+     * @param groupId
+     * @param msg
+     * @return
+     */
+    public fun hasGroupConnection(groupId: Int, msg: Message): Boolean{
+        val conns = connections.get(msg.topic)?.get(groupId) // <主题 to <分组 to 连接>>
+        return !conns.isNullOrEmpty()
+    }
+
+    /**
      * 选择指定分组的某个连接
      * @param groupId
      * @param msg

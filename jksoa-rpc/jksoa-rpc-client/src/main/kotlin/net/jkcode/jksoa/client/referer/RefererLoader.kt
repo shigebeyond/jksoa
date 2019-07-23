@@ -39,9 +39,8 @@ object RefererLoader : ServiceClassLoader<IReferer>(false) {
      *   不重复添加
      *
      * @param clazz 接口类
-     * @param registerable 是否注册, 引用者不关心这个
      */
-    public override fun createServiceClass(clazz: Class<*>, registerable: Boolean): Referer? {
+    public override fun createServiceClass(clazz: Class<*>): Referer? {
         //去重：对已添加的本地服务，不用再次扫描添加
         if(serviceClasses.containsKey(clazz.name))
             return null

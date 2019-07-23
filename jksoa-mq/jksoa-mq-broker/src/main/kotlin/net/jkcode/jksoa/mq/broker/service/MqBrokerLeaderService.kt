@@ -1,6 +1,8 @@
 package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.mq.common.GroupSequence
+import net.jkcode.jksoa.mq.common.TopicSequence
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import net.jkcode.jksoa.registry.IDiscoveryListener
@@ -72,6 +74,10 @@ class MqBrokerLeaderService : IMqBrokerLeaderService, IDiscoveryListener {
      * @return false表示没有broker可分配
      */
     public override fun registerTopic(topic: String): Boolean {
+        // 初始化主题id
+        TopicSequence.getOrCreate(topic)
+
+        // 注册主题
         return mqRegistry.registerTopic(topic)
     }
 
@@ -83,6 +89,15 @@ class MqBrokerLeaderService : IMqBrokerLeaderService, IDiscoveryListener {
      */
     public override fun unregisterTopic(topic: String): Boolean {
         return mqRegistry.unregisterTopic(topic)
+    }
+
+    /**
+     * 注册分组
+     * @param group 分组
+     */
+    public override fun registerGroup(group: String){
+        // 初始化分组id
+        GroupSequence.getOrCreate(group)
     }
 
 }

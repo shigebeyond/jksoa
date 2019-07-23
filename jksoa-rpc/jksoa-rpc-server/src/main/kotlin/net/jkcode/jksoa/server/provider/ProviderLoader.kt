@@ -26,10 +26,9 @@ object ProviderLoader: ServiceClassLoader<IProvider>(true) {
      * 创建service类
      *
      * @param clazz 实现类
-     * @param registerable 是否注册
      * @return
      */
-    public override fun createServiceClass(clazz: Class<*>, registerable: Boolean): Provider? {
+    public override fun createServiceClass(clazz: Class<*>): Provider? {
         if (clazz.isAbstract /* 抽象类 */ || clazz.isInterface /* 接口 */)
             return null
 
@@ -37,7 +36,7 @@ object ProviderLoader: ServiceClassLoader<IProvider>(true) {
         if(clazz.getConstructorOrNull() == null)
             throw RpcServerException("Service Class [$clazz] has no no-arg constructor") // 无默认构造函数
 
-        return Provider(clazz, registerable) // 服务提供者
+        return Provider(clazz) // 服务提供者
     }
 
 }

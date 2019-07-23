@@ -6,6 +6,7 @@ import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.Serializer
 import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jksoa.mq.broker.BrokerConfig
+import net.jkcode.jksoa.mq.broker.serialize.BitSetSerializer
 import net.jkcode.jksoa.mq.broker.serialize.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.TopicRegex
@@ -107,6 +108,11 @@ class LsmMessageRepository(
     protected val queueDir = rootDir + File.separatorChar + "queue"
 
     /**
+     * 索引存储子目录: index
+     */
+    protected val indexDir = rootDir + File.separatorChar + "index"
+
+    /**
      * 进度存储子目录: progress
      */
     protected val progressDir = rootDir + File.separatorChar + "progress"
@@ -115,6 +121,14 @@ class LsmMessageRepository(
         // 创建队列存储
         val queueStoreDir = File(queueDir) // 子目录是queue
         queueStore = StoreBuilder(queueStoreDir, LongSerializer(), FstObjectSerializer() as Serializer<Message>) // key是消息id, value是消息
+                .setMaxVolatileGenerationSize(BrokerConfig.maxVolatileGenerationSize)
+                .setStorageType(BrokerConfig.storageType)
+                .setCodec(BrokerConfig.compressionCodec)
+                .build()
+
+        // 创建索引存储
+        val indexStoreDir = File(indexDir) // 子目录是index
+        indexStore = StoreBuilder(indexStoreDir, LongSerializer(), BitSetSerializer()) // key是消息id, value是待消费的分组id比特集合
                 .setMaxVolatileGenerationSize(BrokerConfig.maxVolatileGenerationSize)
                 .setStorageType(BrokerConfig.storageType)
                 .setCodec(BrokerConfig.compressionCodec)

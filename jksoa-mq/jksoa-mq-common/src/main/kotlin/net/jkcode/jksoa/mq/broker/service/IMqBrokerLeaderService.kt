@@ -25,4 +25,9 @@ interface IMqBrokerLeaderService {
      */
     fun unregisterTopic(topic: String): Boolean
 
+    /**
+     * 注册分组
+     * @param group 分组
+     */
+    fun registerGroup(group: String)
 }
