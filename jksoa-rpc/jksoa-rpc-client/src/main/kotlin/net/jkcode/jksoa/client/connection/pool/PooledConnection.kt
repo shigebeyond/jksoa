@@ -12,7 +12,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 池化的连接
+ * 池化的连接的包装器
  *    1 根据 serverPart 来引用连接池
  *      引用的是同一个server的池化连接
  *    2 GenericObjectPool 有定时逐出超过指定空闲时间的空闲连接, 不用自己逐出, 参考配置 timeBetweenEvictionRunsMillis 与 minEvictableIdleTimeMillis

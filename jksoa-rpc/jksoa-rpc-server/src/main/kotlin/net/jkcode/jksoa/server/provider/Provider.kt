@@ -84,6 +84,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
      * 创建+注册服务
      */
     protected fun createAndRegisterService() {
+        // 创建服务实例
         service = BeanSingletons.instance(clazz)
 
         if (registerable) {
@@ -100,8 +101,10 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
      * 注销服务
      */
     public override fun close() {
-        serverLogger.info("Provider.close(): 注销服务")
-        registry.unregister(serviceUrl)
+        if(registerable){
+            serverLogger.info("Provider.close(): 注销服务")
+            registry.unregister(serviceUrl)
+        }
     }
 
 }
