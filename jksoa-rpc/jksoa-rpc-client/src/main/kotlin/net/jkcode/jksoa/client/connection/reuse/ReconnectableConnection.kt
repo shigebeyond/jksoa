@@ -1,10 +1,11 @@
-package net.jkcode.jksoa.client.connection
+package net.jkcode.jksoa.client.connection.reuse
 
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jksoa.client.IRpcClient
+import net.jkcode.jksoa.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url

@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.client.connection
 
 import net.jkcode.jksoa.client.IConnection
+import net.jkcode.jksoa.client.connection.reuse.ReusableConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
