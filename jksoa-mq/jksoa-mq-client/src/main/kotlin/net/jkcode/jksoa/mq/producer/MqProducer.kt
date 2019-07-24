@@ -44,7 +44,7 @@ object MqProducer : IMqProducer {
      */
     public override fun registerTopic(topic: String): Boolean {
         return brokerLeaderService.registerTopic(topic).also {
-            if(it)  // 刷新本地的topic分配信息
+            if(it)  // 刷新本地的topic分配信息, 通知监听器更新缓存的topic分配信息
                 mqDiscovery.discover()
         }
     }
@@ -57,7 +57,7 @@ object MqProducer : IMqProducer {
      */
     public override fun unregisterTopic(topic: String): Boolean {
         return brokerLeaderService.unregisterTopic(topic).also {
-            if(it) // 刷新本地的topic分配信息
+            if(it) // 刷新本地的topic分配信息, 通知监听器更新缓存的topic分配信息
                 mqDiscovery.discover()
         }
     }

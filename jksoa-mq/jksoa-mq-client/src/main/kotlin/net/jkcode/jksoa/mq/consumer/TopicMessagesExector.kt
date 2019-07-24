@@ -40,13 +40,18 @@ class TopicMessagesExector(
         }catch (ex: Exception){
             e = ex
         }finally {
+            if(e == null) { // 处理成功
+                mqClientLogger.error("TopicMessagesExector消费消息成功: {}", msgs)
+            }else{ // 处理异常
+                e.printStackTrace()
+                mqClientLogger.error("TopicMessagesExector消费消息出错: msgs={}, exception={}", msgs, e.message)
+            }
+
             // 反馈消息消费结果
             val ids = msgs.map { msg -> msg.id }
-            brokerService.feedbackMessages(topic, ids, e, MqPushConsumer.config["group"]!!)
-            if(e != null) { // 处理异常
-                e.printStackTrace()
-                mqClientLogger.error("消费消息出错: 消息={}, 异常={}", msgs, e.message)
-            }
+            val group: String = MqPushConsumer.config["group"]!!
+            brokerService.feedbackMessages(topic, group, ids, e)
+            mqClientLogger.error("TopicMessagesExector向broker反馈消息结果: topic={}, group={}, ids={}, exception={}", topic, group, ids, e?.message)
             return VoidFuture
         }
     }

@@ -2,6 +2,7 @@ package net.jkcode.jksoa.mq.consumer
 
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.mqClientLogger
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
 import java.util.concurrent.CompletableFuture
 
@@ -20,6 +21,7 @@ class MqPushConsumerService : IMqPushConsumerService {
      * @return
      */
     public override fun pushMessage(msg: Message): CompletableFuture<Unit> {
+        mqClientLogger.debug("MqPushConsumerService收到推送消息: {}", msg)
         return MqSubscriber.consumeMessage(msg)
     }
 
