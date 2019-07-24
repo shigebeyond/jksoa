@@ -10,6 +10,7 @@ import net.jkcode.jksoa.mq.broker.repository.IDelayMessageRepository
 import net.jkcode.jksoa.mq.broker.serialize.FstObjectSerializer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.TopicSequence
+import net.jkcode.jksoa.mq.common.mqBrokerLogger
 import java.io.File
 import java.util.concurrent.CompletableFuture
 
@@ -76,6 +77,7 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
      * @return
      */
     public override fun addDelayMessageIds(topic: String, ids: List<Long>): CompletableFuture<Unit> {
+        mqBrokerLogger.debug("添加延迟消息: topic={}, ids={}", topic, ids)
         val topicId: Int = TopicSequence.get(topic)
         val mids = ids.map { topicId to it }
         return idCombiner.addAll(mids)
@@ -86,6 +88,7 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
      * @param ids
      */
     private fun saveDelayMessageIds(ids: List<MessageId>) {
+        mqBrokerLogger.debug("保存延迟消息id:", ids)
         val now = System.currentTimeMillis()
         val delay = now + BrokerConfig.mqDelaySeconds * 1000 // 延迟固定秒
         queueStore.put(delay, ids)
@@ -116,6 +119,7 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
                     msgs.add(msg)
             }
         }
+        mqBrokerLogger.debug("取出到期的延迟消息: {}", msgs)
 
         // 删除出队的延迟消息
         for(key in keys)

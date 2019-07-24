@@ -35,11 +35,11 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
 
     init {
         // 监听topic分配情况变化
-        mqBrokerLogger.debug("Mq broker监听topic分配情况变化, 以便初始化分到的topic的存储")
+        mqBrokerLogger.debug("MqBrokerService监听topic分配情况变化, 以便初始化分到的topic的存储")
         mqRegistry.subscribe(this)
 
         // 启动延迟消息发送的定时器
-        mqBrokerLogger.debug("Mq broker启动延迟消息发送的定时器")
+        mqBrokerLogger.debug("MqBrokerService启动延迟消息发送的定时器")
         DelayMessagePushTimer.start()
     }
 
@@ -60,15 +60,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
     /**
      * 消息推送合并器
      */
-    private val pushCombiner = GroupRunCombiner(100, 100, this::pushMessages)
-
-    /**
-     * 推送消息
-     * @param msgs
-     */
-    protected fun pushMessages(msgs: List<Message>){
-        MqPusher.pushMessages(msgs)
-    }
+    private val pushCombiner = GroupRunCombiner(100, 100, MqPusher::pushMessages)
 
     /**
      * 接收producer发过来的单个消息
@@ -78,6 +70,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
     public override fun putMessage(msg: Message): CompletableFuture<Long> {
         // 根据topic获得仓库
         val repository = LsmMessageRepository.getRepository(msg.topic)
+        mqBrokerLogger.debug("MqBrokerService收到消息: {}", msg)
         // 逐个消息存储
         val future = repository.putMessage(msg)
         future.thenRun {
@@ -97,7 +90,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
         // 检查消息是否是同一个主题
         val sameTopic = msgs.all { it.topic == topic }
         if(!sameTopic)
-            throw MqBrokerException("批量接收多个消息出错: 多个消息不是同一个主题")
+            throw MqBrokerException("MqBrokerService批量接收多个消息出错: 多个消息不是同一个主题")
 
         // 根据topic获得仓库
         val repository = LsmMessageRepository.getRepository(topic)
@@ -157,20 +150,23 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
      * 接受consumer的反馈消息消费结果
      *    无异常则删除, 有异常则扔到延迟队列中
      * @param topic 主题
+     * @param group 分组
      * @param ids 消息标识
      * @param e 消费异常
-     * @param group 分组
      * @return
      */
-    public override fun feedbackMessages(topic: String, ids: List<Long>, e: Throwable?, group: String): CompletableFuture<Unit> {
+    public override fun feedbackMessages(topic: String, group: String, ids: List<Long>, e: Throwable?): CompletableFuture<Unit> {
+        mqBrokerLogger.debug("MqBrokerService收到消息反馈: topic={}, group={}, ids={}, exception={}", topic, group, ids, e?.message)
         // 无异常则完成
         if(e == null) {
             // 根据topic获得仓库
+            mqBrokerLogger.debug("无异常, 完成消息")
             val repository = LsmMessageRepository.getRepository(topic)
             return repository.batchFinishMessages(ids, group)
         }
 
         //有异常则扔到延迟队列中
+        mqBrokerLogger.debug("有异常[{}], 延迟再发送", e.message)
         return LsmDelayMessageRepository.addDelayMessageIds(topic, ids)
     }
 

@@ -6,6 +6,7 @@ import net.jkcode.jkmvc.common.mapToArray
 import net.jkcode.jkmvc.flusher.CounterFlusher
 import net.jkcode.jksoa.mq.common.GroupSequence
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.mqBrokerLogger
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicLong
@@ -48,6 +49,7 @@ abstract class LsmMessageWriter : LsmMessageReader() {
                     // print(if(reqCount < flushSize) "定时" else "定量")
                     // println("sync, 操作计数 from [$reqCount] to [${requestCount()}] ")
                     // 同步到磁盘
+                    mqBrokerLogger.debug("LsmMessageWriter[$topic]批量同步消息到磁盘")
                     queueStore.sync()
                     indexStore.sync()
                 }
@@ -130,6 +132,7 @@ abstract class LsmMessageWriter : LsmMessageReader() {
 
         // 该消息的分组已全部消费完: 删除
         if (groupIds.cardinality() == 0) {
+            mqBrokerLogger.debug("消息[{}]的分组已全部消费完: 删除", id)
             queueStore.delete(id)
             indexStore.delete(id)
         } else { // 回写索引

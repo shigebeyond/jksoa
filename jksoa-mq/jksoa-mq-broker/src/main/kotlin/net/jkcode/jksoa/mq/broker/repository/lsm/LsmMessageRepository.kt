@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicLong
  * @date 2019-07-13 5:16 PM
  */
 class LsmMessageRepository(
-        protected val topic: String, // 主题
+        public override val topic: String, // 主题
         protected override val autoSync: Boolean = BrokerConfig.autoSync // 是否自动同步到磁盘
 ) : LsmMessageWriter() {
 

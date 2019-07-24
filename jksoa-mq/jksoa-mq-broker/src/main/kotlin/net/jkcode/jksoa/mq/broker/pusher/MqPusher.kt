@@ -13,6 +13,7 @@ import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
 import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.mqBrokerLogger
 import net.jkcode.jksoa.mq.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
 import java.util.concurrent.CompletableFuture
@@ -32,6 +33,7 @@ object MqPusher : IMqPusher {
      * @param msg
      */
     public override fun pushMessage(msg: Message){
+        mqBrokerLogger.debug("推送消息: {}", msg)
         // 获得分组
         if(msg.groupIds.cardinality() == 0)
             throw IllegalArgumentException("未指定分组")

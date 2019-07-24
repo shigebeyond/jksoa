@@ -10,6 +10,11 @@ import java.util.concurrent.CompletableFuture
  */
 interface IMessageRepository {
 
+    /**
+     * 主题
+     */
+    val topic: String
+
     /*************************** 读 **************************/
     /**
      * 根据范围查询多个消息
