@@ -16,6 +16,7 @@ import net.jkcode.jksoa.server.IRpcServer
  * 服务提供者
  *   1 提供服务
  *   2 向注册中心注册服务
+ *   3 在启动server时调用
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -38,8 +39,8 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
 
     /**
      * 是否注册 = 是否启动了server
-     *    只有启动了server, 暴露了服务端口才能注册
-     *    如果是纯粹的client(如mq consumer提供IMqPushConsumerService服务), 但不能向注册中心注册, 因为他没有暴露服务端口, 无法提供服务
+     *    只有启动了server, 暴露了server端口才能注册
+     *    如果是纯粹的client(如mq consumer提供IMqPushConsumerService服务), 但不能向注册中心注册, 也因为他没有暴露server端口, 无法让client来连接并调用
      */
     public val registerable: Boolean = IRpcServer.current() != null
 
