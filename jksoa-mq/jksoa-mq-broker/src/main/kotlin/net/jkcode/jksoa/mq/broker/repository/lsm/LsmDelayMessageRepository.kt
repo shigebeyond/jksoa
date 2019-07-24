@@ -4,6 +4,7 @@ import com.indeed.lsmtree.core.Store
 import com.indeed.lsmtree.core.StoreBuilder
 import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.Serializer
+import net.jkcode.jkmvc.common.SimpleObjectPool
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.repository.IDelayMessageRepository
@@ -49,6 +50,21 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
      */
     private val idCombiner = GroupRunCombiner(Int.MAX_VALUE, 100, this::saveDelayMessageIds)
 
+    /**
+     * 消息列表池, 用于在 pollExpiredDelayMessages()
+     */
+    private val msgListPool = SimpleObjectPool(){
+        ArrayList<Message>()
+    }
+
+    /**
+     * key列表池, 用于在 pollExpiredDelayMessages()
+     */
+    private val keyListPool = SimpleObjectPool(){
+        ArrayList<Long>()
+    }
+
+
     init {
         // 创建队列存储
         val queueStoreDir = File(queueDir)
@@ -88,7 +104,7 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
      * @param ids
      */
     private fun saveDelayMessageIds(ids: List<MessageId>) {
-        mqBrokerLogger.debug("保存延迟消息id:", ids)
+        mqBrokerLogger.debug("保存延迟消息id: {}", ids)
         val now = System.currentTimeMillis()
         val delay = now + BrokerConfig.mqDelaySeconds * 1000 // 延迟固定秒
         queueStore.put(delay, ids)
@@ -97,11 +113,12 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
 
     /**
      * 取出到期的延迟消息
-     * @return
+     * @param action
      */
-    public override fun pollExpiredDelayMessages(): List<Message> {
-        val keys = ArrayList<Long>()
-        val msgs = ArrayList<Message>()
+    public override fun pollExpiredDelayMessages(action: (List<Message>) -> Unit) {
+        // 经常为空, 用对象池
+        val keys = keyListPool.borrowObject()
+        val msgs = msgListPool.borrowObject()
         val now = System.currentTimeMillis()
         val itr = queueStore.iterator(now, true)
         for(entry in itr){
@@ -126,6 +143,11 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
             queueStore.delete(key)
         queueStore.sync()
 
-        return msgs
+        try {
+            action.invoke(msgs)
+        }finally {
+            keyListPool.returnObject(keys)
+            msgListPool.returnObject(msgs)
+        }
     }
 }

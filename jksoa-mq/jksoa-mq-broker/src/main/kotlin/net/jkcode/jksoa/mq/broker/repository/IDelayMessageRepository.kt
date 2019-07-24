@@ -29,8 +29,8 @@ interface IDelayMessageRepository {
 
     /**
      * 取出到期的延迟消息
-     * @return
+     * @param action
      */
-    fun pollExpiredDelayMessages(): List<Message>
+    fun pollExpiredDelayMessages(action: (List<Message>) -> Unit)
 
 }
