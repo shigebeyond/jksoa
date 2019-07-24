@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.mq.broker.service
 
+import net.jkcode.jksoa.common.annotation.RemoteMethod
 import net.jkcode.jksoa.common.annotation.RemoteService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.connection.BrokerConnectionHub
@@ -7,6 +8,8 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 消息中转者
+ *    由于broker server端做了请求(消息)的定时定量处理, 因此请求超时需增大, 详见注解 @RemoteMethod.requestTimeoutMillis
+ *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */
@@ -19,6 +22,7 @@ interface IMqBrokerService {
      * @param msg 消息
      * @return 消息id
      */
+    @RemoteMethod(800)
     fun putMessage(msg: Message): CompletableFuture<Long>
 
     /**
@@ -29,6 +33,7 @@ interface IMqBrokerService {
      * @param msgs 同一个主题的多个消息
      * @return 消息id
      */
+    @RemoteMethod(800)
     fun putMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>>
 
     /****************** 消费者调用 *****************/
@@ -38,7 +43,7 @@ interface IMqBrokerService {
      * @param group 分组
      * @return
      */
-    fun subscribeTopic(topic: String, group: String = "default"): CompletableFuture<Unit>
+    fun subscribeTopic(topic: String, group: String): CompletableFuture<Unit>
 
     /**
      * 接受consumer的拉取消息
@@ -47,16 +52,17 @@ interface IMqBrokerService {
      * @param limit 拉取记录数
      * @return
      */
-    fun pullMessagesByGroup(topic: String, group: String = "default", limit: Int = 100): CompletableFuture<List<Message>>
+    fun pullMessagesByGroup(topic: String, group: String, limit: Int = 100): CompletableFuture<List<Message>>
 
     /**
      * 接受consumer的反馈消息消费结果
      * @param topic 主题
+     * @param group 分组
      * @param ids 消息标识
      * @param e 消费异常
-     * @param group 分组
      * @return
      */
-    fun feedbackMessages(topic: String, id: List<Long>, e: Throwable? = null, group: String = "default"): CompletableFuture<Unit>
+    @RemoteMethod(800)
+    fun feedbackMessages(topic: String, group: String, id: List<Long>, e: Throwable? = null): CompletableFuture<Unit>
 
 }
