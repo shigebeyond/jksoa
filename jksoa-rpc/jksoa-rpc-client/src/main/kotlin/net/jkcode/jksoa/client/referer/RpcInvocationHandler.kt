@@ -11,6 +11,7 @@ import net.jkcode.jksoa.guard.MethodGuard
 import net.jkcode.jksoa.guard.MethodGuardInvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
+import java.util.concurrent.CompletableFuture
 
 /**
  * rpc调用的代理实现
@@ -66,18 +67,16 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
      * @param method 方法
      * @param obj 对象
      * @param args 参数
-     * @param complete 完成后的回调函数, 接收2个参数: 1 结果值 2 异常, 返回新结果
      * @return
      */
-    public override fun doInvoke(method: Method, obj: Any, args: Array<Any?>, complete: (Any?, Throwable?) -> Any?): Any? {
+    public override fun doInvoke(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<out Any> {
         // 1 封装请求
         val req = RpcRequest(method, args)
 
         // 2 分发请求, 获得异步响应
-        val resFuture = IRequestInterceptor.trySupplierFinallyAroundInterceptor(interceptors, req, { dispatcher.dispatch(req) }, complete)
-
-        // 3 处理结果
-        return handleResult(method, resFuture)
+        return IRequestInterceptor.trySupplierFinallyAroundInterceptor(interceptors, req) {
+            dispatcher.dispatch(req)
+        }
     }
 
 }

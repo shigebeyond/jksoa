@@ -114,7 +114,7 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
         val startTime = currMillis()
 
         // 5 真正的调用
-        return doInvoke(method, obj, args) { r, e ->
+        val resFuture = doInvoke(method, obj, args).whenComplete{ r, e ->
             // 4.2 添加请求耗时
             methodGuard.measurer?.currentBucket()?.addCostTime(currMillis() - startTime)
 
@@ -130,6 +130,9 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
             // 6 处理异常: 调用后备处理
             return@doInvoke handleException(methodGuard, method, args, e!!)
         }
+
+        //处理结果
+        return handleResult(method, resFuture)
     }
 
     /**
@@ -156,10 +159,9 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
      * @param method 方法
      * @param obj 对象
      * @param args 参数
-     * @param complete 完成后的回调函数, 接收2个参数: 1 结果值 2 异常, 返回新结果
      * @return
      */
-    public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>, complete: (Any?, Throwable?) -> Any?): Any?
+    public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<out Any>
 
     /**
      * 处理结果
