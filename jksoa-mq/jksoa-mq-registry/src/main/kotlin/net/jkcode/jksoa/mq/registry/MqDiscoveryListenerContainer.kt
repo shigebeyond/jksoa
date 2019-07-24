@@ -38,4 +38,37 @@ open class MqDiscoveryListenerContainer(
             l.handleTopic2BrokerChange(assignment)
     }
 
+    /**
+     * 添加子监听器, 要自动通知topic分配信息
+     */
+    public override fun add(listener: IMqDiscoveryListener): Boolean{
+        if(assignment != EmptyTopicAssignment)
+            listener.handleTopic2BrokerChange(assignment)
+
+        return list.add(listener)
+    }
+
+    /**
+     * 添加子监听器, 要自动通知topic分配信息
+     */
+    public override fun addAll(listeners: Collection<IMqDiscoveryListener>): Boolean{
+        if(assignment != EmptyTopicAssignment)
+            for(l in listeners)
+                l.handleTopic2BrokerChange(assignment)
+
+        return list.addAll(listeners)
+    }
+
+    /**
+     * 添加子监听器, 要自动通知topic分配信息
+     */
+    public override fun addAll(index: Int, listeners: Collection<IMqDiscoveryListener>): Boolean{
+        if(assignment != EmptyTopicAssignment)
+            for(l in listeners)
+                l.handleTopic2BrokerChange(assignment)
+
+        return list.addAll(index, listeners)
+    }
+    
+
 }

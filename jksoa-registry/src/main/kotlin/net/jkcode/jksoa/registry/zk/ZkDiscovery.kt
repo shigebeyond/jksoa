@@ -68,8 +68,8 @@ open class ZkDiscovery: IDiscovery {
             // 添加服务发现的监听器
             childListener.add(listener)
 
-            // 2 发现服务：获得子节点
-            val urls = discover(serviceId)
+            // 2 刷新服务地址: 通知监听器更新缓存的服务地址
+            discover(serviceId)
         } catch (e: Throwable) {
             throw RegistryException("ZkDiscovery监听服务[$serviceId]变化失败：${e.message}", e)
         }

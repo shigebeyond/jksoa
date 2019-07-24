@@ -54,7 +54,10 @@ open class ZkMqDiscovery : IMqDiscovery {
 
         // 创建zk数据监听器
         dataListener = ZkMqDataListener(zkClient, topic2brokerPath)
-        dataListener.start()
+        dataListener.start() // 开始监听
+
+        // 刷新本地的topic分配信息, 通知监听器更新缓存的topic分配信息
+        discover()
     }
 
     /**
