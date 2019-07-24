@@ -20,7 +20,9 @@ class BrokerServiceTests {
     /**
      * 消息中转者
      */
-    val brokerService = MqBrokerService()
+    val brokerService by lazy{
+        MqBrokerService()
+    }
 
     @Test
     fun testServer(){
@@ -43,7 +45,7 @@ class BrokerServiceTests {
     @Test
     fun testFeedbackMessage(){
         val msg = brokerService.pullMessagesByGroup(topic, group, 1).get().first()
-        brokerService.feedbackMessages(topic, listOf(msg.id)).get()
+        brokerService.feedbackMessages(topic, group, listOf(msg.id)).get()
         println("反馈消息")
     }
 

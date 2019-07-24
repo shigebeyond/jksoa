@@ -26,7 +26,7 @@ object MqPushConsumer : IMqPushConsumer, IMqSubscriber by MqSubscriber {
 
     init {
         // 提供推送消费者服务, 但不用注册到注册中心
-        ProviderLoader.addClass(MqPushConsumerService::class.java, false)
+        ProviderLoader.addClass(MqPushConsumerService::class.java)
     }
 
     /**

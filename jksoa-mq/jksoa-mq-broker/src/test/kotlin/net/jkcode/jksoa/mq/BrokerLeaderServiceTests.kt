@@ -18,7 +18,9 @@ class BrokerLeaderServiceTests {
     /**
      * 消息中转者的leader
      */
-    val brokerLeaderService = MqBrokerLeaderService()
+    val brokerLeaderService by lazy{
+        MqBrokerLeaderService()
+    }
 
     /**
      * 注册中心
