@@ -23,5 +23,5 @@ interface IRpcRequestHandler {
      *
      * @param req
      */
-    fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit
+    fun handle(req: IRpcRequest, ctx: ChannelHandlerContext)
 }

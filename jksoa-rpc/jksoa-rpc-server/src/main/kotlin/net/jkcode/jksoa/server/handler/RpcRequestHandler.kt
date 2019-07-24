@@ -5,6 +5,7 @@ import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.common.IRequestInterceptor
+import net.jkcode.jkmvc.common.ThreadLocalInheritableInterceptor
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcResponse
@@ -38,9 +39,18 @@ object RpcRequestHandler : IRpcRequestHandler {
      *
      * @param req
      */
-    public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext): Unit {
-        IRequestInterceptor.trySupplierFinallyAroundInterceptor(interceptors, req, {callProvider(req, ctx)} /* 调用provider方法 */){ r, e ->
-            endResponse(req, r, e, ctx) // 返回响应
+    public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext) {
+        // 1 调用provider方法
+        val future = IRequestInterceptor.trySupplierFinallyAroundInterceptor(interceptors, req) {
+            callProvider(req, ctx)
+        }
+
+        // 2 返回响应
+        val threadLocalItct = ThreadLocalInheritableInterceptor()
+        future.whenComplete{ r, ex ->
+            threadLocalItct.beforeExecute() // 继承 ThreadLocal
+            endResponse(req, r, ex, ctx) // 返回响应
+            threadLocalItct.afterExecute() // 清理 ThreadLocal
         }
     }
 
