@@ -1,7 +1,5 @@
 package net.jkcode.jksoa.mq.consumer
 
-import io.netty.util.concurrent.DefaultEventExecutorGroup
-import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerLeaderService
 import net.jkcode.jksoa.mq.common.Message
@@ -19,19 +17,9 @@ import java.util.concurrent.ConcurrentHashMap
 object MqSubscriber: IMqSubscriber {
 
     /**
-     * 消费者配置
-     */
-    public val config = Config.instance("consumer", "yaml")
-
-    /**
      * 消息中转者的leader
      */
     private val brokerLeaderService = Referer.getRefer<IMqBrokerLeaderService>()
-
-    /**
-     * 消息处理的线程池
-     */
-    public val consumerThreadPool: DefaultEventExecutorGroup = DefaultEventExecutorGroup(config["threadNum"]!!)
 
     /**
      * 消息执行者: <主题 to 执行者>
