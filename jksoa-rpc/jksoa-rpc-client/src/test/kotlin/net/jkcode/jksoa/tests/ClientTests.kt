@@ -111,12 +111,12 @@ class ClientTests {
         val msgs:ThreadLocal<String> = ThreadLocal()
         msgs.set("before")
         val future = service.getUserByIdAsync(1)
-        future.whenComplete { r, e ->
+        future.whenComplete { r, ex ->
             print("调用服务[IGuardService.getUserByIdAsync()]")
-            if(e == null)
+            if(ex == null)
                 println("成功： $r")
             else
-                println("异常: $e" )
+                println("异常: $ex" )
             println("获得ThreadLocal: " + msgs.get())
         }
         Thread.sleep(1000000)

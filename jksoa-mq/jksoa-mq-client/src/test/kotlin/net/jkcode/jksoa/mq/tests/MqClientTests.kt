@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.tests
 
 import net.jkcode.jkmvc.common.format
+import net.jkcode.jkmvc.common.randomInt
 import net.jkcode.jkmvc.common.randomLong
 import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.mq.MqProducer
@@ -27,6 +28,10 @@ class MqClientTests {
     val handler = object: IMqHandler {
         override fun consumeMessages(msgs: Collection<Message>) {
             println("收到消息: $msgs")
+
+            val fraction = 10
+            if(randomInt(fraction) == 0)
+                throw Exception("消费消息触发 1/${fraction} 的异常")
         }
     }
 

@@ -21,10 +21,11 @@ object DelayMessagePushTimer {
         CommonMilliTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
                 // 获得延迟消息
-                val msgs = LsmDelayMessageRepository.pollExpiredDelayMessages()
-                // 遍历消息来发送
-                for(msg in msgs)
-                    MqPusher.pushMessage(msg)
+                val msgs = LsmDelayMessageRepository.pollExpiredDelayMessages(){ msgs ->
+                    // 遍历消息来发送
+                    for(msg in msgs)
+                        MqPusher.pushMessage(msg)
+                }
 
                 start()
             }
