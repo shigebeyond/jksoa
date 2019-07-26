@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.mq.consumer
 
 import io.netty.util.concurrent.DefaultEventExecutorGroup
-import net.jkcode.jkmvc.common.CommonThreadPool
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.VoidFuture
 import net.jkcode.jkmvc.common.selectExecutor
@@ -53,7 +52,7 @@ class TopicMessagesExector(
      */
     protected override val executor: ExecutorService =
             if(concurrent) // 并发执行
-                CommonThreadPool // 线程池
+                excutorGroup // 线程池
             else // 串行执行
                 excutorGroup.selectExecutor(topic) // 单线程
 
