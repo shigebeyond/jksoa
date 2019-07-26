@@ -2,10 +2,9 @@ package net.jkcode.jksoa.server.handler
 
 import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.common.IRequestInterceptor
-import net.jkcode.jkmvc.common.ThreadLocalInheritableInterceptor
+import net.jkcode.jkmvc.common.*
+import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
+import net.jkcode.jksoa.client.referer.RpcInvocationHandler
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcResponse
@@ -35,13 +34,18 @@ object RpcRequestHandler : IRpcRequestHandler {
     public override val interceptors: List<IRpcRequestInterceptor> = config.classes2Instances("requestInterceptors")
 
     /**
+     * 服务端处理rpc请求的拦截器链表
+     */
+    private val interceptorChain = RequestInterceptorChain(RpcInvocationHandler.interceptors)
+
+    /**
      * 处理请求: 调用Provider来处理
      *
      * @param req
      */
     public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext) {
         // 1 调用provider方法
-        val future = IRequestInterceptor.trySupplierFinallyAroundInterceptor(interceptors, req) {
+        val future = interceptorChain.intercept(req) {
             callProvider(req, ctx)
         }
 

@@ -1,14 +1,14 @@
 package net.jkcode.jksoa.client.referer
 
 import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IRequestInterceptor
+import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
 import net.jkcode.jkmvc.common.ThreadLocalInheritableThreadPool
 import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.guard.MethodGuard
-import net.jkcode.jksoa.guard.MethodGuardInvocationHandler
+import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.util.concurrent.CompletableFuture
@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2017-11-08 7:25 PM
  */
-object RpcInvocationHandler: MethodGuardInvocationHandler() {
+object RpcInvocationHandler: InvocationHandler {
 
     /**
      * client配置
@@ -31,6 +31,11 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
      * 客户端处理rpc请求的拦截器
      */
     public val interceptors: List<IRpcRequestInterceptor> = config.classes2Instances("interceptors")
+
+    /**
+     * 客户端处理rpc请求的拦截器链表
+     */
+    private val interceptorChain = RequestInterceptorChain(interceptors)
 
     /**
      * 请求分发者
@@ -74,7 +79,7 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
         val req = RpcRequest(method, args)
 
         // 2 分发请求, 获得异步响应
-        return IRequestInterceptor.trySupplierFinallyAroundInterceptor(interceptors, req) {
+        return interceptorChain.intercept(req) {
             dispatcher.dispatch(req)
         }
     }

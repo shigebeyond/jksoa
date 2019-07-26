@@ -1,9 +1,10 @@
 package net.jkcode.jksoa.tracer.agent.interceptor
 
+import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jkmvc.http.HttpRequest
 import net.jkcode.jkmvc.http.IHttpRequestInterceptor
 import net.jkcode.jksoa.tracer.agent.Tracer
-import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
+import java.util.concurrent.CompletableFuture
 
 /**
  * 服务端的http请求拦截器
@@ -15,24 +16,23 @@ import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
 class HttpServerTraceInterceptor: IHttpRequestInterceptor {
 
     /**
-     * 前置处理
+     * 拦截action, 插入前置后置处理
+     *
      * @param req
-     * @return 调用结果作为after()调用的第二参数
+     * @param action 被拦截的处理
+     * @return
      */
-    override fun before(req: HttpRequest): Any? {
-        return Tracer.current().startInitiatorSpanner(req.controllerClass.clazz.qualifiedName!!, req.action + "()")
-    }
+    public override fun intercept(req: HttpRequest, action: () -> Any?): CompletableFuture<Any?> {
+        // 前置处理 -- 可以直接抛异常, 可以直接return
+        val spanner = Tracer.current().startInitiatorSpanner(req.controllerClass.clazz.qualifiedName!!, req.action + "()")
 
-    /**
-     * 后置处理
-     * @param req 可能会需要通过req来传递before()中操作过的对象, 如
-     * @param beforeResult before()方法的调用结果
-     * @param result 目标方法的调用结果
-     * @param ex 目标方法的调用异常
-     */
-    override fun after(req: HttpRequest, beforeResult: Any?, result: Any?, ex: Throwable?) {
-        val spanner = beforeResult as ISpanner
-        spanner.end(ex)
+        // 转future
+        val future = trySupplierFuture(action)
+
+        // 后置处理
+        return future.whenComplete{ r, ex ->
+            spanner.end(ex)
+        }
     }
 
 }

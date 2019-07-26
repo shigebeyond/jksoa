@@ -58,6 +58,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
 
             // 创建请求合并器
             KeyFutureSupplierCombiner<Any, Any?>{ singleArg -> // 单参数的future工厂
+                // 转future
                 trySupplierFuture{
                     // 调用方法
                     invokeMethod(method, arrayOf(singleArg), true)
@@ -90,6 +91,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
 
             // 创建请求合并器
             GroupFutureSupplierCombiner<Any, Any?, Any>(annotation){ singleArg -> // 单参数的future工厂
+                // 转future
                 trySupplierFuture{
                     // 调用批量操作的方法
                     invokeMethod(batchMethod, arrayOf(singleArg), true)

@@ -1,9 +1,10 @@
 package net.jkcode.jksoa.tracer.agent.interceptor
 
+import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.tracer.agent.Tracer
-import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
+import java.util.concurrent.CompletableFuture
 
 /**
  * 客户端处理rpc请求的拦截器
@@ -15,24 +16,23 @@ import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
 class RpcClientTraceInterceptor: IRpcRequestInterceptor {
 
     /**
-     * 前置处理
+     * 拦截action, 插入前置后置处理
+     *
      * @param req
-     * @return 调用结果作为after()调用的第二参数
+     * @param action 被拦截的处理
+     * @return
      */
-    override fun before(req: IRpcRequest): Any? {
-        return Tracer.current().startClientSpanner(req)
-    }
+    public override fun intercept(req: IRpcRequest, action: () -> Any?): CompletableFuture<Any?> {
+        // 前置处理 -- 可以直接抛异常, 可以直接return
+        val spanner = Tracer.current().startClientSpanner(req)
 
-    /**
-     * 后置处理
-     * @param req 可能会需要通过req来传递before()中操作过的对象, 如
-     * @param beforeResult before()方法的调用结果
-     * @param result 目标方法的调用结果
-     * @param ex 目标方法的调用异常
-     */
-    override fun after(req: IRpcRequest, beforeResult: Any?, result: Any?, ex: Throwable?) {
-        val spanner = beforeResult as ISpanner
-        spanner.end(ex)
+        // 转future
+        val future = trySupplierFuture(action)
+
+        // 后置处理
+        return future.whenComplete{ r, ex ->
+            spanner.end(ex)
+        }
     }
 
 }
