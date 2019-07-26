@@ -13,7 +13,7 @@ abstract class ICacheHandler(public val annotation: Cache /* 该类不是通用�
 
     /**
      * 尝试读缓存, 如果缓存不存在, 则回源并写缓存
-     * @param args
+     * @param args 方法参数, 用于组成缓存的key, 可以为空
      * @return
      */
     public fun cacheOrLoad(args: Array<Any?>): CompletableFuture<Any?> {
@@ -26,7 +26,7 @@ abstract class ICacheHandler(public val annotation: Cache /* 该类不是通用�
 
     /**
      * 回源, 兼容返回值类型是CompletableFuture
-     * @param args
+     * @param args 方法参数, 用于组成缓存的key, 可以为空
      * @return
      */
     public abstract fun loadData(args: Array<Any?>):Any?

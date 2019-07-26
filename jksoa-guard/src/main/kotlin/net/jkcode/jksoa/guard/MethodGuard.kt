@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.guard
 
 import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jksoa.client.combiner.annotation.*
 import net.jkcode.jksoa.guard.cache.ICacheHandler
 import net.jkcode.jksoa.guard.circuit.CircuitBreaker
@@ -96,16 +97,9 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
      */
     public inline fun <RequestArgumentType, ResponseType> toFutureSupplier(method: Method = this.method):(RequestArgumentType) -> CompletableFuture<ResponseType> {
         return { singleArg ->
-            // 1 将方法执行转为异步future, 不管方法的返回类型是不是CompletableFuture, 都转异步, 鬼懂方法实现中是真异步还是假异步
-            var f = CompletableFuture.supplyAsync({
+            trySupplierFuture{
                 invokeMethod(method, arrayOf(singleArg), true)
-            })
-            // 2 如果方法(如rpc方法)的返回类型是CompletableFuture, 则需要提取值
-            if(CompletableFuture::class.java.isAssignableFrom(method.returnType))
-                f = f.thenApply {
-                    (it as CompletableFuture<*>).get()
-                }
-            f as CompletableFuture<ResponseType>
+            } as CompletableFuture<ResponseType>
         }
     }
 
@@ -118,11 +112,14 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
             null
         else {
             object: ICacheHandler(annotation){
-                // 回源, 兼容返回值类型是CompletableFuture
+                /**
+                 * 回源, 兼容返回值类型是CompletableFuture
+                 * @param args 方法参数, 用于组成缓存的key, 可以为空
+                 * @return
+                 */
                 override fun loadData(args: Array<Any?>): Any? {
                     return invokeMethod(method, args, false)
                 }
-
             }
         }
     }

@@ -163,7 +163,7 @@ abstract class MethodGuardInvocationHandler: InvocationHandler {
      * @param args 参数
      * @return
      */
-    public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<out Any>
+    public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?>
 
     /**
      * 处理结果

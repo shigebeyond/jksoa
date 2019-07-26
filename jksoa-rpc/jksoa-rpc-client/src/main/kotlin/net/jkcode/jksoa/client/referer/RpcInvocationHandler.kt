@@ -69,7 +69,7 @@ object RpcInvocationHandler: MethodGuardInvocationHandler() {
      * @param args 参数
      * @return
      */
-    public override fun doInvoke(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<out Any> {
+    public override fun doInvoke(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
         // 1 封装请求
         val req = RpcRequest(method, args)
 
