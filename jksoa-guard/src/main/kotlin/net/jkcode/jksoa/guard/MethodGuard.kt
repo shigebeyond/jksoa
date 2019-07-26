@@ -12,9 +12,6 @@ import net.jkcode.jksoa.guard.degrade.IDegradeHandler
 import net.jkcode.jksoa.guard.measure.HashedWheelMeasurer
 import net.jkcode.jksoa.guard.measure.IMeasurer
 import net.jkcode.jksoa.guard.rate.IRateLimiter
-import net.jkcode.jksoa.guard.rate.SmoothBurstyRateLimiter
-import net.jkcode.jksoa.guard.rate.SmoothRateLimiter
-import net.jkcode.jksoa.guard.rate.SmoothWarmingUpRateLimiter
 import java.lang.reflect.Method
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -24,23 +21,15 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-04-19 12:26 PM
  */
-abstract class MethodGuard(public val method: Method /* 方法 */){
-
+abstract class MethodGuard(
+        public val method: Method, // 方法
+        public val handler: MethodGuardInvoker
+){
     /**
      * 方法调用的对象
+     *    合并后会异步调用其他方法, 原来方法的调用对象会丢失
      */
     public abstract val obj:Any
-
-    /**
-     * 调用方法
-     *   因为 MethodGuard 自身是通过方法反射来调用的, 因此不能再直接反射调用 method.invoke(obj, arg), 否则会递归调用以致于死循环
-     *
-     * @param method
-     * @param args
-     * @param handlingCache 是否处理缓存, 即调用 cacheHandler
-     * @return
-     */
-    public abstract fun invokeMethod(method: Method, args: Array<Any?>, handlingCache: Boolean):Any?
 
     /**
      * 方法的key合并器
@@ -61,7 +50,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
                 // 转future
                 trySupplierFuture{
                     // 调用方法
-                    invokeMethod(method, arrayOf(singleArg), true)
+                    handler.invokeAfterCombine(this, method, obj, arrayOf(singleArg))
                 }
             }
         }
@@ -94,7 +83,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
                 // 转future
                 trySupplierFuture{
                     // 调用批量操作的方法
-                    invokeMethod(batchMethod, arrayOf(singleArg), true)
+                    handler.invokeAfterCombine(this, batchMethod, obj, arrayOf(singleArg))
                 } as CompletableFuture<List<Any>>
             }
         }
@@ -115,7 +104,7 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
                  * @return
                  */
                 override fun loadData(args: Array<Any?>): Any? {
-                    return invokeMethod(method, args, false)
+                    return handler.invokeAfterCache(this@MethodGuard, method, obj, args)
                 }
             }
         }

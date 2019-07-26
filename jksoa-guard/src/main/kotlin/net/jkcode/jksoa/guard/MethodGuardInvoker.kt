@@ -1,23 +1,21 @@
 package net.jkcode.jksoa.guard
 
 import net.jkcode.jkmvc.common.currMillis
-import net.jkcode.jkmvc.common.getMethodHandle
 import net.jkcode.jkmvc.common.toExpr
 import net.jkcode.jksoa.client.combiner.annotation.degrade
-import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Future
 
 /**
- * 带守护的方法调用的代理实现
+ * 带守护的方法调用者
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-11-08 7:25 PM
  */
-class MethodGuardInvocationHandler {
+abstract class MethodGuardInvoker {
 
     /**
      * 方法守护者
@@ -31,111 +29,132 @@ class MethodGuardInvocationHandler {
      */
     public fun getMethodGuard(method: Method): MethodGuard{
         return methodGuards.getOrPut(method){
-            createMethodGuard(method)
+            return object: MethodGuard(method, this){
+                /**
+                 * 方法调用的对象
+                 *    合并后会异步调用其他方法, 原来方法的调用对象会丢失
+                 */
+                override val obj: Any
+                    get() = getInovkeObject(method)
+
+            }
         }
     }
 
     /**
-     * 创建方法守护者
+     * 获得调用的对象
      * @param method
      * @return
      */
-    public abstract fun createMethodGuard(method: Method): MethodGuard
+    public abstract fun getInovkeObject(method: Method): Any
 
     /**
-     * 处理方法调用: 调用 ConnectionHub
+     * 守护方法调用
      *
-     * @param proxy 代理对象
      * @param method 方法
-     * @param args0 参数
-     * @return
+     * @param obj 对象
+     * @param args 参数
+     * @return 结果
      */
-    public override fun invoke(proxy: Any, method: Method, args0: Array<Any?>?): Any? {
-        val args: Array<Any?> = if(args0 == null) emptyArray() else args0
-
-        // 1 默认方法, 则不重写, 直接调用
-        if (method.isDefault)
-        // 通过 MethodHandle 来反射调用
-            return method.getMethodHandle().invokeWithArguments(proxy, *args)
-
+    public fun guardInvoke(method: Method, proxy: Any, args: Array<Any?>): Any? {
         guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", ")") {
             it.toExpr()
         }, this::class.simpleName, method.declaringClass.name, method.name)
 
-        // 2 合并调用
-        // 2.1 根据group来合并请求
+        // 1 合并调用
+        // 1.1 根据group来合并请求
         val methodGuard = getMethodGuard(method) // 获得方法守护者
         if (methodGuard.groupCombiner != null) {
             val resFuture = methodGuard.groupCombiner!!.add(args.single()!!)
             return handleResult(method, resFuture)
         }
 
-        // 2.2 根据key来合并请求
+        // 1.2 根据key来合并请求
         if (methodGuard.keyCombiner != null) {
             val resFuture = methodGuard.keyCombiner!!.add(args.single()!!)
             return handleResult(method, resFuture)
         }
 
-        // 3 合并之后的调用
-        return invokeAfterCombine(method, proxy, args, true)
+        // 2 合并之后的调用
+        return invokeAfterCombine(methodGuard, method, proxy, args)
     }
 
     /**
      * 合并之后的调用
      *
+     * @param methodGuard 方法守护者
      * @param method 方法
      * @param obj 对象
      * @param args 参数
-     * @param handlingCache 是否处理缓存, 即调用 cacheHandler
-     *        cacheHandler会主动调用 invokeAfterCombine() 来回源, 需设置参数为 false, 否则递归调用死循环
      * @return 结果
      */
-    public fun invokeAfterCombine(method: Method, obj: Any, args: Array<Any?>, handlingCache: Boolean): Any? {
-        val methodGuard = getMethodGuard(method) // 获得方法守护者
+    public fun invokeAfterCombine(methodGuard: MethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 断路
-        if(handlingCache && methodGuard.circuitBreaker != null)
+        if(methodGuard.circuitBreaker != null)
             if(!methodGuard.circuitBreaker!!.acquire())
                 return handleException(methodGuard, method, args, GuardException("断路"))
 
         // 2 限流
-        if(handlingCache && methodGuard.rateLimiter != null)
+        if(methodGuard.rateLimiter != null)
             if(!methodGuard.rateLimiter!!.acquire())
                 return handleException(methodGuard, method, args, GuardException("限流"))
 
         // 3 缓存
-        if(handlingCache && methodGuard.cacheHandler != null) {
+        if(methodGuard.cacheHandler != null) {
             val resFuture = methodGuard.cacheHandler!!.cacheOrLoad(args)
             return handleResult(method, resFuture)
         }
 
-        // 4 计量
-        // 4.1 添加总计数
+        // 4 缓存之后的调用
+        return invokeAfterCache(methodGuard, method, obj, args)
+    }
+
+    /**
+     * 缓存之后的调用
+     *
+     * @param methodGuard 方法守护者
+     * @param method 方法
+     * @param obj 对象
+     * @param args 参数
+     * @return 结果
+     */
+    public fun invokeAfterCache(methodGuard: MethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
+        // 1 计量
+        // 1.1 添加总计数
         methodGuard.measurer?.currentBucket()?.addTotal()
         val startTime = currMillis()
 
-        // 5 真正的调用
-        val resFuture = doInvoke(method, obj, args).whenComplete{ r, e ->
-            // 4.2 添加请求耗时
+        // 2 真正的调用
+        val resFuture = invokeAfterGuard(method, obj, args).whenComplete { r, e ->
+            // 1.2 添加请求耗时
             methodGuard.measurer?.currentBucket()?.addCostTime(currMillis() - startTime)
 
-            if(e == null){ 
-                // 4.3 添加成功计数
+            if (e == null) {
+                // 1.3 添加成功计数
                 methodGuard.measurer?.currentBucket()?.addSuccess()
                 r
-            }else{ 
-                // 4.4 添加异常计数
+            } else {
+                // 1.4 添加异常计数
                 methodGuard.measurer?.currentBucket()?.addException()
 
-                // 6 处理异常: 调用后备处理
+                // 3 处理异常: 调用后备处理
                 handleException(methodGuard, method, args, e!!)
             }
-
-            
         }
 
         //处理结果
         return handleResult(method, resFuture)
     }
+
+    /**
+     * 守护之后真正的调用
+     *
+     * @param method 方法
+     * @param obj 对象
+     * @param args 参数
+     * @return
+     */
+    public abstract fun invokeAfterGuard(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?>
 
     /**
      * 处理异常: 调用后备处理
@@ -154,16 +173,6 @@ class MethodGuardInvocationHandler {
         }, this::class.simpleName, method.declaringClass.name, method.name, r.message, method.degrade?.fallbackMethod)
         return methodGuard.degradeHandler!!.handleFallback(r, args)
     }
-
-    /**
-     * 真正的调用
-     *
-     * @param method 方法
-     * @param obj 对象
-     * @param args 参数
-     * @return
-     */
-    public abstract fun doInvoke(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?>
 
     /**
      * 处理结果

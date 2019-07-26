@@ -4,7 +4,6 @@ import net.jkcode.jkmvc.common.makeThreads
 import net.jkcode.jkmvc.common.print
 import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.client.referer.Referer
-import net.jkcode.jksoa.client.referer.RpcMethodGuard
 import net.jkcode.jksoa.example.IGuardService
 import net.jkcode.jksoa.example.User
 import net.jkcode.jksoa.guard.combiner.GroupFutureSupplierCombiner
@@ -17,7 +16,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM
  */
-class RpcMethodGuardTests {
+class RpcClientMethodGuardTests {
 
     val service = Referer.getRefer<IGuardService>()
 
@@ -28,7 +27,7 @@ class RpcMethodGuardTests {
     @Test
     fun testKeyCombine() {
         // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
-        val keyCombiner = RpcMethodGuard(IGuardService::getUserByIdAsync).keyCombiner as KeyFutureSupplierCombiner<Int, User>
+        val keyCombiner = RpcClientMethodGuard(IGuardService::getUserByIdAsync).keyCombiner as KeyFutureSupplierCombiner<Int, User>
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(keyCombiner.add(1))
@@ -74,7 +73,7 @@ class RpcMethodGuardTests {
     @Test
     fun testGroupCombine() {
         // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
-        val groupCombiner = RpcMethodGuard(IGuardService::getUserByNameAsync).groupCombiner as GroupFutureSupplierCombiner<String, User, User>
+        val groupCombiner = RpcClientMethodGuard(IGuardService::getUserByNameAsync).groupCombiner as GroupFutureSupplierCombiner<String, User, User>
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(groupCombiner.add(randomString(7)))

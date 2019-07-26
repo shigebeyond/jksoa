@@ -2,17 +2,24 @@ package net.jkcode.jksoa.server.handler
 
 import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
-import net.jkcode.jkmvc.common.*
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.common.ThreadLocalInheritableInterceptor
+import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
 import net.jkcode.jksoa.client.referer.RpcInvocationHandler
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcResponse
+import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
+import net.jkcode.jksoa.guard.MethodGuardInvoker
 import net.jkcode.jksoa.server.RpcContext
 import net.jkcode.jksoa.server.provider.ProviderLoader
+import java.lang.reflect.Method
+import java.util.concurrent.CompletableFuture
 
 /**
  * Rpc请求处理者
@@ -21,7 +28,7 @@ import net.jkcode.jksoa.server.provider.ProviderLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-object RpcRequestHandler : IRpcRequestHandler {
+object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
 
     /**
      * 服务端配置
@@ -79,7 +86,8 @@ object RpcRequestHandler : IRpcRequestHandler {
         RpcContext(req, ctx)
 
         // 4 调用方法
-        return method.invoke(provider.service, *req.args)
+        //return method.invoke(provider.service, *req.args)
+        return guardInvoke(method, provider.service, req.args)
     }
 
     /**
@@ -104,5 +112,28 @@ object RpcRequestHandler : IRpcRequestHandler {
 
         // 2 请求处理后，关闭资源
         ClosingOnRequestEnd.triggerClosings()
+    }
+
+    /**
+     * 获得调用的对象
+     * @param method
+     * @return
+     */
+    public override fun getInovkeObject(method: Method): Any{
+        return ProviderLoader.get(method.getServiceClass().name)!!
+    }
+
+    /**
+     * 守护之后真正的调用
+     *
+     * @param method 方法
+     * @param obj 对象
+     * @param args 参数
+     * @return
+     */
+    public override fun invokeAfterGuard(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
+        return trySupplierFuture {
+            method.invoke(obj, *args)
+        }
     }
 }
