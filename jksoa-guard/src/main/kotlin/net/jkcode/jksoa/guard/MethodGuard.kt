@@ -57,7 +57,12 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
                 throw GuardException("${msg}必须有唯一的参数")
 
             // 创建请求合并器
-            KeyFutureSupplierCombiner<Any, Any?>(toFutureSupplier())
+            KeyFutureSupplierCombiner<Any, Any?>{ singleArg -> // 单参数的future工厂
+                trySupplierFuture{
+                    // 调用方法
+                    invokeMethod(method, arrayOf(singleArg), true)
+                }
+            }
         }
     }
 
@@ -84,22 +89,12 @@ abstract class MethodGuard(public val method: Method /* 方法 */){
                 throw GuardException("${msg}必须有的List或CompletableFuture<List>类型的返回值")
 
             // 创建请求合并器
-            GroupFutureSupplierCombiner<Any, Any?, Any>(annotation, toFutureSupplier(batchMethod))
-        }
-    }
-
-    /**
-     * 将(单参数)的方法调用转为future工厂, 合并请求时调用
-     *    兼容方法返回类型是CompletableFuture
-     *
-     * @param method 一般是调用当前被守护的方法 this.method, 但对于group合并器而言调用的是另一个方法 annotation.batchMethod
-     * @return
-     */
-    public inline fun <RequestArgumentType, ResponseType> toFutureSupplier(method: Method = this.method):(RequestArgumentType) -> CompletableFuture<ResponseType> {
-        return { singleArg ->
-            trySupplierFuture{
-                invokeMethod(method, arrayOf(singleArg), true)
-            } as CompletableFuture<ResponseType>
+            GroupFutureSupplierCombiner<Any, Any?, Any>(annotation){ singleArg -> // 单参数的future工厂
+                trySupplierFuture{
+                    // 调用批量操作的方法
+                    invokeMethod(batchMethod, arrayOf(singleArg), true)
+                } as CompletableFuture<List<Any>>
+            }
         }
     }
 
