@@ -1,1 +1,0 @@
-服务接口必须声明注解 @RemoteService

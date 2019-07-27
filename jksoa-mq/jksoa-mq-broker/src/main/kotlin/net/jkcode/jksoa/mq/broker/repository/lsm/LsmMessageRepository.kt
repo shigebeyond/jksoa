@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.AtomicLong
  * 消息的仓库
  *    使用lsmtree实现的kv存储, 来保存队列+进度
  *    1. 队列存储: 子目录是queue, key是消息id, value是消息
- *    2. 进度存储: 子目录是progress, key为分组id, value是读进度对应的消息id
+ *    2. 索引存储: 子目录是index, key是消息id, value是待消费的分组id比特集合
+ *    3. 进度存储: 子目录是progress, key为分组id, value是读进度对应的消息id
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-13 5:16 PM

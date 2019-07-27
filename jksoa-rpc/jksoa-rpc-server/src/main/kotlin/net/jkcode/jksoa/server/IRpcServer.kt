@@ -97,7 +97,7 @@ abstract class IRpcServer: Closeable {
                 for(p in plugins)
                     p.start()
 
-                // 调用原来的回调
+                // 调用回调
                 callback?.invoke()
 
                 // 关机时要关闭

@@ -22,15 +22,15 @@ import java.util.concurrent.CompletableFuture
  * @date 2019-04-19 12:26 PM
  */
 class MethodGuard(
-        override val method: Method, // 被守护的方法
-        override val handler: IMethodGuardInvoker // 带守护的方法调用者
+        public override val method: Method, // 被守护的方法
+        public override val handler: IMethodGuardInvoker // 带守护的方法调用者
 ) : IMethodGuard {
 
     /**
      * 方法的key合并器
      *    兼容方法返回类型是CompletableFuture
      */
-    override val keyCombiner: KeyFutureSupplierCombiner<Any, Any?>? by lazy{
+    public override val keyCombiner: KeyFutureSupplierCombiner<Any, Any?>? by lazy{
         val annotation = method.keyCombine
         if(annotation == null)
             null
@@ -55,7 +55,7 @@ class MethodGuard(
      * 方法的group合并器
      *    兼容方法返回类型是CompletableFuture
      */
-    override val groupCombiner: GroupFutureSupplierCombiner<Any, Any?, Any>? by lazy{
+    public override val groupCombiner: GroupFutureSupplierCombiner<Any, Any?, Any>? by lazy{
         val annotation = method.groupCombine
         if(annotation == null)
             null
@@ -87,7 +87,7 @@ class MethodGuard(
     /**
      * 缓存处理器
      */
-    override val cacheHandler: ICacheHandler? by lazy{
+    public override val cacheHandler: ICacheHandler? by lazy{
         val annotation = method.cache
         if(annotation == null)
             null
@@ -98,7 +98,7 @@ class MethodGuard(
                  * @param args 方法参数, 用于组成缓存的key, 可以为空
                  * @return
                  */
-                override fun loadData(args: Array<Any?>): Any? {
+                public override fun loadData(args: Array<Any?>): Any? {
                     return handler.invokeAfterCache(this@MethodGuard, method, obj, args)
                 }
             }
@@ -108,7 +108,7 @@ class MethodGuard(
     /**
      * 限流器
      */
-    override val rateLimiter: IRateLimiter? by lazy{
+    public override val rateLimiter: IRateLimiter? by lazy{
         val annotation = method.rateLimit
         IRateLimiter.create(annotation)
     }
@@ -116,7 +116,7 @@ class MethodGuard(
     /**
      * 计量器
      */
-    override val measurer: IMeasurer? by lazy{
+    public override val measurer: IMeasurer? by lazy{
         val annotation = method.metric
         if(annotation == null)
             null
@@ -127,7 +127,7 @@ class MethodGuard(
     /**
      * 降级处理器
      */
-    override val degradeHandler: IDegradeHandler? by lazy{
+    public override val degradeHandler: IDegradeHandler? by lazy{
         val annotation = method.degrade
         if(annotation == null)
             null
@@ -151,7 +151,7 @@ class MethodGuard(
                  * @param args 方法调用的参数
                  * @return
                  */
-                override fun handleFallback(t: Throwable?, args: Array<Any?>): Any? {
+                public override fun handleFallback(t: Throwable?, args: Array<Any?>): Any? {
                     // 调用后备方法
                     return fallbackMethod.invoke(obj, *args)
                 }
@@ -162,7 +162,7 @@ class MethodGuard(
     /**
      * 断路器
      */
-    override val circuitBreaker: ICircuitBreaker? by lazy{
+    public override val circuitBreaker: ICircuitBreaker? by lazy{
         val annotation = method.circuitBreak
         if(annotation == null)
             null

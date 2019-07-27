@@ -30,7 +30,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @param method
      * @return
      */
-    override fun getMethodGuard(method: Method): IMethodGuard{
+    public override fun getMethodGuard(method: Method): IMethodGuard{
         return methodGuards.getOrPut(method){
             return MethodGuard(method, this)
         }
@@ -44,7 +44,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    override fun guardInvoke(method: Method, proxy: Any, args: Array<Any?>): Any? {
+    public override fun guardInvoke(method: Method, proxy: Any, args: Array<Any?>): Any? {
         guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", ")") {
             it.toExpr()
         }, this::class.simpleName, method.declaringClass.name, method.name)
@@ -76,7 +76,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    override fun invokeAfterCombine(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
+    public override fun invokeAfterCombine(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 断路
         if(methodGuard.circuitBreaker != null)
             if(!methodGuard.circuitBreaker!!.acquire())
@@ -106,7 +106,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    override fun invokeAfterCache(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
+    public override fun invokeAfterCache(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 计量
         // 1.1 添加总计数
         methodGuard.measurer?.currentBucket()?.addTotal()

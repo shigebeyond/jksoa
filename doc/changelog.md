@@ -72,7 +72,7 @@
 
 2. 支持插件机制
 
-3. 添加分布式跟踪模块 tracer, 使用插件方式来动态接入原有的rpc系统
+3. 添加分布式跟踪组件 tracer, 使用插件方式来动态接入原有的rpc系统
 
 4. 拆分子工程
 
@@ -90,14 +90,30 @@
 
 5. 重构mq
 
-5.1 broker负责将消息存到lsmtree文件中
+5.1 broker负责将消息存到lsmtree文件中, 一个topic下有3个存储对象
 
-5.2 实现mq的注册中心, 支持topic分配信息的保存与分发
+5.1.1 队列存储: 子目录是queue, key是消息id, value是消息
+
+5.1.2 索引存储: 子目录是index, key是消息id, value是待消费的分组id比特集合
+
+5.1.3 进度存储: 子目录是progress, key为分组id, value是读进度对应的消息id
+
+5.2 实现mq的注册中心, 支持topic分配信息的保存与分发, 用json格式存储在zookeeper中
 
 5.3 引入broker leader来负责topic的分配
 
-5.4 实现 IConsumerConnectionHub, 用于在broker端管理consumer连接
+5.4 实现 ConsumerConnectionHub, 用于在broker端管理consumer连接
 
 5.5 实现 BrokerConnectionHub, 用于在client端管理broker连接
 
+5.6 支持消息的多分组消费, 从生成到存储到消费, producer生产消息时指定多分组, broker存储消息时使用BitSet来存储消息的分组, broker支持并发给多分组consumer推送消息, 只有该消息所有分组的consumer都消费完, 才能删除该消息
+
+5.7 抽取 TopicMessagesExector 来执行单个主题的消息的消费, 同时继承 UnitRequestQueueFlusher, 通过改写属性 executor 来控制并发或串行执行
+
 6. 添加序列号生成器: 基于zk的持久顺序节点来实现
+
+7. 优化分片
+
+8. 重构拦截器, 由原来的before()/after()优化为链式包装拦截处理
+
+9. 重构method guard, 支持rpc server
