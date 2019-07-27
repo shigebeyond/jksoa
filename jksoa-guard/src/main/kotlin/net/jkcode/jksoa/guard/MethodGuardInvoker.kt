@@ -10,12 +10,15 @@ import java.util.concurrent.Future
 
 /**
  * 带守护的方法调用者
+ *    1. guardInvoke() -- 入口
+ *    2. invokeAfterGuard() -- 子类实现, 就是真正的方法调用
+ *    3. 其他方法 -- 被 MethodGuard 中的守护组件调用
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-11-08 7:25 PM
  */
-abstract class MethodGuardInvoker {
+abstract class MethodGuardInvoker : IMethodGuardInvoker {
 
     /**
      * 方法守护者
@@ -27,26 +30,11 @@ abstract class MethodGuardInvoker {
      * @param method
      * @return
      */
-    public fun getMethodGuard(method: Method): MethodGuard{
+    override fun getMethodGuard(method: Method): IMethodGuard{
         return methodGuards.getOrPut(method){
-            return object: MethodGuard(method, this){
-                /**
-                 * 方法调用的对象
-                 *    合并后会异步调用其他方法, 原来方法的调用对象会丢失
-                 */
-                override val obj: Any
-                    get() = getInovkeObject(method)
-
-            }
+            return MethodGuard(method, this)
         }
     }
-
-    /**
-     * 获得调用的对象
-     * @param method
-     * @return
-     */
-    public abstract fun getInovkeObject(method: Method): Any
 
     /**
      * 守护方法调用
@@ -56,7 +44,7 @@ abstract class MethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    public fun guardInvoke(method: Method, proxy: Any, args: Array<Any?>): Any? {
+    override fun guardInvoke(method: Method, proxy: Any, args: Array<Any?>): Any? {
         guardLogger.debug(args.joinToString(", ", "{}调用方法: {}.{}(", ")") {
             it.toExpr()
         }, this::class.simpleName, method.declaringClass.name, method.name)
@@ -88,7 +76,7 @@ abstract class MethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    public fun invokeAfterCombine(methodGuard: MethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
+    override fun invokeAfterCombine(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 断路
         if(methodGuard.circuitBreaker != null)
             if(!methodGuard.circuitBreaker!!.acquire())
@@ -118,7 +106,7 @@ abstract class MethodGuardInvoker {
      * @param args 参数
      * @return 结果
      */
-    public fun invokeAfterCache(methodGuard: MethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
+    override fun invokeAfterCache(methodGuard: IMethodGuard, method: Method, obj: Any, args: Array<Any?>): Any? {
         // 1 计量
         // 1.1 添加总计数
         methodGuard.measurer?.currentBucket()?.addTotal()
@@ -147,16 +135,6 @@ abstract class MethodGuardInvoker {
     }
 
     /**
-     * 守护之后真正的调用
-     *
-     * @param method 方法
-     * @param obj 对象
-     * @param args 参数
-     * @return
-     */
-    public abstract fun invokeAfterGuard(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?>
-
-    /**
      * 处理异常: 调用后备处理
      * @param methodGuard
      * @param method 方法
@@ -164,7 +142,7 @@ abstract class MethodGuardInvoker {
      * @param r 异常
      * @return
      */
-    protected fun handleException(methodGuard: MethodGuard, method: Method, args: Array<Any?>, r: Throwable): Any? {
+    protected fun handleException(methodGuard: IMethodGuard, method: Method, args: Array<Any?>, r: Throwable): Any? {
         if (methodGuard.degradeHandler == null)
             throw r
 

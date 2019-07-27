@@ -84,7 +84,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
      * @param method
      * @return
      */
-    public override fun getInovkeObject(method: Method): Any{
+    public override fun getCombineInovkeObject(method: Method): Any{
         return Referer.getRefer(method.getServiceClass())
     }
 

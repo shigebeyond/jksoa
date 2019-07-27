@@ -21,21 +21,16 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-04-19 12:26 PM
  */
-abstract class MethodGuard(
-        public val method: Method, // 方法
-        public val handler: MethodGuardInvoker
-){
-    /**
-     * 方法调用的对象
-     *    合并后会异步调用其他方法, 原来方法的调用对象会丢失
-     */
-    public abstract val obj:Any
+class MethodGuard(
+        override val method: Method, // 被守护的方法
+        override val handler: IMethodGuardInvoker // 带守护的方法调用者
+) : IMethodGuard {
 
     /**
      * 方法的key合并器
      *    兼容方法返回类型是CompletableFuture
      */
-    public val keyCombiner: KeyFutureSupplierCombiner<Any, Any?>? by lazy{
+    override val keyCombiner: KeyFutureSupplierCombiner<Any, Any?>? by lazy{
         val annotation = method.keyCombine
         if(annotation == null)
             null
@@ -60,7 +55,7 @@ abstract class MethodGuard(
      * 方法的group合并器
      *    兼容方法返回类型是CompletableFuture
      */
-    public val groupCombiner: GroupFutureSupplierCombiner<Any, Any?, Any>? by lazy{
+    override val groupCombiner: GroupFutureSupplierCombiner<Any, Any?, Any>? by lazy{
         val annotation = method.groupCombine
         if(annotation == null)
             null
@@ -92,7 +87,7 @@ abstract class MethodGuard(
     /**
      * 缓存处理器
      */
-    public val cacheHandler: ICacheHandler? by lazy{
+    override val cacheHandler: ICacheHandler? by lazy{
         val annotation = method.cache
         if(annotation == null)
             null
@@ -113,7 +108,7 @@ abstract class MethodGuard(
     /**
      * 限流器
      */
-    public val rateLimiter: IRateLimiter? by lazy{
+    override val rateLimiter: IRateLimiter? by lazy{
         val annotation = method.rateLimit
         IRateLimiter.create(annotation)
     }
@@ -121,7 +116,7 @@ abstract class MethodGuard(
     /**
      * 计量器
      */
-    public val measurer: IMeasurer? by lazy{
+    override val measurer: IMeasurer? by lazy{
         val annotation = method.metric
         if(annotation == null)
             null
@@ -132,7 +127,7 @@ abstract class MethodGuard(
     /**
      * 降级处理器
      */
-    public val degradeHandler: IDegradeHandler? by lazy{
+    override val degradeHandler: IDegradeHandler? by lazy{
         val annotation = method.degrade
         if(annotation == null)
             null
@@ -167,7 +162,7 @@ abstract class MethodGuard(
     /**
      * 断路器
      */
-    public val circuitBreaker: ICircuitBreaker? by lazy{
+    override val circuitBreaker: ICircuitBreaker? by lazy{
         val annotation = method.circuitBreak
         if(annotation == null)
             null

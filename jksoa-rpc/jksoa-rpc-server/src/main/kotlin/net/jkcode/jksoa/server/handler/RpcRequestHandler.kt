@@ -119,7 +119,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @param method
      * @return
      */
-    public override fun getInovkeObject(method: Method): Any{
+    public override fun getCombineInovkeObject(method: Method): Any{
         return ProviderLoader.get(method.getServiceClass().name)!!
     }
 
