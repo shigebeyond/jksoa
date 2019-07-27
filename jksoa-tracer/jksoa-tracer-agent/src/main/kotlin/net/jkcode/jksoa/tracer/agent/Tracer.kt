@@ -1,9 +1,6 @@
 package net.jkcode.jksoa.tracer.agent
 
-import net.jkcode.jkmvc.common.Application
-import net.jkcode.jkmvc.common.DoneFlagList
-import net.jkcode.jkmvc.common.generateId
-import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.client.referer.Referer
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.tracer.agent.loader.AnnotationTraceableServiceLoader
@@ -37,7 +34,7 @@ import kotlin.reflect.jvm.javaMethod
  */
 class Tracer protected constructor() {
 
-    companion object {
+    companion object: ICurrentHolder<Tracer>({ Tracer() }) {
 
         /**
          * 取样器
@@ -111,20 +108,6 @@ class Tracer protected constructor() {
             tracerLogger.info("同步servcie: {}", serviceNames)
         }
 
-        /**
-         * 线程安全的跟踪器对象缓存
-         */
-        protected val tracers:ThreadLocal<Tracer> = ThreadLocal.withInitial {
-            Tracer()
-        }
-
-        /**
-         * 获得当前跟踪器
-         */
-        @JvmStatic
-        public fun current(): Tracer {
-            return tracers.get();
-        }
     }
 
     /**
@@ -285,7 +268,7 @@ class Tracer protected constructor() {
      * 清理
      */
     internal fun clear(){
-        tracers.remove()
+        removeCurrent()
     }
 
 }

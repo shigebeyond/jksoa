@@ -16,7 +16,7 @@ import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.guard.MethodGuardInvoker
-import net.jkcode.jksoa.server.RpcContext
+import net.jkcode.jksoa.server.RpcServerContext
 import net.jkcode.jksoa.server.provider.ProviderLoader
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
@@ -83,7 +83,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
             throw RpcServerException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
         // 3 初始化rpc上下文: 因为rpc的方法可能有异步执行, 因此在方法体的开头就要获得并持有当前的rpc上下文
-        RpcContext(req, ctx)
+        RpcServerContext(req, ctx)
 
         // 4 调用方法
         //return method.invoke(provider.service, *req.args)
@@ -125,6 +125,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
 
     /**
      * 守护之后真正的调用
+     *    调用provider的service实例的方法
      *
      * @param method 方法
      * @param obj 对象

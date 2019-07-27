@@ -90,6 +90,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
 
     /**
      * 守护之后真正的调用
+     *    将方法调用转为发送rpc请求
      *
      * @param method 方法
      * @param obj 对象

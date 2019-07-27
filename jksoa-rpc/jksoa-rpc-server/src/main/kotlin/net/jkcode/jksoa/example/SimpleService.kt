@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.example
 
 import net.jkcode.jkmvc.common.randomLong
-import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.serverLogger
+import net.jkcode.jksoa.server.RpcServerContext
 import java.rmi.RemoteException
 
 /**
@@ -38,7 +38,7 @@ class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服�
      */
     @Throws(RemoteException::class) // rim异常
     public override fun checkVersion(){
-        val v = RpcRequest.current().version
+        val v = RpcServerContext.currentRequest().version
         println("version=$v")
     }
 }

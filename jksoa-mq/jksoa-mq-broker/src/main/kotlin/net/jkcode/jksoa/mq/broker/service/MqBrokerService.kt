@@ -17,7 +17,7 @@ import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssignment
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import net.jkcode.jksoa.server.IRpcServer
-import net.jkcode.jksoa.server.RpcContext
+import net.jkcode.jksoa.server.RpcServerContext
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -117,7 +117,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
      */
     public override fun subscribeTopic(topic: String, group: String): CompletableFuture<Unit> {
         // 添加连接
-        val ctx = RpcContext.current().ctx
+        val ctx = RpcServerContext.current().ctx
         val channel = ctx.channel()
         val consumerUrl = ConsumerUrl(topic, group, channel)
         connHub.handleServiceUrlAdd(consumerUrl, emptyList())
