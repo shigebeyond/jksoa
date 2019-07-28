@@ -11,7 +11,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
 /**
- * 发送rpc请求的作业
+ * 发送分片rpc请求的作业
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-21 3:55 PM

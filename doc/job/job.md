@@ -1,125 +1,183 @@
-# 概述
-jksoa-job 是一个轻量级分布式任务调度平台，核心的设计理念是简单、轻量、易扩展、高性能。具有以下特性:
+# Job -- 作业
 
-- 1、使用简单：；
+## IJob -- 作业接口
 
-- 2、动态：支持动态修改任务状态、启动/停止任务，以及终止运行中任务，即时生效；
-
-- 3、调度者: 同一时间内只有一个调度者, 但是集群模式下有热备, 可保证调度者HA；
-
-- 4、任务执行: 任务执行支持lpc与rpc模式, rpc模式下就是分布式执行，支持集群处理，支持故障转移, 可保证任务执行HA；
-
-- 5、故障转移：依赖于rpc框架的的故障转移, 任务在一台机器上执行失败了, 就切换到另外一台机器上执行。
-
-- 6、动态分片：分片广播任务以执行者为维度进行分片，支持动态扩容执行者集群从而动态增加分片数量，协同进行业务处理；在进行大数据量业务操作时可显著提升任务处理能力和速度。
-
-- 7、全异步：任务调度异步化，依靠异步rpc, 保证高效处理海量任务; 任务执行异步化, 依靠多线程执行, 提高任务执行效率；
-
-# 背景
-
-Quartz作为开源作业调度中的佼佼者，是作业调度的首选。但存在以下问题：
-
-- 1. API设计有点啰嗦, 使用麻烦
-- 2. quartz底层以“抢占式”获取DB锁并由抢占成功的节点来执行任务，会导致节点负载悬殊非常大, 同时由抢占失败导致节点空转；而jksoa-job通过调度者主动分配任务给执行者，从而充分发挥集群优势，达到各节点负载均衡。
-
-因此, 本人依赖于jksoa-rpc实现一个更轻量更简单更高效的分布式任务调度系统
-
-# 使用
-
-使用很简单, 只需要两行代码便可
+主要是一个 `execute()` 方法, 负责封装作业的执行逻辑
 
 ```
-import net.jkcode.jksoa.job.cronjob.CronJobLauncher
+package net.jkcode.jksoa.job
 
-// cron与作业的复合表达式, 由cron表达式 + 作业表达式组成, 其中作业表达式前面加`:`, 标识触发的内容是作业
-// 如 "0/10 * * * * ? -> lpc net.jkcode.jksoa.example.SystemService ping() ()"
-val cronJobExpr = "0/10 * * * * ? -> lpc net.jkcode.jksoa.job.LocalBean echo(String) (\\\"测试消息\\\")"
-//val cronJobExpr = "0/10 * * * * ? -> rpc net.jkcode.jksoa.example.ISystemService echo(String) (\"测试消息\")"
-val trigger = CronJobLauncher.lauch(cronJobExpr)
+/**
+ * 作业
+ * @author shijianhang<772910474@qq.com>
+ * @date 2019-01-21 3:06 PM
+ */
+interface IJob {
+
+    /**
+     * 作业标识，全局唯一
+     */
+    val id: Long
+
+    /**
+     * 执行作业
+     *
+     * @param context 作业执行的上下文
+     */
+    fun execute(context: IJobExecutionContext)
+
+    /**
+     * 转为作业表达式
+     * @return
+     */
+    fun toExpr(): String {
+        return "custom " + javaClass.name
+    }
+
+    /**
+     * 记录作业执行异常
+     *   可记录到磁盘中,以便稍后重试
+     * @param e
+     */
+    fun logExecutionException(e: Throwable){
+    }
+
+}
 ```
 
+当Job被一个trigger被触发时，`execute()`方法会扔到trigger的线程池来执行
 
+`execute()`方法有唯一的参数`IJobExecutionContext`类型的对象, 用于向job实例传递执行上下文信息.
 
-# 架构设计
+## IJobExecutionContext -- 作业执行上下文
 
-## 设计思想
+用于向job实例提供有关其“运行时”信息:
 
-将任务调度与任务执行分离, 从而提供系统的扩展性
+1. jobId -- 作业id
+2. trigger -- 触发器实例
+3. triggerCount -- 当前重复次数
+4. triggerTime -- 触发时间
+5. jobAttr -- 作业属性, 用于存储与传递job实例的状态信息, 在`IJob::execute()`实现中可通过读写该属性来维持状态, 譬如可用于构建session
 
-任务调度者为 Trigger, 自身不承担业务逻辑，只负责发起调度请求。
-
-任务执行为 Job，交由执行者统一执行，执行者负责接收调度请求并执行对应的Job中的业务逻辑。
-
-
-# 调度模块剖析
-
-## RpcJob
-常规Quartz的开发，任务逻辑一般维护在QuartzJobBean中，耦合很严重。jksoa-job中“调度模块”和“任务模块”完全解耦，调度模块中的所有调度任务使用同一个QuartzJobBean，即RpcJob。不同的调度任务将各自参数维护在各自扩展表数据中，当触发RpcJob执行时，将会解析不同的任务参数发起远程调用，调用各自的远程执行者服务。
-
-这种调用模型类似RPC调用，RpcJob提供调用代理的功能，而执行者提供远程服务的功能。
-
-## 调度线程池
-调度采用线程池方式实现，避免单线程因阻塞而引起任务调度延迟。
-
-
-## 任务HA（Failover）
-RpcJob 表示任务是通过rpc来执行, 执行者如若集群部署，调度者将会感知到在线的所有执行者, 这是jksoa-rpc框架自身实现的。
-
-1. 故障转移
-执行节点发生故障, 会通过注册中心摘除, 而调度者订阅注册中心的节点信息, 下一次调度会将请求发给正常的节点
-
-2. 失败重试
-
-
-## 全异步化
-
-jksoa-job系统中业务逻辑在远程执行者执行，触发流程全异步化设计。
-
-相比直接在quartz的QuartzJobBean中执行业务逻辑，极大的降低了调度线程占用时间；
-
-1. 异步调度: 调度请求就是异步rpc, 交给rpc服务的集群来并发执行.
-
-2. 异步执行：执行者就是rpc请求处理的线程池来异步处理的, 执行完给调度者一个异步响应.
-
-因此, 调度者的每次调度是很快的, 不会被执行者阻塞, 能够处理海量调度, 瓶颈在于网络与执行者.
-
-对于执行者, 只需要增加对应rpc服务提供的机器就行了
-
-## 动态分片
-
-我直接在rpc框架中支持分片请求分发, 分片请求是 IShardingRpcRequest, rpc框架会拆分请求并自动传递分片参数, 因此可根据分片参数来开发分片任务；
-
-"分片任务" 以执行者为维度进行分片，支持动态扩容执行者集群从而动态增加分片数量，协同进行业务处理；在进行大数据量业务操作时可显著提升任务处理能力和速度。
-
-"分片任务" 和普通任务开发流程一致，不同之处在于可以可以获取分片参数，获取分片参数进行分片业务处理。
-
-- Java语言任务获取分片参数方式：BEAN、GLUE模式(Java)
 ```
-// 可参考Sample示例执行者中的示例任务"ShardingJobHandler"了解试用
-ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
-```
-- 脚本语言任务获取分片参数方式：GLUE模式(Shell)、GLUE模式(Python)、GLUE模式(Nodejs)
-```
-// 脚本任务入参固定为三个，依次为：任务传参、分片序号、分片总数。以Shell模式任务为例，获取分片参数代码如下
-echo "分片序号 index = $2"
-echo "分片总数 total = $3"
+package net.jkcode.jksoa.job
+
+import net.jkcode.jkmvc.common.DirtyFlagMap
+import java.util.*
+
+/**
+ * 作业执行的上下文
+ * @author shijianhang<772910474@qq.com>
+ * @date 2019-01-21 6:39 PM
+ */
+interface IJobExecutionContext {
+
+    /**
+     * 作业标识，全局唯一
+     */
+    val jobId: Long
+
+    /**
+     * 触发器
+     */
+    val trigger: ITrigger
+
+    /**
+     * 当前重复次数
+     */
+    val triggerCount: Int
+        get() = trigger.triggerCount
+
+    /**
+     * 触发时间 = 当前时间
+     */
+    val triggerTime: Date
+
+    /**
+     * 作业的属性
+     */
+    val jobAttr: DirtyFlagMap<String, Any?>
+}
 ```
 
-分片参数属性说明：
+# 作业分类
 
-    shardingSize：当前分片序号(从0开始)，执行者集群列表中当前执行者的序号；
-    nodeSize：总分片数，执行者集群的总机器数量；
+类族
 
-该特性适用场景如：
-- 1、分片任务场景：10个执行者的集群来处理10w条数据，每台机器只需要处理1w条数据，耗时降低10倍；
-- 2、广播任务场景：广播执行者机器运行shell脚本、广播集群节点进行缓存更新等
+```
+IJob
+    BaseJob
+        LambdaJob -- 用lambda包装的作业
+        LpcJob -- 调用本地bean方法的作业
+        ShardingLpcJob -- 调用本地bean方法的分片作业
+        RpcJob -- 发送rpc请求的作业
+        RpcJob -- 发送分片rpc请求的作业
+```
 
+## 1. LambdaJob -- 用lambda包装的作业
+最灵活的作业定义方式, 直接写代码来封装作业逻辑, 但是由于其灵活性, 无法使用cron与作业的复合表达式来表达, 因此不能使用`CronJobLauncher.lauch(cronJobExpr)`来调度作业
 
-## 故障转移 & 失败重试
-一次完整任务流程包括"调度（调度者） + 执行（执行者）"两个阶段。
-- "故障转移"发生在调度阶段，在执行者集群部署时，如果某一台执行者发生故障，该策略支持自动进行Failover切换到一台正常的执行者机器并且完成调度请求流程。
-- "失败重试"发生在"调度 + 执行"两个阶段，支持通过自定义任务失败重试次数，当任务失败时将会按照预设的失败重试次数主动进行重试；
+只有一个参数, 就是lambda
 
+```
+val job = LambdaJob {
+    println("测试cron表达式定义的触发器")
+}
+```
 
+以下的几类作业均是基于调用方法来封装作业逻辑, 不管是本地方法, 还是远程方法, 因此可以使用cron与作业的复合表达式来表达, 因此可以使用`CronJobLauncher.lauch(cronJobExpr)`来调度作业
 
+## 2. LpcJob -- 调用本地bean方法的作业
+调用的是本地bean方法: `LocalBean::echo(String)`
 
+有2个参数: 1. 方法引用 2. 实参数组
+
+```
+// 调用本地bean方法的作业
+val job = LpcJob(LocalBean::echo, arrayOf<Any?>("测试消息"))
+```
+
+## 3. ShardingLpcJob -- 调用本地bean方法的分片作业
+调用的是本地bean方法: `LocalBean::echo(String)`, 只是加上分片调用
+
+有2个参数: 1. 方法引用 2. 实参数组的数组, 即实参的二维数组, 即每个分片的实参数组
+
+所谓分片调用, 就是按每个分片来调用, 就是以每个分片的的实参数组来调用方法. 
+
+同时由于是本地线程池执行, 因此不用管执行者数目, 直接扔到线程池执行即可
+
+```
+// 调用本地bean方法的分片作业
+val args:Array<Array<*>> = Array(3) { i ->
+    arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
+}
+val job = ShardingLpcJob(LocalBean::echo, args)
+```
+
+## 4. RpcJob -- 发送rpc请求的作业
+
+调用的是远程方法: `ISimpleService::echo(String)`, 实际上是发送rpc请求
+
+有2个参数: 1. 方法引用 2. 实参数组
+
+```
+// 发送rpc请求的作业
+val job = RpcJob(ISimpleService::echo, arrayOf<Any?>("测试消息"))
+```
+
+## 5. RpcJob -- 发送分片rpc请求的作业
+调用的是远程方法: `ISimpleService::echo(String)`, 只是加上分片调用
+
+有2个参数: 1. 方法引用 2. 实参数组的数组, 即实参的二维数组, 即每个分片的实参数组
+
+所谓分片调用, 就是按每个分片来调用, 就是以每个分片的的实参数组来调用方法. 
+
+由于是rpc调用, 执行者即远程服务的提供者. 而分片则是按分片策略分派给这些提供者来执行.
+
+```
+// 发送分片rpc请求的作业
+val args:Array<Array<*>> = Array(3) { i ->
+    arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
+}
+val job = ShardingRpcJob(ISimpleService::echo, args)
+```

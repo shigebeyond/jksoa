@@ -33,7 +33,6 @@ interface IJob {
      * @param e
      */
     fun logExecutionException(e: Throwable){
-
     }
 
 }

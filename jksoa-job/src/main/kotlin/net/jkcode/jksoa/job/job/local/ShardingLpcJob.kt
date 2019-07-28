@@ -10,7 +10,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
 /**
- * 调用bean方法的作业
+ * 调用bean方法的分片作业
  *   bean有默认构造函数
  *
  * @author shijianhang<772910474@qq.com>
