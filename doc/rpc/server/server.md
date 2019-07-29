@@ -45,7 +45,7 @@ object RpcServerLauncher {
         // 获得服务端配置
         val config = Config.instance("rpc-server", "yaml")
         // 获得指定的协议的服务实例
-        val protocol: String = config["rpc-protocol"]!!
+        val protocol: String = config["protocol"]!!
         val server = IRpcServer.instance(protocol)
         // 启动服务
         server.start()

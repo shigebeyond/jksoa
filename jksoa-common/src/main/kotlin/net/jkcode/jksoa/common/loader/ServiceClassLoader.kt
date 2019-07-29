@@ -39,8 +39,6 @@ abstract class ServiceClassLoader<T: IServiceClass>(protected val isProvider: Bo
     public fun load(){
         commonLogger.debug(" ------ load service: {} ------ ", this.javaClass)
         starter.startOnce {
-            // 系统的service包
-            addPackage("net.jkcode.jksoa.service")
             // 用户定义的service包
             addPackages(config["servicePackages"]!!)
         }

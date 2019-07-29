@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM
  */
-class ClientTests {
+class RpcClientTests {
 
     @Test
     fun testProxy(){
@@ -78,7 +78,7 @@ class ClientTests {
         /*
         输出结果:
         classLoader根目录: /oldhome/shi/code/java/jksoa/jksoa-client/out/test/classes/
-        包net.jkcode.jksoa.example下的文件:
+        包net.jkcode.jksoa.rpc.example下的文件:
             file:/oldhome/shi/code/java/jksoa/jksoa-client/out/production/classes/com/jksoa/example
         */
     }
