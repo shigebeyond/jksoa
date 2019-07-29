@@ -1,5 +1,6 @@
-# 注解 @Cache
+# 方法级注解 @Cache
 
+1. 定义
 直接缓存调用结果, key是参数值串联的字符串, value是调用结果, 缓存时间为 expires 指定的秒数
 
 ```
@@ -18,9 +19,11 @@ annotation class Cache(
 )
 ```
 
-demo
+2. demo
+
+缓存调用结果, key是 "user-$id", value是User对象, 缓存时间为120s=2min
 
 ```
-@Cache
+@Cache("user", "-", 120)
 fun getUserById(id: Int): User
 ```

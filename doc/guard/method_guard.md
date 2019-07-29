@@ -1,5 +1,16 @@
 
-方法守护者, 就是守护方法调用
+# IMethodGuard
+
+方法守护者, 就是守护方法调用, 他用于针对方法上定义的守护注解, 建立对应的处理类实例
+
+方法级的守护注解 vs 处理类
+1. `@KeyCombine` -- key合并, 对应实例化与调用处理类 `KeyFutureSupplierCombiner`
+2. `@GroupCombine` -- group合并, 对应实例化与调用处理类 `GroupFutureSupplierCombiner`
+3. `@Metric` -- 统计流量, 对应实例化与调用处理类 `HashedWheelMeasurer`
+4. `@CircuitBreak` -- 断路器, 对应实例化与调用处理类 `CircuitBreaker`
+5. `@RateLimit` -- 限流, 对应实例化与调用处理类 `SmoothBurstyRateLimiter` 或 `SmoothWarmingUpRateLimiter`
+6. `@Degrade` -- 降级: 有异常后备方法, 对应实例化与调用处理类 `IDegradeHandler` 
+7. `@Cache` -- 缓存, 对应实例化与调用处理类 `ICacheHandler`
 
 ```
 package net.jkcode.jksoa.guard

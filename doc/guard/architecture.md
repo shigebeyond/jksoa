@@ -2,9 +2,11 @@
 
 # 流程
 
-核心处理 `net.jkcode.jksoa.guard.MethodGuardInvoker`
+方法级注解解析在 `net.jkcode.jksoa.guard.MethodGuard`
 
-在方法中声明守护相关的注解, 执行方法时触发注解相关的守护逻辑, 
+调用方法时触发守护逻辑在 `net.jkcode.jksoa.guard.MethodGuardInvoker`
+
+在方法中声明守护相关的注解, 调用方法时触发注解相关的守护逻辑:
 
 1. 根据group来合并请求
 

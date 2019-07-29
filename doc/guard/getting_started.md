@@ -23,6 +23,19 @@ jksoa-guard 是应用守护者, 提供了请求合并/流量统计/熔断/限流
 
 为了更简单的应用 jksoa-guard, 框架分别针对请求合并/流量统计/熔断/限流/降级/缓存等, 提供了方法级别的注解, 能够很便捷在方法上设置守护逻辑.
 
+方法级的守护注解有:
+1. `@KeyCombine` -- key合并, 对应实例化与调用处理类 `KeyFutureSupplierCombiner`
+2. `@GroupCombine` -- group合并, 对应实例化与调用处理类 `GroupFutureSupplierCombiner`
+3. `@Metric` -- 统计流量, 对应实例化与调用处理类 `HashedWheelMeasurer`
+4. `@CircuitBreak` -- 断路器, 对应实例化与调用处理类 `CircuitBreaker`
+5. `@RateLimit` -- 限流, 对应实例化与调用处理类 `SmoothBurstyRateLimiter` 或 `SmoothWarmingUpRateLimiter`
+6. `@Degrade` -- 降级: 有异常后备方法, 对应实例化与调用处理类 `IDegradeHandler` 
+7. `@Cache` -- 缓存, 对应实例化与调用处理类 `ICacheHandler`
+
+这些注解只针对rpc服务类, 当然可应用在服务接口, 或服务实现类.
+一般只应用在服务接口.
+至于服务实现类, 你大可自己写代码直接调用处理类, 没必要用注解.
+
 ```
 package net.jkcode.jksoa.rpc.example
 

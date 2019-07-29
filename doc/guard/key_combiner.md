@@ -18,8 +18,9 @@ futures.print()
 ```
 
 
-# 注解 `@KeyCombine`
+# 方法级注解 `@KeyCombine`
 
+1. 定义
 主要针对的是单参数的方法, 针对同一个参数值的多次调用, 直接合并为一次调用
 
 ```
@@ -33,7 +34,9 @@ futures.print()
 annotation class KeyCombine()
 ```
 
-demo, 针对id=1有多次调用, 则合并为一次调用
+2. demo
+
+针对id=1有多次调用, 则合并为一次调用
 
 ```
 // key合并

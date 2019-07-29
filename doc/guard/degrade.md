@@ -1,5 +1,5 @@
-# 注解 @Degrade
-
+# 方法级注解 @Degrade
+1. 定义
 就是指定被守护的方法调用发生异常时, 转而调用的后备方法名, 要保证被守护的方法与后备方法要有同样的参数签名+同样的返回值类型
 
 ```
@@ -15,7 +15,8 @@ annotation class Degrade(
 )
 ```
 
-demo, 表示 `getUserWhenException()` 调用异常时, 转而调用 `getUserWhenFallback()` 作为结果值
+2. demo
+表示 `getUserWhenException()` 调用异常时, 转而调用 `getUserWhenFallback()` 作为结果值
 
 ```
 // 降级: 有异常后备方法

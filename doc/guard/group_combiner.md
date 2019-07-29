@@ -30,10 +30,9 @@ open class GroupFutureSupplierCombiner<RequestArgumentType /* 请求参数类型
 )
 ```
 
+# 方法级注解 @GroupCombine
 
-
-# 注解 @GroupCombine
-
+1. 定义
 主要针对的是单参数的方法, 针对不同参数的多次调用, 直接合并为接收多个参数的批量方法的调用
 
 ```
@@ -55,7 +54,8 @@ annotation class GroupCombine(
 
 ```
 
-demo, 针对 `getUserByNameAsync("a")` / `getUserByNameAsync("b")` 有多次调用, 则合并为一次批量方法调用 `listUsersByNameAsync(listOf("a", "b"))`
+2. demo
+针对 `getUserByNameAsync("a")` / `getUserByNameAsync("b")` 有多次调用, 则合并为一次批量方法调用 `listUsersByNameAsync(listOf("a", "b"))`
 
 ```
 // group合并
