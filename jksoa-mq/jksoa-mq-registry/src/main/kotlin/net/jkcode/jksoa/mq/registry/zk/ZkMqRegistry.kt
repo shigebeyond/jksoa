@@ -4,8 +4,8 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.mq.common.TopicRegex
 import net.jkcode.jksoa.mq.common.mqRegisterLogger
 import net.jkcode.jksoa.mq.registry.*
-import net.jkcode.jksoa.registry.IRegistry
-import net.jkcode.jksoa.registry.zk.ZkRegistry
+import net.jkcode.jksoa.rpc.registry.IRegistry
+import net.jkcode.jksoa.rpc.registry.zk.ZkRegistry
 
 /**
  * 基于zookeeper的mq注册中心

@@ -1,2 +1,2 @@
 # 分片策略
-average: net.jkcode.jksoa.sharding.AverageShardingStrategy
+average: net.jkcode.jksoa.rpc.sharding.AverageShardingStrategy

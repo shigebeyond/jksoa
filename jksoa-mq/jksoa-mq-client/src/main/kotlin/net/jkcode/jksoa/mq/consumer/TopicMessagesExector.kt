@@ -5,7 +5,7 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.VoidFuture
 import net.jkcode.jkmvc.common.selectExecutor
 import net.jkcode.jkmvc.flusher.UnitRequestQueueFlusher
-import net.jkcode.jksoa.client.referer.Referer
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqClientLogger

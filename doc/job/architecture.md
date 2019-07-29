@@ -112,7 +112,7 @@ trigger.start()
 
 2. rpc作业的分片
 我直接在rpc框架中支持分片请求分发, 分片请求是 `IShardingRpcRequest`, rpc框架会按分片参数来拆分成多个请求, 并行分派给服务提供者(执行者)来执行.
-此时分片分派, 要涉及到分派策略 `net.jkcode.jksoa.sharding.Ishardingstrategy`, 具体参考 [sharding_strategy](sharding_strategy.md)
+此时分片分派, 要涉及到分派策略 `net.jkcode.jksoa.rpc.sharding.Ishardingstrategy`, 具体参考 [sharding_strategy](sharding_strategy.md)
 
 分片是以执行者(服务提供者节点)为维度进行分派, 而rpc框架支持动态扩容集群, 从而动态增加执行者(服务提供者节点)数量，并行做业务处理；在进行大数据量业务操作时可显著提升作业处理能力和速度。
 
@@ -134,7 +134,7 @@ val job = ShardingRpcJob(ISimpleService::echo, args)
 
 ```
 分片分派结果, 将 3 个分片分派给 2 个节点:
-net.jkcode.jksoa.client.connection.reuse.ReconnectableConnection(netty://192.168.61.183:9080) => net.jkcode.jkmvc.bit.SetBitIterator(0, 2),
-net.jkcode.jksoa.client.connection.reuse.ReconnectableConnection(netty://192.168.61.184:9080) => net.jkcode.jkmvc.bit.SetBitIterator(1)
+net.jkcode.jksoa.rpc.client.connection.reuse.ReconnectableConnection(netty://192.168.61.183:9080) => net.jkcode.jkmvc.bit.SetBitIterator(0, 2),
+net.jkcode.jksoa.rpc.client.connection.reuse.ReconnectableConnection(netty://192.168.61.184:9080) => net.jkcode.jkmvc.bit.SetBitIterator(1)
 ```
 

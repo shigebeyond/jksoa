@@ -56,8 +56,8 @@ trigger.start()
 import net.jkcode.jksoa.job.cronjob.CronJobLauncher
 
 // cron与作业的复合表达式, 由cron表达式 + 作业表达式组成, 其中作业表达式前面加`:`, 标识触发的内容是作业
-// 如 "0/10 * * * * ? -> lpc net.jkcode.jksoa.example.SystemService ping() ()"
+// 如 "0/10 * * * * ? -> lpc net.jkcode.jksoa.rpc.example.SimpleService ping() ()"
 //val cronJobExpr = "0/10 * * * * ? -> lpc net.jkcode.jksoa.job.LocalBean echo(String) (\\\"测试消息\\\")"
-val cronJobExpr = "0/10 * * * * ? -> rpc net.jkcode.jksoa.example.ISimpleService echo(String) (\"测试消息\")"
+val cronJobExpr = "0/10 * * * * ? -> rpc net.jkcode.jksoa.rpc.example.ISimpleService echo(String) (\"测试消息\")"
 val trigger = CronJobLauncher.lauch(cronJobExpr)
 ```

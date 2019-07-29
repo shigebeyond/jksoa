@@ -8,26 +8,26 @@
 
 因此导致server也有两种实现
 
-1. RmiServer, 实现rmi协议
+1. RmiRpcServer, 实现rmi协议
 
-2. NettyServer, 实现netty协议
+2. NettyRpcServer, 实现netty协议
 
 其类族如下
 
 ```
 IRpcServer
-	NettyServer
-	RmiServer
+	NettyRpcServer
+	RmiRpcServer
 ```
 
 # 启动server
 
-使用 `net.jkcode.jksoa.server.RpcServerLauncher` 作为主类, 其`main()`方法会启动server
+使用 `net.jkcode.jksoa.rpc.server.RpcServerLauncher` 作为主类, 其`main()`方法会启动server
 
-实际上他的实现很简单, 就是根据 `server.yaml` 配置文件中指定的 protocol 协议去调用对应的 IRpcServer 的实现类
+实际上他的实现很简单, 就是根据 `rpc-server.yaml` 配置文件中指定的 protocol 协议去调用对应的 IRpcServer 的实现类
 
 ```
-package net.jkcode.jksoa.server
+package net.jkcode.jksoa.rpc.server
 
 import net.jkcode.jkmvc.common.Config
 
@@ -43,9 +43,9 @@ object RpcServerLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
         // 获得服务端配置
-        val config = Config.instance("server", "yaml")
+        val config = Config.instance("rpc-server", "yaml")
         // 获得指定的协议的服务实例
-        val protocol: String = config["protocol"]!!
+        val protocol: String = config["rpc-protocol"]!!
         val server = IRpcServer.instance(protocol)
         // 启动服务
         server.start()
@@ -57,5 +57,5 @@ object RpcServerLauncher {
 默认的 protocol 是netty, 其实我也可以这么调用, 一样的效果
 
 ```
-NettyServer().start()
+NettyRpcServer().start()
 ```

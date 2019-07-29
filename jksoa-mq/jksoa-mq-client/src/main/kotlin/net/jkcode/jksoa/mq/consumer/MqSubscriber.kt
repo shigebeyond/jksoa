@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.consumer
 
-import net.jkcode.jksoa.client.referer.Referer
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerLeaderService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqClientException

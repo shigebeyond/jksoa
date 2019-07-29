@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.job
 
 import net.jkcode.jkmvc.common.getMethodBySignature
-import net.jkcode.jksoa.example.ISimpleService
+import net.jkcode.jksoa.rpc.example.ISimpleService
 import net.jkcode.jksoa.job.job.local.LpcJob
 import net.jkcode.jksoa.job.job.local.ShardingLpcJob
 import net.jkcode.jksoa.job.job.remote.RpcJob
@@ -15,7 +15,7 @@ class JobTests: BaseTests(){
         try {
             val c = Class.forName("fuck")
 
-//        val c = SystemService::class.java
+//        val c = SimpleService::class.java
 //        val m = c.getMethod("echo", String::class.java)
 //        println(m.getSignature())
 

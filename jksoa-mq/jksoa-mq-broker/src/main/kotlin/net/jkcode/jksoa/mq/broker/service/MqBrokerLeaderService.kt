@@ -5,9 +5,9 @@ import net.jkcode.jksoa.mq.common.GroupSequence
 import net.jkcode.jksoa.mq.common.TopicSequence
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
-import net.jkcode.jksoa.registry.IDiscoveryListener
-import net.jkcode.jksoa.registry.IRegistry
-import net.jkcode.jksoa.registry.zk.ZkRegistry
+import net.jkcode.jksoa.rpc.registry.IDiscoveryListener
+import net.jkcode.jksoa.rpc.registry.IRegistry
+import net.jkcode.jksoa.rpc.registry.zk.ZkRegistry
 
 /**
  * 消息中转者的leader

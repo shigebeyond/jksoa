@@ -1,4 +1,4 @@
 # 均衡负载类型
-random: net.jkcode.jksoa.loadbalance.RandomLoadBalancer # 随机选择
-consistentHash: net.jkcode.jksoa.loadbalance.ConsistentHashLoadBalancer # 一致性hash
-roundRobin: net.jkcode.jksoa.loadbalance.RoundRobinLoadBalancer # 轮询
+random: net.jkcode.jksoa.rpc.loadbalance.RandomLoadBalancer # 随机选择
+consistentHash: net.jkcode.jksoa.rpc.loadbalance.ConsistentHashLoadBalancer # 一致性hash
+roundRobin: net.jkcode.jksoa.rpc.loadbalance.RoundRobinLoadBalancer # 轮询

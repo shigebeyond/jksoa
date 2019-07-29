@@ -1,6 +1,6 @@
 # 分片策略
 
-分片分派, 即将多个分片分派给多个执行者, 分派策略依赖于 `net.jkcode.jksoa.sharding.IShardingStrategy`.
+分片分派, 即将多个分片分派给多个执行者, 分派策略依赖于 `net.jkcode.jksoa.rpc.sharding.IShardingStrategy`.
 
 ## IShardingStrategy 接口
 

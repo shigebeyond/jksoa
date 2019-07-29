@@ -2,10 +2,10 @@ package net.jkcode.jksoa.mq.broker.pusher
 
 import net.jkcode.jkmvc.bit.SetBitIterator
 import net.jkcode.jkmvc.common.map
-import net.jkcode.jksoa.client.IConnection
-import net.jkcode.jksoa.client.connection.IConnectionHub
-import net.jkcode.jksoa.client.dispatcher.IRpcRequestDispatcher
-import net.jkcode.jksoa.client.dispatcher.RpcRequestDispatcher
+import net.jkcode.jksoa.rpc.client.IConnection
+import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
+import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.RpcRequest

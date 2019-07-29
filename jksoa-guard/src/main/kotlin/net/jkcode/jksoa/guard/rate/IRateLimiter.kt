@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.rate
 
-import net.jkcode.jksoa.client.combiner.annotation.RateLimit
+import net.jkcode.jksoa.rpc.client.combiner.annotation.RateLimit
 
 /**
  * 限流器

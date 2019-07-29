@@ -6,9 +6,9 @@ jksoa将系统抽象为3个端: rpc-client端, rpc-server端, http-server端
 
 分别对应有3类插件:
 
-1. rpcClientPlugins: rpc客户端的插件, 在rpc server启动 `net.jkcode.jksoa.server.IRpcServer.start()` 时调用
+1. rpcClientPlugins: rpc客户端的插件, 在rpc server启动 `net.jkcode.jksoa.rpc.server.IRpcServer.start()` 时调用
 
-2. rpcServerPlugins: rpc服务端的插件, 在rpc client的请求分发者初始化 `net.jkcode.jksoa.client.dispatcher.RpcRequestDispatcher.init()` 时调用
+2. rpcServerPlugins: rpc服务端的插件, 在rpc client的请求分发者初始化 `net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher.init()` 时调用
 
 3. httpServerPlugins: http服务端的插件, 在http filter初始化 `net.jkcode.jkmvc.http.JkFilter.init()` 时调用
 
@@ -61,7 +61,7 @@ interface IPlugin: Closeable {
 package net.jkcode.jksoa.tracer.agent.plugin
 
 import net.jkcode.jkmvc.common.IPlugin
-import net.jkcode.jksoa.client.referer.RpcInvocationHandler
+import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
 import net.jkcode.jksoa.tracer.agent.interceptor.RpcClientTraceInterceptor
 
 /**

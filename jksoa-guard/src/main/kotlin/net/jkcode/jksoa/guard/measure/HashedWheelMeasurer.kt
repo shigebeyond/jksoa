@@ -3,7 +3,7 @@ package net.jkcode.jksoa.guard.measure
 import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jkmvc.common.mapToArray
 import net.jkcode.jkmvc.iterator.ArrayFilteredIterator
-import net.jkcode.jksoa.client.combiner.annotation.Metric
+import net.jkcode.jksoa.rpc.client.combiner.annotation.Metric
 
 /**
  * 基于时间轮实现的计量器

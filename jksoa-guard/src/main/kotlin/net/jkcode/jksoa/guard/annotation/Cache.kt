@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.client.combiner.annotation
+package net.jkcode.jksoa.rpc.client.combiner.annotation
 
 import java.lang.reflect.Method
 

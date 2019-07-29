@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.agent.loader
 
-import net.jkcode.jksoa.server.provider.ProviderLoader
+import net.jkcode.jksoa.rpc.server.provider.ProviderLoader
 
 /**
  * rpc服务端的服务加载器

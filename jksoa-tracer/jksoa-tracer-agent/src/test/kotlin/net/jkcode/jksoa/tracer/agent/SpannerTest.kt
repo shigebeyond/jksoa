@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.tracer.agent
 
 import net.jkcode.jksoa.common.RpcRequest
-import net.jkcode.jksoa.example.ISimpleService
+import net.jkcode.jksoa.rpc.example.ISimpleService
 import net.jkcode.jksoa.tracer.agent.plugin.RpcClientTracerPlugin
 import org.junit.Test
 import java.util.concurrent.CompletableFuture

@@ -4,7 +4,7 @@ import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import net.jkcode.jkmvc.common.CommonSecondTimer
 import net.jkcode.jkmvc.common.currMillis
-import net.jkcode.jksoa.client.combiner.annotation.CircuitBreak
+import net.jkcode.jksoa.rpc.client.combiner.annotation.CircuitBreak
 import net.jkcode.jksoa.guard.measure.IMeasurer
 import net.jkcode.jksoa.guard.rate.IRateLimiter
 import java.util.concurrent.TimeUnit

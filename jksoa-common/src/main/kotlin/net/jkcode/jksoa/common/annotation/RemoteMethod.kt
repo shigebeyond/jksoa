@@ -11,7 +11,7 @@ import java.lang.reflect.Method
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RemoteMethod(
-        public val requestTimeoutMillis: Long = 0 /* 请求超时，Long类型，单位毫秒, 如果为0则实际的超时使用client.yaml中定义的配置项 requestTimeoutMillis */
+        public val requestTimeoutMillis: Long = 0 /* 请求超时，Long类型，单位毫秒, 如果为0则实际的超时使用rpc-client.yaml中定义的配置项 requestTimeoutMillis */
 ){
 }
 

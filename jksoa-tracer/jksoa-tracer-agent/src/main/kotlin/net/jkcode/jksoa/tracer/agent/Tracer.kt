@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.tracer.agent
 
 import net.jkcode.jkmvc.common.*
-import net.jkcode.jksoa.client.referer.Referer
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.tracer.agent.loader.AnnotationTraceableServiceLoader
 import net.jkcode.jksoa.tracer.agent.loader.ITraceableServiceLoader

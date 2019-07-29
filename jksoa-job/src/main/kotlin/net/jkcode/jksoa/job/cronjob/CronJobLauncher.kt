@@ -20,7 +20,7 @@ object CronJobLauncher {
     /**
      * 启动
      * @param cronJobExpr cron与作业的复合表达式, 由cron表达式 + 作业表达式组成, 其中作业表达式前面加`:`, 标识触发的内容是作业
-     *                    如 "0/10 * * * * ? -> lpc net.jkcode.jksoa.example.SystemService ping() ()"
+     *                    如 "0/10 * * * * ? -> lpc net.jkcode.jksoa.rpc.example.SimpleService ping() ()"
      */
     public fun lauch(cronJobExpr: String): CronTrigger {
         // 分隔cron表达式 + 作业表达式

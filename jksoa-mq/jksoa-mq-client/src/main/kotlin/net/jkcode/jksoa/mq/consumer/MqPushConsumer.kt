@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.mq.consumer
 
 import net.jkcode.jkmvc.common.Config
-import net.jkcode.jksoa.client.referer.Referer
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
-import net.jkcode.jksoa.server.provider.ProviderLoader
+import net.jkcode.jksoa.rpc.server.provider.ProviderLoader
 
 /**
  * 推模式的消息消费者

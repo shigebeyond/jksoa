@@ -2,8 +2,6 @@ package net.jkcode.jksoa.leader
 
 import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import net.jkcode.jkmvc.common.Application
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.common.commonLogger
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.IZkChildListener
@@ -29,14 +27,9 @@ class ZkSequentialLeaderElection(public override val module: String /* 模块 */
         public val RootPath: String = "/leader"
 
         /**
-         * 配置
-         */
-        public val config: IConfig = Config.instance("leader", "yaml")
-
-        /**
          * zk客户端
          */
-        public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
+        public val zkClient: ZkClient = ZkClientFactory.instance()
     }
 
     /**

@@ -44,7 +44,7 @@ RPC（Remote Procedure Call Protocol，远程过程调用），调用远程服�
 
 ## server端
 
-### server配置 server.yaml
+### server配置 rpc-server.yaml
 
 注:　配置项`servicePackages`声明了服务类所在的包，server启动时会扫描这些包中的服务类来向zk注册服务提供者
 
@@ -57,7 +57,7 @@ port: 9080 # 端口
 parameters: # 参数
   weight: 1
 servicePackages: # service类所在的包路径
-    - net.jkcode.jksoa.example # 示例服务
+    - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.collector.service # 分布式跟踪组件的collector服务
     - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 # netty启动参数
@@ -79,10 +79,10 @@ netty:
 
 ### 创建服务提供者
 
-参考 jksoa-common/src/main/kotlin/net/jkcode/jksoa/example/ISimpleService.kt
+参考 jksoa-common/src/main/kotlin/net.jkcode.jksoa.rpc.example/ISimpleService.kt
 
 ```
-package net.jkcode.jksoa.example
+package net.jkcode.jksoa.rpc.example
 
 import net.jkcode.jksoa.common.annotation.RemoteService
 import java.rmi.RemoteException
@@ -119,11 +119,11 @@ interface ISimpleService /*: Remote // rmi协议服务接口 */ {
 
 ## 启动server
 
-使用 `net.jkcode.jksoa.server.RpcServerLauncher` 作为主类, 其`main()`方法会启动server
+使用 `net.jkcode.jksoa.rpc.server.RpcServerLauncher` 作为主类, 其`main()`方法会启动server
 
 ## client端
 
-### client配置 client.yaml
+### client配置 rpc-client.yaml
 
 注:　配置项`servicePackages`声明了服务类所在的包，client初始化时会扫描这些包中的服务类来向zk订阅服务提供者
 
@@ -134,7 +134,7 @@ serializer: fst # 序列器类型
 loadbalancer: random # 均衡负载类型
 shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
-    - net.jkcode.jksoa.example # 示例服务
+    - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.common.service.remote # collector服务
     - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
@@ -147,8 +147,8 @@ pooledConnectionMaxTotal: 2 # 池化连接的最大数
 ### 获得服务引用者(stub)
 
 ```
-import net.jkcode.jksoa.client.referer.Referer
-import net.jkcode.jksoa.example.ISimpleService
+import net.jkcode.jksoa.rpc.client.referer.Referer
+import net.jkcode.jksoa.rpc.example.ISimpleService
 
 // 获得服务引用者(stub)
 val service = Referer.getRefer<ISimpleService>()

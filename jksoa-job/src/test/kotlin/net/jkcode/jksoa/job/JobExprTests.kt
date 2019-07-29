@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jksoa.example.ISimpleService
+import net.jkcode.jksoa.rpc.example.ISimpleService
 import net.jkcode.jksoa.job.job.local.LpcJob
 import net.jkcode.jksoa.job.job.local.ShardingLpcJob
 import net.jkcode.jksoa.job.job.remote.RpcJob

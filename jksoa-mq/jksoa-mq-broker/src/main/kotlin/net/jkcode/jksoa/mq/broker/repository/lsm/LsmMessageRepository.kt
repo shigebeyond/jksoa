@@ -12,7 +12,7 @@ import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.TopicRegex
 import net.jkcode.jksoa.mq.common.TopicSequence
 import net.jkcode.jksoa.mq.common.exception.MqBrokerException
-import net.jkcode.jksoa.server.IRpcServer
+import net.jkcode.jksoa.rpc.server.IRpcServer
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong

@@ -17,7 +17,7 @@ interface IRpcRequestMeta: IInvocationMethod {
         /**
          * 客户端配置
          */
-        public val config = Config.instance("client", "yaml")
+        public val config = Config.instance("rpc-client", "yaml")
     }
 
     /**

@@ -6,9 +6,9 @@ jksoa将系统抽象为3个端: rpc-client端, rpc-server端, http-server端
 
 分别对应有3类请求拦截器:
 
-1. rpc客户端的拦截器, 配置在 `client.yaml` 的 `interceptors` 项目, 会应用到 `RpcInvocationHandler.interceptors`
+1. rpc客户端的拦截器, 配置在 `rpc-client.yaml` 的 `interceptors` 项目, 会应用到 `RpcInvocationHandler.interceptors`
 
-2. rpc服务端的拦截器, 配置在 `server.yaml` 的 `interceptors` 项目, 会应用到 `HttpRequestHandler.interceptors`
+2. rpc服务端的拦截器, 配置在 `rpc-server.yaml` 的 `interceptors` 项目, 会应用到 `HttpRequestHandler.interceptors`
 
 3. http服务端的拦截器, 配置在 `http.yaml` 的 `interceptors` 项目, 会应用到 `HttpRequestHandler.interceptors`
 

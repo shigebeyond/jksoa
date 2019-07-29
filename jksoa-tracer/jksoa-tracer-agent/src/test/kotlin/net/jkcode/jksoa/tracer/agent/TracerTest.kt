@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.tracer.agent
 
-import net.jkcode.jksoa.client.referer.Referer
-import net.jkcode.jksoa.example.ISimpleService
+import net.jkcode.jksoa.rpc.client.referer.Referer
+import net.jkcode.jksoa.rpc.example.ISimpleService
 import org.junit.Test
 
 @TraceableService

@@ -2,14 +2,12 @@ package net.jkcode.jksoa.sequence
 
 import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import net.jkcode.jkmvc.common.Application
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNodeExistsException
-import java.util.NoSuchElementException
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -42,14 +40,9 @@ class ZkSequence protected constructor(public override val module: String /* 模
         public val MemberPathDelimiter = '-'
 
         /**
-         * 配置
-         */
-        public val config: IConfig = Config.instance("leader", "yaml")
-
-        /**
          * zk客户端
          */
-        public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
+        public val zkClient: ZkClient = ZkClientFactory.instance()
 
         /**
          * 单例池

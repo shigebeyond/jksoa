@@ -19,10 +19,10 @@
 3. 接口必须声明注解 @RemoteService
 
 ## 扫描包的配置
-在`server.yaml` 中的项目 `servicePackages`, 例子如下
+在`rpc-server.yaml` 中的项目 `servicePackages`, 例子如下
 ```
 servicePackages: # service类所在的包路径
-    - net.jkcode.jksoa.example # 示例服务
+    - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.collector.service # 分布式跟踪组件的collector服务
     - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 ```
@@ -43,10 +43,10 @@ Provider需要向注册中心注册其提供的服务信息, 服务信息包含:
 
  ```
 jksoa
-    net.jkcode.jksoa.example.ISimpleService # 服务标识 = 接口类名
+    net.jkcode.jksoa.rpc.example.ISimpleService # 服务标识 = 接口类名
         netty:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
         netty:192.168.0.1:8080
-    net.jkcode.jksoa.example.ISimpleService
+    net.jkcode.jksoa.rpc.example.ISimpleService
         netty:192.168.0.1:8080
         netty:192.168.0.1:8080
 ```

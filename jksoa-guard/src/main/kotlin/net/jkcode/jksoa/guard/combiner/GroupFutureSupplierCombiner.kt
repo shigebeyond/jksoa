@@ -2,7 +2,7 @@ package net.jkcode.jksoa.guard.combiner
 
 import net.jkcode.jkmvc.common.getProperty
 import net.jkcode.jkmvc.flusher.RequestQueueFlusher
-import net.jkcode.jksoa.client.combiner.annotation.GroupCombine
+import net.jkcode.jksoa.rpc.client.combiner.annotation.GroupCombine
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KProperty1
 

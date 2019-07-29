@@ -86,7 +86,7 @@
 
 3. 完善 @RemoteService 注解, 添加属性 connectionHubClass 支持自定义连接管理, 添加属性 loadBalancer 支持自定义均衡负载
 
-4. rpc支持双工, 详见client.yaml/server.yaml中的配置项 duplex
+4. rpc支持双工, 详见rpc-client.yaml/rpc-server.yaml中的配置项 duplex
 
 5. 重构mq
 

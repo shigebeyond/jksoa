@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.collector
 
-import net.jkcode.jksoa.server.IRpcServer
+import net.jkcode.jksoa.rpc.server.IRpcServer
 import org.junit.Test
 
 class CollectorTest {

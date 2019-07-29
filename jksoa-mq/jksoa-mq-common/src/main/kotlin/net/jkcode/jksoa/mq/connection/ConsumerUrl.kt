@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.connection
 
 import io.netty.channel.Channel
-import net.jkcode.jksoa.client.protocol.netty.NettyConnection
+import net.jkcode.jksoa.rpc.client.protocol.netty.NettyConnection
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.mq.common.GroupSequence
 import java.net.InetSocketAddress

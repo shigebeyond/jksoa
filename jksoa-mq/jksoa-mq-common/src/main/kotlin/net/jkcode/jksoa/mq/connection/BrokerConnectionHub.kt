@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.mq.connection
 
 import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jksoa.client.IConnection
-import net.jkcode.jksoa.client.connection.ConnectionHub
+import net.jkcode.jksoa.rpc.client.IConnection
+import net.jkcode.jksoa.rpc.client.connection.ConnectionHub
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message

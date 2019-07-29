@@ -5,8 +5,8 @@ import net.jkcode.jkmvc.common.ConsistentHash
 import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jkmvc.common.map
 import net.jkcode.jkmvc.common.randomInt
-import net.jkcode.jksoa.client.IConnection
-import net.jkcode.jksoa.client.connection.IConnectionHub
+import net.jkcode.jksoa.rpc.client.IConnection
+import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException

@@ -3,7 +3,7 @@ package net.jkcode.jksoa.mq
 import net.jkcode.jksoa.mq.broker.service.MqBrokerLeaderService
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
-import net.jkcode.jksoa.server.IRpcServer
+import net.jkcode.jksoa.rpc.server.IRpcServer
 import org.junit.Test
 
 /**

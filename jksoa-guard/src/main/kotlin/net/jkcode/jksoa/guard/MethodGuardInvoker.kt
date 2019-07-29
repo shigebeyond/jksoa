@@ -2,7 +2,7 @@ package net.jkcode.jksoa.guard
 
 import net.jkcode.jkmvc.common.currMillis
 import net.jkcode.jkmvc.common.toExpr
-import net.jkcode.jksoa.client.combiner.annotation.degrade
+import net.jkcode.jksoa.rpc.client.combiner.annotation.degrade
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap

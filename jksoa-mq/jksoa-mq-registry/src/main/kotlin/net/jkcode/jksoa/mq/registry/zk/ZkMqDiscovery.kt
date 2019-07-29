@@ -29,14 +29,9 @@ open class ZkMqDiscovery : IMqDiscovery {
     public val topic2brokerPath: String = PathPrefix + "topic2broker"
 
     /**
-     * 注册中心配置
-     */
-    public val config: IConfig = Config.instance("registry", "yaml")
-
-    /**
      * zk客户端
      */
-    public val zkClient: ZkClient = ZkClientFactory.instance(config["zkConfigName"]!!)
+    public val zkClient: ZkClient = ZkClientFactory.instance()
 
     /**
      * zk节点数据监听器, 自发监听zk
