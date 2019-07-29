@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.job.trigger
 
-import net.jkcode.jkmvc.common.DirtyFlagMap
 import net.jkcode.jkmvc.common.add
 import net.jkcode.jkmvc.common.format
 import net.jkcode.jkmvc.common.CommonSecondTimer
@@ -33,9 +32,9 @@ abstract class BaseTrigger : ITrigger {
     public override val jobs: List<IJob> = LinkedList()
 
     /**
-     * 作业属性
+     * 作业执行的上下文
      */
-    protected val jobAttrs: MutableMap<Long, DirtyFlagMap<String, Any?>> = HashMap()
+    protected val contexts: MutableMap<Long, JobExecutionContext> = HashMap()
 
     /**
      * 定时任务
@@ -84,26 +83,24 @@ abstract class BaseTrigger : ITrigger {
         // 线程池中执行作业
         CommonThreadPool.execute {
             for(job in jobs){
-                // 获得作业属性
-                val attr = jobAttrs.getOrPut(job.id){
-                    DirtyFlagMap()
+                // 获得作业执行的上下文
+                val ctx = contexts.getOrPut(job.id){
+                    JobExecutionContext(job.id, this)
                 }!!
-                // 构建执行上下文
-                val context = JobExecutionContext(job.id, this, attr)
                 // 执行作业, 要处理好异常
                 var ex: Exception? = null
                 try {
-                    jobLogger.debug("{}执行作业: {}", this.javaClass.simpleName, context)
-                    job.execute(context)
+                    jobLogger.debug("{}执行作业: {}", this.javaClass.simpleName, ctx)
+                    job.execute(ctx)
                 }catch (e: Exception){
                     e.printStackTrace()
                     ex = e
                 }
-                // 更新作业属性
-                if(attr.dirty) {
-                    jobAttrs.put(job.id, attr)
-                    attr.cleanDirty()
-                }
+                // 保存作业属性
+                /*if(ctx.attrs.dirty) {
+                    // TODO: 保存 ctx.attrs
+                    ctx.attrs.cleanDirty()
+                }*/
 
                 // 记录作业执行异常, 对rpc作业由其自己作业来记录
                 if(ex != null)

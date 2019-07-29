@@ -21,18 +21,25 @@ interface IJobExecutionContext {
     val trigger: ITrigger
 
     /**
-     * 当前重复次数
-     */
-    val triggerCount: Int
-        get() = trigger.triggerCount
-
-    /**
-     * 触发时间 = 当前时间
-     */
-    val triggerTime: Date
-
-    /**
      * 作业的属性
      */
-    val jobAttr: DirtyFlagMap<String, Any?>
+    val attrs: DirtyFlagMap<String, Any?>
+
+    /**
+     * 获得作业属性
+     * @param name
+     * @return
+     */
+    fun attr(name: String): Any? {
+        return attrs[name]
+    }
+
+    /**
+     * 设置作业属性
+     * @param name
+     * @param value
+     */
+    fun attr(name: String, value: Any?){
+        attrs[name] = value
+    }
 }

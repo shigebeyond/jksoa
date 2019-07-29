@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-04-19 12:26 PM
  */
-class MethodGuard(
+open class MethodGuard(
         public override val method: Method, // 被守护的方法
         public override val handler: IMethodGuardInvoker // 带守护的方法调用者
 ) : IMethodGuard {
