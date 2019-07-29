@@ -111,8 +111,20 @@ IJob
         LpcJob -- 调用本地bean方法的作业
         ShardingLpcJob -- 调用本地bean方法的分片作业
         RpcJob -- 发送rpc请求的作业
-        RpcJob -- 发送分片rpc请求的作业
+        ShardingRpcJob -- 发送分片rpc请求的作业
 ```
+
+按执行者来分类
+1. 本地作业, 本地执行, 执行者为本地线程池, 即 Trigger的调度线程池, 包含 LambdaJob/LpcJob/ShardingLpcJob
+2. rpc 作业, 通过rpc来执行, 执行者为远程服务提供者节点, 包含 RpcJob/ShardingRpcJob
+
+按是否分片来分类
+1. 不分片作业, 包含 LambdaJob/LpcJob/RpcJob
+2. 分片作业, 包含 ShardingLpcJob/ShardingRpcJob
+
+按作业实现方式来分类
+1. 用方法调用来实现的作业, 包含 LpcJob/RpcJob/ShardingLpcJob/ShardingRpcJob
+2. 自定义实现的作业, 包含 LambdaJob/直接实现IJob
 
 ## 1. LambdaJob -- 用lambda包装的作业
 最灵活的作业定义方式, 直接写代码来封装作业逻辑, 但是由于其灵活性, 无法使用cron与作业的复合表达式来表达, 因此不能使用`CronJobLauncher.lauch(cronJobExpr)`来调度作业
@@ -165,7 +177,7 @@ val job = ShardingLpcJob(LocalBean::echo, args)
 val job = RpcJob(ISimpleService::echo, arrayOf<Any?>("测试消息"))
 ```
 
-## 5. RpcJob -- 发送分片rpc请求的作业
+## 5. ShardingRpcJob -- 发送分片rpc请求的作业
 调用的是远程方法: `ISimpleService::echo(String)`, 只是加上分片调用
 
 有2个参数: 1. 方法引用 2. 实参数组的数组, 即实参的二维数组, 即每个分片的实参数组
@@ -181,3 +193,16 @@ val args:Array<Array<*>> = Array(3) { i ->
 }
 val job = ShardingRpcJob(ISimpleService::echo, args)
 ```
+
+作业调度时, 先分片, 后执行, 而分片分派结果的日志输出:
+
+```
+分片分派结果, 将 3 个分片分派给 2 个节点:
+net.jkcode.jksoa.client.connection.reuse.ReconnectableConnection(netty://192.168.61.183:9080) => net.jkcode.jkmvc.bit.SetBitIterator(0, 2),
+net.jkcode.jksoa.client.connection.reuse.ReconnectableConnection(netty://192.168.61.184:9080) => net.jkcode.jkmvc.bit.SetBitIterator(1)
+```
+
+分片分配结果说明:
+1. 有3个分片
+2. 有2个节点: 分别是 192.168.61.183:9080 与 192.168.61.184:9080
+3. 分片分配结果: 节点 192.168.61.183:9080 得到第0个分片+第2个分片, 节点 192.168.61.184:9080 得到第1个分片

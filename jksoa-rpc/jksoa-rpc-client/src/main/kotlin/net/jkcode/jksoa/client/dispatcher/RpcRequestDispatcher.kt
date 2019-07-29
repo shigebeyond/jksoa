@@ -145,7 +145,7 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
 
         // 打印分片结果
         var iConn = 0
-        val msg = conn2Shds.joinToString(", ", "Sharding result from $shardingSize sharding to $connSize Node: ")  { shds ->
+        val msg = conn2Shds.joinToString(", ", "分片分派结果, 将 $shardingSize 个分片分派给 $connSize 个节点: ")  { shds ->
             "${conns[iConn++]} => ${shds.iterator().toDesc()}"
         }
         clientLogger.info(msg)

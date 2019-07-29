@@ -24,4 +24,11 @@ abstract class BaseConnection(public override val url: Url /* 服务端地址 */
     public override fun hashCode(): Int {
         return url.hashCode()
     }
+
+    /**
+     * 改写 toString()
+     */
+    public override fun toString(): String {
+        return this::class.qualifiedName + '(' + url + ')'
+    }
 }

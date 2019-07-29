@@ -39,7 +39,7 @@ class ClientTests {
         // 1 直接调用报错
         //proxy.defaultMethod()
 
-        // 2 反射调用: java.lang.IllegalAccessException: no private access for invokespecial: interface net.jkcode.jksoa.example.ISystemService, from net.jkcode.jksoa.example.ISystemService/public
+        // 2 反射调用: java.lang.IllegalAccessException: no private access for invokespecial: interface net.jkcode.jksoa.example.ISimpleService, from net.jkcode.jksoa.example.ISimpleService/public
         val method = ISimpleService::defaultMethod.javaMethod!!
         /*val result = MethodHandles.lookup()
                 .`in`(method.getDeclaringClass())
