@@ -48,8 +48,6 @@ interface IGuardService /*: Remote // rmi协议服务接口 */ {
 
     // 降级: 有异常后备方法
     @Degrade(fallbackMethod = "getUserWhenFallback")
-    // 断路器
-    @CircuitBreak(CircuitBreakType.EXCEPTION_COUNT, 1.0, 5, 5)
     fun getUserWhenException(id: Int): User
 
     // 发送异常时调用的方法, 一般是默认方法

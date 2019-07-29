@@ -28,6 +28,11 @@ class RpcClientMethodGuardTests {
     fun testKeyCombine() {
         // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
         val keyCombiner = RpcClientMethodGuard(IGuardService::getUserByIdAsync).keyCombiner as KeyFutureSupplierCombiner<Int, User>
+        /*val keyCombiner = KeyFutureSupplierCombiner<Int, User>{ id ->
+            Thread.sleep(10)
+            val user = User(id, randomString(7))
+            CompletableFuture.completedFuture(user)
+        }*/
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(keyCombiner.add(1))
@@ -74,6 +79,13 @@ class RpcClientMethodGuardTests {
     fun testGroupCombine() {
         // 获得方法的key合并器: 兼容方法返回类型是CompletableFuture
         val groupCombiner = RpcClientMethodGuard(IGuardService::getUserByNameAsync).groupCombiner as GroupFutureSupplierCombiner<String, User, User>
+        /*var id = 0
+        val groupCombiner = GroupFutureSupplierCombiner<String, User, User>("id"){ names ->
+            val us = names.map { name ->
+                User(id++, name)
+            }
+            CompletableFuture.completedFuture(us)
+        }*/
         val futures = ArrayList<CompletableFuture<User>>()
         for (i in (0..2)) {
             futures.add(groupCombiner.add(randomString(7)))

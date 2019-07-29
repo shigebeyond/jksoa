@@ -1,3 +1,64 @@
+# 概述
+断路组件，定时检查流量统计的相关指标是否超过阀值, 如果超过则入断路状态
+
+断路状维持一段时间(可指定时长), 超时后将恢复正常访问
+
+# ICircuitBreaker
+
+## ICircuitBreaker 接口
+
+继承 `IRateLimiter` 就是一个 acquire()方法
+
+```
+package net.jkcode.jksoa.guard.circuit
+
+import net.jkcode.jksoa.guard.rate.IRateLimiter
+
+/**
+ * 断路器
+ *    继承限流器, 在断路状态下, 有限流作用
+ *
+ * @author shijianhang<772910474@qq.com>
+ * @date 2019-04-19 10:30 PM
+ */
+interface ICircuitBreaker: IRateLimiter {
+}
+```
+
+## 断路检查的指标类型
+
+```
+/**
+ * 断路类型
+ * @author shijianhang<772910474@qq.com>
+ * @date 2019-06-04 9:49 AM
+ */
+public enum class CircuitBreakType {
+
+    // 异常数
+    EXCEPTION_COUNT {
+        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.exception.toDouble()
+    },
+    // 异常比例
+    EXCEPTION_RATIO {
+        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.exceptionRatio
+    },
+    // 请求平均耗时
+    AVG_COST_TIME {
+        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.avgCostTime
+    },
+    // 慢请求数
+    SLOW_COUNT {
+        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.slow.toDouble()
+    };
+}
+```
+
+## ICircuitBreaker 实现 -- CircuitBreaker
+
+定时 checkBreakingSeconds 秒检查断路(用统计数据来检查是否满足断路条件), 如果满足条件则转入断路中状态, 断路中状态维持 breakedSeconds 秒, 
+
+```
 package net.jkcode.jksoa.guard.circuit
 
 import net.jkcode.jkmvc.common.currMillis
@@ -91,3 +152,37 @@ class CircuitBreaker(
     }
 
 }
+```
+
+# 注解 @CircuitBreak
+
+就是指定 `CircuitBreaker` 实例化所需要的参数
+
+```
+/**
+ * 断路注解
+ * @author shijianhang<772910474@qq.com>
+ * @date 2019-02-22 6:04 PM
+ */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class CircuitBreak(
+        public val type: CircuitBreakType, // 断路类型
+        public val threshold: Double, // 对比的阀值
+        public val checkBreakingSeconds: Long = 10, // 定时检查断路的时间间隔, 单位: 秒
+        public val breakedSeconds: Long = 60, // 断路时长, 单位: 秒
+        public val rateLimit: RateLimit = RateLimit(0.0) // 限流
+)
+```
+
+demo
+
+`@CircuitBreak` 与 `@Metric` 要配合使用, 因为断路器的断路检查, 检查的是`@Metric` 的流量统计数据
+
+```
+// 统计请求数
+@Metric()
+// 断路器
+@CircuitBreak(CircuitBreakType.EXCEPTION_COUNT, 1.0, 5, 5)
+fun getUserWhenRandomException(id: Int): User
+```

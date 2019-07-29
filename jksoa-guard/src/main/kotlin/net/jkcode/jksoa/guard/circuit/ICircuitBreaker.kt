@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.guard.circuit
 
-import net.jkcode.jksoa.guard.measure.IMetricBucket
 import net.jkcode.jksoa.guard.rate.IRateLimiter
 
 /**
