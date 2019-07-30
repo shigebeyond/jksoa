@@ -31,4 +31,15 @@ interface IConnection: Closeable {
      * @return
      */
     fun send(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): IRpcResponseFuture
+
+    /**
+     * 改写 hashCode(), 用在 ConsistentHash 计算哈希
+     */
+    override fun hashCode(): Int
+
+    /**
+     * 改写 toString()
+     */
+    override fun toString(): String
+
 }

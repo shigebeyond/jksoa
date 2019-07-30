@@ -1,4 +1,4 @@
-# 概述
+# server
 
 目前josoa-rpc支持有2种通讯协议:
 
@@ -31,7 +31,7 @@ IRpcServer
 关键配置项
 
 1. protocol -- 协议, 据此来启动对应的 `IRpcServer` 的实现类
-2. host -- ip, 可以不指定
+2. host -- ip, 可以不指定, 默认取值 `getIntranetHost()`, 即`192.168`开头的局域网ip
 3. port -- 端口, 开放端口来接收rpc服务
 4. parameters -- 注册的url参数, 会生成query string, 并存到注册中心对应server节点中
 5. servicePackages -- 要提供的服务类所在的包路径

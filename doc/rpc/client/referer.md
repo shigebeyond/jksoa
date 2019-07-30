@@ -1,4 +1,4 @@
-# 概述
+# Referer -- 服务引用
 
 `Referer` 就是对远端服务的引用, 即为服务调用方.
 
@@ -50,4 +50,7 @@ class Referer(public override val `interface`:Class<*> /* 接口类 */,
 
 代理实现就是调用 `IRpcClient.connect(url)` 来获得`IConnection`连接对象, 并将方法调用封装为rpc请求, 通过连接对象来发送出去.
 
+# 本地调用
+
+对于某个服务, 如果当前节点既是client, 也是server, 则优先调用本地server提供的服务实例.
 

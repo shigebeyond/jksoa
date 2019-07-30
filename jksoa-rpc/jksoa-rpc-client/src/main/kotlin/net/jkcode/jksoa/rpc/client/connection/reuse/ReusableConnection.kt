@@ -17,17 +17,4 @@ class ReusableConnection(
         protected val conn: IConnection = ReconnectableConnection.instance(url.serverPart).incrRef() // 根据 serverPart 来复用 ReconnectableConnection 的实例
 ) : IConnection by conn
 {
-    /**
-     * 改写 hashCode(), 用在 ConsistentHash 计算哈希
-     */
-    public override fun hashCode(): Int {
-        return url.hashCode()
-    }
-
-    /**
-     * 改写 toString()
-     */
-    public override fun toString(): String {
-        return conn.toString()
-    }
 }

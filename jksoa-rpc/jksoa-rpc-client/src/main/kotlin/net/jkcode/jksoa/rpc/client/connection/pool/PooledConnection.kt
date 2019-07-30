@@ -4,6 +4,7 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.protocol.netty.NettyConnection
+import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
@@ -20,9 +21,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-23 11:21 AM
  */
-class PooledConnection(public override val url: Url /* 服务端地址 */,
-                       public override var weight: Int = 1 /* 权重 */
-) : IConnection {
+class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
 
     companion object{
 
@@ -86,10 +85,4 @@ class PooledConnection(public override val url: Url /* 服务端地址 */,
     public override fun close() {
     }
 
-    /**
-     * 改写 toString()
-     */
-    public override fun toString(): String {
-        return this::class.qualifiedName + '(' + url + ')'
-    }
 }

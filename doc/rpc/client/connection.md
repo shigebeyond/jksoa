@@ -1,4 +1,4 @@
-# 概述
+# 连接
 
 我们一般是使用服务引用者 `Referer` 来引用与调用远端服务, 其底层实现是调用 `IRpcClient.connect(url)` 来获得`IConnection`连接对象, 并将方法调用封装为rpc请求, 通过连接对象来发送出去
 
@@ -13,8 +13,8 @@ IConnection
 		LocalConnection -- 本地连接
 		ReconnectableConnection -- 自动重连的连接
 		RmiConnection -- rmi协议的连接
+        PooledConnection -- 池化的连接的包装器
 	ReusableConnection -- 可复用的连接
-	PooledConnection -- 池化的连接的包装器
 ```
 
 ## IConnection 接口
