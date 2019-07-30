@@ -21,7 +21,7 @@ class MyTests {
 
     @Test
     fun testUrl(){
-        val url = Url("http", "localhost", 8080, "net.jkcode.jksoa.rpc.example.IExampleService", mapOf("name" to "shi", "age" to 1))
+        val url = Url("http", "localhost", 8080, "net.jkcode.jksoa.rpc.example.ISimpleService", mapOf("name" to "shi", "age" to 1))
         println(url)
     }
 

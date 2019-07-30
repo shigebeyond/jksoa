@@ -1,8 +1,9 @@
 ## 组件
-1. Provider	暴露服务的服务提供者
-2. Referer	调用远程服务的服务引用者
-3. Registry	服务注册与发现的注册中心
-4. Server 服务端
+1. Registry	服务注册与发现的注册中心
+2. Provider	暴露服务的服务提供者
+3. Referer	调用远程服务的服务引用者
+4. Server 服务端, 管理Provider, 处理Client的请求, 调用对应的Provider来处理请求
+5. Client 客户端, 管理与Server的连接, 向Server发送请求, 被 Referer 调用
 
 
 ## 调用关系说明

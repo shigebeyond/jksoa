@@ -10,7 +10,7 @@ import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import javax.naming.InitialContext
 
 /**
- * rmi链接
+ * rmi连接
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

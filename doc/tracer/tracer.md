@@ -11,7 +11,6 @@ jksoa 是一个分布式跟踪系统
 - 4、通讯方案：基于 NETTY 使用 TCP 协议通讯进行服务调用；
 - 5、
 
-
 ## 背景
 
 面对日趋复杂的分布式系统，如服务框架、消息中间件、缓存、数据层等，导致开发人员在业务性能瓶颈定位、故障排除等方面效率低下，没有成熟的Trace工具，需要引入分布式跟踪系统(即Trace系统)。
@@ -20,11 +19,7 @@ Trace系统需要能够透明的传递调用上下文，理解系统行为，理
 
 设计思想源于Google的论文《Dapper, a Large-Scale Distributed Systems Tracing Infrastructure》。
 
-
-
 # 快速入门
-
-
 
 ## agent端
 

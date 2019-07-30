@@ -1,3 +1,17 @@
+# 概述
+
+限流: 当流量超过系统最大负载时, 系统会崩溃. 而限流则是限制单位时间内的流量, 超过流量阀值则拒绝服务，从而保护系统。
+
+限流算法:
+
+1. 漏桶算法：漏桶算法思路很简单，水（请求）先进入到漏桶里，漏桶以一定的速度出水，当水流入速度过大会直接溢出，可以看出漏桶算法能强行限制数据的传输速率。
+
+2. 令牌桶算法：对于很多应用场景来说，除了要求能够限制数据的平均传输速率外，还要求允许某种程度的突发传输。这时候漏桶算法可能就不合适了，令牌桶算法更为适合。
+令牌桶算法的原理是系统会以一个恒定的速度往桶里放入令牌，而如果请求需要被处理，则需要先从桶里获取一个令牌，当桶里没有令牌可取时，则拒绝服务。
+
+在 Guava 的 `RateLimiter` 中，使用的就是令牌桶算法，允许部分突发流量传输。在其源码里，可以看到能够突发传输的流量等于 maxBurstSeconds * qps。
+
+我的实现中也参考了 Guava 的 `SmoothBurstyRateLimiter` 与 `SmoothWarmingUpRateLimiter`, 但是由于其api是阻塞, 因此我重新做了一个不阻塞的实现.
 
 # IRateLimiterI类族 -- 限流器
 
@@ -10,6 +24,12 @@ IRateLimiter
         SmoothWarmingUpRateLimiter -- 平滑发放 + 热身 限流器
 ```
 
+## SmoothRateLimiter -- 匀速发放的限流器基类
+
+没有采用滑动窗口来计算流量是否超过限制.
+
+而通过申请的许可数据来计算放过的时间, 到了时间就放过, 否则直接拒绝, 不休眠等待
+
 ## SmoothBurstyRateLimiter -- 平滑发放 + 允许突发 限流器
 
 1. 定义
@@ -21,7 +41,7 @@ IRateLimiter
 /**
  * 限流器: 平滑发放 + 允许突发
  *     在申请许可时, 根据申请的许可数据来计算放过的时间, 到了时间就放过, 否则直接拒绝, 不休眠等待
- *     参考: guava 项目的 SmoothRateLimiter.SmoothBursty
+ *     参考: guava 的 SmoothRateLimiter.SmoothBursty
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-04-19 9:19 AM
@@ -64,7 +84,7 @@ for(i in 0..9){
  *             permits = Math.sqrt(seconds - factor2) - factor1
  *
  *
- *    参考: guava 项目的 SmoothRateLimiter.SmoothBursty
+ *    参考: guava 的 SmoothRateLimiter.SmoothBursty
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-04-19 9:19 AM

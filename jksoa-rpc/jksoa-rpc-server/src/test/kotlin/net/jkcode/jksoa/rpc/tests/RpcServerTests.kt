@@ -25,7 +25,7 @@ class RpcServerTests {
     @Test
     fun testUrl(){
         val config = Config.instance("rpc-server", "yaml")
-        val url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!, "net.jkcode.jksoa.rpc.example.IExampleService", config.getMap("parameters", emptyMap<String, Any?>())!!)
+        val url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!, "net.jkcode.jksoa.rpc.example.ISimpleService", config.getMap("parameters", emptyMap<String, Any?>())!!)
         println(url)
     }
 

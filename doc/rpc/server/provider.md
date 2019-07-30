@@ -19,7 +19,7 @@
 3. 接口必须声明注解 @RemoteService
 
 ## 扫描包的配置
-在`rpc-server.yaml` 中的项目 `servicePackages`, 例子如下
+在`rpc-server.yaml` 中的属性 `servicePackages`, 例子如下
 ```
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务

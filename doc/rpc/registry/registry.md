@@ -28,15 +28,19 @@ Provider需要向注册中心注册其提供的服务信息, 服务信息包含:
 
 服务存储在zk中的目录结构如下:
 
- ```
+```
 jksoa
     net.jkcode.jksoa.rpc.example.ISimpleService # 服务标识 = 接口类名
-        netty:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
+        netty:192.168.0.1:8080 # server节点, 格式是`协议:ip:端口`, 节点数据是参数, 如weight=1
         netty:192.168.0.1:8080
     net.jkcode.jksoa.rpc.example.ISimpleService
         netty:192.168.0.1:8080
         netty:192.168.0.1:8080
 ```
+
+第一层: /jksoa
+第二层: /jksoa/服务标识
+第三层: /jksoa/服务标识/server节点
 
 # 服务发现
 
@@ -45,4 +49,3 @@ jksoa
 使用监听器 `IDiscoveryListener` 来向注册中心订阅服务信息的变化
 
 rpc client使用 `ConnectionHub` 来实现 `IDiscoveryListener`, 来监听服务变化, 并且管理与rpc server的连接
-

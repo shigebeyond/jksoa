@@ -3,7 +3,37 @@
 
 ## 类族
 
-负载策略的接口是 `ILoadBalancer`, 类族为
+负载策略的接口是 `ILoadBalancer`
+
+```
+package net.jkcode.jksoa.rpc.loadbalance
+
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
+import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.rpc.client.IConnection
+
+/**
+ * 选择连接的均衡负载算法
+ *
+ * @author shijianhang
+ * @create 2017-12-18 下午9:04
+ **/
+interface ILoadBalancer {
+
+    /**
+     * 选择连接
+     *
+     * @param conns
+     * @param req
+     * @return
+     */
+    fun select(conns: Collection<IConnection>, req: IRpcRequest): IConnection?
+}
+```
+
+类族为
 
 ```
 ILoadBalancer
@@ -35,7 +65,7 @@ ILoadBalancer
 
 ## 客户端级别配置
 
-在配置文件`rpc-client.yaml`中的项目`loadbalancer` 来指定
+在配置文件`rpc-client.yaml`中的属性`loadbalancer` 来指定
 
 ```
 loadbalancer: random # 均衡负载类型
@@ -54,31 +84,34 @@ interface IMyService
 
 ## 1. 实现接口`ILoadBalancer`
 
+参考 `RandomLoadBalancer`
+
 ```
 package net.jkcode.jksoa.rpc.loadbalance
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
+import net.jkcode.jkmvc.common.get
+import net.jkcode.jkmvc.common.randomInt
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.rpc.client.IConnection
 
 /**
- * 选择连接的均衡负载算法
- * 
+ * 随机的均衡负载算法
+ *
  * @author shijianhang
- * @create 2017-12-18 下午9:04
+ * @create 2017-12-18 下午9:21
  **/
-interface ILoadBalancer {
-
+class RandomLoadBalancer : ILoadBalancer {
     /**
      * 选择连接
-     *
-     * @param conns
-     * @param req
-     * @return
      */
-    fun select(conns: Collection<IConnection>, req: IRpcRequest): IConnection?
+    public override fun select(conns: Collection<IConnection>, req: IRpcRequest): IConnection? {
+        if(conns.isEmpty())
+            return null
+
+        // 随机选个连接
+        val i = randomInt(conns.size)
+        return conns[i]
+    }
 }
 ```
 

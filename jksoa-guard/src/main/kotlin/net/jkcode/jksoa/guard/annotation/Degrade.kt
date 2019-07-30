@@ -10,7 +10,7 @@ import java.lang.reflect.Method
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Degrade(
-        public val fallbackMethod: String // 后备回调
+        public val fallbackMethod: String // 后备方法
 )
 
 /**

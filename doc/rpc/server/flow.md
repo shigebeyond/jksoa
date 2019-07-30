@@ -43,7 +43,9 @@
 
 2. 调用 `ProviderLoader.load()` 来扫描加载Provider服务
 
-3. 初始化插件, 插件配置在 `plugin.yaml`
+自动扫描 `rpc-server.yaml` 配置文件中的 `servicePackages` 指定的服务包, 找到有注解`@RemoteService`的`接口类`, 并创建服务提供者`Provider`
+
+3. 初始化插件, 插件配置在 `plugin.yaml` 的 `rpcServerPlugins` 属性上
 
 4. 调用回调, 只在手动调用 `IRpcServer.start()` 时才会有回调
 
