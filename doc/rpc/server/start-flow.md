@@ -43,7 +43,7 @@
 
 2. 调用 `ProviderLoader.load()` 来扫描加载Provider服务
 
-自动扫描 `rpc-server.yaml` 配置文件中的 `servicePackages` 指定的服务包, 找到有注解`@RemoteService`的`接口类`, 并创建服务提供者`Provider`
+自动扫描 `rpc-server.yaml` 配置文件中的 `servicePackages` 指定的服务包, 找到有注解`@RemoteService`的`接口类`, 并创建服务提供者`Provider`, 并向注册中心注册
 
 3. 初始化插件, 插件配置在 `plugin.yaml` 的 `rpcServerPlugins` 属性上
 

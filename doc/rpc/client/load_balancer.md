@@ -1,5 +1,15 @@
 # 负载均衡
-在集群负载均衡时，jksoa-rpc 提供了多种均衡策略，缺省为 random 随机调用。
+
+LoadBalance 为负载均衡，它的职责是将网络请求，或者其他形式的负载“均摊”到不同的机器上。避免集群中部分服务器压力过大，而另一些服务器比较空闲的情况。通过负载均衡，可以让每台服务器获取到适合自己处理能力的负载。在为高负载服务器分流的同时，还可以避免资源浪费，一举两得。
+
+负载均衡可分为软件负载均衡和硬件负载均衡。软件负载均衡如 Nginx。
+
+jksoa-rpc 中负载均衡主要在client端给服务提供者发送请求时触发, 均衡这些服务提供者的负载. 否则某个服务提供者的负载过大，会导致部分请求超时。
+
+jksoa-rpc 提供了3种负载均衡实现, 缺省为 random 随机调用.
+1. 基于权重随机算法的 `RandomLoadBalancer`
+2. 基于 hash 一致性的 `ConsistentHashLoadBalancer`
+3. 基于加权轮询算法的 `RoundRobinLoadBalancer`。
 
 ## 类族
 
@@ -108,9 +118,13 @@ class RandomLoadBalancer : ILoadBalancer {
         if(conns.isEmpty())
             return null
 
+        // 有权重的集合
+        val col = WeightCollection(conns)
+
         // 随机选个连接
-        val i = randomInt(conns.size)
-        return conns[i]
+        val i = randomInt(col.size)
+        //println("select: $i from: 0 util ${col.size}")
+        return col.get(i)
     }
 }
 ```

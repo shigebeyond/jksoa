@@ -81,7 +81,7 @@ interface IJobExecutionContext {
     val trigger: ITrigger
 
     /**
-     * 作业的属性
+     * 作业的属性, 记录当前作业多次执行过程中的状态信息
      */
     val attrs: DirtyFlagMap<String, Any?>
 

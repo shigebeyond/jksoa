@@ -7,8 +7,8 @@ jksoa-rpc 的异步编程接口都是基于 `CompletableFuture` 来实现的.
 
 ![](../img/async-call-flow.png)
 
-## 使用CompletableFuture签名的接口
-需要服务提供者事先定义CompletableFuture签名的服务，具体参见服务端异步执行接口定义：
+## 使用CompletableFuture返回类型的接口
+需要服务提供者事先定义CompletableFuture返回类型的服务，具体参见服务端异步执行接口定义：
 
 ```
 public interface IGuardService {
@@ -24,7 +24,7 @@ public interface IGuardService {
 val service = Referer.getRefer<IGuardService>()
 // 调用直接返回CompletableFuture
 val future = service.getUserByIdAsync(1)
-// 增加回调
+// 增加完成后回调
 future.whenComplete { r, ex ->
     print("调用服务[IGuardService.getUserByIdAsync()]")
     if(ex == null)

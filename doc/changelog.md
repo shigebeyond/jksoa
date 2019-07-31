@@ -117,3 +117,5 @@
 8. 重构拦截器, 由原来的before()/after()优化为链式包装拦截处理
 
 9. 重构method guard, 支持rpc server
+
+10. 注册中心支持扩展.

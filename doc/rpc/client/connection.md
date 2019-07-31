@@ -69,3 +69,12 @@ interface IConnection: Closeable {
 核心是调用 `val writeFuture = channel.writeAndFlush(req)`, 其中 `channel` 是 `io.netty.channel.Channel` netty的管道对象
 
 同时返回的是 `NettyRpcResponseFuture` 异步响应对象, 该异步响应对象在响应回来时会设置为完成状态, 从而实现`真`异步
+
+## 连接的维持
+
+jksoa-rpc提供了两种方式来维持连接:
+
+1. ReusableConnection -- 可复用的连接, 即单一长连接
+如果服务被大量client引用, 则建议每个client单一长连接
+
+2. PooledConnection -- 池化的连接的包装器, 即多个长连接做连接池

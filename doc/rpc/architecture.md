@@ -1,3 +1,6 @@
+
+![rpc-flow](img/rpc-flow.png)
+
 ## 组件
 1. Registry	服务注册与发现的注册中心
 2. Provider	暴露服务的服务提供者

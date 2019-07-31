@@ -20,6 +20,8 @@ jksoa将系统抽象为3个端: rpc-client端, rpc-server端, http-server端
 
 1.  `IRequestInterceptor` 接口定义如下:
 
+返回类型是 `CompletableFuture`, 1是给业务方调用, 让他能设置回调, 2是给拦截器链表的下一个拦截器调用, 让他能够更准确的确定后置处理的调用时机, 详情参考`net.jkcode.jkmvc.interceptor.RequestInterceptorChain`
+
 ```
 /**
  * 请求拦截器

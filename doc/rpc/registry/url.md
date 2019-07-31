@@ -32,4 +32,13 @@ jksoa
         netty:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
 ```
 
-则可以用 `val url = Url("netty", "192.168.0.1", 8080, "net.jkcode.jksoa.rpc.example.ISimpleService", mapOf("weight" to 1))`
+则可以用以下url对象来表达
+
+```
+val url = Url("netty", "192.168.0.1", 8080, "net.jkcode.jksoa.rpc.example.ISimpleService", mapOf("weight" to 1))
+println(url)
+```
+
+输出结果是:
+
+netty://192.168.0.1:8080/net.jkcode.jksoa.rpc.example.ISimpleService?weight=1

@@ -40,3 +40,5 @@ abstract class ClusterCronJobLauncher {
     public abstract fun loadCronJobs(): List<String>
 }
 ```
+
+开发者需自行实现 `loadCronJobs()`
