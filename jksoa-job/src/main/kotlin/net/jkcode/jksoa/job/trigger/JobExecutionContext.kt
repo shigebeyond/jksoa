@@ -16,7 +16,7 @@ class JobExecutionContext(public override val jobId: Long/* 作业标识，全�
 ) : IJobExecutionContext {
 
     /**
-     * 作业属性
+     * 作业属性, 记录当前作业多次执行过程中的状态信息
      */
     public override val attrs: DirtyFlagMap<String, Any?> = DirtyFlagMap()
 
