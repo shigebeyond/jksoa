@@ -1,17 +1,15 @@
 package net.jkcode.jksoa.mq.connection
 
 import net.jkcode.jkmvc.bit.SetBitIterator
-import net.jkcode.jkmvc.common.ConsistentHash
 import net.jkcode.jkmvc.common.getOrPutOnce
 import net.jkcode.jkmvc.common.map
 import net.jkcode.jkmvc.common.randomInt
-import net.jkcode.jksoa.rpc.client.IConnection
-import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
 import net.jkcode.jksoa.mq.common.Message
-import java.util.*
+import net.jkcode.jksoa.rpc.client.IConnection
+import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -28,7 +26,7 @@ class ConsumerConnectionHub : IConnectionHub() {
     /**
      * 消费者的连接池: <主题 to <分组 to 连接>>
      */
-    protected val connections: ConcurrentHashMap<String, ConcurrentHashMap<Int, MutableList<IConnection>>> = ConcurrentHashMap()
+    internal val connections: ConcurrentHashMap<String, ConcurrentHashMap<Int, ConsumerConnectionList>> = ConcurrentHashMap()
 
     /**
      * 处理服务配置参数（服务地址的参数）变化
@@ -52,7 +50,7 @@ class ConsumerConnectionHub : IConnectionHub() {
             ConcurrentHashMap()
         }.getOrPutOnce(consumerUrl.groupId) {
             // <分组 to 连接>
-            ArrayList()
+            ConsumerConnectionList()
         }
         conns.add(consumerUrl.conn)
     }
@@ -150,6 +148,6 @@ class ConsumerConnectionHub : IConnectionHub() {
         }
 
         // 2.2 有序: 一致性哈希
-        return ConsistentHash(3, 100, conns).get(msg.subjectId)!!
+        return conns.consistentHash.get(msg.subjectId)!!
     }
 }
