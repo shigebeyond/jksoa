@@ -6,9 +6,9 @@
 
 1. 启动server
 
-2. 加载并创建服务提供者`Provider`, 并向注册中心注册
+2. 加载并创建服务提供者`Provider`, 创建服务实现的实例, 并向注册中心注册. 详见 `Provider.createAndRegisterService()`
 
-3. client端的`ConnectionHub`订阅了注册中心, 注册中心向他推送最新的服务提供者节点
+3. client端的`ConnectionHub`订阅了注册中心, 注册中心向他推送最新的服务提供者节点地址
 
 4. `ConnectionHub`收到新的服务提供者节点, 则向节点建立连接
 
@@ -20,7 +20,7 @@
 
 7. 服务代理是通过`RpcInvocationHandler`来实现的, 负责处理代理对象的方法调用.
 
-8. `RpcInvocationHandler` 将发放调用封装为请求, 并通过 `RpcRequestDispatcher` 来分发请求
+8. `RpcInvocationHandler` 将方法调用封装为请求, 并通过 `RpcRequestDispatcher` 来分发请求
 
 9. `RpcRequestDispatcher` 通过 `ConnectionHub` 来选择连接, 并通过连接来发送请求
 
