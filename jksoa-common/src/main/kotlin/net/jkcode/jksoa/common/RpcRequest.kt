@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.common
 
-import net.jkcode.jkmvc.common.LazyAllocatedMap
 import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.common.annotation.getServiceClass
@@ -30,7 +29,7 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
     /**
      * 附加参数
      */
-    public override val attachments: MutableMap<String, Any?> = LazyAllocatedMap()
+    public override val attachments: MutableMap<String, Any?> = HashMap()
 
     /**
      * 构造函数
