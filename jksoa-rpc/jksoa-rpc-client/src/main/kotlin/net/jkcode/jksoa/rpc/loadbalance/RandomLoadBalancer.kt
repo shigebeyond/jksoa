@@ -14,7 +14,6 @@ import net.jkcode.jksoa.rpc.client.IConnection
 class RandomLoadBalancer : ILoadBalancer {
     /**
      * 选择连接
-     *    TODO: 添加权重因子 IConnection.weight
      *
      * @param conn
      * @param req
@@ -24,8 +23,12 @@ class RandomLoadBalancer : ILoadBalancer {
         if(conns.isEmpty())
             return null
 
+        // 有权重的集合
+        val col = WeightCollection(conns)
+
         // 随机选个连接
-        val i = randomInt(conns.size)
-        return conns[i]
+        val i = randomInt(col.size)
+        //println("select: $i from: 0 util ${col.size}")
+        return col.get(i)
     }
 }

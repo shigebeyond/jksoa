@@ -21,7 +21,6 @@ class RoundRobinLoadBalancer : ILoadBalancer {
 
     /**
      * 选择连接
-     *    TODO: 添加权重因子 IConnection.weight
      *
      * @param conn
      * @param req
@@ -31,10 +30,15 @@ class RoundRobinLoadBalancer : ILoadBalancer {
         if(conns.isEmpty())
             return null
 
+        // 有权重的集合
+        val col = WeightCollection(conns)
+
+        // 轮询
         val counter = counters.getOrPut(req.serviceId){
             AtomicInteger(0)
         }
-        val i = counter.getAndIncrement() % conns.size
-        return conns[i]
+        val i = counter.getAndIncrement() % col.size
+        //println("select: $i from: 0 util ${col.size}")
+        return col.get(i)
     }
 }
