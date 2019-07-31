@@ -1,11 +1,10 @@
 package net.jkcode.jksoa.rpc.client.referer
 
-import net.jkcode.jksoa.rpc.client.IReferer
-import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.rpc.client.IReferer
+import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.registry.IRegistry
-import net.jkcode.jksoa.rpc.registry.zk.ZkRegistry
 
 /**
  * 服务的引用（代理）
@@ -27,7 +26,7 @@ class Referer(public override val `interface`:Class<*> /* 接口类 */,
          * 注册中心
          * TODO: 支持多个配置中心, 可用组合模式
          */
-        public val registry: IRegistry = ZkRegistry
+        public val registry: IRegistry = IRegistry.instance("zk")
 
         /**
          * 根据服务接口，来获得服务引用

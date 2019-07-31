@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutorService
  * 某个主题的消息执行者
  *    1 通过 GroupRunCombiner 来合并消息, 并调用 IMqHandler.consumeMessages() 来消费
  *    2 属性 concurrent 控制是否线程池并发执行, 否则单线程串行执行, 通过改写属性 executor 来指定是线程池or单线程执行
+ *    3 串行执行, 避免并发, 状态简单, 保证有序
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-21 4:45 PM

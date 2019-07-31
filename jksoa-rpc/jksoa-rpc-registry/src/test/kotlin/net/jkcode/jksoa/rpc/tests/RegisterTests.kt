@@ -12,7 +12,7 @@ import org.junit.Test
  */
 class RegisterTests {
 
-    val registry = ZkRegistry
+    val registry = ZkRegistry()
 
     val serviceId = "net.jkcode.jksoa.rpc.example.IEchoService"
 

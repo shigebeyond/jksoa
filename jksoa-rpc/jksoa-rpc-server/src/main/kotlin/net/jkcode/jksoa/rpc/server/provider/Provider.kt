@@ -2,13 +2,12 @@ package net.jkcode.jksoa.rpc.server.provider
 
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.singleton.BeanSingletons
-import net.jkcode.jksoa.rpc.client.referer.RefererLoader
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.leader.ZkLeaderElection
+import net.jkcode.jksoa.rpc.client.referer.RefererLoader
 import net.jkcode.jksoa.rpc.registry.IRegistry
-import net.jkcode.jksoa.rpc.registry.zk.ZkRegistry
 import net.jkcode.jksoa.rpc.server.IProvider
 import net.jkcode.jksoa.rpc.server.IRpcServer
 
@@ -34,7 +33,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
          * 注册中心
          * TODO: 支持多个配置中心, 可用组合模式
          */
-        public val registry: IRegistry = ZkRegistry
+        public val registry: IRegistry = IRegistry.instance("zk")
     }
 
     /**

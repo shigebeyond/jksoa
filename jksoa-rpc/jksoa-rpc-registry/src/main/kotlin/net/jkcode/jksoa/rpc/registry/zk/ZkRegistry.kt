@@ -25,7 +25,7 @@ import org.apache.zookeeper.Watcher
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 11:22 AM
  */
-object ZkRegistry : IRegistry, ZkDiscovery() {
+class ZkRegistry : IRegistry, ZkDiscovery() {
 
     /**
      * 注册过的服务地址

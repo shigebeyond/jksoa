@@ -3,9 +3,11 @@ package net.jkcode.jksoa.mq.registry.zk
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.mq.common.TopicRegex
 import net.jkcode.jksoa.mq.common.mqRegisterLogger
-import net.jkcode.jksoa.mq.registry.*
+import net.jkcode.jksoa.mq.registry.IMqRegistry
+import net.jkcode.jksoa.mq.registry.TopicAssigner
+import net.jkcode.jksoa.mq.registry.TopicAssignment
+import net.jkcode.jksoa.mq.registry.toJson
 import net.jkcode.jksoa.rpc.registry.IRegistry
-import net.jkcode.jksoa.rpc.registry.zk.ZkRegistry
 
 /**
  * 基于zookeeper的mq注册中心
@@ -20,7 +22,7 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
     /**
      * rpc的注册中心
      */
-    public val rpcRegistry: IRegistry = ZkRegistry
+    public val rpcRegistry: IRegistry = IRegistry.instance("zk")
 
     /**
      * 注册topic = 给topic分配broker
