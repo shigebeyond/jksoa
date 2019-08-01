@@ -122,5 +122,7 @@ abstract class IRpcServer: Closeable {
         // 关闭插件
         for(p in plugins)
             p.close()
+
+        server = null
     }
 }

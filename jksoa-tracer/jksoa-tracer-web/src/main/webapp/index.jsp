@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false"%>
 <html lang="en" ng-app="myApp">
 <head>
-    <title>Hydra</title>
+    <title>Jksoa-tracer</title>
 </head>
 <script language="JavaScript" type="text/javascript">
     var ctp = "<%=request.getContextPath() %>";

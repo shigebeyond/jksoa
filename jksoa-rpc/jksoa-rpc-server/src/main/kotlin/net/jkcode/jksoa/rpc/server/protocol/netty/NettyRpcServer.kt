@@ -33,24 +33,19 @@ open class NettyRpcServer : IRpcServer() {
     public val nettyConfig = Config.instance("rpc-server.netty", "yaml")
 
     /**
-     * 是否用epoll
-     */
-    protected val epolling: Boolean = Epoll.isAvailable()
-
-    /**
      * 启动选项
      */
-    protected lateinit var bootstrap: ServerBootstrap
+    protected val bootstrap: ServerBootstrap
 
     /**
      * 老板线程池：接收连接
      */
-    protected lateinit var bossGroup: EventLoopGroup
+    protected val bossGroup: EventLoopGroup
 
     /**
      * 工作线程池：处理io
      */
-    protected lateinit var workerGroup: EventLoopGroup
+    protected val workerGroup: EventLoopGroup
 
     init{
         bootstrap = ServerBootstrap()
