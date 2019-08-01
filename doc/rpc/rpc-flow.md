@@ -4,11 +4,13 @@
 
 ## server启动流程
 
-1. 启动server
+0. 启动server
 
-2. 加载并创建服务提供者`Provider`, 创建服务实现的实例, 并向注册中心注册. 详见 `Provider.createAndRegisterService()`
+1. 加载并创建服务提供者`Provider`, 创建服务实现的实例, 并向注册中心注册. 详见 `Provider.createAndRegisterService()`, 即服务注册
 
-3. client端的`ConnectionHub`订阅了注册中心, 注册中心向他推送最新的服务提供者节点地址
+2. client端的`ConnectionHub`订阅了注册中心, 即服务发现
+
+3. 注册中心向`ConnectionHub`推送最新的服务提供者节点地址
 
 4. `ConnectionHub`收到新的服务提供者节点, 则向节点建立连接
 

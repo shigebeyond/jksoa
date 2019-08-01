@@ -41,7 +41,20 @@ try {
 }
 ```
 
-2. 正确的写法: 利用 `trySupplierFuture(action)` 将发送请求操作转为 `CompletableFuture` 对象, 利用 `CompletableFuture.whenComplete()` 来做失败回调处理.
+2. 错误的写法: `sendRequestAsync(req)` 可能会抛异常
+
+```
+异步发请求
+var respFuture: CompletableFuture<RpcResponse> = sendRequestAsync(req)
+
+respFuture.whenComplete{ r, ex ->
+    // 失败后, 重新异步发送请求
+    if(ex != null)
+        sendRequestAsync(req)
+}
+```
+
+3. 正确的写法: 利用 `trySupplierFuture(action)` 将发送请求操作转为 `CompletableFuture` 对象, 同时还会捕获异常, 最后利用 `CompletableFuture.whenComplete()` 来做失败回调处理.
 
 ```
 import net.jkcode.jkmvc.common.trySupplierFuture

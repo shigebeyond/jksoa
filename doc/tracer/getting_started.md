@@ -17,7 +17,7 @@ jksoa 是一个分布式跟踪系统
 
 Trace系统需要能够透明的传递调用上下文，理解系统行为，理清后端调用关系，实现调用链跟踪，调用路径分析，帮助业务人员定位性能瓶颈，排查故障原因等；同时，需要对用户尽量透明，减少对业务代码的侵入性。
 
-设计思想源于Google的论文《Dapper, a Large-Scale Distributed Systems Tracing Infrastructure》。
+设计思想源于[Google Dapper论文](http://bigbully.github.io/Dapper-translation/)实现。。
 
 # 快速入门
 
@@ -50,4 +50,16 @@ httpServerPlugins:
 
 ## collector端
 
-负责提供 ICollectorService 服务, 以供agent调用
+需要启动rpc server, 提供 `ICollectorService` rpc服务, 以供agent调用
+
+## web端
+
+在`jksoa-tracer-web`模块上启动http server, 以显示跟踪相关报表. UI直接复用京东的Hydra框架
+
+1. 查询跟踪页面
+
+![query](img/query.png)
+
+2. 跟踪详情页面
+
+![result](img/result.png)
