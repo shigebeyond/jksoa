@@ -6,6 +6,7 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 服务端span跟踪器
+ *    代表完整的本次调用, 也就代表当前Tracer实例的生命周期, 因此在end()时清理当前Tracer实例
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27

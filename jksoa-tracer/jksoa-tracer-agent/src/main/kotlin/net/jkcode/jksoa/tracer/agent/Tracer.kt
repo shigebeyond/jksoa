@@ -1,8 +1,11 @@
 package net.jkcode.jksoa.tracer.agent
 
-import net.jkcode.jkmvc.common.*
-import net.jkcode.jksoa.rpc.client.referer.Referer
+import net.jkcode.jkmvc.common.Application
+import net.jkcode.jkmvc.common.DoneFlagList
+import net.jkcode.jkmvc.common.ICurrentHolder
+import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.tracer.agent.loader.AnnotationTraceableServiceLoader
 import net.jkcode.jksoa.tracer.agent.loader.ITraceableServiceLoader
 import net.jkcode.jksoa.tracer.agent.sample.BaseSample
@@ -10,11 +13,8 @@ import net.jkcode.jksoa.tracer.agent.spanner.*
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService
 import net.jkcode.jksoa.tracer.common.tracerLogger
-import java.lang.reflect.Method
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.reflect.KFunction
-import kotlin.reflect.jvm.javaMethod
 
 /**
  * 系统跟踪类
@@ -32,7 +32,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-29 6:19 PM
  */
-class Tracer protected constructor() {
+class Tracer protected constructor() : ITracer() {
 
     companion object: ICurrentHolder<Tracer>({ Tracer() }) {
 
@@ -111,42 +111,6 @@ class Tracer protected constructor() {
     }
 
     /**
-     * 是否取样
-     */
-    protected var isSample: Boolean? = null
-
-    /**
-     * id
-     */
-    protected var id: Long = -1
-
-
-    /**
-     * 父span: 可能是发起人, 也可能是服务端
-     */
-    protected var parentSpan: Span? = null
-
-    /**
-     * 新建发起人的span
-     *
-     * @param func
-     * @return
-     */
-    public fun startInitiatorSpanner(func: KFunction<*>): ISpanner {
-        return startInitiatorSpanner(func.javaMethod!!)
-    }
-
-    /**
-     * 新建发起人的span
-     *
-     * @param method
-     * @return
-     */
-    public fun startInitiatorSpanner(method: Method): ISpanner {
-        return startInitiatorSpanner(method.declaringClass.name, method.getSignature())
-    }
-
-    /**
      * 根据服务名获得id
      * @param name
      * @return id
@@ -165,7 +129,7 @@ class Tracer protected constructor() {
      * @param name
      * @return
      */
-    public fun startInitiatorSpanner(serviceName: String, name: String): ISpanner {
+    public override fun startInitiatorSpanner(serviceName: String, name: String): ISpanner {
         // RpcClientTracerPlugin插件中延迟调用 ICollectorService.syncServices()
         syncServices()
 
@@ -203,7 +167,7 @@ class Tracer protected constructor() {
      * @param req
      * @return
      */
-    public fun startClientSpanner(req: IRpcRequest): ISpanner {
+    public override fun startClientSpanner(req: IRpcRequest): ISpanner {
         // 不跟踪 ICollectorService
         if(req.serviceId == ICollectorService::class.qualifiedName)
             return EmptySpanner
@@ -237,7 +201,7 @@ class Tracer protected constructor() {
      * @param req
      * @return
      */
-    public fun startServerSpanner(req: IRpcRequest): ISpanner {
+    public override fun startServerSpanner(req: IRpcRequest): ISpanner {
         // 不跟踪 ICollectorService
         if(req.serviceId == ICollectorService::class.qualifiedName)
             return EmptySpanner
