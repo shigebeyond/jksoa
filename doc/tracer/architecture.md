@@ -46,7 +46,7 @@
 与CAT/hydra类似。支持自适应采样，规则简单，对于每秒钟的请求次数进行统计，如果超过100，就按照10%的比率进行采样。
 
 2.4 上传处理:
-rcp调用`ICollectorService`远程服务，批量异步上传数据
+rcp调用`ICollectorService.send(spans)`远程服务，批量异步上传数据
 
 3. `jksoa-tracer-collector` 跟踪收集人, 负责收集agent上传过来来的调用数据, 并组成跟踪数据入库
 提供 `ICollectorService` rpc服务, 以供agent调用
