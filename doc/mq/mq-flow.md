@@ -8,13 +8,19 @@
 
 2. `BrokerLeader`向注册中心注册主题, 注册中心会将主题分配给broker节点.
 
-3. client订阅注册中心
+3. `Broker`与`Client`订阅注册中心
 
-4. 注册中心向client推送最新的主题分配信息
+4. 注册中心向`Broker/`Client`推送最新的主题分配信息
+
+其中`Broker`节点发现有新的主题分配给自己的话, 则初始化该主题相关的消息存储
 
 ## 消息生成与消费流程
 
-5. `Consumer`向`Broker`订阅主题, 其中broker节点的路由是根据注册中心推送过来的主题分配信息来做的
+5. `Consumer`向`Broker`订阅主题
+
+其中broker节点的路由是根据注册中心推送过来的主题分配信息来做的
+
+同时, 添加绑定主题相关的消息处理者`MessageHandler`
 
 6. `Producer`请求`Broker`来生产消息, 其中broker节点的路由是根据注册中心推送过来的主题分配信息来做的
 
