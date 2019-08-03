@@ -43,9 +43,9 @@ object MqSubscriber: IMqSubscriber {
      * 订阅主题
      *   不允许重复订阅同一个主题
      * @param topic 主题
-     * @param handler
+     * @param handler 消息处理器
      */
-    public override fun subscribeTopic(topic: String, handler: IMqHandler){
+    public override fun subscribeTopic(topic: String, handler: IMessageHandler){
         if(exectors.containsKey(topic))
             throw MqClientException("Duplicate subcribe to the same topic")
 

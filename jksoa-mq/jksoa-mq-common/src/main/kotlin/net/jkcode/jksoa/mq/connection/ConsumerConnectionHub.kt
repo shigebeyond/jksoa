@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap
  * broker端的consumer连接集中器
  *   仅用在 IMqConsumer.pushMessage(msg: Message) 中, 就一个 Message 类型参数
  *   1. 消费者订阅主题+分组时, 收集该连接, 以便向其推送消息
- *   2. 消息推送的均衡负载: 1 无序消息: 随机选择 2 有序消息: 一致性哈希
+ *   2. 消息推送的均衡负载: 1 无路由键: 随机选择 2 有路由键: 一致性哈希
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-21 9:04 PM
@@ -140,14 +140,14 @@ class ConsumerConnectionHub : IConnectionHub() {
         if (conns == null || conns.isEmpty())
             throw RpcNoConnectionException("无订阅的consumer可供推送")
 
-        // 2 选一个连接, 其消息推送的均衡负载: 1 无序消息: 随机选择 2 有序消息: 一致性哈希
-        // 2.1 无序: 随机选个连接
-        if (msg.subjectId == 0L) {
+        // 2 选一个连接, 其消息推送的均衡负载
+        // 2.1 无路由键: 随机选个连接
+        if (msg.routeKey == 0L) {
             val i = randomInt(conns.size)
             return conns[i]
         }
 
-        // 2.2 有序: 一致性哈希
-        return conns.consistentHash.get(msg.subjectId)!!
+        // 2.2 有路由键: 一致性哈希
+        return conns.consistentHash.get(msg.routeKey)!!
     }
 }

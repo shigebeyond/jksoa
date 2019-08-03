@@ -7,7 +7,10 @@ import net.jkcode.jksoa.mq.common.Message
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-23 7:56 PM
  */
-class LambdaMqHandler(protected val lambda: (Collection<Message>) -> Unit) : IMqHandler {
+class LambdaMessageHandler(
+        concurrent: Boolean = true, // 是否线程池并发执行, 否则单线程串行执行
+        protected val lambda: (Collection<Message>) -> Unit
+) : IMessageHandler(concurrent) {
 
     /**
      * 处理消息

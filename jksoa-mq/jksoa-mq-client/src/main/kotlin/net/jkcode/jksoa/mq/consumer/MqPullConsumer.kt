@@ -35,9 +35,9 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
     /**
      * 订阅主题
      * @param topic 主题
-     * @param handler
+     * @param handler 消息处理器
      */
-    public override fun subscribeTopic(topic: String, handler: IMqHandler){
+    public override fun subscribeTopic(topic: String, handler: IMessageHandler){
         // 拉模式: 选举领导者, 一个组内只有一个拉取者
         val election = ZkLeaderElection("mqPuller/" + config["group"]!! + "/" + topic)
         election.run() {
@@ -59,7 +59,7 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
         CommonSecondTimer.newPeriodic({
             for(topic in subscribedTopics)
                 pull(topic)
-        }, config["pullTimerSeconds]!!, TimeUnit.SECONDS)
+        }, config["pullTimerSeconds"]!!, TimeUnit.SECONDS)
     }
 
     /**

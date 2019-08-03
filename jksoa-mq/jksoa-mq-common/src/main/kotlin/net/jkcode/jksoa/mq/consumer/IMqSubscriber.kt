@@ -25,18 +25,19 @@ interface IMqSubscriber {
      * 订阅主题
      *    不允许重复订阅同一个主题
      * @param topic 主题
-     * @param handler
+     * @param handler 消息处理器
      */
-    fun subscribeTopic(topic: String, handler: IMqHandler)
+    fun subscribeTopic(topic: String, handler: IMessageHandler)
 
     /**
      * 订阅主题
      *    不允许重复订阅同一个主题
      * @param topic 主题
-     * @param lambda
+     * @param concurrent 是否线程池并发执行, 否则单线程串行执行
+     * @param lambda 消息处理lambda
      */
-    fun subscribeTopic(topic: String, lambda: (Collection<Message>) -> Unit){
-        subscribeTopic(topic, LambdaMqHandler(lambda))
+    fun subscribeTopic(topic: String, concurrent: Boolean = true, lambda: (Collection<Message>) -> Unit){
+        subscribeTopic(topic, LambdaMessageHandler(concurrent, lambda))
     }
 
     /**

@@ -23,6 +23,8 @@ jksoa-mq是一款轻量级分布式消息队列，拥有 "水平扩展、高可�
 
 # 快速入门
 
+## 生产者
+
 1. 生产者注册主题
 
 ```
@@ -34,16 +36,7 @@ if (!b)
 println("注册主题: $topic")
 ```
 
-2. 消费者注册分组
-
-```
-// 注册消费者分组
-val group = "default"
-MqSubscriber.registerGroup(group)
-println("注册消费者分组: $group")
-```
-
-3. 生产者生产消息
+2. 生产者生产消息
 
 ```
 // 生产消息
@@ -57,12 +50,34 @@ try {
 }
 ```
 
-4. 消费者订阅主题
+## 消费者
+1. 配置
+
+vim consumer.yaml
+
+```
+# 消息消费者配置
+group: "default" # 消费者分组
+pullPageSize: 100 # 每次拉取的消息数
+pullTimerSeconds: 100 # 定时拉取的时间间隔, 单位秒
+threadNum: 10 # 消费处理的线程数
+```
+
+2. 消费者注册分组
+
+```
+// 注册消费者分组
+val group = "default"
+MqSubscriber.registerGroup(group)
+println("注册消费者分组: $group")
+```
+
+3. 消费者订阅主题
 
 ```
 val topic = "topic1"
 // 消息处理器
-val handler = object: IMqHandler {
+val handler = object: IMessageHandler(true /* 是否并发处理 */ ) {
     override fun consumeMessages(msgs: Collection<Message>) {
         println("收到消息: $msgs")
 

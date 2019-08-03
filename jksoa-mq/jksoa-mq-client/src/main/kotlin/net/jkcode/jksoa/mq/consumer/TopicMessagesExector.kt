@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutorService
 
 /**
  * 某个主题的消息执行者
- *    1 通过 GroupRunCombiner 来合并消息, 并调用 IMqHandler.consumeMessages() 来消费
+ *    1 通过 GroupRunCombiner 来合并消息, 并调用 IMessageHandler.consumeMessages() 来消费
  *    2 属性 concurrent 控制是否线程池并发执行, 否则单线程串行执行, 通过改写属性 executor 来指定是线程池or单线程执行
  *    3 串行执行, 避免并发, 状态简单, 保证有序
  *
@@ -23,8 +23,7 @@ import java.util.concurrent.ExecutorService
  */
 class TopicMessagesExector(
         public val topic: String, // 主题
-        public val handler: IMqHandler, // 消息处理器
-        public val concurrent: Boolean = false // 是否线程池并发执行, 否则单线程串行执行
+        public val handler: IMessageHandler // 消息处理器
 ) : UnitRequestQueueFlusher<Message>(100, 100) {
 
     companion object{
@@ -52,7 +51,7 @@ class TopicMessagesExector(
      *    一个topic的消息分配到一个线程中串行处理, 从而保证同一个topic下的消息顺序消费
      */
     protected override val executor: ExecutorService =
-            if(concurrent) // 并发执行
+            if(handler.concurrent) // 并发执行
                 excutorGroup // 线程池
             else // 串行执行
                 excutorGroup.selectExecutor(topic) // 单线程

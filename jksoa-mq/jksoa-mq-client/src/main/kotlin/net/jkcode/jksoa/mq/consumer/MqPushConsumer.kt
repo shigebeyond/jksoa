@@ -32,9 +32,9 @@ object MqPushConsumer : IMqPushConsumer, IMqSubscriber by MqSubscriber {
     /**
      * 订阅主题
      * @param topic 主题
-     * @param handler
+     * @param handler 消息处理器
      */
-    public override fun subscribeTopic(topic: String, handler: IMqHandler){
+    public override fun subscribeTopic(topic: String, handler: IMessageHandler){
         // 调用代理的实现
         MqSubscriber.subscribeTopic(topic, handler)
 

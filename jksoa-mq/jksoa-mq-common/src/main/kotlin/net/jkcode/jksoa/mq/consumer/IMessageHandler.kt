@@ -7,11 +7,11 @@ import net.jkcode.jksoa.mq.common.Message
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-09 8:53 PM
  */
-interface IMqHandler {
+abstract class IMessageHandler(public val concurrent: Boolean = true /* 是否线程池并发执行, 否则单线程串行执行 */) {
 
     /**
      * 消费处理
      * @param msgs 消息
      */
-    fun consumeMessages(msgs: Collection<Message>)
+    public abstract fun consumeMessages(msgs: Collection<Message>)
 }

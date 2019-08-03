@@ -12,7 +12,7 @@ import java.util.*
 data class Message(public val topic: String, // 主题
                    public val data: Any?, // 数据
                    public val groupIds: BitSet = BitSet(), // 分组id
-                   public val subjectId: Long = 0 // 业务实体编号, 如订单号, 用于标识一系列的顺序消息
+                   public val routeKey: Long = 0 // 路由键, 用于做发送路由与消费路由
 ): Serializable {
 
     // 构造函数
@@ -41,6 +41,6 @@ data class Message(public val topic: String, // 主题
      * 由于id不在data class field中, 因此要重写
      */
     public override fun toString(): String {
-        return "Message(id=$id, topic=$topic, data=$data, groupIds=$groupIds, subjectId=$subjectId)"
+        return "Message(id=$id, topic=$topic, data=$data, groupIds=$groupIds, routeKey=$routeKey)"
     }
 }

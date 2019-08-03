@@ -7,7 +7,7 @@ import net.jkcode.jkmvc.common.randomString
 import net.jkcode.jksoa.mq.MqProducer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqClientException
-import net.jkcode.jksoa.mq.consumer.IMqHandler
+import net.jkcode.jksoa.mq.consumer.IMessageHandler
 import net.jkcode.jksoa.mq.consumer.MqPullConsumer
 import net.jkcode.jksoa.mq.consumer.MqPushConsumer
 import net.jkcode.jksoa.mq.consumer.MqSubscriber
@@ -25,7 +25,7 @@ class MqClientTests {
 
     val group = "default"
 
-    val handler = object: IMqHandler {
+    val handler = object: IMessageHandler(true /* 是否并发处理 */ ) {
         override fun consumeMessages(msgs: Collection<Message>) {
             println("收到消息: $msgs")
 
