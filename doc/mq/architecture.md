@@ -24,7 +24,7 @@ jksoa-mq-registry
 待分配的broker节点, 就是服务`IMqBrokerService`的提供者节点
 
 ## broker/server端组件
-1. `BrokerLeader`: 消息代理中心的领导者, 负责注册主题
+1. `BrokerLeader`: 消息代理中心的领导者, 负责注册主题, 实际上将主题分配给broker. 由于该分配操作影响消息全局存储, 不能让client端来任意分配, 因此只能在leader中分配
 2. `Broker`: 消息代理中心, 负责存储消息
 
 ## client端组件
