@@ -20,7 +20,7 @@
 
 其中broker节点的路由是根据注册中心推送过来的主题分配信息来做的
 
-同时, 添加绑定主题相关的消息处理者`MessageHandler`
+同时, 添加绑定主题相关的消息处理者`IMqHandler`
 
 6. `Producer`请求`Broker`来生产消息, 其中broker节点的路由是根据注册中心推送过来的主题分配信息来做的
 
@@ -30,6 +30,6 @@
 
 9. `Consumer`主动向`Broker`拉取消息
 
-10. `Consumer`收到消息后, 调用`MessageHandler`来消费消息
+10. `Consumer`收到消息后, 调用`IMqHandler`来消费消息
 
 11. `Consumer`消费消息后, 向`Broker`反馈消费结果
