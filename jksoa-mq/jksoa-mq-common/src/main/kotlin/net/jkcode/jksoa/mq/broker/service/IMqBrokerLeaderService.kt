@@ -3,7 +3,7 @@ package net.jkcode.jksoa.mq.broker.service
 import net.jkcode.jksoa.common.annotation.RemoteService
 
 /**
- * 消息中转者的leader
+ * 消息中转者的leader服务
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-10 8:41 PM
  */

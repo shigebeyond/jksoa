@@ -9,7 +9,7 @@ import net.jkcode.jksoa.rpc.registry.IDiscoveryListener
 import net.jkcode.jksoa.rpc.registry.IRegistry
 
 /**
- * 消息中转者的leader
+ * 消息中转者的leader服务
  *    1. 监听broker服务节点变化, 以便重新分配topic
  *    2. 注册/注销topic
  *

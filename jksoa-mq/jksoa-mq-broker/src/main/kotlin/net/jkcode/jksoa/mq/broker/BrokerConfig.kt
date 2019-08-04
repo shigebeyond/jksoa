@@ -30,9 +30,9 @@ object BrokerConfig {
     public val dataDir: String = config["dataDir"]!!
 
     /**
-     * 是否自动同步
+     * 是否立即同步
      */
-    public val autoSync: Boolean = config["autoSync"]!!
+    public val immediateSync: Boolean = config["immediateSync"]!!
 
     /**
      * 易变代存储的最大大小，单位 B K M G T

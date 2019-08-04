@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 延迟消息的仓库
- *    1 key是时间戳, value是延迟消息id列表
+ *    1 子目录是_delayQueue, key是时间戳, value是延迟消息id列表
  *    2 为了保证key值(即时间戳)的唯一, 因此只能由定时触发, 不能由定量触发, 通过简单将定量阀值设为int最大值, 基本避免定量触发
  *    3 TODO:  一个消息可以延迟发送多次, 但每次延迟发送的间隔是不一样的
  *

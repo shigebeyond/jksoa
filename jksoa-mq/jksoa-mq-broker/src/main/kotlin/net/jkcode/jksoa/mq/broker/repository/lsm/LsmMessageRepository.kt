@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicLong
  */
 class LsmMessageRepository(
         public override val topic: String, // 主题
-        protected override val autoSync: Boolean = BrokerConfig.autoSync // 是否自动同步到磁盘
+        protected override val immediateSync: Boolean = BrokerConfig.immediateSync // 是否立即同步到磁盘
 ) : LsmMessageWriter() {
 
     companion object{

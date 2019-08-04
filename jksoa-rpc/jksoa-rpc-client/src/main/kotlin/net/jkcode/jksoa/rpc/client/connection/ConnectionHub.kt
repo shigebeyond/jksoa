@@ -2,6 +2,7 @@ package net.jkcode.jksoa.rpc.client.connection
 
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.connection.reuse.ReusableConnection
+import net.jkcode.jksoa.rpc.client.connection.pool.PooledConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
@@ -20,6 +21,11 @@ import java.util.concurrent.ConcurrentHashMap
 open class ConnectionHub: IConnectionHub() {
 
     /**
+     * 客户端配置
+     */
+    public val config: IConfig = Config.instance("rpc-client", "yaml")
+
+    /**
      * 连接池： <协议ip端口 to 连接>
      */
     protected val connections: ConcurrentHashMap<String, IConnection> = ConcurrentHashMap()
@@ -31,7 +37,13 @@ open class ConnectionHub: IConnectionHub() {
      */
     public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
         clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
-        connections[url.serverName] = ReusableConnection(url, url.getParameter("weight", 1)!!) // 创建连接
+        val weight: Int = url.getParameter("weight", 1)!!
+        // 创建连接
+        val conn: IConnection = if(config["reuseConnection"] == true)
+                                    ReusableConnection(url, weight) 
+                                else
+                                    PooledConnection(url, weight) 
+        connections[url.serverName] = conn;
     }
 
     /**

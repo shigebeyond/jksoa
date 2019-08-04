@@ -7,7 +7,7 @@ import net.jkcode.jksoa.mq.connection.BrokerConnectionHub
 import java.util.concurrent.CompletableFuture
 
 /**
- * 消息中转者
+ * 消息中转者服务
  *    由于broker server端做了请求(消息)的定时定量处理, 因此请求超时需增大, 详见注解 @RemoteMethod.requestTimeoutMillis
  *
  * @author shijianhang<772910474@qq.com>

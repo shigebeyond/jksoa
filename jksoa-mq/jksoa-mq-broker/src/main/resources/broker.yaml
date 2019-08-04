@@ -1,7 +1,7 @@
 # 消息中转者配置
 mqDelaySeconds: !!java.lang.Long 10 # 消息延迟发送的秒数
 dataDir: /home/shi/data/mq # 数据存储目录
-autoSync: false # 是否自动同步
+immediateSync: false # 是否立即同步
 maxVolatileGenerationSize: 8M # 易变代存储的最大大小，单位 B K M G T
 storageType: block_compressed #　存储类型  1. inline 不压缩 2. block_compressed　压缩
 compressionCodec: snappy # 压缩类型　1. gzip 2. snappy

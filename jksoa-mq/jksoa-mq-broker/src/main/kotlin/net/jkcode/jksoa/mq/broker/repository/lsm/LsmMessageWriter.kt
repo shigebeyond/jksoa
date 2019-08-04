@@ -32,15 +32,15 @@ abstract class LsmMessageWriter : LsmMessageReader() {
     protected lateinit var maxId: AtomicLong
 
     /**
-     * 是否自动同步到磁盘
+     * 是否立即同步到磁盘
      */
-    protected abstract val autoSync: Boolean
+    protected abstract val immediateSync: Boolean
 
     /**
      * 定量刷盘, 提升刷盘效率
      */
     protected val syncCounter: CounterFlusher? by lazy{
-        if(autoSync)
+        if(immediateSync)
             null
         else
             object: CounterFlusher(100, 100) {
@@ -63,7 +63,7 @@ abstract class LsmMessageWriter : LsmMessageReader() {
      */
     protected fun trySync(num: Int): CompletableFuture<Unit> {
         // 立即同步
-        if(autoSync) {
+        if(immediateSync) {
             queueStore.sync()
             indexStore.sync()
             return UnitFuture
