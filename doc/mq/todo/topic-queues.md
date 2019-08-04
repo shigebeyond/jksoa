@@ -6,7 +6,7 @@
 
 后续支持一个主题有多个队列, 也就有多个存储, 类似于kafka的partition, 或rocketmq的queue.
 
-队列 = broker + 队列id
+队列 = broker + topic + 队列id
 
 ![topic-queue](img/topic-queue.png)
 

@@ -78,3 +78,5 @@ jksoa-rpc提供了两种方式来维持连接:
 如果服务被大量client引用, 则建议每个client单一长连接
 
 2. PooledConnection -- 池化的连接的包装器, 即多个长连接做连接池
+
+可通过 `rpc-client.yaml` 配置文件的属性 `reuseConnection` 来切换: 1 true: 则使用连接 ReconnectableConnection 2 false: 则使用连接 PooledConnection

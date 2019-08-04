@@ -23,7 +23,34 @@ jksoa-mq是一款轻量级分布式消息队列，拥有 "水平扩展、高可�
 
 # 快速入门
 
-## 生产者
+## 启动消息中转者 broker
+
+1. broker配置
+
+```
+# 消息中转者配置
+mqDelaySeconds: !!java.lang.Long 10 # 消息延迟发送的秒数
+dataDir: /home/shi/data/mq # 数据存储目录
+immediateSync: false # 是否立即同步
+maxVolatileGenerationSize: 8M # 易变代存储的最大大小，单位 B K M G T
+storageType: block_compressed #　存储类型  1. inline 不压缩 2. block_compressed　压缩
+compressionCodec: snappy # 压缩类型　1. gzip 2. snappy
+```
+
+2. 配置 rpc-server.yaml
+在配置项`servicePackages`添加broker服务类所在的包路径
+
+```
+servicePackages: # service类所在的包路径
+    ...
+    - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
+```
+
+3. 启动broker server
+
+使用 `net.jkcode.jksoa.rpc.server.RpcServerLauncher` 作为主类, 其`main()`方法会启动server
+
+## 调用生产者 producer
 
 1. 生产者注册主题
 
@@ -50,7 +77,7 @@ try {
 }
 ```
 
-## 消费者
+## 设置消费者 consumer
 1. 配置
 
 vim consumer.yaml
