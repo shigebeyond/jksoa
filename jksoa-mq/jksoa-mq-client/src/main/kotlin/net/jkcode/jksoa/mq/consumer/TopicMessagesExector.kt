@@ -9,6 +9,7 @@ import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqClientLogger
+import net.jkcode.jksoa.mq.consumer.suspend.MqPullConsumeSuspendException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 
@@ -79,7 +80,16 @@ class TopicMessagesExector(
             val group: String = MqPushConsumer.config["group"]!!
             brokerService.feedbackMessages(topic, group, ids, e)
             mqClientLogger.error("TopicMessagesExector向broker反馈消息结果: topic={}, group={}, ids={}, exception={}", topic, group, ids, e?.message)
-            return VoidFuture
+
+            // 返回异步结果
+            if(e == null)
+                return VoidFuture
+
+            // 异常时暂停
+            if(handler.exceptionSuspendSeconds > 0)
+                throw MqPullConsumeSuspendException(handler.exceptionSuspendSeconds, e)
+
+            throw e
         }
     }
 

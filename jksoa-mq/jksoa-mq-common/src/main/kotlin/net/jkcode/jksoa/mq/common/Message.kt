@@ -16,10 +16,10 @@ data class Message(public val topic: String, // 主题
 ): Serializable {
 
     // 构造函数
-    public constructor(topic: String , data: Any?, subjectId: Long): this(topic, data, BitSet(), subjectId)
+    public constructor(topic: String , data: Any?, routeKey: Long): this(topic, data, BitSet(), routeKey)
 
     // 构造函数
-    public constructor(topic: String , data: Any?, group: String, subjectId: Long = 0): this(topic, data, subjectId){
+    public constructor(topic: String , data: Any?, group: String, routeKey: Long = 0): this(topic, data, routeKey){
         addGroup(group)
     }
 

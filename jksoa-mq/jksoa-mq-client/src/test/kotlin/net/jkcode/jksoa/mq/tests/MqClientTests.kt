@@ -111,4 +111,18 @@ class MqClientTests {
         Thread.sleep(100000)
     }
 
+    @Test
+    fun testOrderedMessage(){
+        val states = arrayOf("创建", "付款", "推送", "完成")
+        val id = 1L
+        for(state in states){
+            val order = Order(id, state + " - " + Date().format())
+            // 生产消息
+            val msg = Message(topic, order, group, id)
+            MqProducer.send(msg).get()
+        }
+    }
+
 }
+
+data class Order(public val id: Long, public val desc: String)

@@ -7,7 +7,10 @@ import net.jkcode.jksoa.mq.common.Message
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-09 8:53 PM
  */
-abstract class IMessageHandler(public val concurrent: Boolean = true /* 是否线程池并发执行, 否则单线程串行执行 */) {
+abstract class IMessageHandler(
+        public val concurrent: Boolean = true, // 是否线程池并发执行, 否则单线程串行执行
+        public val exceptionSuspendSeconds: Int = 0 // 异常时暂停的秒数, 如果<=0则不暂停
+) {
 
     /**
      * 消费处理
