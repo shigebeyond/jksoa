@@ -68,6 +68,7 @@ println("注册主题: $topic")
 ```
 // 生产消息
 val topic = "topic1"
+val group = "default"
 val msg = Message(topic, randomString(7) + " - " + Date().format(), group)
 try {
     val id = MqProducer.send(msg).get()

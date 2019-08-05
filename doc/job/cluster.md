@@ -1,6 +1,6 @@
 # Cluster
 
-在 `net.jkcode.jksoa.job.cronjob.ClusterCronJobLauncher` 中实现了集群的调度者.
+在 `net.jkcode.jksoa.job.cronjob.ClusterCronJobLauncher` 中实现了调度者集群.
 
 集群中有多个候选者节点, 但是只有选为leader的候选者节点才能成为唯一的调度者, 其他候选者节点则成为热备.
 

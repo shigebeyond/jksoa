@@ -53,70 +53,112 @@ consumer收到消息后调用`IMessageHandler`来处理, 同时`IMessageHandler.
 
 如果你的业务场景是要求严格有序的话, 则一旦消费某个消息出错了, 就不能继续消费下一个消息.
 
-此时你可以选择抛`MqPullConsumeSuspendException`异常, 系统捕获到该异常, 会暂停拉取定时器, 暂停时间在`MqPullConsumeSuspendException.suspendSeconds`属性中指定, 等过了暂停时间会重新启动拉取定时器
+此时你可以在`IMessageHandler.consumeMessages(msgs)`的实现中, 抛出异常`MqPullConsumeSuspendException`, 系统捕获到该异常, 会暂停拉取定时器, 暂停时间在`MqPullConsumeSuspendException.suspendSeconds`属性中指定, 等过了暂停时间会重新启动拉取定时器. 
+
+当然, 你也可以直接使用 `IMessageHandler` 的子类 `SerialSuspendablePullMessageHandler`, 他自动将业务异常转为`MqPullConsumeSuspendException` 异常, 让你不用关心如何暂停的细节.
+
+`SerialSuspendablePullMessageHandler` 实现如下:
+
+```
+package net.jkcode.jksoa.mq.consumer.suspend
+
+/**
+ * 串行的可暂停的拉模式的消息处理器
+ *    只用于拉模式的消费者上: MqPullConsumer
+ *
+ * @author shijianhang<772910474@qq.com>
+ * @date 2019-08-05 6:44 PM
+ */
+abstract class SerialSuspendablePullMessageHandler(
+        public val exceptionSuspendSeconds: Int // 异常时暂停的秒数
+): IMessageHandler(false) {
+
+    init{
+        if(exceptionSuspendSeconds <= 0)
+            throw IllegalArgumentException("异常时暂停的秒数必须为正整数")
+    }
+
+    /**
+     * 消费处理
+     * @param msgs 消息
+     */
+    public override fun consumeMessages(msgs: Collection<Message>){
+        try{
+            doConsumeMessages(msgs)
+        }catch(e: Exception){
+            // 封装暂停的异常
+            throw MqPullConsumeSuspendException(exceptionSuspendSeconds, e)
+        }
+    }
+
+    /**
+     * 真正的消费处理
+     * @param msgs 消息
+     */
+    public abstract fun doConsumeMessages(msgs: Collection<Message>)
+}
+```
 
 ## demo
 
 下面用订单进行示例。一个订单的顺序流程是：创建、付款、推送、完成。订单号相同的消息会被先后发送到同一个队列中，消费时，同一个OrderId获取到的肯定是同一个队列。
 
-jksoa-mq消息生产端示例代码如下：
+### 消息生产代码
 
 ```
+// 订单实体类
+data class Order(public val id: Long, public val desc: String)
+
+val topic = "topic1"
+val group = "default"
+// 订单所有状态
+val states = arrayOf("创建", "付款", "推送", "完成")
+val id = 1L
+for(state in states){
+    // 创建订单
+    val order = Order(id, state + " - " + Date().format())
+    // 生产消息
+    // val msg = Message(topic, order, group) // 随机发给topic下的队列, 然后每个group随机发给group下的push consumer
+    val msg = Message(topic, order, group, order.id /* routeKey */) // 按routeKey(订单号)固定发给topic下的队列, 然后每个group按routeKey(订单号)固定发给group下的push consumer
+    MqProducer.send(msg).get()
+}
 ```
 
-输出：
 
-
-从图中红色框可以看出，orderId等于15103111039的订单被顺序放入queueId等于7的队列。queueOffset同时在顺序增长。
-
-发送时有序，接收（消费）时也要有序，才能保证顺序消费。如下这段代码演示了普通消费（非有序消费）的实现方式。
-
-
-并发消费
+## 消息消费代码
 
 ```
+// 并发的消息处理器
+/*
+val handler = object: IMessageHandler(true /* 是否并发处理 */ ) {
+    override fun consumeMessages(msgs: Collection<Message>) {
+        println("收到消息: $msgs")
+
+        val fraction = 10
+        if(randomInt(fraction) == 0)
+            throw Exception("消费消息触发 1/${fraction} 的异常")
+    }
+}
+*/
+
+// 串行的可暂停的拉模式的消息处理器
+val handler = object: SerialSuspendablePullMessageHandler(30 /* 异常时暂停的秒数 */ ) {
+    override fun doConsumeMessages(msgs: Collection<Message>) {
+        println("收到消息: $msgs")
+
+        val fraction = 10
+        if(randomInt(fraction) == 0)
+            throw Exception("消费消息触发 1/${fraction} 的异常")
+    }
+}
+
+// 订阅主题
+MqPullConsumer.subscribeTopic(topic, handler)
 ```
 
-输出：
-
-
-可见，订单号为15103111039的订单被消费时顺序完成乱了。所以用MessageListenerConcurrently这种消费者是无法做到顺序消费的，采用下面这种方式就做到了顺序消费：
-
-顺序消费
-```
-
-```
-
-输出：
-
-MessageListenerOrderly能够保证顺序消费，从图中我们也看到了期望的结果。图中的输出是只启动了一个消费者时的输出，看起来订单号还是混在一起，但是每组订单号之间是有序的。因为消息发送时被分配到了三个队列（参见前面生产者输出日志），那么这三个队列的消息被这唯一消费者消费。
-
-如果启动2个消费者呢？那么其中一个消费者对应消费2个队列，另一个消费者对应消费剩下的1个队列。
-
-如果启动3个消费者呢？那么每个消费者都对应消费1个队列，订单号就区分开了。输出变为这样：
-
-消费者1输出：
-
-
-
-消费者2输出：
-
-
-
-消费者3输出：
-
-
-
-很完美，有木有？！
-
-按照这个示例，把订单号取了做了一个取模运算再丢到selector中，selector保证同一个模的都会投递到同一条queue。即： 相同订单号的--->有相同的模--->有相同的queue。最后就会类似这样：
-
-
-
-总结：
+## 总结
 
 jksoa-mq的顺序消息需要满足2点：
-
-1.Producer端保证发送消息有序，且发送到同一个队列。
-2.consumer端保证消费同一个队列。
+1. Producer端保证发送消息有序，根据routeKey发送到固定的一个队列。
+2. Consumer端拉模式消费, 对指定队列按单线程串行消费。
 

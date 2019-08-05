@@ -110,6 +110,8 @@
 
 5.7 抽取 TopicMessagesExector 来执行单个主题的消息的消费, 同时继承 UnitRequestQueueFlusher, 通过改写属性 executor 来控制并发或串行执行
 
+5.8 支持有序消息: 1 Message 添加属性 routeKey 来将消息路由到固定的队列与消费者上;  2 添加 SerialSuspendablePullMessageHandler 来支持串行的可暂停的拉模式的消息处理器, 从而保证消费处理是串行
+
 6. 添加序列号生成器: 基于zk的持久顺序节点来实现
 
 7. 优化分片
