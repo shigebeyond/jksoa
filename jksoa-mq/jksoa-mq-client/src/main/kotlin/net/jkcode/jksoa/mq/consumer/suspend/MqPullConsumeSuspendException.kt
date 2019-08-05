@@ -15,6 +15,9 @@ class MqPullConsumeSuspendException(
 ) : MqClientException(message) {
 
     init{
+        if(suspendSeconds <= 0)
+            throw IllegalArgumentException("暂停的秒数必须为正整数")
+    
         if(cause != null)
             initCause(cause)
     }

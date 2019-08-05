@@ -9,7 +9,6 @@ import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqClientLogger
-import net.jkcode.jksoa.mq.consumer.suspend.MqPullConsumeSuspendException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 
@@ -58,7 +57,7 @@ class TopicMessagesExector(
                 excutorGroup.selectExecutor(topic) // 单线程
 
     /**
-     * 批量消费消息
+     * 批量消费消息, 在 executor 中执行
      */
     public override fun handleRequests(msgs: List<Message>, reqs: Collection<Pair<Message, CompletableFuture<Unit>>>): CompletableFuture<*> {
         var e: Exception? = null
@@ -84,10 +83,6 @@ class TopicMessagesExector(
             // 返回异步结果
             if(e == null)
                 return VoidFuture
-
-            // 异常时暂停
-            if(handler.exceptionSuspendSeconds > 0)
-                throw MqPullConsumeSuspendException(handler.exceptionSuspendSeconds, e)
 
             throw e
         }

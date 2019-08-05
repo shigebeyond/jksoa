@@ -112,10 +112,12 @@ class MqClientTests {
     }
 
     @Test
-    fun testOrderedMessage(){
+    fun testProductOrderedMessage(){
+        // 订单所有状态
         val states = arrayOf("创建", "付款", "推送", "完成")
         val id = 1L
         for(state in states){
+            // 创建订单
             val order = Order(id, state + " - " + Date().format())
             // 生产消息
             val msg = Message(topic, order, group, id)
@@ -123,6 +125,23 @@ class MqClientTests {
         }
     }
 
+    @Test
+    fun testConsumeOrderedMessage(){
+        // 串行的可暂停的拉模式的消息处理器
+        val handler = object: SerialSuspendablePullMessageHandler(30 /* 异常时暂停的秒数 */ ) {
+            override fun doConsumeMessages(msgs: Collection<Message>) {
+                println("收到消息: $msgs")
+
+                val fraction = 10
+                if(randomInt(fraction) == 0)
+                    throw Exception("消费消息触发 1/${fraction} 的异常")
+            }
+        }
+        // 订阅主题
+        MqPullConsumer.subscribeTopic(topic, handler)
+    }
+
 }
 
+// 订单实体类
 data class Order(public val id: Long, public val desc: String)
