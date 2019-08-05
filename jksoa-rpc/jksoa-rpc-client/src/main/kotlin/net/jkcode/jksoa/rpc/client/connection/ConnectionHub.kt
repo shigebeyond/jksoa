@@ -1,5 +1,7 @@
 package net.jkcode.jksoa.rpc.client.connection
 
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.connection.reuse.ReusableConnection
 import net.jkcode.jksoa.rpc.client.connection.pool.PooledConnection
@@ -26,6 +28,11 @@ open class ConnectionHub: IConnectionHub() {
     public val config: IConfig = Config.instance("rpc-client", "yaml")
 
     /**
+     * 是否复用连接: 1 true: 则使用连接 ReconnectableConnection 2 false: 则使用连接 PooledConnection
+     */
+    protected open val reuseConnection: Boolean = config["reuseConnection"]!!
+
+    /**
      * 连接池： <协议ip端口 to 连接>
      */
     protected val connections: ConcurrentHashMap<String, IConnection> = ConcurrentHashMap()
@@ -39,7 +46,7 @@ open class ConnectionHub: IConnectionHub() {
         clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
         val weight: Int = url.getParameter("weight", 1)!!
         // 创建连接
-        val conn: IConnection = if(config["reuseConnection"] == true)
+        val conn: IConnection = if(reuseConnection == true)
                                     ReusableConnection(url, weight) 
                                 else
                                     PooledConnection(url, weight) 
