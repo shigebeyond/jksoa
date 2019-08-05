@@ -7,12 +7,12 @@
 
 ## 子模块
 
-模块图
-参考 https://blog.csdn.net/chenaima1314/article/details/79202315
+1. `remote service`模块: broker的远端服务，处理来自client的请求;
+2. `repository`模块: 负责消息存储, 提供简单的api来在读写消息;
+3. `pusher`模块: 负责将消息推送给push consumer.
+4. `consumer connection`模块:  负责管理push consumer的连接.
 
-1. service模块: broker的远端服务，处理来自client的请求;
-2. repository模块: 负责消息存储, 提供简单的api来在读写消息;
-3. consumer connection模块:  负责管理consumer的连接.
+![broker-module](../img/broker-module.png)
 
 ## 服务
 

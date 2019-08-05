@@ -1,4 +1,4 @@
-# storage 消息存储
+# 消息存储
 
 jksoa-mq使用基于 lsmtree 模型的高性能 k/v 存储来存储消息数据
 

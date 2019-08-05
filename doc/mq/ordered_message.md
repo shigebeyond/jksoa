@@ -1,8 +1,10 @@
-# 有序消息
+# Ordered Message -- 有序消息
 
-有序消息, 指的是可以按照消息的发送顺序来消费。
+有序消息, 指的是可以按照消息的发送顺序来消费, 即生产顺序=消费顺序.
 
 jksoa-mq也可以保证从生产到消费的过程中消息有序, 他是通过在每个环节的参与方中选择固定的一个参与者来实现的, 因为每个环节的参与者只有一个, 没有并行, 因此可以保证串行, 从而保证消息有序.
+
+即固定一个队列来存储消息, 固定一个消费者来消费消息.
 
 按照[消息路由](route.md)的规则, 需要以下几个环节之间进行配合
 
@@ -24,9 +26,13 @@ jksoa-mq也可以保证从生产到消费的过程中消息有序, 他是通过�
 
 ### 2.1 分组内, 选择固定的消费者
 
-拉模式下的消费不用说了, 因为单个队列单个分组下的pull consumer是唯一, 并且他处理的是整个队列的消息, 没有并行, 因此可以保证串行, 从而保证消息有序.
+1. 拉模式
 
-推模式下的消费, 单个分组下, 默认是采用随机的方式选择要推送的push consumer, 但是我们可以通过设置`routeKey`(必须大于0)的方式来选择固定的push consumer:
+因为单个队列单个分组下的pull consumer是唯一, 并且他处理的是整个队列的消息, 没有并行, 因此可以保证串行, 从而保证消息有序.
+
+2. 推模式
+
+单个分组下, 默认是采用随机的方式选择要推送的push consumer, 但是我们可以通过设置`routeKey`(必须大于0)的方式来选择固定的push consumer:
 
 选中的是 `ConsistentHash.get(routeKey)` 索引的push consumer
 
@@ -38,9 +44,16 @@ consumer收到消息后调用`IMessageHandler`来处理, 同时`IMessageHandler.
 
 ### 2.3 消费异常的处理
 
-推模式下, 当push consumer消费某个消息出错后, broker会继续推送下一个消息, 如果要控制不继续处理下一个消息, 请选择拉模式
+1. 推模式
 
-拉模式下, 当pull consumer
+当push consumer消费某个消息出错后, broker会继续推送下一个消息, 不会暂停.
+
+2. 拉模式
+当pull consumer消费某个消息出错后, pull consumer默认会继续定时拉取下一批消息来消费, 不会暂停.
+
+如果你的业务场景是要求严格有序的话, 则一旦消费某个消息出错了, 就不能继续消费下一个消息.
+
+此时你可以选择抛`MqPullConsumeSuspendException`异常, 系统捕获到该异常, 会暂停拉取定时器, 暂停时间在`MqPullConsumeSuspendException.suspendSeconds`属性中指定, 等过了暂停时间会重新启动拉取定时器
 
 ## demo
 
@@ -48,117 +61,9 @@ consumer收到消息后调用`IMessageHandler`来处理, 同时`IMessageHandler.
 
 jksoa-mq消息生产端示例代码如下：
 
+```
+```
 
-/**
- * Producer，发送顺序消息
- */
-public class Producer {
-	
-    public static void main(String[] args) throws IOException {
-        try {
-            DefaultMQProducer producer = new DefaultMQProducer("please_rename_unique_group_name");
- 
-            producer.setNamesrvAddr("10.11.11.11:9876;10.11.11.12:9876");
- 
-            producer.start();
- 
-            String[] tags = new String[] { "TagA", "TagC", "TagD" };
-            
-            // 订单列表
-            List<OrderDemo> orderList =  new Producer().buildOrders();
-            
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String dateStr = sdf.format(date);
-            for (int i = 0; i < 10; i++) {
-                // 加个时间后缀
-                String body = dateStr + " Hello jksoa-mq " + orderList.get(i);
-                Message msg = new Message("TopicTestjjj", tags[i % tags.length], "KEY" + i, body.getBytes());
- 
-                SendResult sendResult = producer.send(msg, new MessageQueueSelector() {
-                    @Override
-                    public MessageQueue select(List<MessageQueue> mqs, Message msg, Object arg) {
-                        Long id = (Long) arg;
-                        long index = id % mqs.size();
-                        return mqs.get((int)index);
-                    }
-                }, orderList.get(i).getOrderId());//订单id
- 
-                System.out.println(sendResult + ", body:" + body);
-            }
-            
-            producer.shutdown();
- 
-        } catch (MQClientException e) {
-            e.printStackTrace();
-        } catch (RemotingException e) {
-            e.printStackTrace();
-        } catch (MQBrokerException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.in.read();
-    }
-    
-    /**
-     * 生成模拟订单数据 
-     */
-    private List<OrderDemo> buildOrders() {
-    	List<OrderDemo> orderList = new ArrayList<OrderDemo>();
- 
-    	OrderDemo orderDemo = new OrderDemo();
-        orderDemo.setOrderId(15103111039L);
-    	orderDemo.setDesc("创建");
-    	orderList.add(orderDemo);
-    	
-    	orderDemo = new OrderDemo();
-    	orderDemo.setOrderId(15103111065L);
-    	orderDemo.setDesc("创建");
-    	orderList.add(orderDemo);
-    	
-    	orderDemo = new OrderDemo();
-    	orderDemo.setOrderId(15103111039L);
-    	orderDemo.setDesc("付款");
-    	orderList.add(orderDemo);
-    	
-    	orderDemo = new OrderDemo();
-    	orderDemo.setOrderId(15103117235L);
-    	orderDemo.setDesc("创建");
-    	orderList.add(orderDemo);
-    	
-    	orderDemo = new OrderDemo();
-    	orderDemo.setOrderId(15103111065L);
-    	orderDemo.setDesc("付款");
-    	orderList.add(orderDemo);
-    	
-    	orderDemo = new OrderDemo();
-    	orderDemo.setOrderId(15103117235L);
-    	orderDemo.setDesc("付款");
-    	orderList.add(orderDemo);
-    	
-    	orderDemo = new OrderDemo();
-    	orderDemo.setOrderId(15103111065L);
-    	orderDemo.setDesc("完成");
-    	orderList.add(orderDemo);
-    	
-    	orderDemo = new OrderDemo();
-    	orderDemo.setOrderId(15103111039L);
-    	orderDemo.setDesc("推送");
-    	orderList.add(orderDemo);
-    	
-    	orderDemo = new OrderDemo();
-    	orderDemo.setOrderId(15103117235L);
-    	orderDemo.setDesc("完成");
-    	orderList.add(orderDemo);
-    	
-    	orderDemo = new OrderDemo();
-    	orderDemo.setOrderId(15103111039L);
-    	orderDemo.setDesc("完成");
-    	orderList.add(orderDemo);
-    	
-    	return orderList;
-    }
 输出：
 
 
@@ -167,96 +72,21 @@ public class Producer {
 发送时有序，接收（消费）时也要有序，才能保证顺序消费。如下这段代码演示了普通消费（非有序消费）的实现方式。
 
 
-/**
- * 普通消息消费
- */
-public class Consumer {
- 
-    public static void main(String[] args) throws MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("please_rename_unique_group_name_3");
-        consumer.setNamesrvAddr("10.11.11.11:9876;10.11.11.12:9876");
-        /**
-         * 设置Consumer第一次启动是从队列头部开始消费还是队列尾部开始消费<br>
-         * 如果非第一次启动，那么按照上次消费的位置继续消费
-         */
-        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
- 
-        consumer.subscribe("TopicTestjjj", "TagA || TagC || TagD");
- 
-        consumer.registerMessageListener(new MessageListenerConcurrently() {
- 
-            Random random = new Random();
- 
-            @Override
-            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-                System.out.print(Thread.currentThread().getName() + " Receive New Messages: " );
-                for (MessageExt msg: msgs) {
-                    System.out.println(msg + ", content:" + new String(msg.getBody()));
-                }
-                try {
-                    //模拟业务逻辑处理中...
-                    TimeUnit.SECONDS.sleep(random.nextInt(10));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-            }
-        });
- 
-        consumer.start();
- 
-        System.out.println("Consumer Started.");
-    }
-}
+并发消费
+
+```
+```
 
 输出：
 
 
 可见，订单号为15103111039的订单被消费时顺序完成乱了。所以用MessageListenerConcurrently这种消费者是无法做到顺序消费的，采用下面这种方式就做到了顺序消费：
 
+顺序消费
+```
 
-/**
- * 顺序消息消费，带事务方式（应用可控制Offset什么时候提交）
- */
-public class ConsumerInOrder {
- 
-    public static void main(String[] args) throws MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("please_rename_unique_group_name_3");
-        consumer.setNamesrvAddr("10.11.11.11:9876;10.11.11.12:9876");
-        /**
-         * 设置Consumer第一次启动是从队列头部开始消费还是队列尾部开始消费<br>
-         * 如果非第一次启动，那么按照上次消费的位置继续消费
-         */
-        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
- 
-        consumer.subscribe("TopicTestjjj", "TagA || TagC || TagD");
- 
-        consumer.registerMessageListener(new MessageListenerOrderly() {
- 
-            Random random = new Random();
- 
-            @Override
-            public ConsumeOrderlyStatus consumeMessage(List<MessageExt> msgs, ConsumeOrderlyContext context) {
-                context.setAutoCommit(true);
-                System.out.print(Thread.currentThread().getName() + " Receive New Messages: " );
-                for (MessageExt msg: msgs) {
-                    System.out.println(msg + ", content:" + new String(msg.getBody()));
-                }
-                try {
-                    //模拟业务逻辑处理中...
-                    TimeUnit.SECONDS.sleep(random.nextInt(10));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return ConsumeOrderlyStatus.SUCCESS;
-            }
-        });
- 
-        consumer.start();
- 
-        System.out.println("Consumer Started.");
-    }
-}
+```
+
 输出：
 
 MessageListenerOrderly能够保证顺序消费，从图中我们也看到了期望的结果。图中的输出是只启动了一个消费者时的输出，看起来订单号还是混在一起，但是每组订单号之间是有序的。因为消息发送时被分配到了三个队列（参见前面生产者输出日志），那么这三个队列的消息被这唯一消费者消费。
