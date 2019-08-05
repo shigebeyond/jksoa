@@ -18,6 +18,8 @@ interface IMessageRepository {
     /*************************** 读 **************************/
     /**
      * 根据范围查询多个消息
+     *    无关读进度
+     *
      * @param startId 开始的id
      * @param limit
      * @param inclusive 是否包含开始的id
@@ -26,12 +28,15 @@ interface IMessageRepository {
     fun getMessagesByRange(startId: Long, limit: Int = 100, inclusive: Boolean = true): List<Message>
 
     /**
-     * 根据分组查询多个消息
+     * 根据分组读进度查询多个消息
+     *    按上一次的读进度来开始读下一页
+     *    保存当前读进度
+     *
      * @param startId 开始的id
      * @param limit
      * @return
      */
-    fun getMessagesByGroup(group: String, limit: Int = 100): List<Message>
+    fun getMessagesByGroupProgress(group: String, limit: Int = 100): List<Message>
 
     /**
      * 查询单个消息

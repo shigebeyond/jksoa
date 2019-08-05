@@ -1,10 +1,14 @@
 package net.jkcode.jksoa.mq.consumer
 
 import net.jkcode.jkmvc.common.*
-import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.consumer.suspend.MqPullConsumeSuspendException
+import net.jkcode.jksoa.mq.consumer.suspend.PullConsumeSuspendProgress
+import net.jkcode.jksoa.rpc.client.referer.Referer
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
@@ -23,6 +27,16 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
     public val config = Config.instance("consumer", "yaml")
 
     /**
+     * 分组
+     */
+    private val group: String = config["group"]!!
+
+    /**
+     * 每次拉取记录数
+     */
+    private val limit: Int = config.getInt("pullPageSize", 100)!!
+
+    /**
      * 消息中转者
      */
     private val brokerService = Referer.getRefer<IMqBrokerService>()
@@ -31,6 +45,11 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
      * 启动者
      */
     private val starter = AtomicStarter()
+
+    /**
+     * 主题的暂停进度
+     */
+    private val topicSuspendProgresses: ConcurrentHashMap<String, PullConsumeSuspendProgress> = ConcurrentHashMap();
 
     /**
      * 订阅主题
@@ -67,14 +86,33 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
      * @param topic
      */
     private fun pull(topic: String) {
+        // 在暂停时期内, 不拉取
+        val suspendProgress = topicSuspendProgresses[topic]
+        if(suspendProgress != null && currMillis() < suspendProgress.endTime)
+            return
+
         CommonThreadPool.execute() {
-            var msgs: List<Message>
-            do {
-                // 拉取消息
-                msgs = brokerService.pullMessagesByGroup(topic, config["group"]!!, config.getInt("pullPageSize", 100)!!).get()
+            // 拉取消息
+            val msgsFuture: CompletableFuture<List<Message>>
+            if(suspendProgress == null) // 按上一次的读进度来拉取
+                msgsFuture = brokerService.pullMessagesByGroupProgress(topic, group, limit)
+            else{ // 按暂停进度来拉取
+                msgsFuture = brokerService.pullMessagesByGroup(topic, group, suspendProgress.startId, limit)
+                topicSuspendProgresses.remove(topic)
+            }
+            val msgs = msgsFuture.get()
+
+            if(msgs.isNotEmpty()) {
                 // 处理消息 + 主动更新消息状态
-                consumeMessages(topic, msgs)
-            }while(msgs.isNotEmpty())
+                val future = consumeMessages(topic, msgs)
+                future.whenComplete { r, ex ->
+                    if(ex is MqPullConsumeSuspendException){ // 有消费暂停的异常 => 暂停
+                        topicSuspendProgresses[topic] = PullConsumeSuspendProgress(currMillis() + ex.suspendSeconds * 1000, msgs.first().id)
+                    }else{ // 继续: 递归调用
+                        pull(topic)
+                    }
+                }
+            }
         }
     }
 }

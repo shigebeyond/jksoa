@@ -46,13 +46,28 @@ interface IMqBrokerService {
     fun subscribeTopic(topic: String, group: String): CompletableFuture<Unit>
 
     /**
-     * 接受consumer的拉取消息
+     * 接受consumer的按分组来拉取消息
+     *    无关读进度
+     *
+     * @param topic 主题
+     * @param group 分组
+     * @param startId 开始的消息id
+     * @param limit 拉取记录数
+     * @return
+     */
+    fun pullMessagesByGroup(topic: String, group: String, startId: Long, limit: Int = 100): CompletableFuture<List<Message>>
+
+    /**
+     * 接受consumer的按分组读进度来拉取消息
+     *    按上一次的读进度来开始读下一页
+     *    保存当前读进度
+     *
      * @param topic 主题
      * @param group 分组
      * @param limit 拉取记录数
      * @return
      */
-    fun pullMessagesByGroup(topic: String, group: String, limit: Int = 100): CompletableFuture<List<Message>>
+    fun pullMessagesByGroupProgress(topic: String, group: String, limit: Int = 100): CompletableFuture<List<Message>>
 
     /**
      * 接受consumer的反馈消息消费结果

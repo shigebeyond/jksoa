@@ -37,6 +37,8 @@ abstract class LsmMessageReader : IMessageRepository {
 
     /**
      * 根据范围查询多个消息
+     *    无关读进度
+     *
      * @param startId 开始的id
      * @param limit
      * @param inclusive 是否包含开始的id
@@ -57,6 +59,9 @@ abstract class LsmMessageReader : IMessageRepository {
 
     /**
      * 根据范围与分组查询多个消息
+     *    按上一次的读进度来开始读下一页
+     *    保存当前读进度
+     *
      * @param startId 开始的id
      * @param group 分组
      * @param limit
@@ -83,12 +88,15 @@ abstract class LsmMessageReader : IMessageRepository {
     }
 
     /**
-     * 根据分组查询多个消息
+     * 根据分组读进度查询多个消息
+     *    按上一次的读进度来开始读下一页
+     *    保存当前读进度
+     *
      * @param startId 开始的id
      * @param limit
      * @return
      */
-    public override fun getMessagesByGroup(group: String, limit: Int): List<Message>{
+    public override fun getMessagesByGroupProgress(group: String, limit: Int): List<Message>{
         // 读该分组的进度
         val groupId: Int = GroupSequence.get(group)
         val startId:Long? = progressStore.get(groupId)

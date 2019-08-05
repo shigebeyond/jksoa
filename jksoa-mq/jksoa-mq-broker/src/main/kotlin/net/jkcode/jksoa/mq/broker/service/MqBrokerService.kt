@@ -132,16 +132,37 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
 
     /**
      * 接受consumer的按分组来拉取消息
+     *    无关读进度
+     *
+     * @param topic 主题
+     * @param group 分组
+     * @param startId 开始的消息id
+     * @param limit 拉取记录数
+     * @return
+     */
+    public override fun pullMessagesByGroup(topic: String, group: String, startId: Long, limit: Int): CompletableFuture<List<Message>>{
+        // 根据topic获得仓库
+        val repository = LsmMessageRepository.getRepository(topic)
+        // 查询消息
+        val msgs = repository.getMessagesByRangeAndGroup(startId, group, limit, true)
+        return CompletableFuture.completedFuture(msgs)
+    }
+
+    /**
+     * 接受consumer的按分组读进度来拉取消息
+     *    按上一次的读进度来开始读下一页
+     *    保存当前读进度
+     *
      * @param topic 主题
      * @param group 分组
      * @param limit 拉取记录数
      * @return
      */
-    public override fun pullMessagesByGroup(topic: String, group: String, limit: Int): CompletableFuture<List<Message>> {
+    public override fun pullMessagesByGroupProgress(topic: String, group: String, limit: Int): CompletableFuture<List<Message>> {
         // 根据topic获得仓库
         val repository = LsmMessageRepository.getRepository(topic)
         // 查询消息
-        val msgs = repository.getMessagesByGroup(group, limit)
+        val msgs = repository.getMessagesByGroupProgress(group, limit)
         return CompletableFuture.completedFuture(msgs)
     }
 

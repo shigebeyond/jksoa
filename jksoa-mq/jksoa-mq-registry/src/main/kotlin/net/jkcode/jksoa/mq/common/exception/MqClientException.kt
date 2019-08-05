@@ -5,7 +5,7 @@ import net.jkcode.jkmvc.common.JkException
 /**
  * mq客户端异常
  */
-class MqClientException : JkException {
+open class MqClientException : JkException {
     public constructor(message: String) : super(message) {
     }
 

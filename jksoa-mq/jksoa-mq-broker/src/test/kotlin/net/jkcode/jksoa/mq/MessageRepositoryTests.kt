@@ -45,7 +45,7 @@ class MessageRepositoryTests {
     @Test
     fun testGetMessagesByGroup(){
         for(i in 0 until 5) {
-            val msgs = repository.getMessagesByGroup(group, 2)
+            val msgs = repository.getMessagesByGroupProgress(group, 2)
             println(msgs)
             println("---------------")
         }
