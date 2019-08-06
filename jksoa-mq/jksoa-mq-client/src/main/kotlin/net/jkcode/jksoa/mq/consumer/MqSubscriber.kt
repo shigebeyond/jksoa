@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.mq.consumer
 
-import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerLeaderService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqClientException
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
@@ -63,7 +63,9 @@ object MqSubscriber: IMqSubscriber {
     }
 
     /**
-     * 异步消费消息
+     * 异步消费消息, 消费完给broker反馈消费结果
+     *    扔给topic对应的 TopicMessagesExector 来执行
+     *
      * @param msg 消息
      * @return
      */
@@ -72,7 +74,9 @@ object MqSubscriber: IMqSubscriber {
     }
 
     /**
-     * 异步消费消息
+     * 异步消费消息, 消费完给broker反馈消费结果
+     *    扔给topic对应的 TopicMessagesExector 来执行
+     *
      * @param msgs 消息
      * @return
      */

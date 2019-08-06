@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq.broker.repository.lsm
 
 import net.jkcode.jkmvc.common.UnitFuture
+import net.jkcode.jkmvc.common.VoidFuture
 import net.jkcode.jkmvc.common.getWritableFinalField
 import net.jkcode.jkmvc.common.mapToArray
 import net.jkcode.jkmvc.flusher.CounterFlusher
@@ -45,13 +46,14 @@ abstract class LsmMessageWriter : LsmMessageReader() {
         else
             object: CounterFlusher(100, 100) {
                 // 处理刷盘
-                override fun handleRequests(reqCount: Int) {
+                override fun handleRequests(reqCount: Int): CompletableFuture<Void> {
                     // print(if(reqCount < flushSize) "定时" else "定量")
                     // println("sync, 操作计数 from [$reqCount] to [${requestCount()}] ")
                     // 同步到磁盘
                     mqBrokerLogger.debug("LsmMessageWriter[$topic]批量同步消息到磁盘")
                     queueStore.sync()
                     indexStore.sync()
+                    return VoidFuture
                 }
             }
     }

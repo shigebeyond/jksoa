@@ -62,6 +62,9 @@ consumer收到消息后调用`IMessageHandler`来处理, 同时`IMessageHandler.
 ```
 package net.jkcode.jksoa.mq.consumer.suspend
 
+import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.consumer.IMessageHandler
+
 /**
  * 串行的可暂停的拉模式的消息处理器
  *    只用于拉模式的消费者上: MqPullConsumer

@@ -103,7 +103,7 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
             val msgs = msgsFuture.get()
 
             if(msgs.isNotEmpty()) {
-                // 处理消息 + 主动更新消息状态
+                // 异步消费消息, 消费完给broker反馈消费结果
                 val future = consumeMessages(topic, msgs)
                 future.whenComplete { r, ex ->
                     if(ex is MqPullConsumeSuspendException){ // 有消费暂停的异常 => 暂停

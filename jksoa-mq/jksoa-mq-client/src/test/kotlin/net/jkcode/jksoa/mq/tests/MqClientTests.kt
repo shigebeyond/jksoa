@@ -11,6 +11,7 @@ import net.jkcode.jksoa.mq.consumer.IMessageHandler
 import net.jkcode.jksoa.mq.consumer.MqPullConsumer
 import net.jkcode.jksoa.mq.consumer.MqPushConsumer
 import net.jkcode.jksoa.mq.consumer.MqSubscriber
+import net.jkcode.jksoa.mq.consumer.suspend.SerialSuspendablePullMessageHandler
 import org.junit.Test
 import java.util.*
 

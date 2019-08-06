@@ -2,20 +2,20 @@ package net.jkcode.jksoa.mq.consumer
 
 import io.netty.util.concurrent.DefaultEventExecutorGroup
 import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.VoidFuture
+import net.jkcode.jkmvc.common.UnitFuture
 import net.jkcode.jkmvc.common.selectExecutor
 import net.jkcode.jkmvc.flusher.UnitRequestQueueFlusher
-import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqClientLogger
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 
 /**
  * 某个主题的消息执行者
- *    1 通过 GroupRunCombiner 来合并消息, 并调用 IMessageHandler.consumeMessages() 来消费
- *    2 属性 concurrent 控制是否线程池并发执行, 否则单线程串行执行, 通过改写属性 executor 来指定是线程池or单线程执行
+ *    1 继承 UnitRequestQueueFlusher 来合并消息, 并调用 IMessageHandler.consumeMessages() 来消费, 消费完给broker反馈消费结果
+ *    2 handler 的属性 concurrent 控制是否线程池并发执行, 否则单线程串行执行, 通过改写属性 executor 来指定是线程池or单线程执行
  *    3 串行执行, 避免并发, 状态简单, 保证有序
  *
  * @author shijianhang<772910474@qq.com>
@@ -82,7 +82,7 @@ class TopicMessagesExector(
 
             // 返回异步结果
             if(e == null)
-                return VoidFuture
+                return UnitFuture
 
             throw e
         }

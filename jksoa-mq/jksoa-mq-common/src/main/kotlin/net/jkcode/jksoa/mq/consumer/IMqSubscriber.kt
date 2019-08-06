@@ -48,13 +48,13 @@ interface IMqSubscriber {
     fun isTopicSubscribed(topic: String): Boolean
 
     /**
-     * 异步消费消息
+     * 异步消费消息, 消费完给broker反馈消费结果
      * @param msg 消息
      */
     fun consumeMessage(msg: Message): CompletableFuture<Unit>
 
     /**
-     * 异步消费消息
+     * 异步消费消息, 消费完给broker反馈消费结果
      * @param msgs 消息
      * @return
      */

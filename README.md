@@ -1,17 +1,12 @@
 # 概述
 
-jksoa一个针对微服务的一系列分布式组件的集合
+jksoa一个针对微服务的一系列分布式组件的集合:
 
 1. jksoa-rpc: 远程方法调用的组件, 包含 registry / rpc-client / rpc-server 的3个子组件
-
 2. jksoa-job: 分布式任务调度的组件
-
 3. jksoa-guard: 应用守护者组件, 提供了请求合并/流量统计/熔断/限流/降级/缓存等多功能的守护
-
 4. jksoa-tracer: 分布式跟踪的组件, 包含 agent / collector / web 的3个子组件
-
 5. jksoa-mq: 消息队列的组件, 包含, 包含 mq-registry / mq-client / mq-broker 的3个子组件
-
 
 # 公共组件
 1. [插件机制](doc/common/plugin.md)
@@ -23,67 +18,67 @@ jksoa一个针对微服务的一系列分布式组件的集合
 
 远程方法调用的组件
 
-## 基础
-[快速开始](doc/rpc/getting_started.md)
+## 入门
+1. [快速开始](doc/rpc/getting_started.md)
 
 ### 注册中心
-[注册中心](doc/rpc/registry/registry.md)
-[url](doc/rpc/registry/url.md)
+2. [注册中心](doc/rpc/registry/registry.md)
+3. [url](doc/rpc/registry/url.md)
 
 ### rpc-server 服务端
-[服务端](doc/rpc/server/server.md)
-[多协议支持](doc/rpc/server/protocol.md)
-[服务提供者](doc/rpc/server/provider.md)
-[server端的请求上下文](doc/rpc/server/context.md)
-[异步执行](doc/rpc/server/async-execute.md)
-[服务端启动流程](doc/rpc/server/start-flow.md)
+4. [服务端](doc/rpc/server/server.md)
+5. [多协议支持](doc/rpc/server/protocol.md)
+6. [服务提供者](doc/rpc/server/provider.md)
+7. [server端的请求上下文](doc/rpc/server/context.md)
+8. [异步执行](doc/rpc/server/async-execute.md)
+9. [服务端启动流程](doc/rpc/server/start-flow.md)
 
 ### 服务实体
-[服务注解](doc/rpc/service/annotation.md)
-[服务实例](doc/rpc/service/instance.md)
+10. [服务注解](doc/rpc/service/annotation.md)
+11. [服务实例](doc/rpc/service/instance.md)
 
 ### rpc-client 客户端
 
-[客户端](doc/rpc/client/client.md)
-[服务引用者](doc/rpc/client/referer.md)
-[多协议支持](doc/rpc/client/protocol.md)
-[异步调用](doc/rpc/client/async-call.md)
-[客户端均衡负载](doc/rpc/client/load_balancer.md)
-[故障转移(失败重试)](doc/rpc/client/failover.md)
-[连接管理](doc/rpc/client/connnection_manage.md)
-[连接](doc/rpc/client/connection.md)
-[复用单一连接](doc/rpc/client/reuse-connection.md)
-[池化的连接的包装器](doc/rpc/client/pooled-connection.md)
-[客户端初始化流程](doc/rpc/client/init-flow.md)
+12. [客户端](doc/rpc/client/client.md)
+13. [服务引用者](doc/rpc/client/referer.md)
+14. [多协议支持](doc/rpc/client/protocol.md)
+15. [异步调用](doc/rpc/client/async-call.md)
+16. [客户端均衡负载](doc/rpc/client/load_balancer.md)
+17. [故障转移(失败重试)](doc/rpc/client/failover.md)
+18. [连接管理](doc/rpc/client/connnection_manage.md)
+19. [连接](doc/rpc/client/connection.md)
+20. [复用单一连接](doc/rpc/client/reuse-connection.md)
+21. [池化的连接的包装器](doc/rpc/client/pooled-connection.md)
+22. [客户端初始化流程](doc/rpc/client/init-flow.md)
 
 ### todo
-[令牌验证](doc/rpc/todo/token-authorization.md)
+23. [令牌验证](doc/rpc/todo/token-authorization.md)
 
 ## 高级
-[架构](doc/rpc/architecture.md)
-[rpc流程](doc/rpc/rpc-flow.md)
-[附加参数](doc/rpc/common/attachment.md)
-[优雅的关机](doc/rpc/common/graceful-shutdown.md)
+24. [架构](doc/rpc/architecture.md)
+25. [rpc流程](doc/rpc/rpc-flow.md)
+26. [附加参数](doc/rpc/common/attachment.md)
+27. [优雅的关机](doc/rpc/common/graceful-shutdown.md)
 
 # jksoa-job
 
 分布式任务调度的组件
 
-## 基础
+## 入门
 1. [快速开始](doc/job/getting_started.md)
-[作业](doc/job/job.md)
-[触发器](doc/job/trigger.md)
+2. [作业](doc/job/job.md)
+3. [触发器](doc/job/trigger.md)
 
 ## 高级
-[架构](doc/job/architecture.md)
-[分片策略](doc/job/sharding_strategy.md)
-[调度者集群](doc/job/cluster.md)
+4.[架构](doc/job/architecture.md)
+5. [分片策略](doc/job/sharding_strategy.md)
+6. [调度者集群](doc/job/cluster.md)
 
 # jksoa-guard
 
 应用守护者组件, 提供了请求合并/流量统计/熔断/限流/降级/缓存等多功能的守护
 
-## 基础
+## 入门
 1. [快速开始](doc/guard/getting_started.md)
 2. [注解](doc/guard/annotation.md)
 
@@ -104,7 +99,7 @@ jksoa一个针对微服务的一系列分布式组件的集合
 
 分布式跟踪的组件
 
-## 基础
+## 入门
 1. [快速开始](doc/tracer/getting_started.md)
 2. [agent](doc/tracer/agent.md)
 3. [collector](doc/tracer/collector.md)
@@ -117,7 +112,7 @@ jksoa一个针对微服务的一系列分布式组件的集合
 
 消息队列的组件
 
-## 基础
+## 入门
 1. [快速开始](doc/mq/getting_started.md)
 
 ### 消息主体
