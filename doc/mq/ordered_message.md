@@ -140,6 +140,8 @@ for(state in states){
 }
 ```
 
+目前, jksoa-mq只支持单主题单队列, 暂未支持单主题多队列, 因此同一个主题的消息总是发给固定的一个队列, routeKey在路由队列上是多余的, 但可用于路由consumer
+
 ## 消息消费代码
 
 1. 配置
@@ -194,6 +196,8 @@ val handler = object: SerialSuspendablePullMessageHandler( 120 /* 异常时暂�
 // 订阅主题
 MqPullConsumer.subscribeTopic(topic, handler)
 ```
+
+由结果可知, 使用`SerialSuspendablePullMessageHandler`都是在同一个线程中执行的
 
 ## 总结
 
