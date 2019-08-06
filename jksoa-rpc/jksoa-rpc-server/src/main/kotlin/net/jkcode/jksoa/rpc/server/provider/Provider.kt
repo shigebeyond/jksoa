@@ -72,7 +72,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
         // 创建+注册服务
         if(`interface`.remoteService?.onlyLeader ?: false){ // 要选举leader
             // 先选举leader才创建+注册服务
-            val election = ZkLeaderElection(serviceId)
+            val election = ZkLeaderElection("service/" + serviceId)
             election.run(){
                 createAndRegisterService()
             }

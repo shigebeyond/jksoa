@@ -8,6 +8,7 @@ import org.I0Itec.zkclient.IZkDataListener
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNoNodeException
 import org.I0Itec.zkclient.exception.ZkNodeExistsException
+import java.util.*
 
 /**
  * 选举领导者: 基于zk的单个临时节点来实现
@@ -30,6 +31,11 @@ class ZkLeaderElection(public override val module: String /* 模块 */,
          */
         public val zkClient: ZkClient = ZkClientFactory.instance()
 
+        /**
+         * 记录已创建的目录节点
+         */
+        protected val dirs: MutableList<String> = LinkedList()
+
         init {
             // 创建根节点
             if (!zkClient.exists(RootPath))
@@ -38,6 +44,42 @@ class ZkLeaderElection(public override val module: String /* 模块 */,
                 } catch (e: ZkNodeExistsException) {
                     // do nothing
                 }
+
+            // 读目录节点
+            dirs.addAll(zkClient.getChildren(RootPath))
+        }
+
+        /**
+         * 创建目录节点
+         * @param module
+         */
+        public fun createDirNode(module: String){
+            if(!module.contains('/')) 
+                return
+            
+            val dir = module.substringBeforeLast('/')
+            if (dir == "")
+                return
+            if(dirs.contains(dir))
+                return
+
+            // 加锁创建目录节点
+            val dirPath = "${RootPath}/$dir"
+            synchronized(this) {
+                // 双重检查
+                if(dirs.contains(dir))
+                    return
+                
+                dirs.add(dir)
+
+                // 创建目录节点
+                if (!zkClient.exists(dirPath))
+                    try {
+                        zkClient.createPersistent(dirPath, true)
+                    } catch (e: ZkNodeExistsException) {
+                        // do nothing
+                    }
+            }
         }
     }
 
@@ -47,20 +89,8 @@ class ZkLeaderElection(public override val module: String /* 模块 */,
     protected val path: String = "${RootPath}/$module"
 
     init {
-        // 创建父节点
-        if(module.contains('/')) {
-            val parentModule = module.substringBeforeLast('/')
-            if (parentModule != "") {
-                val parentPath = "${RootPath}/$parentModule"
-                if (!zkClient.exists(parentPath))
-                    try {
-                        zkClient.createPersistent(parentPath, true)
-                    } catch (e: ZkNodeExistsException) {
-                        // do nothing
-                    }
-            }
-        }
-
+        // 创建目录节点
+        createDirNode(module)
     }
 
     /****************************** 监听处理 *******************************/
