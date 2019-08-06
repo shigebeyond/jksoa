@@ -46,6 +46,23 @@ class ZkLeaderElection(public override val module: String /* 模块 */,
      */
     protected val path: String = "${RootPath}/$module"
 
+    init {
+        // 创建父节点
+        if(module.contains('/')) {
+            val parentModule = module.substringBeforeLast('/')
+            if (parentModule != "") {
+                val parentPath = "${RootPath}/$parentModule"
+                if (!zkClient.exists(parentPath))
+                    try {
+                        zkClient.createPersistent(parentPath, true)
+                    } catch (e: ZkNodeExistsException) {
+                        // do nothing
+                    }
+            }
+        }
+
+    }
+
     /****************************** 监听处理 *******************************/
     /**
      * 节点的事件监听器
