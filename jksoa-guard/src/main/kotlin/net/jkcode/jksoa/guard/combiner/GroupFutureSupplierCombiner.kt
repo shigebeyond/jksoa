@@ -17,15 +17,15 @@ open class GroupFutureSupplierCombiner<RequestArgumentType /* 请求参数类型
         public val reqArgField: String, /* 请求参数对应的响应字段名 */
         public val respField: String = "", /* 要返回的响应字段名, 如果为空则取响应对象 */
         public val one2one: Boolean = true /* 请求对响应是一对一(ResponseType是非List), 还是一对多(ResponseType是List) */,
-        flushSize: Int = 100 /* 触发刷盘的队列大小 */,
+        flushQuota: Int = 100 /* 触发刷盘的队列大小 */,
         flushTimeoutMillis: Long = 100 /* 触发刷盘的定时时间 */,
         public val batchFutureSupplier:(List<RequestArgumentType>) -> CompletableFuture<List<BatchItemType>> /* 批量取值操作 */
-): RequestQueueFlusher<RequestArgumentType, ResponseType>(flushSize, flushTimeoutMillis){
+): RequestQueueFlusher<RequestArgumentType, ResponseType>(flushQuota, flushTimeoutMillis){
 
     /**
      * 构造函数, 使用注解传参
      */
-    public constructor(annotation: GroupCombine, batchFutureSupplier:(List<RequestArgumentType>) -> CompletableFuture<List<BatchItemType>>):this(annotation.reqArgField, annotation.respField, annotation.one2one, annotation.flushSize, annotation.flushTimeoutMillis, batchFutureSupplier)
+    public constructor(annotation: GroupCombine, batchFutureSupplier:(List<RequestArgumentType>) -> CompletableFuture<List<BatchItemType>>):this(annotation.reqArgField, annotation.respField, annotation.one2one, annotation.flushQuota, annotation.flushTimeoutMillis, batchFutureSupplier)
 
     /**
      * 处理刷盘的请求

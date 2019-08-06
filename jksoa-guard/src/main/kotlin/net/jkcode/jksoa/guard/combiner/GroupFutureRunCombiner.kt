@@ -10,10 +10,10 @@ import java.util.concurrent.CompletableFuture
  * @date 2019-04-10 9:47 AM
  */
 open class GroupFutureRunCombiner<RequestArgumentType/* 请求参数类型 */> (
-        flushSize: Int = 100 /* 触发刷盘的队列大小 */,
+        flushQuota: Int = 100 /* 触发刷盘的队列大小 */,
         flushTimeoutMillis: Long = 100 /* 触发刷盘的定时时间 */,
         public val batchFutureRun:(List<RequestArgumentType>) -> CompletableFuture<Unit> /* 批量无值操作 */
-): UnitRequestQueueFlusher<RequestArgumentType>(flushSize, flushTimeoutMillis){
+): UnitRequestQueueFlusher<RequestArgumentType>(flushQuota, flushTimeoutMillis){
 
     /**
      * 处理刷盘的请求

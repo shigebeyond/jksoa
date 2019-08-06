@@ -13,9 +13,9 @@ class GroupSupplierCombiner<RequestArgumentType /* 请求参数类型 */, Respon
         reqArgField: String, /* 请求参数对应的响应字段名 */
         respField: String = "", /* 要返回的响应字段名, 如果为空则取响应对象 */
         one2one: Boolean = true, /* 请求对响应是一对一(ResponseType是非List), 还是一对多(ResponseType是List) */
-        flushSize: Int = 100 /* 触发刷盘的队列大小 */,
+        flushQuota: Int = 100 /* 触发刷盘的队列大小 */,
         flushTimeoutMillis: Long = 100 /* 触发刷盘的定时时间 */,
         batchSupplier:(List<RequestArgumentType>) -> List<BatchItemType> /* 批量取值操作 */
-): GroupFutureSupplierCombiner<RequestArgumentType, ResponseType, BatchItemType>(reqArgField, respField, one2one, flushSize, flushTimeoutMillis, toFutureSupplier(batchSupplier)){
+): GroupFutureSupplierCombiner<RequestArgumentType, ResponseType, BatchItemType>(reqArgField, respField, one2one, flushQuota, flushTimeoutMillis, toFutureSupplier(batchSupplier)){
 
 }
