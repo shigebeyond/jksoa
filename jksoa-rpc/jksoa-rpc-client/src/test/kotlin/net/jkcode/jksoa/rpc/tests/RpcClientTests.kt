@@ -98,6 +98,14 @@ class RpcClientTests {
     }
 
     @Test
+    fun testObjectMethod(){
+        val service = Referer.getRefer<ISimpleService>()
+        println("toString(): $service")
+        println("hashCode(): ${service.hashCode()}")
+        println("equals(): ${service.equals(service)}")
+    }
+
+    @Test
     fun testReferer(){
         val service = Referer.getRefer<ISimpleService>()
         val pong = service.ping()

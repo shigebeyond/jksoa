@@ -3,17 +3,19 @@ package net.jkcode.jksoa.rpc.client.referer
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.ThreadLocalInheritableThreadPool
 import net.jkcode.jkmvc.common.getMethodHandle
+import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
-import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
-import net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.guard.MethodGuardInvoker
+import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * rpc调用的代理实现
@@ -44,6 +46,11 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
      */
     private val dispatcher: IRpcRequestDispatcher = RpcRequestDispatcher
 
+    /**
+     * <哈希码, 接口类>
+     */
+    private val hash2Class = ConcurrentHashMap<Int, Class<*>>()
+
     init{
         // 修改 CompletableFuture.asyncPool 属性为 ThreadLocalInheritableThreadPool.commonPool
         ThreadLocalInheritableThreadPool.applyCommonPoolToCompletableFuture()
@@ -56,7 +63,9 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
      * @return
      */
     public fun createProxy(intf: Class<*>): Any {
-        return Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(intf), RpcInvocationHandler)
+        val proxy =  Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(intf), RpcInvocationHandler)
+        hash2Class[System.identityHashCode(proxy)] = intf
+        return proxy
     }
 
     /**
@@ -75,7 +84,27 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
             // 通过 MethodHandle 来反射调用
             return method.getMethodHandle().invokeWithArguments(proxy, *args)
 
-        // 2 守护方法调用
+        // 2 拦截Object的方法, 不进行远程调用
+        val hash = System.identityHashCode(proxy)
+        val serviceClass = hash2Class[hash]!!
+        val methodSignature = method.getSignature()
+        if (methodSignature == "equals(Object)") {
+            val other = args[0]
+            if (other == null || !Proxy.isProxyClass(other.javaClass)) // 非代理
+                return false
+
+            return Proxy.getInvocationHandler(other) == RpcInvocationHandler // handler相同
+                    && hash2Class[System.identityHashCode(other)] == serviceClass // 接口类相同
+        }
+
+        if (methodSignature == "hashCode()")
+            return hash
+
+
+        if (methodSignature == "toString()")
+            return "RpcInvocationHandler[" + serviceClass.name + "]"
+
+        // 3 守护方法调用
         return guardInvoke(method, proxy, args)
     }
 
