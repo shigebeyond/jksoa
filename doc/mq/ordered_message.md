@@ -108,6 +108,19 @@ abstract class SerialSuspendablePullMessageHandler(
 
 ### 消息生产代码
 
+1. 生产者注册主题
+
+```
+// 注册主题
+val topic = "topic1"
+val b = MqProducer.registerTopic(topic)
+if (!b)
+    throw MqClientException("没有broker可分配")
+println("注册主题: $topic")
+```
+
+2. 生产者生产消息
+
 ```
 // 订单实体类
 data class Order(public val id: Long, public val desc: String)
@@ -121,14 +134,36 @@ for(state in states){
     // 创建订单
     val order = Order(id, state + " - " + Date().format())
     // 生产消息
-    // val msg = Message(topic, order, group) // 随机发给topic下的队列, 然后每个group随机发给group下的push consumer
-    val msg = Message(topic, order, group, order.id /* routeKey */) // 按routeKey(订单号)固定发给topic下的队列, 然后每个group按routeKey(订单号)固定发给group下的push consumer
+    // val msg = Message(topic, order.toString(), group) // 随机发给topic下的队列, 然后每个group随机发给group下的push consumer
+    val msg = Message(topic, order.toString(), group, order.id /* routeKey */) // 按routeKey(订单号)固定发给topic下的队列, 然后每个group按routeKey(订单号)固定发给group下的push consumer
     MqProducer.send(msg).get()
 }
 ```
 
-
 ## 消息消费代码
+
+1. 配置
+
+vim consumer.yaml
+
+```
+# 消息消费者配置
+group: "default" # 消费者分组
+pullPageSize: 100 # 每次拉取的消息数
+pullTimerSeconds: !!java.lang.Long 60 # 定时拉取的时间间隔, Long类型，单位秒
+threadNum: 10 # 消费处理的线程数
+```
+
+2. 消费者注册分组
+
+```
+// 注册消费者分组
+val group = "default"
+MqSubscriber.registerGroup(group)
+println("注册消费者分组: $group")
+```
+
+3. 消费者订阅主题
 
 ```
 // 并发的消息处理器
@@ -145,9 +180,10 @@ val handler = object: IMessageHandler(true /* 是否并发处理 */ ) {
 */
 
 // 串行的可暂停的拉模式的消息处理器
-val handler = object: SerialSuspendablePullMessageHandler(30 /* 异常时暂停的秒数 */ ) {
+val handler = object: SerialSuspendablePullMessageHandler( 120 /* 异常时暂停的秒数 */ ) {
     override fun doConsumeMessages(msgs: Collection<Message>) {
-        println("收到消息: $msgs")
+        val name = Thread.currentThread().name
+        println("线程[$name]于${Date().format()} 收到消息: $msgs")
 
         val fraction = 10
         if(randomInt(fraction) == 0)

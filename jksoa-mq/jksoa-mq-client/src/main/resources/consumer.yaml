@@ -1,5 +1,5 @@
 # 消息消费者配置
 group: "default" # 消费者分组
 pullPageSize: 100 # 每次拉取的消息数
-pullTimerSeconds: 100 # 定时拉取的时间间隔, 单位秒
+pullTimerSeconds: !!java.lang.Long 100 # 定时拉取的时间间隔, Long类型，单位秒
 threadNum: 10 # 消费处理的线程数

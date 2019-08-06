@@ -4,6 +4,7 @@ import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
+import net.jkcode.jksoa.mq.common.mqClientLogger
 import net.jkcode.jksoa.mq.consumer.suspend.MqPullConsumeSuspendException
 import net.jkcode.jksoa.mq.consumer.suspend.PullConsumeSuspendProgress
 import net.jkcode.jksoa.rpc.client.referer.Referer
@@ -58,7 +59,7 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
      */
     public override fun subscribeTopic(topic: String, handler: IMessageHandler){
         // 拉模式: 选举领导者, 一个组内只有一个拉取者
-        val election = ZkLeaderElection("mqPuller/" + config["group"]!! + "/" + topic)
+        val election = ZkLeaderElection("mqPuller/" + config["group"]!! + "-" + topic)
         election.run() {
             // 调用代理的实现
             MqSubscriber.subscribeTopic(topic, handler)
@@ -107,6 +108,7 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
                 val future = consumeMessages(topic, msgs)
                 future.whenComplete { r, ex ->
                     if(ex is MqPullConsumeSuspendException){ // 有消费暂停的异常 => 暂停
+                        mqClientLogger.debug("消费主题[{}]消息出错, 暂停拉取定时器{}s", topic, ex.suspendSeconds)
                         topicSuspendProgresses[topic] = PullConsumeSuspendProgress(currMillis() + ex.suspendSeconds * 1000, msgs.first().id)
                     }else{ // 继续: 递归调用
                         pull(topic)

@@ -13,7 +13,9 @@ import net.jkcode.jksoa.mq.consumer.MqPushConsumer
 import net.jkcode.jksoa.mq.consumer.MqSubscriber
 import net.jkcode.jksoa.mq.consumer.suspend.SerialSuspendablePullMessageHandler
 import org.junit.Test
+import java.io.Serializable
 import java.util.*
+import java.util.concurrent.atomic.AtomicLong
 
 /**
  * @Description:
@@ -62,7 +64,7 @@ class MqClientTests {
      * 测试消息生产
      */
     @Test
-    fun testProductor(){
+    fun testProducer(){
         // 生产消息
         val msg = Message(topic, randomString(7) + " - " + Date().format(), group)
         try {
@@ -105,23 +107,24 @@ class MqClientTests {
 
         // 生产消息
         while(true){
-            testProductor()
+            testProducer()
             Thread.sleep(randomLong(50))
         }
 
         Thread.sleep(100000)
     }
 
+    val id = AtomicLong(0)
+
     @Test
     fun testProductOrderedMessage(){
         // 订单所有状态
         val states = arrayOf("创建", "付款", "推送", "完成")
-        val id = 1L
         for(state in states){
             // 创建订单
-            val order = Order(id, state + " - " + Date().format())
+            val order = Order(id.incrementAndGet(), state + " - " + Date().format())
             // 生产消息
-            val msg = Message(topic, order, group, id)
+            val msg = Message(topic, order.toString(), group, order.id)
             MqProducer.send(msg).get()
         }
     }
@@ -129,9 +132,10 @@ class MqClientTests {
     @Test
     fun testConsumeOrderedMessage(){
         // 串行的可暂停的拉模式的消息处理器
-        val handler = object: SerialSuspendablePullMessageHandler(30 /* 异常时暂停的秒数 */ ) {
+        val handler = object: SerialSuspendablePullMessageHandler(20 /* 异常时暂停的秒数 */ ) {
             override fun doConsumeMessages(msgs: Collection<Message>) {
-                println("收到消息: $msgs")
+                val name = Thread.currentThread().name
+                println("线程[$name]于${Date().format()} 收到消息: $msgs")
 
                 val fraction = 10
                 if(randomInt(fraction) == 0)
@@ -140,6 +144,26 @@ class MqClientTests {
         }
         // 订阅主题
         MqPullConsumer.subscribeTopic(topic, handler)
+    }
+
+    /**
+     * 测试推模式的消息消费
+     */
+    @Test
+    fun testProductAndConsumeOrderedMessage(){
+        // 注册主题
+        testRegisterTopic()
+
+        // 注册消息者
+        testConsumeOrderedMessage()
+
+        // 生产消息
+        while(true){
+            testProductOrderedMessage()
+            Thread.sleep(randomLong(50))
+        }
+
+        Thread.sleep(100000)
     }
 
 }
