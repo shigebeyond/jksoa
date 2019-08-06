@@ -25,14 +25,25 @@ object BrokerConfig {
     public val mqDelaySeconds: Long = config["mqDelaySeconds"]!!
 
     /**
+     * 触发批量同步的定时时间
+     */
+    public val batchSyncTimeoutMillis: Long = config["batchSyncTimeoutMillis"]!!
+
+    /**
+     * 触发批量同步的写操作次数
+     */
+    public val batchSyncQuota: Int = config["batchSyncQuota"]!!
+
+    /**
+     * 是否批量同步
+     *    只有定量与定时都大于0才批量同步, 否则立即同步
+     */
+    public val batchSync: Boolean = batchSyncQuota > 0 && batchSyncTimeoutMillis > 0
+
+    /**
      * 数据存储目录
      */
     public val dataDir: String = config["dataDir"]!!
-
-    /**
-     * 是否立即同步
-     */
-    public val immediateSync: Boolean = config["immediateSync"]!!
 
     /**
      * 易变代存储的最大大小，单位 B K M G T

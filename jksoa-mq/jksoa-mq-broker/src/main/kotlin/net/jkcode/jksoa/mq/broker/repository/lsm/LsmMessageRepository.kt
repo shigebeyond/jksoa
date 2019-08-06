@@ -27,10 +27,7 @@ import java.util.concurrent.atomic.AtomicLong
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-13 5:16 PM
  */
-class LsmMessageRepository(
-        public override val topic: String, // 主题
-        protected override val immediateSync: Boolean = BrokerConfig.immediateSync // 是否立即同步到磁盘
-) : LsmMessageWriter() {
+class LsmMessageRepository(public override val topic: String /* 主题 */ ) : LsmMessageWriter() {
 
     companion object{
 

@@ -5,6 +5,7 @@ import net.jkcode.jkmvc.common.VoidFuture
 import net.jkcode.jkmvc.common.getWritableFinalField
 import net.jkcode.jkmvc.common.mapToArray
 import net.jkcode.jkmvc.flusher.CounterFlusher
+import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.common.GroupSequence
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqBrokerLogger
@@ -33,21 +34,16 @@ abstract class LsmMessageWriter : LsmMessageReader() {
     protected lateinit var maxId: AtomicLong
 
     /**
-     * 是否立即同步到磁盘
-     */
-    protected abstract val immediateSync: Boolean
-
-    /**
-     * 定量刷盘, 提升刷盘效率
+     * 批量刷盘, 提升刷盘效率
      */
     protected val syncCounter: CounterFlusher? by lazy{
-        if(immediateSync)
+        if(!BrokerConfig.batchSync) // 立即同步
             null
-        else
+        else // 批量同步
             object: CounterFlusher(100, 100) {
                 // 处理刷盘
                 override fun handleRequests(reqCount: Int): CompletableFuture<Void> {
-                    // print(if(reqCount < flushSize) "定时" else "定量")
+                    // print(if(reqCount < flushQuota) "定时" else "定量")
                     // println("sync, 操作计数 from [$reqCount] to [${requestCount()}] ")
                     // 同步到磁盘
                     mqBrokerLogger.debug("LsmMessageWriter[$topic]批量同步消息到磁盘")
@@ -65,7 +61,7 @@ abstract class LsmMessageWriter : LsmMessageReader() {
      */
     protected fun trySync(num: Int): CompletableFuture<Unit> {
         // 立即同步
-        if(immediateSync) {
+        if(syncCounter == null) {
             queueStore.sync()
             indexStore.sync()
             return UnitFuture

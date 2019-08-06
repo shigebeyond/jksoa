@@ -29,9 +29,14 @@ jksoa-mq是一款轻量级分布式消息队列，拥有 "水平扩展、高可�
 
 ```
 # 消息中转者配置
+# 1 延迟消息的配置
 mqDelaySeconds: !!java.lang.Long 10 # 消息延迟发送的秒数
+# 2 批量同步的配置
+# 只有 batchSyncQuota 与 batchSyncTimeoutMillis 都大于0才批量同步, 否则立即同步
+batchSyncQuota: 100 # 触发批量同步的写操作次数
+batchSyncTimeoutMillis: !!java.lang.Long 1000 # 触发批量同步的定时时间
+# 3 存储的配置
 dataDir: /home/shi/data/mq # 数据存储目录
-immediateSync: false # 是否立即同步
 maxVolatileGenerationSize: 8M # 易变代存储的最大大小，单位 B K M G T
 storageType: block_compressed #　存储类型  1. inline 不压缩 2. block_compressed　压缩
 compressionCodec: snappy # 压缩类型　1. gzip 2. snappy
