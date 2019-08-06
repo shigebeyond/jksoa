@@ -16,7 +16,7 @@ abstract class SerialSuspendablePullMessageHandler(
 
     init{
         if(exceptionSuspendSeconds <= 0)
-            throw IllegalArgumentException("异常时暂停的秒数必须为正整数")
+            throw IllegalArgumentException("异常时暂停的秒数不是正整数: $exceptionSuspendSeconds")
     }
 
     /**
