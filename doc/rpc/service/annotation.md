@@ -41,11 +41,11 @@ servicePackages: # service类所在的包路径
 
 注解`@RemoteMethod`, 应用在服务类的单个方法上.
 
-就一个属性 `requestTimeoutMillis`, 用于指定超时时间
+就一个属性 `requestTimeoutMillis`, 用于指定请求超时时间
 
-其实`rpc-client.yaml`中的 `requestTimeoutMillis` 为默认超时.
+其实`rpc-client.yaml`中的 `requestTimeoutMillis` 为默认请求超时.
 
-但是如果某个方法耗时较长, 可以单独指定超时时间.
+但是如果某个方法耗时较长, 可以单独指定较长的超时时间.
 
 ```
 /**
