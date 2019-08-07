@@ -17,7 +17,7 @@ import net.jkcode.jksoa.rpc.registry.IRegistry
  * @author shijianhang<772910474@qq.com>
  * @date 2019-7-12 11:22 AM
  */
-object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
+class ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
 
     /**
      * rpc的注册中心
@@ -128,7 +128,7 @@ object ZkMqRegistry: ZkMqDiscovery(), IMqRegistry {
      * 写topic分配
      * @param assignment
      */
-    private fun persist(assignment: TopicAssignment) {
+    protected fun persist(assignment: TopicAssignment) {
         // 写topic分配
         val json = assignment.toJson()
         zkClient.writeData(topic2brokerPath, json)

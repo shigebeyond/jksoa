@@ -1,13 +1,13 @@
 package net.jkcode.jksoa.mq
 
 import net.jkcode.jkmvc.common.getWritableFinalField
-import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerLeaderService
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.producer.IMqProducer
 import net.jkcode.jksoa.mq.registry.IMqDiscovery
-import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
+import net.jkcode.jksoa.mq.registry.IMqRegistry
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -25,7 +25,7 @@ object MqProducer : IMqProducer {
     /**
      * 服务发现
      */
-    private val mqDiscovery: IMqDiscovery = ZkMqRegistry
+    private val mqDiscovery: IMqDiscovery = IMqRegistry.instance("zk")
 
     /**
      * 消息中转者的leader

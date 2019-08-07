@@ -1,5 +1,8 @@
 package net.jkcode.jksoa.mq.registry
 
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
 import net.jkcode.jksoa.common.Url
 
 /**
@@ -10,6 +13,14 @@ import net.jkcode.jksoa.common.Url
  * @date 2019-7-12 11:22 AM
  */
 interface IMqRegistry: IMqDiscovery {
+
+    // 可配置的单例
+    companion object: NamedConfiguredSingletons<IMqRegistry>() {
+        /**
+         * 单例类的配置，内容是哈希 <单例名 to 单例类>
+         */
+        public override val instsConfig: IConfig = Config.instance("mq-registry", "yaml")
+    }
 
     /**
      * 注册topic = 给topic分配broker

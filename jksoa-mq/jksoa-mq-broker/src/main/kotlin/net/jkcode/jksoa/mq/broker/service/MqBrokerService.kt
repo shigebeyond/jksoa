@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.mq.broker.service
 
 import net.jkcode.jkmvc.common.UnitFuture
-import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.pusher.DelayMessagePushTimer
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher
@@ -15,7 +14,7 @@ import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
 import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
 import net.jkcode.jksoa.mq.registry.IMqRegistry
 import net.jkcode.jksoa.mq.registry.TopicAssignment
-import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
+import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.server.IRpcServer
 import net.jkcode.jksoa.rpc.server.RpcServerContext
 import java.util.concurrent.CompletableFuture
@@ -31,7 +30,7 @@ class MqBrokerService: IMqBrokerService, IMqDiscoveryListener {
     /**
      * 注册中心
      */
-    protected val mqRegistry: IMqRegistry = ZkMqRegistry
+    protected val mqRegistry: IMqRegistry = IMqRegistry.instance("zk")
 
     init {
         // 监听topic分配情况变化

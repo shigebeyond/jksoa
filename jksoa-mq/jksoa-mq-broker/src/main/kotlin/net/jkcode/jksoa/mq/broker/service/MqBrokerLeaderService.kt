@@ -4,7 +4,6 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.mq.common.GroupSequence
 import net.jkcode.jksoa.mq.common.TopicSequence
 import net.jkcode.jksoa.mq.registry.IMqRegistry
-import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 import net.jkcode.jksoa.rpc.registry.IDiscoveryListener
 import net.jkcode.jksoa.rpc.registry.IRegistry
 
@@ -26,7 +25,7 @@ class MqBrokerLeaderService : IMqBrokerLeaderService, IDiscoveryListener {
     /**
      * 注册中心
      */
-    protected val mqRegistry: IMqRegistry = ZkMqRegistry
+    protected val mqRegistry: IMqRegistry = IMqRegistry.instance("zk")
 
     /********************* 监听broker服务节点变化 **********************/
     /**

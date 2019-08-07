@@ -57,13 +57,12 @@ broker使用`MqBrokerService` 来实现`IMqDiscoveryListener`, 来监听主题�
 zk: net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
 ```
 
-## 3. 通过策略名来引用策略
+## 3. 通过注册中心名名来引用注册中心名
 
 ```
 val registry: IMqRegistry = IMqRegistry.instance("注册中心名")
-// 主题发现, 获得主题的提供者节点url
-val urls = registry.discover("net.jkcode.jksoa.mq.example.ISimpleService")
-// 主题注册, 注册主题提供者节点url
-val url = Url("netty", "192.168.0.1", 8080, "net.jkcode.jksoa.mq.example.ISimpleService", mapOf("weight" to 1))
-registry.register(url)
+// 主题分配情况的发现
+val urls = registry.discover()
+// 主题注册, 给主题分配broker
+registry.registerTopic("topic1")
 ```

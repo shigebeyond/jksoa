@@ -25,7 +25,7 @@ class BrokerLeaderServiceTests {
     /**
      * 注册中心
      */
-    protected val mqRegistry: IMqRegistry = ZkMqRegistry
+    protected val mqRegistry: IMqRegistry = ZkMqRegistry()
 
     @Test
     fun testServer(){

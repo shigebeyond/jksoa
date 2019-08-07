@@ -72,7 +72,7 @@ rpc client使用 `ConnectionHub` 来实现 `IDiscoveryListener`, 来监听服务
 zk: net.jkcode.jksoa.rpc.registry.zk.ZkRegistry
 ```
 
-## 3. 通过策略名来引用策略
+## 3. 通过注册中心名名来引用注册中心名
 
 ```
 val registry: IRegistry = IRegistry.instance("注册中心名")

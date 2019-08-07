@@ -11,9 +11,9 @@ import org.junit.Test
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM
  */
-class MqRegisterTests {
+class MqRegistryTests {
 
-    val mqRegistry = ZkMqRegistry
+    val mqRegistry = ZkMqRegistry()
 
     val topic = "topic1"
 

@@ -10,7 +10,7 @@ import org.junit.Test
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM
  */
-class RegisterTests {
+class RegistryTests {
 
     val registry = ZkRegistry()
 
@@ -25,7 +25,7 @@ class RegisterTests {
          * 服务标识，即接口类全名
          */
         override val serviceId: String
-            get() = this@RegisterTests.serviceId
+            get() = this@RegistryTests.serviceId
 
         // 处理服务地址新增
         override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {

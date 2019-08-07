@@ -1,19 +1,15 @@
 package net.jkcode.jksoa.mq.connection
 
 import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jksoa.rpc.client.IConnection
-import net.jkcode.jksoa.rpc.client.connection.ConnectionHub
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqBrokerException
 import net.jkcode.jksoa.mq.common.exception.MqClientException
 import net.jkcode.jksoa.mq.common.mqClientLogger
-import net.jkcode.jksoa.mq.registry.EmptyTopicAssignment
-import net.jkcode.jksoa.mq.registry.IMqDiscovery
-import net.jkcode.jksoa.mq.registry.IMqDiscoveryListener
-import net.jkcode.jksoa.mq.registry.TopicAssignment
-import net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
+import net.jkcode.jksoa.mq.registry.*
+import net.jkcode.jksoa.rpc.client.IConnection
+import net.jkcode.jksoa.rpc.client.connection.ConnectionHub
 import kotlin.reflect.jvm.javaMethod
 
 /**
@@ -35,7 +31,7 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
     /**
      * 服务发现
      */
-    protected val mqDiscovery: IMqDiscovery = ZkMqRegistry
+    protected val mqDiscovery: IMqDiscovery = IMqRegistry.instance("zk")
 
     /**
      * topic分配情况
