@@ -24,14 +24,14 @@ IRpcClient
 
 我们一般是使用服务引用者 `Referer` 来引用与调用远端服务, 其底层实现是调用 `IRpcClient.connect(url)` 来获得`IConnection`连接对象, 并将方法调用封装为rpc请求, 通过连接对象来发送出去
 
-## client配置 -- rpc-client.yaml
+## client配置 rpc-client.yaml
 
 关键配置项
 
-1. serializer -- 序列器类型
-2. loadbalancer -- 序列器类型
-3. shardingStrategy -- 批量请求的分片策略
-4. servicePackages -- 要提供的服务类所在的包路径
+1. `serializer` -- 序列器类型
+2. `loadbalancer` -- 序列器类型
+3. `shardingStrategy` -- 批量请求的分片策略
+4. `servicePackages` -- 要提供的服务类所在的包路径
 
 ```
 # 客户端配置
@@ -41,7 +41,7 @@ loadbalancer: random # 均衡负载类型
 shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
-    - net.jkcode.jksoa.tracer.common.service.remote # collector服务
+    - net.jkcode.jksoa.tracer.common.service.remote # tracer组件的collector服务
     - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
@@ -83,7 +83,9 @@ interface IRpcClient: Closeable {
 ## IRpcClient 的实现
 
 1. `RmiRpcClient`
-`RmiRpcClient`实现很简单, `connect(url)` 返回的是 `RmiConnection` 对象
+
+实现很简单, `connect(url)` 返回的是 `RmiConnection` 对象
 
 2. `NettyRpcClient`
-`NettyRpcClient`实现就比较复杂, `connect(url)` 返回的是 `NettyConnection` 对象
+
+实现就比较复杂, `connect(url)` 返回的是 `NettyConnection` 对象

@@ -2,13 +2,13 @@
 
 ## 定义
 
-注解 `@RemoteService` 应用在远程服务类上
+注解 `@RemoteService` 应用在远程服务的接口类上
 
 属性:
-1. version 版本
-2. onlyLeader 是否选举leader, 控制是否只有唯一一个server来提供服务
-3. loadBalancer 均衡负载器类型, 参考 `load-balancer.yaml`中声明的负载器
-4. connectionHubClass 连接集中器的实现类, 默认是 `ConnectionHub`, 特殊场景下需要自定义, 如mq client自定义的连接集中器是 `BrokerConnectionHub`
+1. `version` 版本
+2. `onlyLeader` 是否选举leader, 控制是否只有唯一一个server来提供服务
+3. `loadBalancer` 均衡负载器类型, 参考 `load-balancer.yaml`中声明的负载器
+4. `connectionHubClass` 连接集中器的实现类, 默认是 `ConnectionHub`, 特殊场景下需要自定义, 如mq client自定义的连接集中器是 `BrokerConnectionHub`
 
 ```
 /**
@@ -31,6 +31,7 @@ annotation class RemoteService(public val version: Int = 0, // 接口版本
 1. server端启动时, 会自动扫描 `rpc-server.yaml` 配置文件中的 `servicePackages` 指定的服务包, 找到接口有注解`@RemoteService`的`实现类`, 并创建服务提供者`Provider`
 2. client端初始化时, 会自动扫描 `rpc-client.yaml` 配置文件中的 `servicePackages` 指定的服务包, 找到有注解`@RemoteService`的`接口类`, 并创建服务引用者`Referer`
 
+配置示例:
 ```
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务

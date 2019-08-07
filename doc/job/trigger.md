@@ -4,9 +4,9 @@ Trigger用于触发Job的执行。
 
 当你准备调度一个job时，你需要创建一个Trigger的实例来负责调度.
 
-Trigger包含了多个job的jobAttr，用于给Job存储与传递状态数据。
+Trigger包含了多个job的作业执行上下文，用于给Job存储与传递状态数据。
 
-jksoa-job自带了各种不同类型的Trigger，最常用的主要是PeriodicTrigger和CronTrigger。
+jksoa-job自带了各种不同类型的Trigger，最常用的主要是`PeriodicTrigge`r和`CronTrigger`。
 
 ## PeriodicTrigger -- 周期性重复的触发器
 主要用于周期性执行Job, 即在特定的时间点执行，重复执行N次，每次执行间隔T个时间单位。
@@ -43,9 +43,9 @@ data class PeriodicTrigger(public val intervalSeconds: Long /* 重复的时间�
 ## CronTrigger -- cron表达式定义的触发器
 在基于日历的调度上非常有用，如“每个星期五的正午”，或者“每月的第十天的上午10:15”等。
 
-CronTrigger通常比PeriodicTrigger更有用，如果您需要基于日历的概念而不是按照PeriodicTrigger的精确指定间隔进行重新启动的作业启动计划。
+`CronTrigger`通常比`PeriodicTrigger`更有用，如果您需要基于日历的概念而不是按照`PeriodicTrigger`的精确指定间隔进行重新启动的作业启动计划。
 
-使用CronTrigger，您可以指定号时间表，例如“每周五中午”或“每个工作日和上午9:30”，甚至“每周一至周五上午9:00至10点之间每5分钟”和1月份的星期五“。
+使用`CronTrigger`，您可以指定号时间表，例如“每周五中午”或“每个工作日和上午9:30”，甚至“每周一至周五上午9:00至10点之间每5分钟”和1月份的星期五“。
 
 构建`CronTrigger`需要一个参数: 就是cron表达式
 
@@ -88,7 +88,7 @@ data class CronTrigger (public val cronExpr: CronExpression /* cron表达式 */)
 https://www.w3cschool.cn/quartz_doc/quartz_doc-lwuv2d2a.html
 
 ## Cron Expressions
-Cron-Expressions用于配置CronTrigger的实例。Cron Expressions是由七个子表达式组成的字符串，用于描述日程表的各个细节。这些子表达式用空格分隔，并表示：
+Cron-Expressions用于配置`CronTrigger`的实例。Cron Expressions是由七个子表达式组成的字符串，用于描述日程表的各个细节。这些子表达式用空格分隔，并表示：
 1. Seconds
 2. Minutes
 3. Hours
@@ -118,16 +118,16 @@ Cron-Expressions用于配置CronTrigger的实例。Cron Expressions是由七个�
 以下是一些表达式及其含义的更多示例 - 您可以在JavaDoc中找到更多的org.quartz.CronExpression
 
 ## Cron Expressions示例
-CronTrigger示例1 - 创建一个触发器的表达式，每5分钟就会触发一次
+示例1 - 创建一个触发器的表达式，每5分钟就会触发一次
 “0 0/5 * * *？”
 
-CronTrigger示例2 - 创建触发器的表达式，每5分钟触发一次，分钟后10秒（即上午10时10分，上午10:05:10等）。
+示例2 - 创建触发器的表达式，每5分钟触发一次，分钟后10秒（即上午10时10分，上午10:05:10等）。
 “10 0/5 * * *？”
 
-CronTrigger示例3 - 在每个星期三和星期五的10:30，11:30，12:30和13:30创建触发器的表达式。
+示例3 - 在每个星期三和星期五的10:30，11:30，12:30和13:30创建触发器的表达式。
 “0 30 10-13？* WED，FRI“
 
-CronTrigger示例4 - 创建触发器的表达式，每个月5日和20日上午8点至10点之间每半小时触发一次。请注意，触发器将不会在上午10点开始，仅在8:00，8:30，9:00和9:30
+示例4 - 创建触发器的表达式，每个月5日和20日上午8点至10点之间每半小时触发一次。请注意，触发器将不会在上午10点开始，仅在8:00，8:30，9:00和9:30
 “0 0/30 8-9 5,20 *？”
 
 请注意，一些调度要求太复杂，无法用单一触发表示 - 例如“每上午9:00至10:00之间每5分钟，下午1:00至晚上10点之间每20分钟”一次。在这种情况下的解决方案是简单地创建两个触发器，并注册它们来运行相同的作业。

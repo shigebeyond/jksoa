@@ -166,6 +166,7 @@ class CircuitBreaker(
 # 方法级注解 @CircuitBreak
 
 1. 定义
+
 就是指定 `CircuitBreaker` 实例化所需要的参数
 
 ```
@@ -186,6 +187,7 @@ annotation class CircuitBreak(
 ```
 
 2. demo
+
 `@CircuitBreak` 与 `@Metric` 要配合使用, 因为断路器的断路检查, 检查的是`@Metric` 的流量统计数据
 
 ```

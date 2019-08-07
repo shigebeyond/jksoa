@@ -21,7 +21,7 @@ Trace系统需要能够透明的传递调用上下文，理解系统行为，理
 
 ## agent端
 
-### agent配置 agent.yaml
+### 配置 agent.yaml
 
 ```
 # agent配置

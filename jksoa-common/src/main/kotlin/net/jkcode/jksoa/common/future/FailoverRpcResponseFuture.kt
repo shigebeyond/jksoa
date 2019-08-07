@@ -4,7 +4,7 @@ import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 
 /**
- * 失败重试的异步响应
+ * 支持失败重试的异步响应
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

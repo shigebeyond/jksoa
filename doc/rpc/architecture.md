@@ -25,8 +25,9 @@ jksoa-rpc-registry
 ![rpc-flow](img/rpc-flow.png)
 
 ## registry组件
-存储服务注册信息, 就是有哪些服务, 服务有哪些提供者节点
-服务提供者将服务信息（包含协议、ip、端口等信息）注册到注册中心，服务引用方通过注册中心发现服务。当服务发生变更，注册中心负责通知各个引用者。
+存储服务节点注册信息, 就是有哪些服务, 服务有哪些提供者节点
+
+服务提供者将服务信息（包含协议、ip、端口等信息）注册到注册中心，服务引用方通过注册中心发现服务节点。当服务节点发生变更，注册中心负责通知各个引用者。
 
 ## server端组件
 1. `RpcRequestHandler` 请求处理器
@@ -38,9 +39,9 @@ jksoa-rpc-registry
 2. `ServiceProxy` 服务代理, 简化调用, 调本地服务一样调远程服务, 使用`RpcInvocationHandler`来实现
 3. `RpcInvocationHandler` 将方法调用封装为请求, 并通过 `RpcRequestDispatcher` 来分发请求
 4. `RpcRequestDispatcher` 分发请求
-5. `ConnectionHub` 连接集中器, 通过订阅注册中心来发现服务, 同时用于管理单个服务的一组server的连接, 发送请求时会根据不同的负载均衡策略选择一个可用的Server发送。
-6. `LoadBalancer` 均衡负载器, 用于均衡发送请求给某服务的多个server(即服务提供者节点)
-7. `Connection` 单个连接, 用于发送请求
+5. `ConnectionHub` 连接集中器, 通过订阅注册中心来发现服务节点, 同时用于管理单个服务的一组server的连接, 发送请求时会根据不同的负载均衡策略选择一个可用的Server发送。
+6. `LoadBalancer` 均衡负载器, 用于均衡发送请求给某服务的多个server(即服务提供者节点)中的某个.
+7. `Connection` 单个连接, 即与server的连接, 用于向server发送请求
 
 ## 公共组件
 1. `Serializer` 序列器, 用于编码解码请求与响应.

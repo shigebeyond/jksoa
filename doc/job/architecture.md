@@ -41,8 +41,8 @@ trigger.start()
 # 调度分析
 
 ## Trigger分类
-1. PeriodicTrigger -- 周期性重复的触发器
-2. CronTrigger -- cron表达式定义的触发器
+1. `PeriodicTrigger` -- 周期性重复的触发器
+2. `CronTrigger` -- cron表达式定义的触发器
 
 ## Trigger的调度线程池
 调度采用线程池方式实现，避免单线程因阻塞而引起作业调度延迟。
@@ -61,11 +61,11 @@ trigger.start()
 2. rpc job, 通过rpc来执行, 执行者为远程服务提供者节点
 
 明细分类:
-1. LambdaJob -- 用lambda包装的作业
-2. LpcJob -- 调用本地bean方法的作业
-3. ShardingLpcJob -- 调用本地bean方法的分片作业
-4. RpcJob -- 发送rpc请求的作业
-5. ShardingRpcJob -- 发送分片rpc请求的作业
+1. `LambdaJob` -- 用lambda包装的作业
+2. `LpcJob` -- 调用本地bean方法的作业
+3. `ShardingLpcJob` -- 调用本地bean方法的分片作业
+4. `RpcJob` -- 发送rpc请求的作业
+5. `ShardingRpcJob` -- 发送分片rpc请求的作业
 
 ## rpc作业: RpcJob/ShardingRpcJob
 
@@ -75,9 +75,11 @@ trigger.start()
 
 ## rpc作业的HA
 1. 故障转移
+
 基于rpc框架, 调度者会感知到所有在线的服务提供者(执行者)节点, 如果某个执行节点发生故障掉线了, 则调度者会将该节点排除, 下一次调度会将请求发给其他在线的节点
 
 2. 失败重试
+
 基于rpc框架, 如果一次调度(rpc)请求失败, 框架会根据配置的重发次数执行重发.
 
 ## 全异步化
@@ -88,7 +90,7 @@ trigger.start()
 2. rpc作业
 基于rpc框架实现的rpc作业, rpc自身支持client端异步发请求/server端异步处理请求/client异步接收响应
 
-相比直接在quartz的QuartzJobBean中执行业务逻辑，极大的降低了调度线程占用时间；
+相比直接在quartz的`QuartzJobBean`中执行业务逻辑，极大的降低了调度线程占用时间；
 
 因此, 调度者的每次调度是很快的, 不会被阻塞, 能够处理海量调度, 瓶颈在于网络与服务提供者集群.
 
@@ -100,7 +102,7 @@ trigger.start()
 
 如10台机器处理10w条数据, 分片之后, 则每台机器处理1w条数据, 并行度增加10倍, 而耗时降低10倍.
 
-为了更简单的表达分片, 我设计的作业分片只针对`用方法调用来实现的作业`, 即包含 LpcJob/RpcJob/ShardingLpcJob/ShardingRpcJob, 而每个分片对应一次调用的实参数组.
+为了更简单的表达分片, 我设计的作业分片只针对`用方法调用来实现的作业`, 即包含 `LpcJob/RpcJob/ShardingLpcJob/ShardingRpcJob`, 而每个分片对应一次调用的实参数组.
 
 因此, 所谓作业分片调度, 就是按每个分片来调度, 就是以每个分片的的实参数组来调用方法, 每个分片的调用是要分派给具体的执行者来执行.
 

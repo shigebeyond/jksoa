@@ -7,6 +7,7 @@
 ## Tracer -- 系统跟踪器, 跟踪入口
 
 1. 基类 `ITracer`
+
 我们来看看其基类 `ITracer`, 一窥概貌
 
 ```
@@ -157,13 +158,15 @@ abstract class ISpanner(public val tracer: Tracer, public val span: Span){
 
 ### span模型
 
-1. Span
+1. `Span`
+
 追踪服务调基本结构，表示跨服务的一次调用；多span形成树形结构，组合成一次Trace追踪记录。
 
-2. Annotation
+2. `Annotation`
+
 在span中的标注点，记录整个span时间段内发生的事件。
 
-而Annotation类型有:
+而`Annotation`类型有:
 > - `Cs` CLIENT_SEND，客户端发起请求
 > - `Cr` CLIENT_RECIEVE，客户端收到响应
 > - `Sr` SERVER_RECIEVE，服务端收到请求
@@ -183,21 +186,33 @@ ISpanner
 ```
 
 1. `ClientSpanner` -- 客户端span跟踪器
-start(): 添加cs annotation
-end(): 添加cr annotation, 并上传
+
+`start()`: 添加cs annotation
+
+`end()`: 添加cr annotation, 并上传
 
 2. `InitiatorSpanner` -- 发起人span跟踪器
+
 继承 `ClientSpanner`
+
 代表调用链的起点, 如http server处理请求
-代表完整的本次调用, 也就代表当前Tracer实例的生命周期, 因此在end()时清理当前Tracer实例
+
+代表完整的本次调用, 也就代表当前Tracer实例的生命周期, 因此在`end()`时清理当前`Tracer`实例
 
 3. `ServerSpanner` -- 服务端span跟踪器
-start(): 添加sr annotation
-end(): 添加ss	 annotation, 并上传
-代表完整的本次调用, 也就代表当前Tracer实例的生命周期, 因此在end()时清理当前Tracer实例
+
+`start()`: 添加sr annotation
+
+`end()`: 添加ss annotation, 并上传
+
+代表完整的本次调用, 也就代表当前Tracer实例的生命周期, 因此在`end()`时清理当前`Tracer`实例
 
 4. `EmptySpanner` -- 啥不都干的span跟踪器
+
 不采样时使用他来兼容ISpanner的调用
+
+5. 其他
+
 对于采集率: 与CAT/hydra类似。支持自适应采样，规则简单，对于每秒钟的请求次数进行统计，如果超过100，就按照10%的比率进行采样。
 
 最后, 每个spanner采集调用数据后, 都调用`collectorService.send(spans)`来上传跟踪数据
@@ -207,14 +222,19 @@ end(): 添加ss	 annotation, 并上传
 jksoa-tracer在 rpc client/rpc server/http server等3端都做了插件, 其实现是使用对应的拦截器来埋点跟踪.
 
 1. rpc client
+
 插件: `RpcClientTracerPlugin`
+
 拦截器: `RpcClientTraceInterceptor`
 
 2. rpc server
+
 插件: `RpcServerTracerPlugin`
+
 拦截器: `RpcServerTraceInterceptor`
 
-
 3. http server
+
 插件 `HttpServerTracerPlugin`
+
 拦截器 `HttpServerTraceInterceptor`

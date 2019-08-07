@@ -6,7 +6,7 @@
 
 针对每个key的(单参数)取值操作合并, 也等同于取值操作去重
 
-构建 `KeyFutureSupplierCombiner` 只需要一个参数, 为取值操作, 其返回值类型是 CompletableFuture, 直接调用作为源异步结果
+构建 `KeyFutureSupplierCombiner` 只需要一个参数, 为取值操作, 其返回值类型是 `CompletableFuture`, 直接调用作为源异步结果
 
 ```
 val keyCombiner = KeyFutureSupplierCombiner<Int, User>{ id ->
@@ -25,6 +25,7 @@ futures.print()
 # 方法级注解 `@KeyCombine`
 
 1. 定义
+
 主要针对的是单参数的方法, 针对同一个参数值的多次调用, 直接合并为一次调用
 
 ```

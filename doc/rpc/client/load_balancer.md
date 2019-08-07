@@ -4,7 +4,7 @@ LoadBalance 为负载均衡，它的职责是将网络请求，或者其他形�
 
 负载均衡可分为软件负载均衡和硬件负载均衡。软件负载均衡如 Nginx。
 
-jksoa-rpc 中负载均衡主要在client端给服务提供者发送请求时触发, 均衡这些服务提供者的负载. 否则某个服务提供者的负载过大，会导致部分请求超时。
+jksoa-rpc 中负载均衡主要在client端选择服务提供者发送请求时触发, 均衡这些服务提供者的负载. 否则某个服务提供者的负载过大，会导致部分请求超时。
 
 jksoa-rpc 提供了3种负载均衡实现, 缺省为 random 随机调用.
 1. 基于权重随机算法的 `RandomLoadBalancer`
@@ -56,7 +56,8 @@ ILoadBalancer
 
 ## RandomLoadBalancer
 随机，按权重设置随机概率。
-在一个截面上碰撞的概率高，但调用量越大分布越均匀，而且按概率使用权重后也比较均匀，有利于动态调整提供者权重。
+
+调用量少时碰撞概率高，但调用量越大分布越均匀，而且按概率使用权重后也比较均匀，有利于动态调整提供者权重。
 
 ## ConsistentHashLoadBalancer
 一致性 Hash，相同参数的请求总是发到同一提供者。
@@ -67,27 +68,26 @@ ILoadBalancer
 
 ## RoundRobinLoadBalancer
 轮询，按公约后的权重设置轮询比率。
+
 存在慢的提供者累积请求的问题，比如：第二台机器很慢，但没挂，当请求调到第二台时就卡在那，久而久之，所有请求都卡在调到第二台上。
 
 # 配置负载策略
 
 目前我只在客户端发送请求时, 使用负载策略, 因此配置只针对客户端
 
-## 客户端级别配置
+实际策略是依次有优先级的读取以下的值:
 
-在配置文件`rpc-client.yaml`中的属性`loadbalancer` 来指定
-
-```
-loadbalancer: random # 均衡负载类型
-```
-
-## 方法级别配置
-
-在注解 `@RemoteService` 的属性 `loadBalancer` 来指定
+1. 通过注解 `@RemoteService` 的属性 `loadBalancer` 来指定的策略
 
 ```
 @RemoteService(loadBalancer = "consistentHash")
 interface IMyService
+```
+
+2. 通过配置文件`rpc-client.yaml`中的属性`loadbalancer` 来指定的策略
+
+```
+loadbalancer: random # 均衡负载类型
 ```
 
 # 扩展负载策略

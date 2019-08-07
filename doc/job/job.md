@@ -53,9 +53,9 @@ interface IJob {
 
 用于向job实例提供有关其“运行时”信息:
 
-1. jobId -- 作业id
-2. trigger -- 触发器实例
-3. attr -- 作业属性, 用于存储与传递job实例的状态信息, 在`IJob::execute()`实现中可通过读写该属性来维持状态, 譬如可用于构建session
+1. `jobId` -- 作业id
+2. `trigger` -- 触发器实例
+3. `attr` -- 作业属性, 用于存储与传递job实例的状态信息, 在`IJob::execute()`实现中可通过读写该属性来维持状态, 譬如可用于构建session
 
 ```
 package net.jkcode.jksoa.job
@@ -124,12 +124,12 @@ IJob
 2. rpc 作业, 通过rpc来执行, 执行者为远程服务提供者节点, 包含 RpcJob/ShardingRpcJob
 
 按是否分片来分类
-1. 不分片作业, 包含 LambdaJob/LpcJob/RpcJob
-2. 分片作业, 包含 ShardingLpcJob/ShardingRpcJob
+1. 不分片作业, 包含 `LambdaJob/LpcJob/RpcJob`
+2. 分片作业, 包含 `ShardingLpcJob/ShardingRpcJob`
 
 按作业实现方式来分类
-1. 用方法调用来实现的作业, 包含 LpcJob/RpcJob/ShardingLpcJob/ShardingRpcJob
-2. 自定义实现的作业, 包含 LambdaJob/直接实现IJob
+1. 用方法调用来实现的作业, 包含 `LpcJob/RpcJob/ShardingLpcJob/ShardingRpcJob`
+2. 自定义实现的作业, 包含 `LambdaJob`/直接实现IJob
 
 ## 1. LambdaJob -- 用lambda包装的作业
 最灵活的作业定义方式, 直接写代码来封装作业逻辑, 但是由于其灵活性, 无法使用cron与作业的复合表达式来表达, 因此不能使用`CronJobLauncher.lauch(cronJobExpr)`来调度作业

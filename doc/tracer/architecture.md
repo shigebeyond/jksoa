@@ -36,19 +36,20 @@
 
 2. `jksoa-tracer-agent` 跟踪代理人, 负责采集调用数据
 
-2.1 基于rpc: 
+2.1 基于rpc:
 构建于jksoa-rpc之上，支持应用的透明接入。
 
-2.2 拦截器实现: 
+2.2 拦截器实现:
 对rpc client/rpc server/http server等3端, 使用拦截器来埋点跟踪.
 
-2.3 采集处理: 
+2.3 采集处理:
 与CAT/hydra类似。支持自适应采样，规则简单，对于每秒钟的请求次数进行统计，如果超过100，就按照10%的比率进行采样。
 
 2.4 上传处理:
 rcp调用`ICollectorService.send(spans)`远程服务，批量异步上传数据
 
 3. `jksoa-tracer-collector` 跟踪收集人, 负责收集agent上传过来来的调用数据, 并组成跟踪数据入库
+
 提供 `ICollectorService` rpc服务, 以供agent调用
 
 4. `jksoa-tracer-web` 用户交互界面, 读跟踪数据并显示报表. UI直接复用京东的Hydra框架
@@ -56,13 +57,14 @@ rcp调用`ICollectorService.send(spans)`远程服务，批量异步上传数据
 ## 接入方式
 
 1. 透明接入
+
 对rpc client/rpc server/http server等3端, 使用拦截器来埋点跟踪, 已做成插件.
 
 配置好插件即可实现透明接入，自动拦截跨服务的调用，进行数据采样。
 
 2. 注解
-对于其他分散的服务，或者业务逻辑中其他小粒度的埋点，如服务内部的方法调用、数据库操作、URL请求等，提供注解 `@TraceService` 的方式。
 
+对于其他分散的服务，或者业务逻辑中其他小粒度的埋点，如服务内部的方法调用、数据库操作、URL请求等，提供注解 `@TraceService` 的方式。
 
 ## 数据存储模块
 - 目前支持存在mysql

@@ -26,10 +26,10 @@
 
 由于一个主题有多个队列, 因此消息的发送需要选择队列, 从而选择broker
 
-1. 如果routeKey = 0
+1. 如果routeKey = 0:
 随便选择队列来发送
 
-2. 如果routeKey > 0
+2. 如果routeKey > 0:
 通过 `routeKey % queueNum` 来选择指定序号的队列
 
 
@@ -41,6 +41,7 @@
 => 提升存储能力的扩展性
 
 2. `MqPullConsumer`订阅主题
+
 原来: 对 "$group/$topic" 加锁, 加锁了才能消费
 
 变为: 在 "$group/$topic" 建顺序节点, 获得节点的序列号. 定时拉取时, 遍历主题的每个队列, 以队列序号为key, 以节点序列号为真实节点, 做一致性hash选择, 如果选中的是当前pull consumer的序列号, 则执行拉取.
@@ -59,10 +60,10 @@
 
 推模式下的消费, 需要明确队列所在的broker要将消息发给指定分组下的哪个push consumer, 不过这个跟单主题多队列无关, 直接维持原来的逻辑就行
 
-1. 如果routeKey = 0
+1. 如果routeKey = 0:
 随便选择consumer来推送
 
-2. 如果routeKey > 0
+2. 如果routeKey > 0:
 以routeKey为key, 以订阅的push consumer连接作为真实节点, 做一致性hash来选择push consumer
 
 => 按一致性hash来给消息分配push consumer

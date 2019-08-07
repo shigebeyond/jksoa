@@ -41,7 +41,7 @@
 
 1. 启动rmi/netty的server
 
-2. 调用 `ProviderLoader.load()` 来扫描加载Provider服务
+2. 调用 `ProviderLoader.load()` 来扫描加载`Provider`服务
 
 自动扫描 `rpc-server.yaml` 配置文件中的 `servicePackages` 指定的服务包, 找到有注解`@RemoteService`的`接口类`, 并创建服务提供者`Provider`, 并向注册中心注册
 
@@ -49,4 +49,4 @@
 
 4. 调用回调, 只在手动调用 `IRpcServer.start()` 时才会有回调
 
-5. 添加关闭的钩子, 关闭当前server
+5. 添加关闭的钩子, 当应用结束时关闭当前server

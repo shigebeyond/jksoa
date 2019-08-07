@@ -26,7 +26,7 @@ IRpcServer
 
 实际上他的实现很简单, 就是根据 `rpc-server.yaml` 配置文件中指定的 `protocol` 协议去调用对应的 `IRpcServer` 的实现类
 
-## server配置 -- rpc-server.yaml
+## 配置 rpc-server.yaml
 
 关键配置项
 
@@ -47,7 +47,7 @@ parameters: # 参数
   weight: 1
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
-    - net.jkcode.jksoa.tracer.collector.service # 分布式跟踪组件的collector服务
+    - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
     - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 # netty启动参数
 netty:

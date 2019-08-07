@@ -14,9 +14,9 @@ jksoa微服务框架中本项目中有多个组件, 如rpc/job/tracer/mq等, 组
 
 因此, 我设计了`ModuleLogSwitcher`, 直接在组件级别来控制是否启用日志, 如同`开关`, 啪一下就开, 啪一下就关, 很方便, 但只用于jksoa相关组件的开发.
 
-## 配置
+## 配置 module-log-switcher.yaml
 
-每个组件都做成一个开关配置, 详见 `module-log-switcher.yaml`
+每个组件都做成一个开关配置
 
 ```
 # 按组件来切换启用日志

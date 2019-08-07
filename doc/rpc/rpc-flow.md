@@ -12,7 +12,7 @@
 
 3. 注册中心向`ConnectionHub`推送最新的服务提供者节点地址
 
-4. `ConnectionHub`收到新的服务提供者节点, 则向节点建立连接
+4. `ConnectionHub`收到新的服务提供者节点(即server), 则向节点建立连接, 可能立即连接或延迟连接.
 
 ## rpc调用流程
 
@@ -24,11 +24,11 @@
 
 8. `RpcInvocationHandler` 将方法调用封装为请求, 并通过 `RpcRequestDispatcher` 来分发请求
 
-9. `RpcRequestDispatcher` 通过 `ConnectionHub` 来选择连接, 并通过连接来发送请求
+9. `RpcRequestDispatcher` 通过 `ConnectionHub` 来选择与server的连接, 并通过连接来发送请求
 
-10. `ConnectionHub` 使用均衡负载器来选择连接
+10. `ConnectionHub` 使用均衡负载器来选择与server的连接
 
-11. 调用连接来发送请求
+11. 调用连接来向server发送请求
 
 12. client/server端的编码解码都是通过序列化器来做
 
@@ -40,7 +40,7 @@
 
 16. 最后将调用结果封装为响应发送给client, 作为rpc的结果.
 
-当然包含编码解析与网络传输, 图上略过了.
+当然流程上还有编码解析与网络传输等环节, 图上略过了.
 
 ### 总结
 

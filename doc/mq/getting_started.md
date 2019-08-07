@@ -25,7 +25,7 @@ jksoa-mq是一款轻量级分布式消息队列，拥有 "水平扩展、高可�
 
 ## 启动消息中转者 broker
 
-1. broker配置
+1. broker配置: broker.yaml
 
 ```
 # 消息中转者配置
@@ -42,7 +42,7 @@ storageType: block_compressed #　存储类型  1. inline 不压缩 2. block_com
 compressionCodec: snappy # 压缩类型　1. gzip 2. snappy
 ```
 
-2. 配置 rpc-server.yaml
+2. 服务包配置 rpc-server.yaml
 在配置项`servicePackages`添加broker服务类所在的包路径
 
 ```
@@ -84,9 +84,7 @@ try {
 ```
 
 ## 设置消费者 consumer
-1. 配置
-
-vim consumer.yaml
+1. consumer配置 consumer.yaml
 
 ```
 # 消息消费者配置

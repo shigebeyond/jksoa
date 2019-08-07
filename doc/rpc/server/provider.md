@@ -16,23 +16,23 @@
 他的实现是扫描指定的包, 找到满足以下3个条件的服务类:
 1. 类名以`Service`为后缀
 2. 普通类, 非接口, 非抽象类
-3. 接口必须声明注解 @RemoteService
+3. 其实现的接口必须声明注解 `@RemoteService`
 
 ## 扫描包的配置
 在`rpc-server.yaml` 中的属性 `servicePackages`, 例子如下
 ```
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
-    - net.jkcode.jksoa.tracer.collector.service # 分布式跟踪组件的collector服务
+    - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
     - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 ```
 
 # 向注册中心注册Provider的服务
 
-## 注册服务信息
-Provider需要向注册中心注册其提供的服务信息, 服务信息包含: 
+## 注册服务节点信息
+Provider需要向注册中心注册其提供的服务节点信息, 包含:
 1. 服务的接口名
-2. server信息: ip + 端口
+2. 节点信息: 协议 + ip + 端口
 3. 其他配置: 如权重
 
 ## 注册中心的存储

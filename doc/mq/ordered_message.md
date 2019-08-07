@@ -144,9 +144,9 @@ for(state in states){
 
 ## 消息消费代码
 
-1. 配置
+1. 配置 `consumer.yaml`
 
-vim consumer.yaml
+拉取的配置见 1 `pullPageSize` 每次拉取数 2 `pullTimerSeconds` 定时拉取的时间间隔
 
 ```
 # 消息消费者配置

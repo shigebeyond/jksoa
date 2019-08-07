@@ -36,17 +36,24 @@ MqPullConsumer.subscribeTopic(topic, handler)
 
 ### 推模式订阅
 `MqPushConsumer.subscribeTopic(topic, handler)`
+
 1. 订阅处理
+
 1.1 consumer绑定主题相关的消息处理器`IMessageHandler`
+
 1.2 consumer向broker发送订阅请求, broker会保持consumer连接, 并关联到主题;
 
 2. 推送处理
+
 当broker收到新消息时, 会将消息主动推送给消息主题相关的consumer.
 
 ### 拉模式订阅
 `MqPullConsumer.subscribeTopic(topic, handler)`
+
 1. 订阅处理
+
 1.1 consumer绑定主题相关的消息处理器`IMessageHandler`
+
 1.2 consumer启动拉取的定时器, 定时从broker中拉取订阅的主题相关的消息
 
 2. 拉取处理
@@ -63,6 +70,7 @@ broker会记录每个分组对每个主题的拉取进度, 每次拉取只返回
 而根据并行/串行策略有所不同:
 
 1. 并行消费
+
 分组内多消费者消费, 单消费者内多线程消费
 
 适用于吞吐量较大的消息场景，如邮件发送、短信发送等业务逻辑
@@ -77,8 +85,7 @@ broker会记录每个分组对每个主题的拉取进度, 每次拉取只返回
 
 多个消费者分组可订阅同一个主题, 对于同一个消息, broker根据主题给订阅的多个消费者分组每个分组发一次, 对某个分组内选择一个消费者来发送
 
-单个分组内消费者的选择: 根据 `Message.routeKey` 来选择
-`ConsumerConnectionHub` 消息推送的均衡负载:
+单个分组内消费者的选择: 根据 `Message.routeKey` 来选择. 具体参考 `ConsumerConnectionHub` 消息推送的均衡负载:
 
 1. 无路由键: 随机选择, 即并行
 2. 有路由键: 一致性哈希, 即串行

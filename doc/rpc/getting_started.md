@@ -45,9 +45,13 @@ RPC（Remote Procedure Call Protocol，远程过程调用），调用远程服�
 
 # 快速入门
 
+## 依赖
+
+依赖于我的另一框架 [jkmvc](https://github.com/shigebeyond/jkmvc), 由于重构中暂未上传到maven仓库, 因此要自行下载到本地, 与jksoa居于同一级目录
+
 ## server端
 
-### server配置 rpc-server.yaml
+### 配置 rpc-server.yaml
 
 注:　配置项`servicePackages`声明了服务类所在的包，server启动时会扫描这些包中的服务类来向zk注册服务提供者
 
@@ -61,7 +65,7 @@ parameters: # 参数
   weight: 1
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
-    - net.jkcode.jksoa.tracer.collector.service # 分布式跟踪组件的collector服务
+    - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
     - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 # netty启动参数
 netty:
@@ -126,7 +130,7 @@ interface ISimpleService /*: Remote // rmi协议服务接口 */ {
 
 ## client端
 
-### client配置 rpc-client.yaml
+### 配置 rpc-client.yaml
 
 注:　配置项`servicePackages`声明了服务类所在的包，client初始化时会扫描这些包中的服务类来向zk订阅服务提供者
 
@@ -138,7 +142,7 @@ loadbalancer: random # 均衡负载类型
 shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
-    - net.jkcode.jksoa.tracer.common.service.remote # collector服务
+    - net.jkcode.jksoa.tracer.common.service.remote # tracer组件的collector服务
     - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒

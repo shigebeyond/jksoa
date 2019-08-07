@@ -28,8 +28,8 @@ jksoa-mq-registry
 2. `Broker`: 消息中转者, 负责接收`Producer`发过来的消息, 并存储消息, 同时向`Consumer`推送最新的消息
 
 ## client端组件
-`Producer` : 消息生产者, 注册Topic, 并向该Topic生产消息;
-`Consumer` : 消息消费者, 订阅主体, 能消费该Topic下的消息;
+1. `Producer` : 消息生产者, 注册Topic, 并向该Topic生产消息;
+2. `Consumer` : 消息消费者, 订阅主体, 能消费该Topic下的消息;
 
 
 ## 调用关系
@@ -38,6 +38,17 @@ jksoa-mq-registry
 ## 分层
 
 ```
+└── net
+    └── jkcode
+        └── jksoa
+            └── mq
+                ├── registry 注册中心
+                ├── consumer 消费者
+                │   └── service 消费者服务
+                ├── producer 生产者
+                └── broker 中转者
+                    ├── pusher 消息推送者
+                    ├── repository 消息存储
+                    │   └── lsm 基于lsm-tree实现的消息存储
+                    └── service 中转者
 ```
-
-# 特性

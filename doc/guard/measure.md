@@ -1,4 +1,8 @@
-# HashedWheelMeasurer -- 基于时间轮实现的计量器
+# 计量器
+
+计量器, 主要用于统计请求数
+
+## HashedWheelMeasurer -- 基于时间轮实现的计量器
 
 一般的用法如下, 用于为其他守护工具提供请求统计数据
 
@@ -17,7 +21,7 @@ try{
 }
 ```
 
-# 方法级注解 @Metric
+## 方法级注解 @Metric
 
 1. 定义
 
@@ -36,7 +40,7 @@ annotation class Metric(
 )
 ```
 
-2. 使用
+2. demo
 
 `@Metric` 一般与 `@CircuitBreak` 配合使用, 为`@CircuitBreak` 提供请求统计数据, 来检查是否超过断路的阀值
 
