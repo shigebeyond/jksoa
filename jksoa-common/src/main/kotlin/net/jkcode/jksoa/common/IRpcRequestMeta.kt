@@ -4,6 +4,10 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.getMethodBySignature
 import net.jkcode.jksoa.common.annotation.remoteMethod
 import net.jkcode.jksoa.common.invocation.IInvocationMethod
+import java.lang.reflect.Method
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.javaMethod
 
 /**
  * rpc调用的元数据
@@ -18,6 +22,32 @@ interface IRpcRequestMeta: IInvocationMethod {
          * 客户端配置
          */
         public val config = Config.instance("rpc-client", "yaml")
+
+        /**
+         * 方法超时
+         */
+        protected val methodRequestTimeoutMillis: ConcurrentHashMap<Method, Long> = ConcurrentHashMap();
+
+        /**
+         * 设置方法超时
+         * @param method
+         * @param requestTimeoutMillis
+         */
+        public fun setMethodRequestTimeoutMillis(func: KFunction<*>, requestTimeoutMillis: Long){
+            setMethodRequestTimeoutMillis(func.javaMethod!!, requestTimeoutMillis)
+        }
+
+        /**
+         * 设置方法超时
+         * @param method
+         * @param requestTimeoutMillis
+         */
+        public fun setMethodRequestTimeoutMillis(method: Method, requestTimeoutMillis: Long){
+            if(requestTimeoutMillis <= 0)
+                throw IllegalArgumentException("方法超时必须为正整数: $requestTimeoutMillis")
+
+            methodRequestTimeoutMillis.put(method, requestTimeoutMillis)
+        }
     }
 
     /**
@@ -33,15 +63,22 @@ interface IRpcRequestMeta: IInvocationMethod {
             // 默认超时
             val default: Long = config["requestTimeoutMillis"]!!
             try {
-                // 方法的注解 @RemoteMethod 定义的超时
+                // 获得自定义超时
                 val clazz = Class.forName(this.clazz)
                 val method = clazz.getMethodBySignature(this.methodSignature)
                 if(method != null && method.remoteMethod != null){
-                    val v = method.remoteMethod!!.requestTimeoutMillis
-                    if(v != 0L)
-                        return v
+                    // 1 通过 setMethodRequestTimeoutMillis() 设置的超时
+                    val sv = methodRequestTimeoutMillis[method]
+                    if(sv != null)
+                        return sv
+
+                    // 2 通过方法的注解 @RemoteMethod 定义的超时
+                    val av = method.remoteMethod!!.requestTimeoutMillis
+                    if(av != 0L)
+                        return av
                 }
 
+                // 3 默认超时
                 return default
             }catch (e: ClassNotFoundException){
                 // 在job工程中, 可能直接构造 IRpcRequest, 而没有加载相关的接口类

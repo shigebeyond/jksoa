@@ -4,7 +4,9 @@ import net.jkcode.jkmvc.common.format
 import net.jkcode.jkmvc.common.randomInt
 import net.jkcode.jkmvc.common.randomLong
 import net.jkcode.jkmvc.common.randomString
+import net.jkcode.jksoa.common.IRpcRequestMeta
 import net.jkcode.jksoa.mq.MqProducer
+import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.exception.MqClientException
 import net.jkcode.jksoa.mq.consumer.IMessageHandler
@@ -15,6 +17,8 @@ import net.jkcode.jksoa.mq.consumer.suspend.SerialSuspendablePullMessageHandler
 import org.junit.Test
 import java.io.Serializable
 import java.util.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 /**
@@ -112,6 +116,47 @@ class MqClientTests {
         }
 
         Thread.sleep(100000)
+    }
+
+    @Test
+    fun testProducePerformance(){
+        // 注册主题
+        testRegisterTopic()
+
+        // 预先设置大的超时
+        IRpcRequestMeta.setMethodRequestTimeoutMillis(IMqBrokerService::putMessage, 5000)
+
+        // 生产消息
+        val n = 10000
+        val start = System.currentTimeMillis()
+        var future: CompletableFuture<Long>? = null
+        for(i in 0 until n) {
+            val msg = Message(topic, randomString(7) + " - " + Date().format(), group)
+            future = MqProducer.send(msg)
+        }
+        println("生产 ${n} 个消息")
+        println("请求耗时: ${System.currentTimeMillis() - start} mills")
+        future!!.whenComplete { r, ex ->
+            println("响应耗时: ${System.currentTimeMillis() - start} mills")
+        }
+
+        Thread.sleep(100000)
+    }
+
+
+    @Test
+    fun testConsumePerformance(){
+        val n = AtomicInteger(0)
+        val handler = object: IMessageHandler(true /* 是否并发处理 */ ) {
+            override fun consumeMessages(msgs: Collection<Message>) {
+                n.addAndGet(msgs.size)
+                println(Date().format() + "收到" + n.get() + "消息: " + msgs)
+            }
+        }
+
+        // 订阅主题
+        MqPullConsumer.subscribeTopic(topic, handler)
+        Thread.sleep(1000000)
     }
 
     val id = AtomicLong(0)

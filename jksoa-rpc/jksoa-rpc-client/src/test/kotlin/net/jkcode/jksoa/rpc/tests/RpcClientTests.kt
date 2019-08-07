@@ -1,6 +1,8 @@
 package net.jkcode.jksoa.rpc.tests
 
 import net.jkcode.jkmvc.common.*
+import net.jkcode.jkmvc.serialize.FstSerializer
+import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.rpc.client.protocol.netty.NettyRpcClient
 import net.jkcode.jksoa.rpc.client.referer.Referer
@@ -20,6 +22,13 @@ import kotlin.reflect.jvm.javaMethod
  * @date 2017-12-14 3:11 PM
  */
 class RpcClientTests {
+
+    @Test
+    fun testResponse(){
+        val res = RpcResponse(79228843763695616L, 251)
+        val bs = FstSerializer().serialize(res)
+        println(bs?.size)
+    }
 
     @Test
     fun testProxy(){

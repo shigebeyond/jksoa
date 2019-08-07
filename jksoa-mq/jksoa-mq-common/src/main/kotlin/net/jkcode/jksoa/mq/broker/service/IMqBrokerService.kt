@@ -22,7 +22,7 @@ interface IMqBrokerService {
      * @param msg 消息
      * @return 消息id
      */
-    @RemoteMethod(800)
+    @RemoteMethod(1000)
     fun putMessage(msg: Message): CompletableFuture<Long>
 
     /**
@@ -33,7 +33,7 @@ interface IMqBrokerService {
      * @param msgs 同一个主题的多个消息
      * @return 消息id
      */
-    @RemoteMethod(800)
+    @RemoteMethod(1000)
     fun putMessages(topic: String, msgs: List<Message>): CompletableFuture<Array<Long>>
 
     /****************** 消费者调用 *****************/
@@ -77,7 +77,7 @@ interface IMqBrokerService {
      * @param e 消费异常
      * @return
      */
-    @RemoteMethod(800)
+    @RemoteMethod(1000)
     fun feedbackMessages(topic: String, group: String, id: List<Long>, e: Throwable? = null): CompletableFuture<Unit>
 
 }
