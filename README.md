@@ -52,14 +52,11 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 22. [客户端初始化流程](doc/rpc/client/init-flow.md)
 23. [请求超时](doc/rpc/client/request_timeout.md)
 
-### todo
-24. [令牌验证](doc/rpc/todo/token-authorization.md)
-
 ## 高级
-25. [架构](doc/rpc/architecture.md)
-26. [rpc流程](doc/rpc/rpc-flow.md)
-27. [附加参数](doc/rpc/common/attachment.md)
-28. [优雅的关机](doc/rpc/common/graceful-shutdown.md)
+24. [架构](doc/rpc/architecture.md)
+25. [rpc流程](doc/rpc/rpc-flow.md)
+26. [附加参数](doc/rpc/common/attachment.md)
+27. [优雅的关机](doc/rpc/common/graceful-shutdown.md)
 
 # jksoa-job
 
