@@ -55,7 +55,7 @@ interface IJob {
 
 1. `jobId` -- 作业id
 2. `trigger` -- 触发器实例
-3. `attr` -- 作业属性, 用于存储与传递job实例的状态信息, 在`IJob::execute()`实现中可通过读写该属性来维持状态, 譬如可用于构建session
+3. `attrs` -- 作业属性, 用于存储与传递job实例的状态信息, 在`IJob::execute()`实现中可通过读写该属性来维持状态, 譬如可用于构建session
 
 ```
 package net.jkcode.jksoa.job
