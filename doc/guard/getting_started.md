@@ -89,6 +89,8 @@ interface IGuardService /*: Remote // rmi协议服务接口 */ {
     }
 
     // group合并后要调用的批量方法
+    // 限流
+    @RateLimit(100.0)
     fun listUsersByNameAsync(names: List<String>): CompletableFuture<List<User>>
 
     // 降级: 有异常后备方法
