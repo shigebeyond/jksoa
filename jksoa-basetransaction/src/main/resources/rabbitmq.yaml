@@ -1,0 +1,8 @@
+default:
+    host : 127.0.0.1 # 服务器地址
+    port: 5672 # 端口
+    vhost: / # virtualHost
+    username: root
+    password: root
+    pooledConnectionMaxTotal: 10 # 池化连接的最大数
+
