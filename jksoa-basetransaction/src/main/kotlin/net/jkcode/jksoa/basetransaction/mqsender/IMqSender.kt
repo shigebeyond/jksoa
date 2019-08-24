@@ -1,14 +1,9 @@
 package net.jkcode.jksoa.basetransaction.mqsender
 
-import net.jkcode.jkmvc.cache.ICache
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
-import net.jkcode.jksoa.basetransaction.localmq.ILocalMqRepository
-import net.jkcode.jksoa.basetransaction.localmq.LocalMqRepository
-import net.jkcode.jksoa.job.job.remote.RpcJob
-import net.jkcode.jksoa.job.trigger.CronTrigger
-import net.jkcode.jksoa.rpc.example.ISimpleService
+import java.util.concurrent.CompletableFuture
 
 /**
  * 消息发送者
@@ -29,6 +24,7 @@ abstract class IMqSender {
      * 发送消息
      * @param topic 消息主题
      * @param msg 消息内容
+     * @return
      */
-    public abstract fun sendMq(topic: String, msg: ByteArray)
+    public abstract fun sendMq(topic: String, msg: ByteArray): CompletableFuture<Void>
 }

@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.basetransaction.localmq
 
-import net.jkcode.jkmvc.orm.OrmMeta 
-import net.jkcode.jkmvc.orm.Orm 
+import net.jkcode.jkmvc.orm.Orm
+import net.jkcode.jkmvc.orm.OrmMeta
 
 /**
  * 本地消息模型

@@ -1,6 +1,8 @@
 package net.jkcode.jksoa.basetransaction.localmq
 
+import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.db.Db
+import net.jkcode.jksoa.basetransaction.mqsender.IMqSender
 import net.jkcode.jksoa.job.job.remote.RpcJob
 import net.jkcode.jksoa.job.trigger.CronTrigger
 import java.io.File
@@ -11,7 +13,17 @@ import java.io.File
  * @author shijianhang<772910474@qq.com>
  * @date 2019-08-24 5:36 PM
  */
-object LocalMqRepository : ILocalMqRepository {
+object LocalMqManager : ILocalMqManager {
+
+    /**
+     * 配置
+     */
+    public val config: Config = Config.instance("basetransaction", "yaml")
+
+    /**
+     * 消息发送者
+     */
+    public val sender = IMqSender.instance(config["mqType"]!!)
 
     init {
         // 初始化时建表: local_mq
@@ -27,7 +39,7 @@ object LocalMqRepository : ILocalMqRepository {
      * @param topic 消息主题
      * @param msg 消息内容
      */
-    public override fun add(bizType: String, bizId: String, topic: String, msg: ByteArray) {
+    public override fun addLocalMq(bizType: String, bizId: String, topic: String, msg: ByteArray) {
         val i = LocalMqModel()
         i.bizType = bizType
         i.bizId = bizId
@@ -38,9 +50,9 @@ object LocalMqRepository : ILocalMqRepository {
     }
 
     /**
-     * 启动作业
+     * 启动定时发送消息的作业
      */
-    public fun startJob(){
+    public override fun startSendMqJob(){
         // 定义job
         val job = RpcJob(::processLocalMq)
         // 定义trigger
@@ -55,34 +67,20 @@ object LocalMqRepository : ILocalMqRepository {
      * 定时处理本地消息
      *   查询并发送消息
      */
-    public fun processLocalMq(limit: Int){
+    private fun processLocalMq(limit: Int){
         val msgs = LocalMqModel.queryBuilder().limit(limit).findAllModels<LocalMqModel>()
-        for (msg in msgs)
-            sendMq(msg.topic, msg.msg)
+        for (msg in msgs) {
+            sender.sendMq(msg.topic, msg.msg).whenComplete { r, ex ->
+                if(ex == null)
+                    LocalMqModel.delete(msg.id)
+                else
+                    LocalMqModel.db.execute("UPDATE `local_mq` SET `try_times`=`try_times`+1 WHERE `id`=?", listOf(msg.id))
+            }
+        }
     }
 
-    /**
-     * 删除本地消息
-     * @param id
-     */
-    public override fun delete(id: Int) {
-        LocalMqModel.delete(id)
-    }
-
-    /**
-     * 查询待发送的本地消息
-     * @param limit
-     * @return
-     */
-    public override fun findAll(limit: Int): List<LocalMqModel> {
-        return LocalMqModel.queryBuilder().limit(limit).findAllModels<LocalMqModel>()
-    }
-
-    /**
-     * 增加重试次数
-     * @param id
-     */
-    public override fun increaseTryTimes(id: Int) {
-        LocalMqModel.db.execute("UPDATE `local_mq` SET `try_times`=`try_times`+1 WHERE `id`=?")
+    @JvmStatic
+    fun main(args: Array<String>) {
+        startSendMqJob()
     }
 }
