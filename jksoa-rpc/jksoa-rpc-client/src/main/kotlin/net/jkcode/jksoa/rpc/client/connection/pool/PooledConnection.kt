@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
  *    1 根据 serverPart 来引用连接池
  *      引用的是同一个server的池化连接
  *    2 GenericObjectPool 有定时逐出超过指定空闲时间的空闲连接, 不用自己逐出, 参考配置 timeBetweenEvictionRunsMillis 与 minEvictableIdleTimeMillis
+ *    3 GenericObjectPool 获得空闲连接时会检查连接的有效性, 无效连接自动调用close(), 不用你手动调用
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-23 11:21 AM

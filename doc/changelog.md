@@ -121,3 +121,5 @@
 9. 重构method guard, 支持rpc server
 
 10. 注册中心支持扩展.
+
+11. 添加rabbitmq的连接池

@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.basetransaction.rabbitmq
+package net.jkcode.jksoa.basetransaction.mqsender.rabbitmq.client
 
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
@@ -13,7 +13,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject
  * @author shijianhang<772910474@qq.com>
  * @date 2019-08-23 11:03 AM
  */
-class PooledConnectionFactory(public val config: IConfig) : BasePooledObjectFactory<Connection>() {
+internal class PooledConnectionFactory(public val config: IConfig) : BasePooledObjectFactory<Connection>() {
 
     /**
      * rabbitmq原生的连接工厂

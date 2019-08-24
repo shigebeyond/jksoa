@@ -1,0 +1,2 @@
+mqType: rabbitmq # 消息队列类型: rabbitmq / jkmq
+sendPageSize: 100 # 每次发送的消息数
