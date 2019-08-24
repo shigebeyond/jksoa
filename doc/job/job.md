@@ -182,6 +182,11 @@ val job = ShardingLpcJob(LocalBean::echo, args)
 val job = RpcJob(ISimpleService::echo, arrayOf<Any?>("测试消息"))
 ```
 
+注意:
+
+方法中不要使用默认参数, 否则以下的 `RpcRquest` 构造函数无法识别, 但是手动构造 `RpcRquest` 只在 job 中使用
+`public constructor(func: KFunction<*>, args: Array<Any?> = emptyArray()) : this(func.javaMethod!!, args)`
+
 ## 5. ShardingRpcJob -- 发送分片rpc请求的作业
 调用的是远程方法: `ISimpleService::echo(String)`, 只是加上分片调用
 
