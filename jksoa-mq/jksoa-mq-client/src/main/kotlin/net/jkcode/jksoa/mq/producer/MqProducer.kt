@@ -70,8 +70,7 @@ object MqProducer : IMqProducer {
      */
     public override fun send(msg: Message): CompletableFuture<Long> {
         // data要转为 ByteArray, 否则broker在接收消息并反序列化时, 会报错: 找不到类
-        if(msg.data != null)
-            msg.data = ISerializer.instance("fst").serialize(msg.data!!)
+        msg.serializeData()
 
         // 通过中转者来分发消息
         return brokerService.putMessage(msg).thenApply { id ->

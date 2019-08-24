@@ -40,7 +40,7 @@ data class Message(public val topic: String, // 主题
 
     /**
      * data要转为 ByteArray, 否则broker在接收消息并反序列化时, 会报错: 找不到类
-     *   在producer发给broker前调用
+     *   在producer发给broker前调用, 见 MqProducer.send()
      */
     public fun serializeData(){
         if(data != null)
@@ -48,8 +48,8 @@ data class Message(public val topic: String, // 主题
     }
 
     /**
-     * data要转为 ByteArray, 否则broker在接收消息并反序列化时, 会报错: 找不到类
-     *    在consumer触发 IMessageHandler.consumeMessages() 前调用
+     * data要转为 Object, 方便consumer处理
+     *    在consumer触发 IMessageHandler.consumeMessages() 前调用, 见 TopicMessagesExecutor.handleRequests()
      */
     public fun unserializeData(){
         if(data != null)

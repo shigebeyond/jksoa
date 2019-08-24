@@ -62,6 +62,11 @@ class TopicMessagesExecutor(
     public override fun handleRequests(msgs: List<Message>, reqs: Collection<Pair<Message, CompletableFuture<Unit>>>): CompletableFuture<*> {
         var e: Exception? = null
         try {
+            // data要转为 Object, 方便consumer处理
+            msgs.forEach {
+                it.unserializeData()
+            }
+
             // 消费处理
             handler.consumeMessages(msgs)
         }catch (ex: Exception){
