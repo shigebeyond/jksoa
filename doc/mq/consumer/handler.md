@@ -30,7 +30,7 @@ abstract class IMessageHandler(public val concurrent: Boolean = true /* 是否�
 
 在创建消息处理器`IMessageHandler`时, 就要指定是否并发处理, 即属性 `concurrent`
 
-consumer是使用`TopicMessagesExector`来调用`IMessageHandler`, 他直接将调用扔到`ExecutorService`来执行.
+consumer是使用`TopicMessagesExecutor`来调用`IMessageHandler`, 他直接将调用扔到`ExecutorService`来执行.
 
 而`ExecutorService`的具体实现是根据`IMessageHandler.concurrent`来确定的:
 

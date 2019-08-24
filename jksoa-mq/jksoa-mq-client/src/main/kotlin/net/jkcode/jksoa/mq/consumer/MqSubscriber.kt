@@ -24,7 +24,7 @@ object MqSubscriber: IMqSubscriber {
     /**
      * 消息执行者: <主题 to 执行者>
      */
-    private val exectors: ConcurrentHashMap<String, TopicMessagesExector> = ConcurrentHashMap();
+    private val exectors: ConcurrentHashMap<String, TopicMessagesExecutor> = ConcurrentHashMap();
 
     /**
      * 已订阅的主题
@@ -50,7 +50,7 @@ object MqSubscriber: IMqSubscriber {
             throw MqClientException("Duplicate subcribe to the same topic")
 
         // 添加执行者
-        exectors[topic] = TopicMessagesExector(topic, handler)
+        exectors[topic] = TopicMessagesExecutor(topic, handler)
     }
 
     /**
@@ -64,7 +64,7 @@ object MqSubscriber: IMqSubscriber {
 
     /**
      * 异步消费消息, 消费完给broker反馈消费结果
-     *    扔给topic对应的 TopicMessagesExector 来执行
+     *    扔给topic对应的 TopicMessagesExecutor 来执行
      *
      * @param msg 消息
      * @return
@@ -75,7 +75,7 @@ object MqSubscriber: IMqSubscriber {
 
     /**
      * 异步消费消息, 消费完给broker反馈消费结果
-     *    扔给topic对应的 TopicMessagesExector 来执行
+     *    扔给topic对应的 TopicMessagesExecutor 来执行
      *
      * @param msgs 消息
      * @return

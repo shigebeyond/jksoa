@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.mq
 
 import net.jkcode.jkmvc.common.getWritableFinalField
+import net.jkcode.jkmvc.serialize.ISerializer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerLeaderService
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
@@ -68,6 +69,10 @@ object MqProducer : IMqProducer {
      * @return broker生成的消息id
      */
     public override fun send(msg: Message): CompletableFuture<Long> {
+        // data要转为 ByteArray, 否则broker在接收消息并反序列化时, 会报错: 找不到类
+        if(msg.data != null)
+            msg.data = ISerializer.instance("fst").serialize(msg.data!!)
+
         // 通过中转者来分发消息
         return brokerService.putMessage(msg).thenApply { id ->
             // 回写broker生成的消息id

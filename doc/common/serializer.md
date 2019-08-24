@@ -33,8 +33,8 @@ interface ISerializer {
      * @param bytes
      * @return
      */
-    fun unserizlize(bytes: ByteArray): Any? {
-        return unserizlize(ByteArrayInputStream(bytes))
+    fun unserialize(bytes: ByteArray): Any? {
+        return unserialize(ByteArrayInputStream(bytes))
     }
 
     /**
@@ -43,7 +43,7 @@ interface ISerializer {
      * @param input
      * @return
      */
-    fun unserizlize(input: InputStream): Any?
+    fun unserialize(input: InputStream): Any?
 }
 ```
 
@@ -101,7 +101,7 @@ class FstSerializer: ISerializer {
      * @param bytes
      * @return
      */
-    public override fun unserizlize(bytes: ByteArray): Any? {
+    public override fun unserialize(bytes: ByteArray): Any? {
         return conf.getObjectInput(bytes).readObject()
     }
 
@@ -111,7 +111,7 @@ class FstSerializer: ISerializer {
      * @param input
      * @return
      */
-    public override fun unserizlize(input: InputStream): Any? {
+    public override fun unserialize(input: InputStream): Any? {
         return conf.getObjectInput(input).readObject()
     }
 
@@ -136,7 +136,7 @@ val serializer: ISerializer = ISerializer.instance("序列器名") // 获得序�
 val obj = "hello world"
 val bs = instance.serialize(obj) // 序列化
 if(bs != null) {
-    val obj2 = instance.unserizlize(bs!!) // 反序列化
+    val obj2 = instance.unserialize(bs!!) // 反序列化
     println(obj2)
 }
 ```

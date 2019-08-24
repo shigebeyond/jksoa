@@ -1,0 +1,17 @@
+# 不同数据库的配置
+# mysql, 命名: 小写+下划线
+default:
+  # 主库
+  master:
+    driverClass: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1/tracer?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+  # 多个从库, 可省略
+  slaves:
+    -
+      driverClass: com.mysql.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1/tracer?useUnicode=true&characterEncoding=utf-8
+      username: root
+      password: root
+

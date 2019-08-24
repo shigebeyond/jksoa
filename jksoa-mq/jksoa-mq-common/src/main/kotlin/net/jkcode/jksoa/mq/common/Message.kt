@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.mq.common
 
+import net.jkcode.jkmvc.serialize.ISerializer
 import java.io.Serializable
 import java.util.*
 
@@ -10,7 +11,7 @@ import java.util.*
  * @date 2019-01-09 8:54 PM
  */
 data class Message(public val topic: String, // 主题
-                   public val data: Any?, // 数据
+                   public var data: Any?, // 数据
                    public val groupIds: BitSet = BitSet(), // 分组id
                    public val routeKey: Long = 0 // 路由键, 用于做发送路由与消费路由
 ): Serializable {
@@ -35,6 +36,24 @@ data class Message(public val topic: String, // 主题
      */
     public fun addGroup(group: String){
         groupIds.set(GroupSequence.get(group))
+    }
+
+    /**
+     * data要转为 ByteArray, 否则broker在接收消息并反序列化时, 会报错: 找不到类
+     *   在producer发给broker前调用
+     */
+    public fun serializeData(){
+        if(data != null)
+            data = ISerializer.instance("fst").serialize(data!!)
+    }
+
+    /**
+     * data要转为 ByteArray, 否则broker在接收消息并反序列化时, 会报错: 找不到类
+     *    在consumer触发 IMessageHandler.consumeMessages() 前调用
+     */
+    public fun unserializeData(){
+        if(data != null)
+            data = ISerializer.instance("fst").unserialize(data as ByteArray)
     }
 
     /**

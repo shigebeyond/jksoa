@@ -8,7 +8,7 @@ server端异步执行, 就是将同步阻塞的代码实现, 转为异步的代�
 
 3. 如果实现是做定时定量的批量处理, 则返回批量处理对应的异步结果, 如 `IFlusher`类族
 
-4. 如果实现是要黏在某个线程来执行, 则返回该线程执行的异步结果, 如`TopicMessagesExector`串行执行单topic的消息消费.
+4. 如果实现是要黏在某个线程来执行, 则返回该线程执行的异步结果, 如`TopicMessagesExecutor`串行执行单topic的消息消费.
 
 ## 定义CompletableFuture返回类型的接口
 

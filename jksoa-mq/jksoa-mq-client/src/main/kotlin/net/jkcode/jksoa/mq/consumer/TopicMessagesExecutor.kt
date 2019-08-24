@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-21 4:45 PM
  */
-class TopicMessagesExector(
+class TopicMessagesExecutor(
         public val topic: String, // 主题
         public val handler: IMessageHandler // 消息处理器
 ) : UnitRequestQueueFlusher<Message>(100, 100) {
@@ -68,17 +68,17 @@ class TopicMessagesExector(
             e = ex
         }finally {
             if(e == null) { // 处理成功
-                mqClientLogger.error("TopicMessagesExector消费消息成功: {}", msgs)
+                mqClientLogger.error("TopicMessagesExecutor消费消息成功: {}", msgs)
             }else{ // 处理异常
                 e.printStackTrace()
-                mqClientLogger.error("TopicMessagesExector消费消息出错: msgs={}, exception={}", msgs, e.message)
+                mqClientLogger.error("TopicMessagesExecutor消费消息出错: msgs={}, exception={}", msgs, e.message)
             }
 
             // 反馈消息消费结果
             val ids = msgs.map { msg -> msg.id }
             val group: String = MqPushConsumer.config["group"]!!
             brokerService.feedbackMessages(topic, group, ids, e)
-            mqClientLogger.error("TopicMessagesExector向broker反馈消息结果: topic={}, group={}, ids={}, exception={}", topic, group, ids, e?.message)
+            mqClientLogger.error("TopicMessagesExecutor向broker反馈消息结果: topic={}, group={}, ids={}, exception={}", topic, group, ids, e?.message)
 
             // 返回异步结果
             if(e == null)
