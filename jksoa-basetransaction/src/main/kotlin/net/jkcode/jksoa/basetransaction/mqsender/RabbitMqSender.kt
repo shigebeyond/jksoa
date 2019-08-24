@@ -37,12 +37,14 @@ class RabbitMqSender : IMqSender() {
             // 添加confirm回调
             channel.addConfirmListener(object : ConfirmListener {
 
+                // 投递失败: broker丢失消息, 不保证消息能发送到消费者
                 override fun handleNack(deliveryTag: Long, multiple: Boolean) {
-                    f.complete(null)
+                    f.completeExceptionally(Exception("消息[$deliveryTag]丢失"))
                 }
 
+                // 投递成功
                 override fun handleAck(deliveryTag: Long, multiple: Boolean) {
-                    commonLogger.warn("消息[{}]丢失", deliveryTag)
+                    f.complete(null)
                 }
             })
 
