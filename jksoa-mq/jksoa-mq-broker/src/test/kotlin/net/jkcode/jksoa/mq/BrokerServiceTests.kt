@@ -31,7 +31,7 @@ class BrokerServiceTests {
 
     @Test
     fun testPutMessage(){
-        val msg = Message(topic, randomString(7), group)
+        val msg = Message(topic, randomString(7).toByteArray(), group)
         val id = brokerService.putMessage(msg).get()
         println("接收消息: $msg")
     }

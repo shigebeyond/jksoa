@@ -70,7 +70,8 @@ class MqClientTests {
     @Test
     fun testProducer(){
         // 生产消息
-        val msg = Message(topic, randomString(7) + " - " + Date().format(), group)
+        val body = randomString(7) + " - " + Date().format()
+        val msg = Message(topic, body.toByteArray(), group)
         try {
             val id = MqProducer.send(msg).get()
             println("生产消息: $msg")
@@ -131,7 +132,8 @@ class MqClientTests {
         val start = System.currentTimeMillis()
         var future: CompletableFuture<Long>? = null
         for(i in 0 until n) {
-            val msg = Message(topic, randomString(7) + " - " + Date().format(), group)
+            val body = randomString(7) + " - " + Date().format()
+            val msg = Message(topic, body.toByteArray(), group)
             future = MqProducer.send(msg)
         }
         println("生产 ${n} 个消息")
@@ -169,7 +171,7 @@ class MqClientTests {
             // 创建订单
             val order = Order(id.incrementAndGet(), state + " - " + Date().format())
             // 生产消息
-            val msg = Message(topic, order.toString(), group, order.id)
+            val msg = Message(topic, order.toString().toByteArray(), group, order.id)
             MqProducer.send(msg).get()
         }
     }

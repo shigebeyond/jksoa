@@ -4,7 +4,7 @@
 主要属性
 
 1. `topic` -- 消息主题
-2. `data` -- 消息数据
+2. `body` -- 消息数据
 3. `groupIds` -- 消费者分组id的比特集, 代表多个消费者分组id
 4. `routeKey` -- 路由键, 用于做发送路由与消费路由
 5. `id` -- 消息id, 但只在broker端保存时生成, 保证在同一个topic下有序
@@ -22,7 +22,7 @@ import java.util.*
  * @date 2019-01-09 8:54 PM
  */
 data class Message(public val topic: String, // 主题
-                   public val data: Any?, // 数据
+                   public var body: ByteArray, // 数据
                    public val groupIds: BitSet = BitSet(), // 分组id
                    public val routeKey: Long = 0 // 路由键, 用于做发送路由与消费路由
 ): Serializable {
