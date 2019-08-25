@@ -69,9 +69,6 @@ object MqProducer : IMqProducer {
      * @return broker生成的消息id
      */
     public override fun send(msg: Message): CompletableFuture<Long> {
-        // data要转为 ByteArray, 否则broker在接收消息并反序列化时, 会报错: 找不到类
-        msg.serializeData()
-
         // 通过中转者来分发消息
         return brokerService.putMessage(msg).thenApply { id ->
             // 回写broker生成的消息id
