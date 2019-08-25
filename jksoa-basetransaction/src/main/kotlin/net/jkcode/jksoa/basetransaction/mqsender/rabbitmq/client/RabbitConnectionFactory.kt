@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.basetransaction.mqsender.rabbitmq.client
 
-import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
@@ -12,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class ConnectionHolder(public val conn: Connection){
 
-    public val channel: Channel by lazy{
-        conn.createChannel()
+    public val channel: ConfirmableChannel by lazy{
+        ConfirmableChannel(conn.createChannel())
     }
 }
 
@@ -102,7 +101,7 @@ object RabbitConnectionFactory {
      * @param name 配置标识
      * @return
      */
-    public fun getChannel(name: String = "default"): Channel {
+    public fun getChannel(name: String = "default"): ConfirmableChannel {
         // 获得已有连接
         return getConnectionHolder(name).channel
     }

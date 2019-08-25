@@ -24,7 +24,7 @@ class MessageRepositoryTests {
         // 新建消息
         val msgs = LinkedList<Message>()
         for(i in 0 until 100) {
-            val msg = Message(topic, randomString(7), group)
+            val msg = Message(topic, randomString(7).toByteArray(), group)
             msgs.add(msg)
         }
 
@@ -54,7 +54,7 @@ class MessageRepositoryTests {
     @Test
     fun testPutAndDeleteMessage(){
         // 新建
-        val msg = Message(topic, randomString(7), group)
+        val msg = Message(topic, randomString(7).toByteArray(), group)
         val id = repository.putMessage(msg).get()
 
         // 读取

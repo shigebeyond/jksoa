@@ -19,8 +19,7 @@ class LocalMqTest {
             println("插入user表：" + uid)
 
             // 添加本地消息
-            LocalMqManager.addLocalMq("new user", uid.toString(), "new_user", )
-
+            LocalMqManager.addLocalMq("new user", uid.toString(), "new_user", "new user: $uid".toByteArray())
         }
 
     }
