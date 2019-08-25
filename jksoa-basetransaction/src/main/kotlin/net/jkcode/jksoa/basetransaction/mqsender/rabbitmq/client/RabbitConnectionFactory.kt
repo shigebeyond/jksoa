@@ -71,7 +71,7 @@ object RabbitConnectionFactory {
             val pool = getPool(name)
             var i = 0
             do {
-                // 无效连接直接归还, 连接池会根据 PooledConnectionFactory.validateObject() 来校验空闲的连接的, 因此可安全的调用 borrowObject() 来获得连接
+                // 无效连接直接归还, 不用手动close, 连接池会调用 PooledConnectionFactory.validateObject() 来校验空闲的连接的, 无效连接自动close, 因此可安全的接着调用 borrowObject() 来获得连接
                 if (conn != null)
                     pool.returnObject(conn)
 
@@ -96,7 +96,7 @@ object RabbitConnectionFactory {
     }
 
     /**
-     * 获得rabbit通道
+     * 获得rabbit信道
      *
      * @param name 配置标识
      * @return

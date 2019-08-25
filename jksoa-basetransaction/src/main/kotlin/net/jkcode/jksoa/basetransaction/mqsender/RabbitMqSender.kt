@@ -18,14 +18,14 @@ class RabbitMqSender : IMqSender() {
      * @return
      */
     public override fun sendMq(topic: String, msg: ByteArray): CompletableFuture<Void> {
-        // 获得ThreadLocal的通道
+        // 获得ThreadLocal的信道
         val channel = RabbitConnectionFactory.getChannel()
 
         // 声明队列
-        channel.queueDeclare(topic, false, false, false, null)
+        channel.queueDeclare(topic, true /* 队列持久化 */, false, false, null)
 
         // 发送持久化消息+异步确认
-        return channel.basicPublishAndAsynConfirm("", topic, MessageProperties.PERSISTENT_BASIC, msg)
+        return channel.basicPublishAndAsynConfirm("", topic, MessageProperties.PERSISTENT_BASIC /* 消息持久化 */, msg)
     }
 
 }

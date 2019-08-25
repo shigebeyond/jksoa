@@ -9,4 +9,6 @@ dependencies{
 
     // 定时任务
     compile project(':jksoa-job')
+
+    testRuntime "mysql:mysql-connector-java:5.1.6"
 }

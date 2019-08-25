@@ -1,2 +1,4 @@
 mqType: rabbitmq # 消息队列类型: rabbitmq / jkmq
 sendPageSize: 100 # 每次发送的消息数
+sendSecondSpan: 20 # 重发的时间间隔, 单位秒
+autoStartSendMqJob: true # 自动启动定时发送事务消息表中的消息的作业

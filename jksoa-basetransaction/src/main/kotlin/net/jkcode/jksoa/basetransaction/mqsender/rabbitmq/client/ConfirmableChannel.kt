@@ -7,7 +7,7 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
- * 支持异步确认投递的通道
+ * 支持异步确认投递的信道
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-08-25 11:51 AM

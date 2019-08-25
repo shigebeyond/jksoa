@@ -1,2 +1,2 @@
 # 消息发送者实现
-rabbit: net.jkcode.jksoa.basetransaction.mqsender.RabbitMqSender
+rabbitmq: net.jkcode.jksoa.basetransaction.mqsender.RabbitMqSender
