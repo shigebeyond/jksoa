@@ -9,10 +9,10 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-09 8:54 PM
  */
-data class Message(public val topic: String, // 主题
-                   public val body: ByteArray, // 数据
-                   public val groupIds: BitSet = BitSet(), // 分组id
-                   public val routeKey: Long = 0 // 路由键, 用于做发送路由与消费路由
+data class Message(public var topic: String, // 主题
+                   public var body: ByteArray, // 数据
+                   public var groupIds: BitSet = BitSet(), // 分组id
+                   public var routeKey: Long = 0 // 路由键, 用于做发送路由与消费路由
 ): Serializable {
 
     // 构造函数

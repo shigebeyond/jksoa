@@ -117,6 +117,14 @@ abstract class LsmMessageReader : IMessageRepository {
      * @return
      */
     public override fun getMessage(id: Long): Message? {
-        return queueStore.get(id)
+        // 先查索引, 获得最新分组
+        val groupIds:BitSet? = indexStore.get(id)
+        if(groupIds == null)
+            return null
+
+        // 后查消息, 更新分组
+        val msg = queueStore.get(id)
+        msg?.groupIds = groupIds
+        return msg
     }
 }
