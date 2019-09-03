@@ -106,14 +106,14 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      * @param requestTimeoutMillis 请求超时
      * @return 异步结果
      */
-    public override fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long): List<CompletableFuture<Any?>> {
+    public override fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long): Array<CompletableFuture<Any?>> {
         val connHub: IConnectionHub = IConnectionHub.instance(req.serviceId)
 
         // 获得所有连接(节点)
         val conns = connHub.selectAll(req)
 
         // 2 发送请求，并获得异步响应
-        return conns.map { conn ->
+        return conns.mapToArray { conn ->
             // 发送请求, 支持失败重试
             sendFailover(req, requestTimeoutMillis){ tryTimes: Int -> // 选择连接
                 if(tryTimes == 0) // 第一次选分配好的连接
@@ -133,7 +133,7 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      * @param requestTimeoutMillis 请求超时
      * @return 多个结果
      */
-    public override fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long): List<CompletableFuture<Any?>> {
+    public override fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long): Array<CompletableFuture<Any?>> {
         val connHub: IConnectionHub = IConnectionHub.instance(shdReq.serviceId)
         // 1 分片
         val conns = connHub.selectAll() // 获得所有连接(节点)
@@ -151,7 +151,7 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
         clientLogger.info(msg)
 
         // 2 逐个分片构建并发送rpc请求
-        val futures = ArrayList<CompletableFuture<Any?>>(shardingSize)
+        val futures = arrayOfNulls<CompletableFuture<Any?>>(shardingSize)
         conn2Shds.forEachIndexed { iConn, shds ->
             for(iSharding in shds.iterator()) {
                 // 构建请求
@@ -165,10 +165,10 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
                     else // 第二次随便选
                         connHub.select(req)
                 }
-                futures.add(future)
+                futures[iConn] = future
             }
         }
-        return futures
+        return futures as Array<CompletableFuture<Any?>>
     }
 
 }

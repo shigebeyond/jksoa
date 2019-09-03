@@ -33,7 +33,7 @@ interface IRpcRequestDispatcher {
      * @param requestTimeoutMillis 请求超时
      * @return 异步结果
      */
-    fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): List<CompletableFuture<Any?>>
+    fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): Array<CompletableFuture<Any?>>
 
     /**
      * 分发一个分片的请求
@@ -44,5 +44,5 @@ interface IRpcRequestDispatcher {
      * @param requestTimeoutMillis 请求超时
      * @return 多个异步结果
      */
-    fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long = shdReq.requestTimeoutMillis): List<CompletableFuture<Any?>>
+    fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long = shdReq.requestTimeoutMillis): Array<CompletableFuture<Any?>>
 }
