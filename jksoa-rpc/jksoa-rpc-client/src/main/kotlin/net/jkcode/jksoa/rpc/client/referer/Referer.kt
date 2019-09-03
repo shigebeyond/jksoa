@@ -51,6 +51,8 @@ class Referer(public override val `interface`:Class<*> /* 接口类 */,
          * @param local 限制本地服务
          * @return
          */
+        @JvmStatic
+        @JvmOverloads
         public fun <T> getRefer(clazz: Class<T>, local: Boolean = false): T {
             return getRefer(clazz.name, local)
         }
