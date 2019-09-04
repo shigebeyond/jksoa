@@ -2,16 +2,12 @@ package net.jkcode.jksoa.rpc.client.dispatcher
 
 import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import net.jkcode.jkmvc.common.*
+import net.jkcode.jksoa.common.*
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.client.referer.RefererLoader
-import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.IRpcResponse
-import net.jkcode.jksoa.common.IShardingRpcRequest
-import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
 import net.jkcode.jksoa.rpc.sharding.IShardingStrategy
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -114,12 +110,13 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
 
         // 2 发送请求，并获得异步响应
         return conns.mapToArray { conn ->
+            val newReq = (req as RpcRequest).copy()
             // 发送请求, 支持失败重试
-            sendFailover(req, requestTimeoutMillis){ tryTimes: Int -> // 选择连接
+            sendFailover(newReq, requestTimeoutMillis){ tryTimes: Int -> // 选择连接
                 if(tryTimes == 0) // 第一次选分配好的连接
                     conn
                 else // 第二次随便选
-                    connHub.select(req)
+                    connHub.select(newReq)
             }
         }
     }
