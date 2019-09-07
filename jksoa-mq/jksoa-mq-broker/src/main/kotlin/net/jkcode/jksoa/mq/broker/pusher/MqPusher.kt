@@ -51,7 +51,7 @@ object MqPusher : IMqPusher {
                 return
 
             // 发送请求, 支持失败重试
-            RpcRequestDispatcher.sendFailover(req) { tryTimes: Int ->
+            RpcRequestDispatcher.sendFailover(req) { tryCount: Int ->
                 // 该分组选一个连接
                 connHub.selectGroupConnection(groupId, msg)
             }

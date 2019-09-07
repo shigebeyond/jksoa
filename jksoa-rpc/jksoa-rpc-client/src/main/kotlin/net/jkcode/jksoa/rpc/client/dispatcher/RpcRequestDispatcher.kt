@@ -71,7 +71,7 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
     public override fun dispatch(req: IRpcRequest, requestTimeoutMillis: Long): CompletableFuture<Any?> {
         val connHub: IConnectionHub = IConnectionHub.instance(req.serviceId)
         // 发送请求, 支持失败重试
-        return sendFailover(req, requestTimeoutMillis){ tryTimes: Int -> // 选择连接
+        return sendFailover(req, requestTimeoutMillis){ tryCount: Int -> // 选择连接
             connHub.select(req)
         }
     }
@@ -80,14 +80,14 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      * 发送请求, 支持失败重试
      * @param req
      * @param requestTimeoutMillis
-     * @param connSelector 连接选择器, 参数是 tryTimes, 据此来明确失败重试时的连接选择策略
+     * @param connSelector 连接选择器, 参数是 tryCount, 据此来明确失败重试时的连接选择策略
      * @return 异步结果
      */
-    public fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis, connSelector: (tryTimes: Int) -> IConnection): CompletableFuture<Any?> {
-        return FailoverRpcResponseFuture(config["maxTryTimes"]!!) { tryTimes: Int ->
+    public fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis, connSelector: (tryCount: Int) -> IConnection): CompletableFuture<Any?> {
+        return FailoverRpcResponseFuture(config["maxTryCount"]!!) { tryCount: Int ->
             clientLogger.debug(" ------ dispatch request ------ ")
             // 1 选择连接
-            val conn = connSelector.invoke(tryTimes)
+            val conn = connSelector.invoke(tryCount)
 
             // 2 发送请求，并获得异步响应
             conn.send(req, requestTimeoutMillis)
@@ -112,8 +112,8 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
         return conns.mapToArray { conn ->
             val newReq = (req as RpcRequest).copy()
             // 发送请求, 支持失败重试
-            sendFailover(newReq, requestTimeoutMillis){ tryTimes: Int -> // 选择连接
-                if(tryTimes == 0) // 第一次选分配好的连接
+            sendFailover(newReq, requestTimeoutMillis){ tryCount: Int -> // 选择连接
+                if(tryCount == 0) // 第一次选分配好的连接
                     conn
                 else // 第二次随便选
                     connHub.select(newReq)
@@ -155,9 +155,9 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
                 val req = shdReq.buildRpcRequest(iSharding)
 
                 // 发送请求, 支持失败重试
-                val future = sendFailover(req, requestTimeoutMillis) { tryTimes: Int ->
+                val future = sendFailover(req, requestTimeoutMillis) { tryCount: Int ->
                     // 选择连接
-                    if (tryTimes == 0) // 第一次选分配好的连接
+                    if (tryCount == 0) // 第一次选分配好的连接
                         conns[iConn]
                     else // 第二次随便选
                         connHub.select(req)

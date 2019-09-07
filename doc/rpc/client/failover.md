@@ -82,4 +82,4 @@ respFuture.whenComplete{ r, ex ->
 
 ## 重试次数配置
 
-在 `rpc-client.yaml` 配置文件中的属性 `maxTryTimes`
+在 `rpc-client.yaml` 配置文件中的属性 `maxTryCount`

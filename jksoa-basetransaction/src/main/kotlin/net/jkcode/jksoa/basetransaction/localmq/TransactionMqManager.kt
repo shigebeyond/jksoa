@@ -64,12 +64,12 @@ object TransactionMqManager : ITransactionMqManager {
 
     /**
      * 计算下一次发送时间
-     * @param tryTimes 重试次数
+     * @param tryCount 重试次数
      * @return
      */
-    private fun calculateNextSendTime(tryTimes: Int): Long {
+    private fun calculateNextSendTime(tryCount: Int): Long {
         val now: Long = System.currentTimeMillis() / 1000
-        return now + config.getInt("sendSecondSpan", 10)!! * tryTimes
+        return now + config.getInt("sendSecondSpan", 10)!! * tryCount
     }
 
     /**
@@ -100,7 +100,7 @@ object TransactionMqManager : ITransactionMqManager {
         val msgs = TransactionMqModel.queryBuilder().where("next_send_time", "<=", now).limit(limit).findAllModels<TransactionMqModel>()
         for (msg in msgs) {
             // 更新下一次的重发时间: TODO: 可批量更新, 直接将 calculateNextSendTime()中的时间计算算法写成sql
-            TransactionMqModel.db.execute("UPDATE `local_mq` SET next_send_time = ? WHERE `id`=?", listOf(msg.id, calculateNextSendTime(msg.tryTimes + 1)))
+            TransactionMqModel.db.execute("UPDATE `local_mq` SET next_send_time = ? WHERE `id`=?", listOf(msg.id, calculateNextSendTime(msg.tryCount + 1)))
 
             // 发送消息
             sender.sendMq(msg.topic, msg.msg).whenComplete { r, ex ->

@@ -28,5 +28,5 @@ class TransactionMqModel(id:Int? = null): Orm(id) {
 
 	public var nextSendTime:Long by property() // 创建时间戳, 单位秒
 
-	public var tryTimes:Int by property() // 重试次数
+	public var tryCount:Int by property() // 重试次数
 }
