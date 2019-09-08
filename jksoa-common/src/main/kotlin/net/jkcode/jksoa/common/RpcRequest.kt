@@ -6,6 +6,7 @@ import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
 import java.lang.reflect.Method
+import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
@@ -21,19 +22,20 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
                       public override val methodSignature: String, //方法签名：包含方法名+参数类型
                       public override val args: Array<Any?> = emptyArray(), //实参
                       public override val version: Int = 0 //版本
-): IRpcRequest {
+): IRpcRequest, Cloneable {
 
     companion object {
         /**
          * 请求分发者
          */
-        protected val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance()
+        public val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance()
     }
 
     /**
      * 请求标识，全局唯一
      */
-    public override val id: Long = generateId("rpc")
+    public override var id: Long = generateId("rpc")
+        protected set
 
     /**
      * 附加参数
@@ -67,10 +69,20 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
     }
 
     /**
+     * 克隆对象
+     * @return
+     */
+    public override fun clone(): Any {
+        val o = super.clone() as RpcRequest
+        o.id = generateId("rpc")
+        return o;
+    }
+
+    /**
      * 调用
      * @return
      */
-    public override fun invoke(): Any? {
+    public override fun invoke(): CompletableFuture<Any?> {
         return dispatcher.dispatch(this)
     }
 }

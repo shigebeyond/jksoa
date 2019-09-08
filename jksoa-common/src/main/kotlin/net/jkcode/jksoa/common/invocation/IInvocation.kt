@@ -1,6 +1,9 @@
 package net.jkcode.jksoa.common.invocation
 
 import net.jkcode.jkmvc.common.toExpr
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executor
+import java.util.function.Supplier
 
 /**
  * 方法调用的描述: 方法 + 参数
@@ -30,7 +33,7 @@ interface IInvocation {
      * 调用
      * @return
      */
-    fun invoke(): Any?
+    fun invoke(): CompletableFuture<Any?>
 
     /**
      * 转为描述

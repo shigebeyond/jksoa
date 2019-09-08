@@ -2,8 +2,10 @@ package net.jkcode.jksoa.common.invocation
 
 import net.jkcode.jkmvc.common.getMethodBySignature
 import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jkmvc.singleton.BeanSingletons
 import java.lang.reflect.Method
+import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
@@ -60,7 +62,9 @@ open class Invocation(public override val clazz: String, /* 服务接口类全�
      * 调用
      * @return
      */
-    public override fun invoke(): Any?{
-        return method.invoke(bean, *args)
+    public override fun invoke(): CompletableFuture<Any?> {
+        return trySupplierFuture {
+            method.invoke(bean, *args)
+        }
     }
 }

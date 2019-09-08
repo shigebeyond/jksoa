@@ -1,14 +1,13 @@
 package net.jkcode.jksoa.job
 
 import net.jkcode.jkmvc.common.getMethodBySignature
-import net.jkcode.jkmvc.common.mapToArray
-import net.jkcode.jkmvc.common.trim
 import net.jkcode.jkmvc.validator.ArgsParser
-import net.jkcode.jksoa.job.job.local.LpcJob
-import net.jkcode.jksoa.job.job.local.ShardingLpcJob
-import net.jkcode.jksoa.job.job.remote.RpcJob
-import net.jkcode.jksoa.job.job.remote.ShardingRpcJob
-import java.lang.reflect.Method
+import net.jkcode.jksoa.common.RpcRequest
+import net.jkcode.jksoa.common.ShardingRpcRequest
+import net.jkcode.jksoa.common.invocation.IInvocation
+import net.jkcode.jksoa.common.invocation.Invocation
+import net.jkcode.jksoa.common.invocation.ShardingInvocation
+import net.jkcode.jksoa.job.job.InvocationJob
 
 /**
  * 作业表达式的解析器
@@ -46,38 +45,30 @@ object JobExprParser: IJobParser {
             return c.newInstance() as IJob
         }
 
-        // 2 其他作业类型: lpc / shardingLpc / rpc / shardingRpc
-        val subexprs = expr.split(' ', limit = 4)
-        if(subexprs.size != 4)
-            throw JobException("其他作业表达式是由4个元素组成, 4个元素之间以空格分隔: 1 作业类型 2 类名 3 方法签名 4 方法实参列表")
-        val (type, clazz, methodSignature, argsExpr) = subexprs
+        // 2 其他作业类型: lpc / rpc / shardingLpc / shardingRpc
+        val subexprs = expr.split(' ', limit = 5)
+        if(subexprs.size < 4)
+            throw JobException("其他作业表达式是由5个元素组成, 5个元素之间以空格分隔: 1 作业类型 2 类名 3 方法签名 4 方法实参列表 5 分片处理之每个分片的参数个数, 非分片处理可省略")
+        val type: String = subexprs[0]
+        val clazz: String = subexprs[1]
+        val methodSignature: String = subexprs[2]
+        val argsExpr: String = subexprs[3]
+        val argsPerSharding: Int = if(subexprs.size == 4) 0 else subexprs[4].toInt()
+
         val c = Class.forName(clazz) // ClassNotFoundException
         val m = c.getMethodBySignature(methodSignature)
         if(m == null)
             throw JobException("Class [$clazz] has no method [$methodSignature]") // 无函数
-
-        return when(type){
-            "lpc" -> LpcJob(m, ArgsParser.parse(argsExpr, m!!))
-            "rpc" -> RpcJob(m, ArgsParser.parse(argsExpr, m!!))
-            "shardingLpc" -> ShardingLpcJob(m, parseShardingArgses(argsExpr, m!!))
-            "shardingRpc" -> ShardingRpcJob(m, parseShardingArgses(argsExpr, m!!) )
+        val args = ArgsParser.parse(argsExpr, m!!)
+        val inv: IInvocation = when(type){
+            "lpc" -> Invocation(m, args)
+            "rpc" -> RpcRequest(m, args)
+            "shardingLpc" -> ShardingInvocation(m, args, argsPerSharding)
+            "shardingRpc" -> ShardingRpcRequest(m, args, argsPerSharding)
             else -> throw JobException("无效作业类型: $type")
         }
+        return InvocationJob(inv)
     }
 
-    /**
-     * 解析分片参数
-     *
-     * @param argExpr 参数表达式
-     * @param method 方法
-     * @return
-     */
-    private fun parseShardingArgses(argExpr: String, method: Method): Array<Array<*>> {
-        //val argses = argExpr.split("),(")
-        val argses = argExpr.split("(?<=\\)),(?=\\()".toRegex()) // 每个分片的参数表达式 保留()
-        return argses.mapToArray { args ->
-            ArgsParser.parse(args, method)
-        }
-    }
 
 }

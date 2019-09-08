@@ -1,8 +1,11 @@
 package net.jkcode.jksoa.common.invocation
 
 import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkmvc.common.join
+import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import java.lang.reflect.Method
+import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
@@ -34,4 +37,19 @@ class ShardingInvocation(clazz: String, //服务接口类全名
      * @param args 实参
      */
     public constructor(func: KFunction<*>, args: Array<Any?>, argsPerSharding: Int) : this(func.javaMethod!!, args, argsPerSharding)
+
+    /**
+     * 调用
+     * @return
+     */
+    public override fun invoke(): CompletableFuture<Any?> {
+        val futures = arrayOfNulls<CompletableFuture<Any?>>(shardingSize)
+        for(i in 0 until shardingSize){
+            // 异步调用
+            futures[i] = CompletableFuture.supplyAsync{
+                method.invoke(bean, *getShardingArgs(i)) // 调用bean方法
+            }
+        }
+        return (futures as Array<CompletableFuture<Any?>>).join() as CompletableFuture<Any?>
+    }
 }

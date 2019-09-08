@@ -4,6 +4,7 @@ import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.annotation.remoteService
 import java.lang.reflect.Method
+import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
@@ -39,5 +40,13 @@ class ShardingRpcRequest(clazz: String, //服务接口类全名
 
     public override fun toString(): String {
         return "ShardingRpcRequest: " + toDesc()
+    }
+
+    /**
+     * 调用
+     * @return
+     */
+    public override fun invoke(): CompletableFuture<Any?> {
+        return dispatcher.dispatchSharding(this) as CompletableFuture<Any?>
     }
 }
