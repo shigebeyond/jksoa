@@ -12,7 +12,7 @@ import java.util.*
  * @date 2019-01-21 6:39 PM
  */
 class JobExecutionContext(public override val jobId: Long/* 作业标识，全局唯一 */,
-                                   public override val trigger: ITrigger /* 触发器 */
+                          public override val trigger: ITrigger /* 触发器 */
 ) : IJobExecutionContext {
 
     /**

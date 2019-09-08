@@ -16,8 +16,9 @@ interface IJob {
      * 执行作业
      *
      * @param context 作业执行的上下文
+     * @return 异步则返回CompletableFuture, 否则返回null即可
      */
-    fun execute(context: IJobExecutionContext)
+    fun execute(context: IJobExecutionContext): Any?
 
     /**
      * 转为作业表达式

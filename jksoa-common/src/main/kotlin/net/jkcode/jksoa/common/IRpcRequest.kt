@@ -5,12 +5,18 @@ import java.io.Serializable
 
 /**
  * rpc请求
+ *   远端方法调用的描述: 方法 + 参数
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
 interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
+
+    /**
+     * 请求标识，全局唯一
+     */
+    val id: Long
 
     /**
      * 服务标识，即接口类全名
@@ -71,6 +77,14 @@ interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
      */
     public fun setAttachment(key: String, value: Any?) {
         attachments[key] = value
+    }
+
+    /**
+     * 设置附加参数
+     * @param data
+     */
+    public fun setAttachments(data: Map<String, Any?>) {
+        attachments.putAll(data)
     }
 
     /**

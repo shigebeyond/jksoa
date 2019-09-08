@@ -1,14 +1,11 @@
 package net.jkcode.jksoa.job.trigger
 
-import net.jkcode.jkmvc.common.add
-import net.jkcode.jkmvc.common.format
-import net.jkcode.jkmvc.common.CommonSecondTimer
-import net.jkcode.jkmvc.common.CommonThreadPool
+import io.netty.util.Timeout
+import io.netty.util.TimerTask
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.job.IJob
 import net.jkcode.jksoa.job.ITrigger
 import net.jkcode.jksoa.job.jobLogger
-import io.netty.util.Timeout
-import io.netty.util.TimerTask
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
@@ -88,23 +85,22 @@ abstract class BaseTrigger : ITrigger {
                     JobExecutionContext(job.id, this)
                 }!!
                 // 执行作业, 要处理好异常
-                var ex: Exception? = null
-                try {
+                val resFuture = trySupplierFuture {
+                    // 执行作业
                     jobLogger.debug("{}执行作业: {}", this.javaClass.simpleName, ctx)
                     job.execute(ctx)
-                }catch (e: Exception){
-                    e.printStackTrace()
-                    ex = e
-                }
-                // 保存作业属性
-                /*if(ctx.attrs.dirty) {
-                    // TODO: 保存 ctx.attrs
-                    ctx.attrs.cleanDirty()
-                }*/
 
-                // 记录作业执行异常, 对rpc作业由其自己作业来记录
-                if(ex != null)
-                    job.logExecutionException(ex)
+                    // 保存作业属性
+                    /*if(ctx.attrs.dirty) {
+                        // TODO: 保存 ctx.attrs
+                        ctx.attrs.cleanDirty()
+                    }*/
+                }
+
+                // 记录执行异常
+                resFuture.exceptionally{
+                    job.logExecutionException(it)
+                }
             }
 
             // 重复次数+1

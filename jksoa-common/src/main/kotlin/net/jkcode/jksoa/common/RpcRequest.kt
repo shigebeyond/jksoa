@@ -4,22 +4,31 @@ import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.annotation.remoteService
+import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
 /**
  * rpc请求
+ *    远端方法调用的描述: 方法 + 参数
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-data class RpcRequest(public override val clazz: String, /* 服务接口类全名 */
-                      public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
-                      public override val args: Array<Any?> = emptyArray() /* 实参 */,
-                      public override val version: Int = 0 /* 版本 */
+open class RpcRequest(public override val clazz: String, //服务接口类全名
+                      public override val methodSignature: String, //方法签名：包含方法名+参数类型
+                      public override val args: Array<Any?> = emptyArray(), //实参
+                      public override val version: Int = 0 //版本
 ): IRpcRequest {
+
+    companion object {
+        /**
+         * 请求分发者
+         */
+        protected val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance()
+    }
 
     /**
      * 请求标识，全局唯一
@@ -57,4 +66,11 @@ data class RpcRequest(public override val clazz: String, /* 服务接口类全�
         return "RpcRequest: " + toDesc()
     }
 
+    /**
+     * 调用
+     * @return
+     */
+    public override fun invoke(): Any? {
+        return dispatcher.dispatch(this)
+    }
 }

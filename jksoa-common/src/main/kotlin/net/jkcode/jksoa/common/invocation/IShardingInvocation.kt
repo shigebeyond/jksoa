@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.common.invocation
 
 import net.jkcode.jkmvc.common.toExpr
+import java.util.*
 
 /**
  * 分片方法调用的描述
@@ -9,18 +10,29 @@ import net.jkcode.jkmvc.common.toExpr
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IShardingInvocation: IInvocationMethod {
+interface IShardingInvocation: IInvocation {
+
+    /**
+     * 每个分片的参数个数
+     */
+    val argsPerSharding: Int
 
     /**
      * 分片总数
      */
     val shardingSize: Int
-        get() = shardingArgses.size
+        get() = args.size / argsPerSharding
 
     /**
-     * 分片要调用的实参
+     * 获得指定分片的实参
+     * @param iSharding 分片序号
+     * @return
      */
-    val shardingArgses: Array<Array<*>>
+    fun getShardingArgs(iSharding: Int): Array<Any?> {
+        val shardingArgs: Array<Any?> = arrayOfNulls(argsPerSharding)
+        System.arraycopy(args, argsPerSharding * iSharding, shardingArgs, 0, argsPerSharding)
+        return shardingArgs
+    }
 
     /**
      * 转为描述
@@ -28,11 +40,7 @@ interface IShardingInvocation: IInvocationMethod {
      * @return
      */
     override fun toDesc(): String {
-        return "method=$clazz.$methodSignature, shardingSize=$shardingSize, shardingArgses=" + shardingArgses.joinToString(", ", "[", "]"){ args ->
-            args.joinToString(", ", "(", ")"){
-                it.toExpr()
-            }
-        }
+        return super.toDesc() + ", argsPerSharding=" + argsPerSharding
     }
 
     /**
@@ -40,10 +48,6 @@ interface IShardingInvocation: IInvocationMethod {
      * @return
      */
     override fun toExpr(): String {
-        return "$clazz $methodSignature " + shardingArgses.joinToString(","){ args ->
-            args.joinToString(",", "(", ")"){
-                it.toExpr()
-            }
-        }
+        return super.toExpr() + " " + argsPerSharding
     }
 }

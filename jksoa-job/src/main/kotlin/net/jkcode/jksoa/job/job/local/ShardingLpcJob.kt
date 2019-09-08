@@ -54,14 +54,14 @@ data class ShardingLpcJob(public override val clazz: String, /* 服务接口类�
     protected fun execute1Sharding(context: IJobExecutionContext, i: Int) {
         // 1 如果是最后一个分片, 则在当前线程处理
         if(i == shardingArgses.size - 1){
-            method.invoke(bean, *shardingArgses[i]) // 调用bean方法
+            method.invoke(bean, *getShardingArgs(i)) // 调用bean方法
             return
         }
 
         // 2 使用线程池来并发处理每个分片
         CommonThreadPool.execute{
             try{
-                method.invoke(bean, *shardingArgses[i]) // 调用bean方法
+                method.invoke(bean, *getShardingArgs(i)) // 调用bean方法
             }catch (e: Exception){
                 e.printStackTrace()
             }

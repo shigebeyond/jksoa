@@ -4,17 +4,12 @@ import net.jkcode.jksoa.common.invocation.IShardingInvocation
 
 /**
  * 分片的rpc请求
+ *    远端方法调用的描述: 方法 + 参数
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:03 AM
  */
-interface IShardingRpcRequest : IShardingInvocation, IRpcRequestMeta {
-
-    /**
-     * 要调用的服务标识，即接口类全名
-     */
-    val serviceId: String
-        get() = clazz
+interface IShardingRpcRequest : IShardingInvocation, IRpcRequest {
 
     /**
      * 构建rpc请求
@@ -22,7 +17,9 @@ interface IShardingRpcRequest : IShardingInvocation, IRpcRequestMeta {
      * @return
      */
     fun buildRpcRequest(iSharding: Int): IRpcRequest {
-        return RpcRequest(serviceId, methodSignature, shardingArgses[iSharding] as Array<Any?>, version)
+        val req = RpcRequest(serviceId, methodSignature, getShardingArgs(iSharding), version)
+        req.setAttachments(attachments)
+        return req
     }
 
 }

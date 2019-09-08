@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.job.job.local
 
-import net.jkcode.jkmvc.singleton.BeanSingletons
 import net.jkcode.jkmvc.common.getMethodBySignature
-import net.jkcode.jksoa.common.invocation.IInvocationMethod
+import net.jkcode.jkmvc.singleton.BeanSingletons
+import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.job.JobException
 import net.jkcode.jksoa.job.job.BaseJob
 import java.lang.reflect.Method
@@ -12,7 +12,7 @@ import java.lang.reflect.Method
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-23 8:41 PM
  */
-abstract class BaseLpcJob() : BaseJob(), IInvocationMethod {
+abstract class BaseLpcJob() : BaseJob(), IInvocation {
 
     /**
      * 被调用的bean

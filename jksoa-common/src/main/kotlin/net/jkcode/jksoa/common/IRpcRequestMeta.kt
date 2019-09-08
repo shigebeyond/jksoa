@@ -3,7 +3,7 @@ package net.jkcode.jksoa.common
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.getMethodBySignature
 import net.jkcode.jksoa.common.annotation.remoteMethod
-import net.jkcode.jksoa.common.invocation.IInvocationMethod
+import net.jkcode.jksoa.common.invocation.IInvocation
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KFunction
@@ -14,7 +14,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-24 4:03 PM
  */
-interface IRpcRequestMeta: IInvocationMethod {
+interface IRpcRequestMeta: IInvocation {
 
     companion object {
 

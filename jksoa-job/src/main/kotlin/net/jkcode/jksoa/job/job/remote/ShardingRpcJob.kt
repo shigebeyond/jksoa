@@ -1,11 +1,10 @@
 package net.jkcode.jksoa.job.job.remote
 
-import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
-import net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.invocation.IShardingInvocation
 import net.jkcode.jksoa.job.IJob
 import net.jkcode.jksoa.job.IJobExecutionContext
+import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -22,7 +21,7 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : IJob, IShardingInv
         /**
          * 请求分发者
          */
-        protected val dispatcher: IRpcRequestDispatcher = RpcRequestDispatcher
+        protected val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance()
 
     }
 
@@ -41,19 +40,6 @@ class ShardingRpcJob(protected val req: ShardingRpcRequest) : IJob, IShardingInv
      * @param shardingArgses 分片要调用的实参
      */
     public constructor(func: KFunction<*>, shardingArgses: Array<Array<*>>) : this(func.javaMethod!!, shardingArgses)
-
-    /**
-     * 执行作业
-     * @param context 作业执行的上下文
-     */
-    public override fun execute(context: IJobExecutionContext) {
-        val resFutures = dispatcher.dispatchSharding(req)
-        // 记录执行异常
-        for(resFuture in resFutures)
-            resFuture.exceptionally{
-                this.logExecutionException(it)
-            }
-    }
 
     /**
      * 转为字符串

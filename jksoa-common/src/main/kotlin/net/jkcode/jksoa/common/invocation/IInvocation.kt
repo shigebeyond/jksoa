@@ -9,7 +9,17 @@ import net.jkcode.jkmvc.common.toExpr
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IInvocation : IInvocationMethod {
+interface IInvocation {
+
+    /**
+     * 类名
+     */
+    val clazz: String
+
+    /**
+     * 方法签名：包含方法名+参数类型
+     */
+    val methodSignature: String
 
     /**
      * 实参
@@ -17,12 +27,18 @@ interface IInvocation : IInvocationMethod {
     val args: Array<Any?>
 
     /**
+     * 调用
+     * @return
+     */
+    fun invoke(): Any?
+
+    /**
      * 转为描述
      *
      * @return
      */
-    override fun toDesc(): String {
-        return "id=$id, method=$clazz.$methodSignature, args=" +  args.joinToString(", ", "[", "]"){
+    fun toDesc(): String {
+        return "method=$clazz.$methodSignature, args=" +  args.joinToString(", ", "[", "]"){
             it.toExpr()
         }
     }
@@ -31,7 +47,7 @@ interface IInvocation : IInvocationMethod {
      * 转为表达式
      * @return
      */
-    override fun toExpr(): String {
+    fun toExpr(): String {
         return "$clazz $methodSignature " + args.joinToString(",", "(", ")"){
             it.toExpr()
         }
