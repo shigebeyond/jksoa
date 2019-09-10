@@ -1,13 +1,11 @@
 package net.jkcode.jksoa.dtx.tcc
 
 import net.jkcode.jkmvc.common.*
-import net.jkcode.jksoa.dtx.dtxLogger
 import net.jkcode.jksoa.dtx.tcc.model.TccParticipant
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.reflect.MethodSignature
 import java.util.concurrent.CompletableFuture
-import kotlin.reflect.KProperty1
 
 /**
  * tcc事务的管理者
@@ -102,7 +100,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
             if (ex == null) { // 3.1 调用成功, 则提交事务
                 tx.commit()
             } else { // 3.2 调用失败, 则回滚事务
-                dtxLogger.warn("Tcc transaction trying failed, transaction={}, exception={}", tx, ex)
+                dtxTccLogger.warn("Tcc transaction trying failed, transaction={}, exception={}", tx, ex)
                 tx.rollback()
                 throw ex
             }
@@ -198,7 +196,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
             else
                 tx.rollback()
         }else{
-            dtxLogger.error("{}分支事务[$txCtx]失败: 事务不存在", if(txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) "确认" else "取消")
+            dtxTccLogger.error("{}分支事务[$txCtx]失败: 事务不存在", if(txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) "确认" else "取消")
         }
 
         // 3 返回默认的结果值

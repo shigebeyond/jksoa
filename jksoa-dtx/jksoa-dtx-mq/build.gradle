@@ -7,9 +7,6 @@ dependencies{
     // rabbitmq
     compile "com.rabbitmq:amqp-client:3.6.6"
 
-    // 切面
-    compile "org.aspectj:aspectjrt:${aspectj_version}"
-
     // 定时任务
     compile project(':jksoa-job')
 

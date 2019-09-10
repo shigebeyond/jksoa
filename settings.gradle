@@ -5,7 +5,8 @@ include 'jksoa-rpc:jksoa-rpc-registry', 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc
 include 'jksoa-job'
 include 'jksoa-mq:jksoa-mq-common', 'jksoa-mq:jksoa-mq-registry', 'jksoa-mq:jksoa-mq-client', 'jksoa-mq:jksoa-mq-broker'
 include 'jksoa-tracer:jksoa-tracer-common', 'jksoa-tracer:jksoa-tracer-agent', 'jksoa-tracer:jksoa-tracer-collector', 'jksoa-tracer:jksoa-tracer-web'
-include 'jksoa-dtx'
+include 'jksoa-dtx:jksoa-dtx-mq', 'jksoa-dtx:jksoa-dtx-tcc'
+include 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-common', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-goods', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-order', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-web'
 
 // 添加jkmvc子项目
 include 'jkmvc-common'

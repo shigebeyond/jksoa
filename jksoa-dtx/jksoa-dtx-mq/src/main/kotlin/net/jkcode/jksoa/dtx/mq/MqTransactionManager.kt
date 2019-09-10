@@ -2,7 +2,6 @@ package net.jkcode.jksoa.dtx.mq
 
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.db.Db
-import net.jkcode.jksoa.dtx.dtxLogger
 import net.jkcode.jksoa.dtx.mq.model.MqTransactionModel
 import net.jkcode.jksoa.dtx.mq.mqsender.IMqSender
 import net.jkcode.jksoa.job.job.LambdaJob
@@ -100,7 +99,7 @@ object MqTransactionManager : IMqTransactionManager {
      * 处理到期消息发送
      */
     private fun processExpiredMqs(){
-        dtxLogger.debug("定时处理事务消息")
+        dtxMqLogger.debug("定时处理事务消息")
         // 查询事务消息
         val limit: Int = config["sendPageSize"]!!
         val now: Long = System.currentTimeMillis() / 1000
