@@ -47,20 +47,27 @@ object MqTransactionManager : IMqTransactionManager {
 
     /**
      * 添加事务消息
-     * @param bizType 业务类型
-     * @param bizId 业务主体编号
      * @param topic 消息主题
      * @param msg 消息内容
+     * @param bizType 业务类型
+     * @param bizId 业务主体编号
      */
-    public override fun addMq(bizType: String, bizId: String, topic: String, msg: ByteArray) {
-        val tx = MqTransactionModel()
-        tx.bizType = bizType
-        tx.bizId = bizId
-        tx.topic = topic
-        tx.msg = msg
-        tx.created = System.currentTimeMillis() / 1000
-        tx.nextSendTime = calculateNextSendTime(0)
-        tx.save()
+    public override fun addMq(topic: String, msg: ByteArray, bizType: String, bizId: String) {
+        // 1 保存消息事务
+        val mq = MqTransactionModel()
+        mq.topic = topic
+        mq.msg = msg
+        mq.bizType = bizType
+        mq.bizId = bizId
+        mq.created = System.currentTimeMillis() / 1000
+        mq.nextSendTime = calculateNextSendTime(0)
+        mq.create()
+
+        // 2 在事务完成回调中发送消息
+        MqTransactionModel.db.addTransactionCallback { commited ->
+            if(commited)
+                processMq(mq)
+        }
     }
 
     /**
@@ -79,7 +86,7 @@ object MqTransactionManager : IMqTransactionManager {
     public override fun startSendMqJob(){
         // 定义job
         val job = LambdaJob{
-            processLocalMq()
+            processExpiredMqs()
         }
         // 定义trigger
         val trigger = CronTrigger("0/5 * * * * ?")
@@ -90,25 +97,34 @@ object MqTransactionManager : IMqTransactionManager {
     }
 
     /**
-     * 定时处理事务消息
-     *   查询并发送消息
+     * 处理到期消息发送
      */
-    private fun processLocalMq(){
+    private fun processExpiredMqs(){
         dtxLogger.debug("定时处理事务消息")
         // 查询事务消息
         val limit: Int = config["sendPageSize"]!!
         val now: Long = System.currentTimeMillis() / 1000
         val msgs = MqTransactionModel.queryBuilder().where("next_send_time", "<=", now).limit(limit).findAllModels<MqTransactionModel>()
-        for (msg in msgs) {
-            // 更新下一次的重发时间: TODO: 可批量更新, 直接将 calculateNextSendTime()中的时间计算算法写成sql
-            MqTransactionModel.db.execute("UPDATE `local_mq` SET next_send_time = ? WHERE `id`=?", listOf(msg.id, calculateNextSendTime(msg.tryCount + 1)))
+        for (msg in msgs)
+            processMq(msg)
+    }
 
-            // 发送消息
-            sender.sendMq(msg.topic, msg.msg).whenComplete { r, ex ->
-                if(ex == null) // 发送成功, 则删除事务消息
-                    MqTransactionModel.delete(msg.id)
-                else  // 发送失败, 则更新重试次数
-                    MqTransactionModel.db.execute("UPDATE `local_mq` SET `try_times`=`try_times`+1 WHERE `id`=?", listOf(msg.id))
+    /**
+     * 处理单个消息发送
+     * @param msg
+     */
+    private fun processMq(msg: MqTransactionModel) {
+        // 更新下一次的重发时间: TODO: 可批量更新, 直接将 calculateNextSendTime()中的时间计算算法写成sql
+        msg.nextSendTime = calculateNextSendTime(msg.tryCount + 1)
+        msg.update()
+
+        // 发送消息
+        sender.sendMq(msg.topic, msg.msg).whenComplete { r, ex ->
+            if (ex == null) // 发送成功, 则删除事务消息
+                msg.delete()
+            else {  // 发送失败, 则更新重试次数
+                msg.tryCount = msg.tryCount + 1
+                msg.update()
             }
         }
     }

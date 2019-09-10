@@ -19,7 +19,6 @@ class TccMethodAspect {
      */
     @Pointcut("@annotation(net.jkcode.jksoa.dtx.tcc.TccMethod)")
     public fun tccMethod() {
-
     }
 
     /**

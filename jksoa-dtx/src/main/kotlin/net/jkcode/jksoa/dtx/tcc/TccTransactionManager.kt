@@ -7,6 +7,7 @@ import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.reflect.MethodSignature
 import java.util.concurrent.CompletableFuture
+import kotlin.reflect.KProperty1
 
 /**
  * tcc事务的管理者
@@ -33,8 +34,10 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
 
     /**
      * 当前事务
-     *   1. 在根事务/分支事务开始时, 必须要给该属性赋值, 即记录当前事务, 因为后续步骤添加参与者时要用到
-     *   2. 在根事务/分支事务结束时, 不能仅清理该属性, 即调用 this.txt = null, 而要清空当前事务, 即调用 removeCurrent()
+     *   1. 写
+     *   1.1 在根事务/分支事务开始时, 必须要给该属性赋值, 即记录当前事务, 因为后续步骤添加参与者时要用到
+     *   1.2 在根事务/分支事务结束时, 不能仅清理该属性, 即调用 this.txt = null, 而要清空当前事务, 即调用 removeCurrent()
+     *   2. 读, 在根事务/分支事务过程中被其他参与者来读
      *   3. 不需要事务层级, tx为null表示第一级, 非null表示其他级
      */
     public override var tx: TccTransactionModel? = null
@@ -82,6 +85,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
         tx.id = generateId("tcc")
         tx.parentId = 0
         tx.status = TccTransactionModel.STATUS_TRYING
+        tx.setBizProp(pjp)
         tx.create()
 
         // 1 作为当前事务
@@ -158,6 +162,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
             tx.id = txCtx!!.branchId // 分支事务id
             tx.parentId = txCtx!!.id // 父事务id
             tx.status = TccTransactionModel.STATUS_TRYING
+            tx.setBizProp(pjp)
             tx.create()
 
             // 1 作为当前事务
@@ -206,16 +211,15 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
      *    1. 查询到期的确认中/取消中的根事务, 进而提交/回滚该事务
      *    2. 只有根事务才能发起恢复, 分支事务无权发起恢复, 反正根事务会调用分支事务的确认/取消方法
      */
-    override fun recover(){
+    public override fun recover(){
         // 查询到期的确认中/取消中的根事务
         val rertySeconds: Int = config["rertySeconds"]!! // 重试秒数
         val maxRetryCount: Int = config["maxRetryCount"]!! // 最大的重试次数
-        val time: Long = System.currentTimeMillis() / 1000
+        val now: Long = System.currentTimeMillis() / 1000
         val txs = TccTransactionModel.queryBuilder()
-                .where("domain", "=", Application.name)
                 .where("parent_id", "=", 0) // 根事务
                 .where("status", "IN", arrayOf(TccTransactionModel.STATUS_CONFIRMING, TccTransactionModel.STATUS_CANCELING)) // 确认中/取消中的事务
-                .where("updated", "<=", time - rertySeconds) // 过了重试秒数
+                .where("updated", "<=", now - rertySeconds) // 过了重试秒数
                 .where("retry_count", "<", maxRetryCount) // 过了重试秒数
                 .findAllModels<TccTransactionModel>()
 

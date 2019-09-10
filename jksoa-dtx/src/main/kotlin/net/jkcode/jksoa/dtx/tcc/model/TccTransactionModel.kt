@@ -1,9 +1,14 @@
 package net.jkcode.jksoa.dtx.tcc.model
 
 import net.jkcode.jkmvc.common.Application
+import net.jkcode.jkmvc.common.getProperty
 import net.jkcode.jkmvc.orm.OrmMeta
 import net.jkcode.jkmvc.orm.Orm
 import net.jkcode.jksoa.common.RpcRequest
+import net.jkcode.jksoa.dtx.tcc.tccMethod
+import org.aspectj.lang.ProceedingJoinPoint
+import org.aspectj.lang.reflect.MethodSignature
+import kotlin.reflect.KProperty1
 
 /**
  * tcc事务
@@ -42,7 +47,9 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	// 代理属性读写
 	public var id:Long by property() // 事务编号
 
-	public var domain:String by property() // 业务领域
+	public var bizType:String by property() // 业务类型
+
+	public var bizId:String by property() // 业务主体编号
 
 	public var parentId:Long by property() // 父事务编号
 
@@ -59,6 +66,44 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	public var updated:Long by property() // 更新时间
 
 	public var version:Int by property() // 版本
+
+	/**
+	 * 设置事务的业务相关字段: 业务类型 + 业务主体编号
+	 * @param pjp
+	 */
+	public fun setBizProp(pjp: ProceedingJoinPoint){
+		val method = (pjp.signature as MethodSignature).method
+		val annotation = method.tccMethod!!
+
+		// 1 业务类型
+		this.bizType = Application.name + '.' + annotation.bizType
+
+		// 2 业务主体编号
+		if(annotation.bizIdParamField.isBlank())
+			return
+		val fields = annotation.bizIdParamField.split('.')
+		if(fields.isEmpty())
+			return
+		// 2.1 第一层是参数序号
+		val i: Int = fields[0].toInt()
+		var value: Any? = pjp.args[i]
+		if(value == null)
+			return
+
+		// 2.2 其他层是参数字段名
+		for(i in 1 until fields.size){
+			// 通过反射读取字段值
+			val prop = value!!::class.getProperty(fields[i]) as KProperty1<Any, Any?>?
+			if(prop == null)
+				return
+
+			value = prop.get(value)
+			if(value == null)
+				return
+		}
+		if(value != null)
+			this.bizId = value.toString()
+	}
 
 	/**
 	 * 添加参与者
@@ -130,7 +175,6 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	 * 添加创建字段
 	 */
 	override fun beforeCreate() {
-		domain = Application.name
 		created = System.currentTimeMillis() / 1000
 	}
 

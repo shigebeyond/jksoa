@@ -25,7 +25,7 @@ class MqTransactionTest {
             println("插入user表：" + uid)
 
             // 添加事务消息
-            MqTransactionManager.addMq("new user", uid.toString(), topic, "new user: $uid".toByteArray())
+            MqTransactionManager.addMq(topic, "new user: $uid".toByteArray(), "new user", uid.toString())
         }
 
         Thread.sleep(100000)
