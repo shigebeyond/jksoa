@@ -4,7 +4,6 @@ import net.jkcode.jkmvc.common.Application
 import net.jkcode.jkmvc.orm.OrmMeta
 import net.jkcode.jkmvc.orm.Orm
 import net.jkcode.jksoa.common.RpcRequest
-import net.jkcode.jksoa.dtx.tcc.TccException
 
 /**
  * tcc事务
@@ -80,7 +79,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 		if(last.confirmInvocation is RpcRequest)
 			return last
 
-		throw TccException("当前参与者不是rpc类型")
+		throw IllegalStateException("当前参与者不是rpc类型")
 	}
 
 	/**
