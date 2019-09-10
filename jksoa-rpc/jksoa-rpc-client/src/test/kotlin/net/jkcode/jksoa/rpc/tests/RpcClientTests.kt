@@ -3,11 +3,11 @@ package net.jkcode.jksoa.rpc.tests
 import net.jkcode.jkmvc.common.*
 import net.jkcode.jkmvc.serialize.FstSerializer
 import net.jkcode.jksoa.common.RpcResponse
-import net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher
-import net.jkcode.jksoa.rpc.client.protocol.netty.NettyRpcClient
-import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.rpc.client.protocol.netty.NettyRpcClient
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.example.IGuardService
 import net.jkcode.jksoa.rpc.example.ISimpleService
 import org.junit.Test
@@ -158,11 +158,11 @@ class RpcClientTests {
 
     @Test
     fun testShardingRequest(){
-        val args:Array<Array<*>> = Array(3) { i ->
-            arrayOf("第${i}个分片的参数") // ISimpleService::echo 的实参
+        val args:Array<Any?> = Array(3) { i ->
+            "第${i}个分片的参数" // ISimpleService::echo 的实参
         }
-        val job = ShardingRpcRequest(ISimpleService::echo, args)
-        val dispatcher = RpcRequestDispatcher
+        val job = ShardingRpcRequest(ISimpleService::echo, args, 1)
+        val dispatcher = IRpcRequestDispatcher.instance()
         val futures = dispatcher.dispatchSharding(job)
         futures.print()
     }

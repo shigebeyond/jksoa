@@ -3,10 +3,11 @@ package net.jkcode.jksoa.rpc.client.dispatcher
 import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.common.*
+import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.client.referer.RefererLoader
-import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
 import net.jkcode.jksoa.rpc.sharding.IShardingStrategy
 import java.util.concurrent.CompletableFuture
 
@@ -20,7 +21,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
-object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
+class RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
 
     /**
      * 客户端配置
@@ -102,15 +103,15 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      * @param requestTimeoutMillis 请求超时
      * @return 异步结果
      */
-    public override fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long): Array<CompletableFuture<Any?>> {
+    public override fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long): CompletableFuture<Array<Any?>> {
         val connHub: IConnectionHub = IConnectionHub.instance(req.serviceId)
 
         // 获得所有连接(节点)
         val conns = connHub.selectAll(req)
 
         // 2 发送请求，并获得异步响应
-        return conns.mapToArray { conn ->
-            val newReq = (req as RpcRequest).copy()
+        val futures = conns.mapToArray { conn ->
+            val newReq = (req as RpcRequest).clone() as RpcRequest
             // 发送请求, 支持失败重试
             sendFailover(newReq, requestTimeoutMillis){ tryCount: Int -> // 选择连接
                 if(tryCount == 0) // 第一次选分配好的连接
@@ -119,6 +120,7 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
                     connHub.select(newReq)
             }
         }
+        return futures.join()
     }
 
     /**
@@ -130,7 +132,7 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      * @param requestTimeoutMillis 请求超时
      * @return 多个结果
      */
-    public override fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long): Array<CompletableFuture<Any?>> {
+    public override fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long): CompletableFuture<Array<Any?>> {
         val connHub: IConnectionHub = IConnectionHub.instance(shdReq.serviceId)
         // 1 分片
         val conns = connHub.selectAll() // 获得所有连接(节点)
@@ -155,17 +157,16 @@ object RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
                 val req = shdReq.buildRpcRequest(iSharding)
 
                 // 发送请求, 支持失败重试
-                val future = sendFailover(req, requestTimeoutMillis) { tryCount: Int ->
+                futures[iConn] = sendFailover(req, requestTimeoutMillis) { tryCount: Int ->
                     // 选择连接
                     if (tryCount == 0) // 第一次选分配好的连接
                         conns[iConn]
                     else // 第二次随便选
                         connHub.select(req)
                 }
-                futures[iConn] = future
             }
         }
-        return futures as Array<CompletableFuture<Any?>>
+        return (futures as Array<CompletableFuture<Any?>>).join()
     }
 
 }

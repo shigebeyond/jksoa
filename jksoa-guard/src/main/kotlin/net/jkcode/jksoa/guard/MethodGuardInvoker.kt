@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.guard
 
 import net.jkcode.jkmvc.common.currMillis
+import net.jkcode.jkmvc.common.resultFromFuture
 import net.jkcode.jkmvc.common.toExpr
 import net.jkcode.jksoa.rpc.client.combiner.annotation.degrade
 import java.lang.reflect.Method
@@ -54,13 +55,13 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         val methodGuard = getMethodGuard(method) // 获得方法守护者
         if (methodGuard.groupCombiner != null) {
             val resFuture = methodGuard.groupCombiner!!.add(args.single()!!)
-            return handleResult(method, resFuture)
+            return method.resultFromFuture(resFuture)
         }
 
         // 1.2 根据key来合并请求
         if (methodGuard.keyCombiner != null) {
             val resFuture = methodGuard.keyCombiner!!.add(args.single()!!)
-            return handleResult(method, resFuture)
+            return method.resultFromFuture(resFuture)
         }
 
         // 2 合并之后的调用
@@ -90,7 +91,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         // 3 缓存
         if(methodGuard.cacheHandler != null) {
             val resFuture = methodGuard.cacheHandler!!.cacheOrLoad(args)
-            return handleResult(method, resFuture)
+            return method.resultFromFuture(resFuture)
         }
 
         // 4 缓存之后的调用
@@ -131,7 +132,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         }
 
         //处理结果
-        return handleResult(method, resFuture)
+        return method.resultFromFuture(resFuture)
     }
 
     /**
@@ -152,21 +153,4 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         return methodGuard.degradeHandler!!.handleFallback(r, args)
     }
 
-    /**
-     * 处理结果
-     *
-     * @param method 方法
-     * @param resFuture
-     * @return
-     */
-    protected fun handleResult(method: Method, resFuture: CompletableFuture<Any?>): Any? {
-        // 1 异步结果
-        //if (Future::class.java.isAssignableFrom(method.returnType))
-        if(method.returnType == Future::class.java
-                || method.returnType == CompletableFuture::class.java)
-            return resFuture
-
-        // 2 同步结果
-        return resFuture.get()
-    }
 }

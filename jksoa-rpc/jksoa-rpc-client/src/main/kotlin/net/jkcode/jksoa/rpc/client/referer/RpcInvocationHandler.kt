@@ -9,8 +9,7 @@ import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.guard.MethodGuardInvoker
-import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
-import net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher
+import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -44,7 +43,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
     /**
      * 请求分发者
      */
-    private val dispatcher: IRpcRequestDispatcher = RpcRequestDispatcher
+    private val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance()
 
     /**
      * <哈希码, 接口类>

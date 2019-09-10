@@ -1,0 +1,3 @@
+# tcc事务配置
+resendSeconds: 20 # 重发的时间间隔, 单位秒
+maxRetryCount: 3 # 最大的重试次数
