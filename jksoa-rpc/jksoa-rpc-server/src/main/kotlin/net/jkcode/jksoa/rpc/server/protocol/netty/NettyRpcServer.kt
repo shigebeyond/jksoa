@@ -97,7 +97,7 @@ open class NettyRpcServer : IRpcServer() {
     /**
      * 启动server
      */
-    public override fun doStart(callback: () -> Unit): Unit{
+    public override fun doStart(waitingClose: Boolean, callback: () -> Unit): Unit{
        try {
            // Bind and start to accept incoming connections.
            val f: ChannelFuture = bootstrap.bind(serverUrl.port).sync()
@@ -108,7 +108,8 @@ open class NettyRpcServer : IRpcServer() {
            // Wait until the server socket is closed.
            // In this example, this does not happen, but you can do that to gracefully
            // shut down your server.
-           f.channel().closeFuture().sync()
+           if(waitingClose)
+               f.channel().closeFuture().sync()
        }catch(e: Exception) {
            serverLogger.error("NettyRpcServer运行异常", e)
            e.printStackTrace()

@@ -80,16 +80,17 @@ abstract class IRpcServer: Closeable {
 
     /**
      * 启动服务器
+     * @param waitingClose 是否等待关闭
      * @param callback 启动后回调
      */
-    fun start(callback: (() -> Unit)? = null){
+    fun start(waitingClose: Boolean = true, callback: (() -> Unit)? = null){
         // 启动服务器
         try{
             serverLogger.debug(" ------ start rpc server ------ ")
             serverLogger.info("{}在地址[{}]上启动", name, serverUrl)
             server = this
             // 可能阻塞，只能在最后一句执行
-            doStart() {
+            doStart(waitingClose) {
                 //启动后，主动调用 ProviderLoader.load() 来扫描加载Provider服务
                 ProviderLoader.load()
 
@@ -111,9 +112,10 @@ abstract class IRpcServer: Closeable {
 
     /**
      * 启动服务器
+     * @param waitingClose 是否等待关闭
      * @param callback 启动后回调
      */
-    abstract fun doStart(callback: () -> Unit)
+    abstract fun doStart(waitingClose: Boolean, callback: () -> Unit)
 
     /**
      * 关闭server

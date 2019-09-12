@@ -17,7 +17,7 @@ class RmiRpcServer : IRpcServer() {
     /**
      * 启动服务器
      */
-    public override fun doStart(callback: () -> Unit): Unit{
+    public override fun doStart(waitingClose: Boolean, callback: () -> Unit): Unit{
         // 监听端口
         LocateRegistry.createRegistry(serverUrl.port)
 
