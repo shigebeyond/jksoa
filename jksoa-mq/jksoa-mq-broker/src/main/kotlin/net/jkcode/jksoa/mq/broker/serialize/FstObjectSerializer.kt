@@ -2,7 +2,8 @@ package net.jkcode.jksoa.mq.broker.serialize
 
 import com.indeed.util.serialization.LengthVIntSerializer
 import com.indeed.util.serialization.Serializer
-import org.nustaq.serialization.FSTConfiguration
+import net.jkcode.jkmvc.serialize.FstSerializer
+import net.jkcode.jkmvc.serialize.ISerializer
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException
@@ -22,9 +23,9 @@ class FstObjectSerializer : Serializer<Any> {
         public val lengthSerializer = LengthVIntSerializer()
 
         /**
-         * fst配置
+         * 序列器
          */
-        public val conf = FSTConfiguration.createDefaultConfiguration()
+        public val fstSerializer: FstSerializer = ISerializer.instance("fst") as FstSerializer
     }
 
     /**
@@ -33,7 +34,7 @@ class FstObjectSerializer : Serializer<Any> {
     @Throws(IOException::class)
     public override fun write(obj: Any, out: DataOutput) {
         // 转字节
-        val bytes = conf.asByteArray(obj)
+        val bytes = fstSerializer.serialize(obj)!!
         // 写大小
         lengthSerializer.write(bytes.size, out)
         // 写字节
@@ -51,7 +52,7 @@ class FstObjectSerializer : Serializer<Any> {
         val bytes = ByteArray(length)
         `in`.readFully(bytes)
         // 转对象
-        return conf.getObjectInput(bytes).readObject()
+        return fstSerializer.unserialize(bytes)!!
     }
 
 }

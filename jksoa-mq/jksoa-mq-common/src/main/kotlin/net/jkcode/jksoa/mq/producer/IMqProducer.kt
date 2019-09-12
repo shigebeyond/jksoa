@@ -10,7 +10,6 @@ import java.util.concurrent.CompletableFuture
  */
 interface IMqProducer {
 
-
     /**
      * 注册主题
      * @param topic 主题

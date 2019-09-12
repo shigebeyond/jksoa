@@ -31,12 +31,17 @@ object MqProducer : IMqProducer {
     /**
      * 消息中转者的leader
      */
-    private val brokerLeaderService = Referer.getRefer<IMqBrokerLeaderService>()
+    private val brokerLeaderService: IMqBrokerLeaderService = Referer.getRefer<IMqBrokerLeaderService>()
 
     /**
      * 消息中转者
      */
-    private val brokerService = Referer.getRefer<IMqBrokerService>()
+    private val brokerService: IMqBrokerService = Referer.getRefer<IMqBrokerService>()
+
+    /**
+     * 注册过的主题
+     */
+    private val registeredTopics: HashSet<String> = HashSet<String>()
 
     /**
      * 注册主题
@@ -44,9 +49,16 @@ object MqProducer : IMqProducer {
      * @return false表示没有broker可分配
      */
     public override fun registerTopic(topic: String): Boolean {
+        if(registeredTopics.contains(topic))
+            return true
+
         return brokerLeaderService.registerTopic(topic).also {
-            if(it)  // 刷新本地的topic分配信息, 通知监听器更新缓存的topic分配信息
+            if(it) {
+                // 记录
+                registeredTopics.add(topic)
+                // 刷新本地的topic分配信息, 通知监听器更新缓存的topic分配信息
                 mqDiscovery.discover()
+            }
         }
     }
 
@@ -57,9 +69,16 @@ object MqProducer : IMqProducer {
      * @return false表示topic根本就没有分配过
      */
     public override fun unregisterTopic(topic: String): Boolean {
+        if(!registeredTopics.contains(topic))
+            return false
+
         return brokerLeaderService.unregisterTopic(topic).also {
-            if(it) // 刷新本地的topic分配信息, 通知监听器更新缓存的topic分配信息
+            // 删除记录
+            registeredTopics.remove(topic)
+            if(it) {
+                // 刷新本地的topic分配信息, 通知监听器更新缓存的topic分配信息
                 mqDiscovery.discover()
+            }
         }
     }
 
