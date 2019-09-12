@@ -1,12 +1,21 @@
 rootProject.name = 'jksoa'
 
-include 'jksoa-common', 'jksoa-guard'
+// 公共
+include 'jksoa-common'
+// 应用守护
+include 'jksoa-guard'
+// rpc
 include 'jksoa-rpc:jksoa-rpc-registry', 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc:jksoa-rpc-server'
+// 作业调度
 include 'jksoa-job'
+// 消息队列
 include 'jksoa-mq:jksoa-mq-common', 'jksoa-mq:jksoa-mq-registry', 'jksoa-mq:jksoa-mq-client', 'jksoa-mq:jksoa-mq-broker'
+// 跟踪链
 include 'jksoa-tracer:jksoa-tracer-common', 'jksoa-tracer:jksoa-tracer-agent', 'jksoa-tracer:jksoa-tracer-collector', 'jksoa-tracer:jksoa-tracer-web'
+// 分布式事务
 include 'jksoa-dtx:jksoa-dtx-mq', 'jksoa-dtx:jksoa-dtx-tcc'
-include 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-common', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-goods', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-order', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-web'
+// 分布式事务的案例
+include 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon-api', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay-api', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-order'
 
 // 添加jkmvc子项目
 include 'jkmvc-common'

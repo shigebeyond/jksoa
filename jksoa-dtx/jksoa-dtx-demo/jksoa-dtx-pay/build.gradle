@@ -1,4 +1,4 @@
 dependencies{
     // other project
-    compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-common')
+    compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay-api')
 }
