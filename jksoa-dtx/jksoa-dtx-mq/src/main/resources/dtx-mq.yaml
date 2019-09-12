@@ -1,4 +1,5 @@
 # 基于mq的事务的配置
+dbName: default
 mqType: rabbitmq # 消息队列类型: rabbitmq / jkmq
 sendPageSize: 100 # 每次发送的消息数
 resendSeconds: 20 # 重发的时间间隔, 单位秒

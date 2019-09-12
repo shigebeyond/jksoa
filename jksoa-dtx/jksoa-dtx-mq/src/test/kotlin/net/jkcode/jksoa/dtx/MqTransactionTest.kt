@@ -1,10 +1,14 @@
 package net.jkcode.jksoa.dtx
 
+import com.rabbitmq.client.AMQP
+import com.rabbitmq.client.DefaultConsumer
+import com.rabbitmq.client.Envelope
 import com.rabbitmq.client.QueueingConsumer
 import net.jkcode.jkmvc.db.Db
 import net.jkcode.jksoa.dtx.mq.MqTransactionManager
-import net.jkcode.jksoa.dtx.mq.mqsender.rabbitmq.client.RabbitConnectionFactory
+import net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.client.RabbitConnectionFactory
 import org.junit.Test
+import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -31,6 +35,7 @@ class MqTransactionTest {
         Thread.sleep(100000)
     }
 
+    // 同步消费
     @Test
     fun testRabbitmqConsumer() {
         // 获得ThreadLocal的信道
@@ -57,5 +62,39 @@ class MqTransactionTest {
             // 返回确认状态，注释掉表示使用自动确认模式
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
         }
+    }
+
+    // 异步消费
+    fun testRabbitmqConsumerAsyn() {
+        // 获得ThreadLocal的信道
+        val channel = RabbitConnectionFactory.getChannel()
+
+        // 声明队列
+        channel.queueDeclare(topic, true, false, false, null)
+
+        // 同一时刻服务器只会发一条消息给消费者
+        // 设置客户端最多接收未被 ack 的消息的个数
+        channel.basicQos(1)
+
+        val consumer = object : DefaultConsumer(channel) {
+            override fun handleDelivery(consumerTag: String?,
+                                        envelope: Envelope?,
+                                        properties: AMQP.BasicProperties?,
+                                        body: ByteArray?) {
+                println(" recv message: " + String(body!!))
+                try {
+                    TimeUnit.SECONDS.sleep(100)
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+
+                channel.basicAck(envelope!!.deliveryTag, false)
+            }
+        }
+        channel.basicConsume(topic, consumer)
+
+
+        //等待回调函数执行完毕之后， 关闭资源
+        TimeUnit.SECONDS.sleep(500)
     }
 }

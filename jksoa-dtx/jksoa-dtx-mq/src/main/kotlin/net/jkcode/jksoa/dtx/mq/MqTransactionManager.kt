@@ -3,7 +3,7 @@ package net.jkcode.jksoa.dtx.mq
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.db.Db
 import net.jkcode.jksoa.dtx.mq.model.MqTransactionModel
-import net.jkcode.jksoa.dtx.mq.mqsender.IMqSender
+import net.jkcode.jksoa.dtx.mq.mqmgr.IMqManager
 import net.jkcode.jksoa.job.job.LambdaJob
 import net.jkcode.jksoa.job.trigger.CronTrigger
 import java.io.File
@@ -22,9 +22,9 @@ object MqTransactionManager : IMqTransactionManager {
     public val config: Config = Config.instance("dtx-mq", "yaml")
 
     /**
-     * 消息发送者
+     * 消息管理者
      */
-    public val sender = IMqSender.instance(config["mqType"]!!)
+    public val mqMgr = IMqManager.instance(config["mqType"]!!)
 
     init {
         // 初始化时建表: transaction_mq
@@ -118,7 +118,7 @@ object MqTransactionManager : IMqTransactionManager {
         msg.update()
 
         // 发送消息
-        sender.sendMq(msg.topic, msg.msg).whenComplete { r, ex ->
+        mqMgr.sendMq(msg.topic, msg.msg).whenComplete { r, ex ->
             if (ex == null) // 发送成功, 则删除事务消息
                 msg.delete()
             else {  // 发送失败, 则更新重试次数

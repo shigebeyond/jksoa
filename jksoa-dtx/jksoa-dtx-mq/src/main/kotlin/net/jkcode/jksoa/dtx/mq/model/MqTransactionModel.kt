@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.dtx.mq.model
 
+import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.orm.Orm
 import net.jkcode.jkmvc.orm.OrmMeta
 
@@ -11,7 +12,12 @@ import net.jkcode.jkmvc.orm.OrmMeta
  */
 class MqTransactionModel(id:Int? = null): Orm(id) {
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(MqTransactionModel::class, "消息事务", "mq_transaction", "id"){}
+ 	companion object m: OrmMeta(MqTransactionModel::class, "消息事务", "mq_transaction", "id", config["dbName"]!!){
+		/**
+		 * 配置
+		 */
+		public val config: Config = Config.instance("dtx-mq", "yaml")
+	}
 
 	// 代理属性读写
 	public var id:Int by property() // 消息编号 

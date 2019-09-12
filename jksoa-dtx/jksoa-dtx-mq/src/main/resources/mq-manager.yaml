@@ -1,2 +1,3 @@
 # 消息发送者实现
 rabbitmq: net.jkcode.jksoa.dtx.mqsender.RabbitMqSender
+jkmq: net.jkcode.jksoa.dtx.mq.mqmgr.JkMqManager
