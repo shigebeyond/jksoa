@@ -199,9 +199,9 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
             dtxTccLogger.error("{}分支事务[$txCtx]失败: 事务不存在", if(txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) "确认" else "取消")
         }
 
-        // 3 返回默认的结果值
+        // 3 返回默认的结果值, 其实返回啥都无所谓, 反正调用方不用结果值
         val method = (pjp.signature as MethodSignature).method
-        return method.defaultValue
+        return method.defaultResult
     }
 
     /**

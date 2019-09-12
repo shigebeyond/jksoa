@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.dtx.tcc.model
 
 import net.jkcode.jkmvc.common.Application
+import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.getProperty
 import net.jkcode.jkmvc.orm.OrmMeta
 import net.jkcode.jkmvc.orm.Orm
@@ -19,7 +20,12 @@ import kotlin.reflect.KProperty1
 class TccTransactionModel(id:Int? = null): Orm(id) {
 
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(TccTransactionModel::class, "tcc事务", "tcc_transaction", "id"){
+ 	companion object m: OrmMeta(TccTransactionModel::class, "tcc事务", "tcc_transaction", "id", config["dbName"]!!){
+
+		/**
+		 * 配置
+		 */
+		public val config: Config = Config.instance("dtx-tcc", "yaml")
 
 		/**
 		 * 事务状态: 尝试中
