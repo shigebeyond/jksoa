@@ -30,9 +30,9 @@ class OrderModel(id:Long? = null): Orm(id) {
 		public val STATUS_PAID: Int = 2
 
 		/**
-		 * 订单状态: 已取消
+		 * 订单状态: 支付失败
 		 */
-		public val STATUS_CANCELIED: Int = 3
+		public val STATUS_PAY_FAILED: Int = 3
 
 		init {
 			hasMany("items", OrderItemModel::class)
@@ -59,7 +59,7 @@ class OrderModel(id:Long? = null): Orm(id) {
 
 	public var totalMoney:Int by property() // 总金额, 单位:分 
 
-	public var status:Int by property() // 订单状态： 0 草稿 1 待支付 2 已支付 3 已取消
+	public var status:Int by property() // 订单状态： 0 草稿 1 待支付 2 已支付 3 支付失败
 
 	public var created:Long by property() // 创建时间
 
@@ -90,7 +90,7 @@ class OrderModel(id:Long? = null): Orm(id) {
 		val descs = mapOf(
 			1 to "待支付",
 			2 to "已支付",
-			3 to "已取消"
+			3 to "支付失败"
 		)
 		return descs[status]!!
 	}

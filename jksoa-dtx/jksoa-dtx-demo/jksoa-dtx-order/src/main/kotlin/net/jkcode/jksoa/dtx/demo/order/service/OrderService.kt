@@ -62,13 +62,14 @@ class OrderService {
         // 查询优惠券
         val coupon = couponService.getCouponById(couponId)
 
-        // 1 先锁住优惠券
+        // 1 先冻结优惠券
         val uid = 1
         val uname = "买家"
         couponService.freezeCoupon(uid, couponId, id).get()
 
         return OrderModel.db.transaction {
             // 2 扣库存
+            // 内存中扣库存, 仅用于演示
             for(product in products){
                 val buyQuantity = productId2quantity[product.id]!!
                 if(product.remainQuantity < buyQuantity)
@@ -126,7 +127,7 @@ class OrderService {
 
         // 未处理
         if(order.status == OrderModel.STATUS_DRAFT) {
-            order.status = OrderModel.STATUS_PAYING // 支付中
+            order.status = OrderModel.STATUS_PAYING // 待支付
             order.update()
         }
 
@@ -146,10 +147,33 @@ class OrderService {
         if(!order.loaded)
             return order
 
-        // 未处理
-        if(order.status == OrderModel.STATUS_DRAFT)
-            order.delete() // 直接删除
+        // 已处理
+        if(order.status != OrderModel.STATUS_DRAFT)
+            return order
 
+        // 未处理
+        // 查询商品
+        val products = productService.getProductsByIds(productId2quantity.keys)
+        
+        OrderModel.db.transaction {
+            // 1 加库存
+            // 内存中加库存, 仅用于演示
+            for(product in products){
+                val buyQuantity = productId2quantity[product.id]!!
+                if(product.remainQuantity < buyQuantity)
+                    throw Exception("商品[${product.id}]剩余库存为${product.remainQuantity}个, 不能满足购买${buyQuantity}个")
+
+                product.remainQuantity = product.remainQuantity - buyQuantity
+                product.update()
+            }
+
+            // 2 删除订单
+            order.delete() 
+
+            // 删除订单项
+            OrderItemModel.queryBuilder().where("order_id", "=", id).delete();
+        }
+        
         return order
     }
 
@@ -166,9 +190,11 @@ class OrderService {
         if(!order.loaded)
             throw Exception("订单[$id]不存在")
 
-        // 更新状态为支付中
-        order.status = OrderModel.STATUS_PAYING
-        order.update()
+        // 检查状态
+        if(order.status == OrderModel.STATUS_DRAFT)
+            throw Exception("订单[$id]未创建完毕")
+        if(order.status != OrderModel.STATUS_PAYING)
+            throw Exception("订单[$id]已支付过")
 
         // 优惠券支付
         val couponFuture = couponService.spendCoupon(order.buyerUid, order.couponId, order.id)
@@ -223,8 +249,8 @@ class OrderService {
 
         var result = true
         // 未处理
-        if(order.status != OrderModel.STATUS_CANCELIED){
-            order.status = OrderModel.STATUS_CANCELIED
+        if(order.status != OrderModel.STATUS_PAY_FAILED){
+            order.status = OrderModel.STATUS_PAY_FAILED
             result = order.update()
         }
 

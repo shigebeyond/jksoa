@@ -55,15 +55,15 @@ class PayAccountService : IPayAccountService {
         if(order != null)
             return CompletableFuture.completedFuture(true)
 
-        // 检查账号
+        // 检查转出账号
         val fromAccount = PayAccountModel(orderE.fromUid)
         if(!fromAccount.loaded)
-            throw Exception("支付账号[${orderE.fromUid}]不存在")
+            throw Exception("转出账号[${orderE.fromUid}]不存在")
 
-        // 检查账号
+        // 检查转入账号
         val toAccount = PayAccountModel(orderE.toUid)
         if(!toAccount.loaded)
-            throw Exception("支付账号[${orderE.toUid}]不存在")
+            throw Exception("转入账号[${orderE.toUid}]不存在")
 
         // 检查余额
         if(fromAccount.balance < orderE.money)
@@ -78,6 +78,7 @@ class PayAccountService : IPayAccountService {
             order.create()
 
             // 买家扣钱
+            // 内存中扣钱, 仅用于演示
             fromAccount.balance = fromAccount.balance - orderE.money
             fromAccount.update()
         }
@@ -97,18 +98,16 @@ class PayAccountService : IPayAccountService {
         if(order == null || order.status != PayOrderModel.STATUS_TRYING)
             return CompletableFuture.completedFuture(true)
 
-
         // 检查账号
         val toAccount = PayAccountModel(orderE.toUid)
-        if(!toAccount.loaded)
-            throw Exception("支付账号[${orderE.toUid}]不存在")
 
         val result = PayOrderModel.db.transaction {
             // 更新订单状态
             order.status = PayOrderModel.STATUS_CONFIRMED
-            order.create()
+            order.update()
 
             // 卖家加钱
+            // 内存中加钱, 仅用于演示
             toAccount.balance = toAccount.balance + orderE.money
             toAccount.update()
         }
@@ -130,15 +129,14 @@ class PayAccountService : IPayAccountService {
 
         // 检查账号
         val fromAccount = PayAccountModel(orderE.fromUid)
-        if(!fromAccount.loaded)
-            throw Exception("支付账号[${orderE.fromUid}]不存在")
 
         val result = PayOrderModel.db.transaction {
             // 更新订单状态
-            order.status = PayOrderModel.STATUS_CONFIRMED
-            order.create()
+            order.status = PayOrderModel.STATUS_CANCELED
+            order.update()
 
             // 买家加钱
+            // 内存中加钱, 仅用于演示
             fromAccount.balance = fromAccount.balance + orderE.money
             fromAccount.update()
         }

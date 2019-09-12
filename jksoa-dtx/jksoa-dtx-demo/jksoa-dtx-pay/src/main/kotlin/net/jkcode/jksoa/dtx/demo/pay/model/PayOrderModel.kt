@@ -29,7 +29,7 @@ class PayOrderModel: PayOrderEntity(), IOrm by GeneralModel(m), IEntitiableOrm<P
 		/**
 		 * 支付订单状态: 已取消
 		 */
-		public val STATUS_CANCELIED: Int = 3
+		public val STATUS_CANCELED: Int = 3
 
 	}
 
