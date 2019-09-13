@@ -1,0 +1,2 @@
+# 缓存实现
+default: net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher

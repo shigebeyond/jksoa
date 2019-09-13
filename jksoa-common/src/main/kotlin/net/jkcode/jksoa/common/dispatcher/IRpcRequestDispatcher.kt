@@ -19,7 +19,7 @@ interface IRpcRequestDispatcher {
         /**
          * 单例类的配置，内容是哈希 <单例名 to 单例类>
          */
-        public override val instsConfig: IConfig = Config.instance("request-dispatcher", "yaml")
+        public override val instsConfig: IConfig = Config.instance("rpc-dispatcher", "yaml")
     }
 
 
