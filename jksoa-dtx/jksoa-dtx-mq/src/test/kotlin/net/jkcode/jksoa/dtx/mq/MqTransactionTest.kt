@@ -1,11 +1,10 @@
-package net.jkcode.jksoa.dtx
+package net.jkcode.jksoa.dtx.mq
 
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.DefaultConsumer
 import com.rabbitmq.client.Envelope
 import com.rabbitmq.client.QueueingConsumer
 import net.jkcode.jkmvc.db.Db
-import net.jkcode.jksoa.dtx.mq.MqTransactionManager
 import net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.client.RabbitConnectionFactory
 import org.junit.Test
 import java.util.concurrent.TimeUnit

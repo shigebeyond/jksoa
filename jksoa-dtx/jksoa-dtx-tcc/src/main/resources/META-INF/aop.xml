@@ -1,0 +1,12 @@
+<aspectj>
+    <!-- only weave classes in our application-specific packages -->
+    <weaver>
+        <include within="net.jkcode.jksoa.dtx.tcc.*"/>
+    </weaver>
+
+    <!-- weave in just this aspect -->
+    <aspects>
+        <aspect name="net.jkcode.jksoa.dtx.tcc.TccMethodAspect"/>
+    </aspects>
+
+</aspectj>

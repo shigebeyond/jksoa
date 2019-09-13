@@ -50,7 +50,9 @@
                 <td><%= Formatter.formateTimestamp(order.getPayTime()) %></td>
                 <td>
                     <button type="button" class="btn btn-lg btn-danger" data-toggle="popover" data-placement="left" title="商品明细" data-content="<%= order.getItemsDesc() %>">商品明细</button>
+                    <% if(order.getStatus() == OrderModel.STATUS_PAYING){ %>
                     <a href="<%= req.absoluteUrl("order/selectPay/" + order.getId()) %>" class="btn btn-default">支付</a>
+                    <% } %>
                  </td>
               </tr>
            <% } %>

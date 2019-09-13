@@ -3,10 +3,14 @@ dependencies{
     compile project(':jkmvc-orm')
 
     // 切面
-    compile "org.aspectj:aspectjrt:${aspectj_version}"
+    compile "org.aspectj:aspectjrt:${aspectjVersion}"
 
     // 定时任务
     compile project(':jksoa-job')
 
-    testRuntime "mysql:mysql-connector-java:5.1.6"
+    // jdbc
+    runtime "mysql:mysql-connector-java:5.1.6"
 }
+
+
+apply plugin: "aspectj.gradle"

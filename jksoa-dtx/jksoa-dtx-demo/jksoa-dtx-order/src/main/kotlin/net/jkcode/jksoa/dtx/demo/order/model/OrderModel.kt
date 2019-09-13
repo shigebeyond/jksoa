@@ -17,21 +17,25 @@ class OrderModel(id:Long? = null): Orm(id) {
 		/**
 		 * 订单状态: 草稿
 		 */
+		@JvmStatic
 		public val STATUS_DRAFT: Int = 0
 
 		/**
 		 * 订单状态: 待支付
 		 */
+		@JvmStatic
 		public val STATUS_PAYING: Int = 1
 
 		/**
 		 * 订单状态: 已支付
 		 */
+		@JvmStatic
 		public val STATUS_PAID: Int = 2
 
 		/**
 		 * 订单状态: 支付失败
 		 */
+		@JvmStatic
 		public val STATUS_PAY_FAILED: Int = 3
 
 		init {
@@ -88,6 +92,7 @@ class OrderModel(id:Long? = null): Orm(id) {
 	 */
 	public fun getStatusDesc(): String {
 		val descs = mapOf(
+			0 to "草稿",
 			1 to "待支付",
 			2 to "已支付",
 			3 to "支付失败"

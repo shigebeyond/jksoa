@@ -10,8 +10,12 @@ buildscript {
             url "http://dl.bintray.com/kotlin/kotlin"
         }
         maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven {
             url 'http://oss.jfrog.org/artifactory/oss-snapshot-local'
         }
+
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -20,6 +24,8 @@ buildscript {
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
 
         classpath "org.akhikhl.gretty:gretty:${gretty_version}"
+
+        classpath "gradle.plugin.aspectj:gradle-aspectj:0.1.6"
     }
 }
 
