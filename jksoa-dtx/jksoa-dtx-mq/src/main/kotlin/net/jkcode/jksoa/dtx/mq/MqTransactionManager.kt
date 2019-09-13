@@ -27,8 +27,8 @@ object MqTransactionManager : IMqTransactionManager {
     public val mqMgr = IMqManager.instance(config["mqType"]!!)
 
     init {
-        // 初始化时建表: transaction_mq
-        createTable()
+        // 初始化时建表: mq_transaction
+        createTable(config["dbName"]!!)
 
         // 启动定时发送消息的作业
         if(config["autoStartSendMqJob"]!!)
@@ -36,10 +36,11 @@ object MqTransactionManager : IMqTransactionManager {
     }
 
     /**
-     * 建表: transaction_mq
+     * 建表: mq_transaction
+     * @param db
      */
-    private fun createTable() {
-        val sqlFile = Thread.currentThread().contextClassLoader.getResource("transaction_mq.mysql.sql").getFile()
+    private fun createTable(db: String) {
+        val sqlFile = Thread.currentThread().contextClassLoader.getResource("mq_transaction.mysql.sql").getFile()
         val sql = File(sqlFile).readText()
         Db.instance().execute(sql)
     }

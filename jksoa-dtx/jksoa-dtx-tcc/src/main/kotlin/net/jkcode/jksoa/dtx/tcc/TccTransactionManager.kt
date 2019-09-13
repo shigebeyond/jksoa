@@ -1,10 +1,12 @@
 package net.jkcode.jksoa.dtx.tcc
 
 import net.jkcode.jkmvc.common.*
+import net.jkcode.jkmvc.db.Db
 import net.jkcode.jksoa.dtx.tcc.model.TccParticipant
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.reflect.MethodSignature
+import java.io.File
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -23,6 +25,22 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
          * 配置
          */
         public val config: Config = Config.instance("dtx-tcc", "yaml")
+
+        init{
+            // 初始化时建表: tcc_transaction
+            createTable(config["dbName"]!!)
+        }
+
+        /**
+         * 建表: tcc_transaction
+         * @param db
+         */
+        private fun createTable(db: String) {
+            val sqlFile = Thread.currentThread().contextClassLoader.getResource("tcc_transaction.mysql.sql").getFile()
+            val sql = File(sqlFile).readText()
+            Db.instance(db).execute(sql)
+        }
+
     }
 
     /**
