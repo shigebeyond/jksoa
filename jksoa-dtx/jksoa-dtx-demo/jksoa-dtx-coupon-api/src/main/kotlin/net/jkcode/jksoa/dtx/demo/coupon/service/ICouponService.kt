@@ -14,6 +14,11 @@ import java.util.concurrent.CompletableFuture
 interface ICouponService {
 
     /**
+     * 初始化数据
+     */
+    fun initData()
+
+    /**
      * 获得用户的所有未消费的优惠券
      * @param uid
      * @return
@@ -44,6 +49,6 @@ interface ICouponService {
      * @param bizOrderId 业务订单编号
      * @return
      */
-    @TccMethod("", "", "coupon", "2")
+    @TccMethod("", "", "coupon.spendCoupon", "2")
     fun spendCoupon(uid: Int, id: Int, bizOrderId: Long): CompletableFuture<Boolean>
 }

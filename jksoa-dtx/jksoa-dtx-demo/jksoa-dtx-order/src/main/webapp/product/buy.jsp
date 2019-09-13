@@ -1,4 +1,4 @@
-<%@ page language="java" import="net.jkcode.jkmvc.http.HttpRequest,net.jkcode.jksoa.dtx.demo.product.ProductModel" pageEncoding="UTF-8"%>
+<%@ page language="java" import="java.util.*,net.jkcode.jkmvc.common.Formatter,net.jkcode.jkmvc.http.HttpRequest,net.jkcode.jksoa.dtx.demo.product.ProductModel,net.jkcode.jksoa.dtx.demo.coupon.entity.CouponEntity" pageEncoding="UTF-8"%>
 <% HttpRequest req = HttpRequest.current(); %>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +16,7 @@
     <div class="panel-heading">购买商品</div>
 
     <!-- Form -->
-    <% ProductModel pd = (ProductModel) req.getAttribute("pd"); %>
+    <% ProductModel pd = (ProductModel) req.getAttribute("product"); %>
     <form class="panel-body" action="<%= req.absoluteUrl("order/make/" + pd.getId()) %>" method="post">
       <div class="form-group">
         <label for="id">商品编号</label>
@@ -28,7 +28,7 @@
       </div>
       <div class="form-group">
         <label for="price">价格</label>
-        <span><%= pd.getPrice() %></span>
+        <span><%= Formatter.formateCents(pd.getPrice()) %></span>
       </div>
       <div class="form-group">
         <label for="quantity">购买数量</label>

@@ -35,7 +35,7 @@ class OrderModel(id:Long? = null): Orm(id) {
 		public val STATUS_PAY_FAILED: Int = 3
 
 		init {
-			hasMany("items", OrderItemModel::class)
+			hasMany("items", OrderItemModel::class, "order_id")
 		}
 
 	}

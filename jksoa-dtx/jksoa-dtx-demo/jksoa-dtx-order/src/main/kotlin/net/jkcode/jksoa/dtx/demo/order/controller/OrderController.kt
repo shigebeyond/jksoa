@@ -35,15 +35,19 @@ class OrderController: Controller()
      * 创建订单
      *    创建成功后跳转到 order/selectPay
      */
-    public fun makeAction(){
+    public fun makeAction(): CompletableFuture<Void> {
         val productId: Int = req["id"]!! // 商品编号
-        val quantitiy: Int = req["quantitiy"]!! // 商品数量
+        val quantitiy: Int = req["quantity"]!! // 商品数量
         val couponId: Int = req["couponId"]!! // 优惠券编号
         val id2quantity = mapOf<Int, Int>(productId to quantitiy)
         // 创建订单
         val id = generateId("order") //订单编号, 预先生成, 以便tcc
-        val order = orderService.makeOrder(id, id2quantity, couponId)
-        redirect("order/selectPay/" + order.id)
+        val orderFuture = orderService.makeOrder(id, id2quantity, couponId)
+        // 异步响应
+        return orderFuture.thenAccept { order ->
+            redirect("order/selectPay/" + order.id)
+        }
+
     }
 
     /**

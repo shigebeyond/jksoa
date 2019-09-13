@@ -1,10 +1,13 @@
 package net.jkcode.jksoa.dtx.demo.coupon.service
 
+import net.jkcode.jkmvc.common.randomInt
+import net.jkcode.jkmvc.db.Db
 import net.jkcode.jkmvc.serialize.ISerializer
 import net.jkcode.jksoa.dtx.demo.coupon.entity.CouponEntity
 import net.jkcode.jksoa.dtx.demo.coupon.model.CouponModel
 import net.jkcode.jksoa.dtx.mq.MqTransactionManager
 import net.jkcode.jksoa.dtx.tcc.TccMethod
+import java.io.File
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -13,6 +16,22 @@ import java.util.concurrent.CompletableFuture
  * @date 2019-09-11 2:26 PM
  */
 class CouponService : ICouponService {
+
+    /**
+     * 初始化数据库
+     */
+    override fun initData() {
+        val count = CouponModel.queryBuilder().count()
+        if(count > 0) // 已初始过
+            return
+        for(i in 0..100){
+            val coupon = CouponModel()
+            coupon.money = randomInt(30) * 100
+            coupon.uid = 1
+            coupon.status = 1
+            coupon.create()
+        }
+    }
 
     /**
      * 获得用户的所有未消费的优惠券

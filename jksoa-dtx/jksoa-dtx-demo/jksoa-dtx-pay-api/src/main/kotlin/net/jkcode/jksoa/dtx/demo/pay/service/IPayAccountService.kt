@@ -12,6 +12,12 @@ import java.util.concurrent.CompletableFuture
  */
 @RemoteService(version = 1)
 interface IPayAccountService {
+
+    /**
+     * 初始化数据
+     */
+    fun initData()
+
     /**
      * 获得账号余额
      * @param uid
@@ -24,6 +30,6 @@ interface IPayAccountService {
      * @param orderE
      * @return
      */
-    @TccMethod("", "", "payAccount", "0.bizOrderId")
+    @TccMethod("", "", "pay.spendBalance", "0.bizOrderId")
     fun spendBalance(orderE: PayOrderEntity): CompletableFuture<Boolean>
 }

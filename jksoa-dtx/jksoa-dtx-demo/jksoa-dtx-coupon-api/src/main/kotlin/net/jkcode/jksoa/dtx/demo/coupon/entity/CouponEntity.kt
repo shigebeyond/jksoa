@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.dtx.demo.coupon.entity
 
+import net.jkcode.jkmvc.common.Formatter
 import net.jkcode.jkmvc.orm.OrmEntity
 
 /**
@@ -22,7 +23,7 @@ open class CouponEntity : OrmEntity() {
     public var status:Int by property() // 状态： 1 未使用 2 尝试使用 3 已使用
 
     override fun toString(): String {
-        return "优惠券编号: $id, 金额: $money 分"
+        return "优惠券编号: $id, 金额: " + Formatter.formateCents(money)
     }
 
 }

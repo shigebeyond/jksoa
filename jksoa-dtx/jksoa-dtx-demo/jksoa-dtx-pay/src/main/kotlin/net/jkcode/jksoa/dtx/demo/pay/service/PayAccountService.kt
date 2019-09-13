@@ -1,11 +1,14 @@
 package net.jkcode.jksoa.dtx.demo.pay.service
 
+import net.jkcode.jkmvc.common.randomInt
+import net.jkcode.jkmvc.db.Db
 import net.jkcode.jkmvc.serialize.ISerializer
 import net.jkcode.jksoa.dtx.demo.pay.model.PayAccountModel
 import net.jkcode.jksoa.dtx.demo.pay.entity.PayOrderEntity
 import net.jkcode.jksoa.dtx.demo.pay.model.PayOrderModel
 import net.jkcode.jksoa.dtx.mq.MqTransactionManager
 import net.jkcode.jksoa.dtx.tcc.TccMethod
+import java.io.File
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -14,6 +17,26 @@ import java.util.concurrent.CompletableFuture
  * @date 2019-09-11 2:26 PM
  */
 class PayAccountService : IPayAccountService {
+
+    /**
+     * 初始化数据库
+     */
+    override fun initData() {
+        val count = PayAccountModel.queryBuilder().count()
+        if(count > 0) // 已初始过
+            return
+        // 1 买家
+        val buyer = PayAccountModel()
+        buyer.uid = 1
+        buyer.balance = randomInt(1000) * 100
+        buyer.create()
+
+        // 2 卖家
+        val seller = PayAccountModel()
+        seller.uid = 2
+        seller.balance = randomInt(1000) * 100
+        seller.create()
+    }
 
     /**
      * 获得账号余额

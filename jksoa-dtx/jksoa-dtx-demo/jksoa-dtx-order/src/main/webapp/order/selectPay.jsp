@@ -1,4 +1,4 @@
-<%@ page language="java" import="net.jkcode.jkmvc.http.HttpRequest,net.jkcode.jksoa.dtx.demo.product.OrderModel" pageEncoding="UTF-8"%>
+<%@ page language="java" import="net.jkcode.jkmvc.common.Formatter,net.jkcode.jkmvc.http.HttpRequest,net.jkcode.jksoa.dtx.demo.order.OrderModel" pageEncoding="UTF-8"%>
 <% HttpRequest req = HttpRequest.current(); %>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,27 +16,30 @@
     <div class="panel-heading">购买商品</div>
 
     <!-- Form -->
-    <% OrderModel order = (OrderModel) req.getAttribute("order"); %>
+    <%
+    OrderModel order = (OrderModel) req.getAttribute("order");
+    int balance = (int) req.getAttribute("balance");
+    %>
     <form class="panel-body" action="<%= req.absoluteUrl("order/balancePay/" + order.getId()) %>" method="post">
       <div class="form-group">
-        <label for="">总金额(分)</label>
-        <span><%= order.getTotalMoney() %></span>
+        <label for="">总金额</label>
+        <span><%= Formatter.formateCents(order.getTotalMoney()) %></span>
       </div>
       <div class="form-group">
         <label for="">优惠券编号</label>
         <span><%= order.getCouponId() %></span>
       </div>
       <div class="form-group">
-        <label for="">优惠券抵扣金额(分)</label>
-        <span><%= order.getCouponMoney() %></span>
+        <label for="">优惠券抵扣金额</label>
+        <span><%= Formatter.formateCents(order.getCouponMoney()) %></span>
       </div>
       <div class="form-group">
-        <label for="">要支付的金额(分)</label>
-        <span><%= order.getPayMoney() %></span>
+        <label for="">要支付的金额</label>
+        <span><%= Formatter.formateCents(order.getPayMoney()) %></span>
       </div>
       <div class="form-group">
-        <label for="">我的余额(分)</label>
-        <span><%= balance %></span>
+        <label for="">我的余额</label>
+        <span><%= Formatter.formateCents(balance) %></span>
       </div>
       <button type="submit" class="btn btn-default">余额支付</button>
       <a href="<%= req.absoluteUrl("order/rechargePayNotify/" + order.getId()) %>" class="btn btn-primary">充值支付(模拟支付成功通知)</a>

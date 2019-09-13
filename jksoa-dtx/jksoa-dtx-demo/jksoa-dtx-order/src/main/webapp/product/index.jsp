@@ -1,4 +1,4 @@
-<%@ page language="java" import="java.util.*,net.jkcode.jkmvc.http.HttpRequest,net.jkcode.jksoa.dtx.demo.product.ProductModel" pageEncoding="UTF-8"%>
+<%@ page language="java" import="java.util.*,net.jkcode.jkmvc.common.Formatter,net.jkcode.jkmvc.http.HttpRequest,net.jkcode.jksoa.dtx.demo.product.ProductModel" pageEncoding="UTF-8"%>
 <% HttpRequest req = HttpRequest.current(); %>
 
 <!DOCTYPE html>
@@ -31,7 +31,7 @@
           </tr>
         </thead>
         <tbody>
-          <%  List<ProductModel> pds = (List<ProductModel>)request.getAttribute("pds");
+          <%  List<ProductModel> pds = (List<ProductModel>)request.getAttribute("products");
               for (Iterator<ProductModel> it = pds.iterator(); it.hasNext();) {
                ProductModel pd = it.next(); %>
               <tr>
@@ -39,8 +39,7 @@
                 <td><%= pd.getName() %></td>
                 <td><%= pd.getSellerUid() %></td>
                 <td><%= pd.getSellerUname() %></td>
-                <td><%= pd.getName() %></td>
-                <td><%= pd.getPrice() %></td>
+                <td><%= Formatter.formateCents(pd.getPrice()) %></td>
                 <td><%= pd.getQuantity() %></td>
                 <td><%= pd.getRemainQuantity() %></td>
                 <td>

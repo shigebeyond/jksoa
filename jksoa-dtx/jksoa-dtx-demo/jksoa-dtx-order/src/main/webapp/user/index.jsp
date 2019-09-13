@@ -1,4 +1,4 @@
-<%@ page language="java" import="java.util.*,net.jkcode.jkmvc.http.HttpRequest,net.jkcode.jksoa.dtx.demo.order.entity.UserEntity" pageEncoding="UTF-8"%>
+<%@ page language="java" import="java.util.*,net.jkcode.jkmvc.common.Formatter,net.jkcode.jkmvc.http.HttpRequest,net.jkcode.jksoa.dtx.demo.order.entity.UserEntity" pageEncoding="UTF-8"%>
 <% HttpRequest req = HttpRequest.current(); %>
 
 <!DOCTYPE html>
@@ -34,8 +34,8 @@
               <tr>
                 <th scope="row"><%= user.getUid() %></th>
                 <td><%= user.getUname() %></td>
-                <td><%= user.getBalance() %></td>
-                <td><%= user.getCouponsDesc() %></td>
+                <td><%= Formatter.formateCents(user.getBalance()) %></td>
+                <td><button type="button" class="btn btn-lg btn-danger" data-toggle="popover" title="优惠券明细" data-content="<%= user.getCouponsDesc() %>"><%= user.getCoupons().size() %>张优惠券</button></td>
                 <td>
 
                  </td>
@@ -46,6 +46,12 @@
     </div>
   </div>
   <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
   <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script>
+  $(function () {
+    $('[data-toggle="popover"]').popover({'html':true});
+  })
+  </script>
 </body>
 </html>

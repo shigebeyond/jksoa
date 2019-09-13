@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.dtx.demo.order
 
-import net.jkcode.jkmvc.orm.OrmMeta 
+import net.jkcode.jkmvc.common.Formatter
+import net.jkcode.jkmvc.orm.OrmMeta
 import net.jkcode.jkmvc.orm.Orm 
 
 /**
@@ -27,7 +28,7 @@ class OrderItemModel(id:Int? = null): Orm(id) {
 	public var productPrice:Int by property() // 价格, 单位:分
 
 	override fun toString(): String {
-		return "商品编号: $productId, 商品名: $productName, 商品价格: $productPrice, 购买数量: $productQuantity"
+		return "商品编号: $productId, 名称: $productName, 价格: " + Formatter.formateCents(productPrice) + ", 数量: $productQuantity"
 	}
 
 }

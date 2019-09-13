@@ -4,6 +4,9 @@ dependencies{
     compile project(':jkmvc-server-jetty')
     compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon')
     compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay')
+
+    // jdbc
+    runtime "mysql:mysql-connector-java:5.1.6"
 }
 
 apply plugin: 'org.akhikhl.gretty'
