@@ -173,7 +173,7 @@ class OrderService {
         // 获得订单
         val order = OrderModel(id)
         val result = CompletableFuture.completedFuture(order)
-        // 被删掉了
+        // 被删掉了, 或创建失败
         if(!order.loaded)
             return result
 
@@ -213,7 +213,7 @@ class OrderService {
      * @param id
      * @return
      */
-    @TccMethod("confirmBalancePayOrder", "cancelBalancePayOrder", "order.payOrder", "2", true)
+    @TccMethod("confirmBalancePayOrder", "cancelBalancePayOrder", "order.payOrder", "0", true)
     public fun balancePayOrder(id: Long): CompletableFuture<Boolean> {
         // 获得订单
         val order = OrderModel(id)
@@ -230,14 +230,18 @@ class OrderService {
         val couponFuture = couponService.spendCoupon(order.buyerUid, order.couponId, order.id)
 
         // 余额支付
-        val payOrder = PayOrderEntity()
-        payOrder.fromUid = order.buyerUid
-        payOrder.fromUname = order.buyerUname
-        payOrder.toUid = order.sellerUid
-        payOrder.toUname = order.sellerUname
-        payOrder.money = order.payMoney
-        payOrder.bizOrderId = id
-        val balanceFuture = payAccountService.spendBalance(payOrder)
+        val balanceFuture: CompletableFuture<Boolean>
+        if(order.payMoney > 0) { // 要支付
+            val payOrder = PayOrderEntity()
+            payOrder.fromUid = order.buyerUid
+            payOrder.fromUname = order.buyerUname
+            payOrder.toUid = order.sellerUid
+            payOrder.toUname = order.sellerUname
+            payOrder.money = order.payMoney
+            payOrder.bizOrderId = id
+            balanceFuture = payAccountService.spendBalance(payOrder)
+        }else // 不用支付
+            balanceFuture = CompletableFuture.completedFuture(true)
 
         return CompletableFuture.allOf(couponFuture, balanceFuture).thenApply {
             couponFuture.get() && balanceFuture.get()

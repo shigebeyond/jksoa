@@ -20,17 +20,17 @@ class CouponModel(id:Int? = null): CouponEntity(), IOrm by GeneralModel(m), IEnt
 		/**
 		 * 优惠券状态: 未使用
 		 */
-		public val STATUS_UNSPENT: Int = 1
+		public const val STATUS_UNSPENT: Int = 1
 
 		/**
 		 * 优惠券状态: 冻结, 绑定到某个业务订单
 		 */
-		public val STATUS_FROZEN: Int = 2
+		public const val STATUS_FROZEN: Int = 2
 
 		/**
 		 * 优惠券状态: 已使用
 		 */
-		public val STATUS_SPENT: Int = 3
+		public const val STATUS_SPENT: Int = 3
 
 	}
 

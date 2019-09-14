@@ -146,7 +146,7 @@ class PayAccountService : IPayAccountService {
     public fun cancelSpendBalance(orderE: PayOrderEntity): CompletableFuture<Boolean> {
         // 查询订单
         val order = PayOrderModel.queryBuilder().where("biz_order_id", "=", orderE.bizOrderId).findModel<PayOrderModel>()
-        // 已处理过
+        // 没创建 或 已处理过
         if(order == null || order.status != PayOrderModel.STATUS_TRYING)
             return CompletableFuture.completedFuture(true)
 

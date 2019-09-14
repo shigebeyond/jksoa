@@ -19,17 +19,17 @@ class PayOrderModel: PayOrderEntity(), IOrm by GeneralModel(m), IEntitiableOrm<P
 		/**
 		 * 支付订单状态: 尝试中
 		 */
-		public val STATUS_TRYING: Int = 1
+		public const val STATUS_TRYING: Int = 1
 
 		/**
 		 * 支付订单状态: 已确认
 		 */
-		public val STATUS_CONFIRMED: Int = 2
+		public const val STATUS_CONFIRMED: Int = 2
 
 		/**
 		 * 支付订单状态: 已取消
 		 */
-		public val STATUS_CANCELED: Int = 3
+		public const val STATUS_CANCELED: Int = 3
 
 	}
 
