@@ -17,14 +17,14 @@ class TccMethodAspect {
     /**
      * 切入点: 有@Compensable注解的方法
      */
-    @Pointcut("@annotation(net.jkcode.jksoa.dtx.tcc.TccMethod)")
-    public fun tccMethod() {
+    @Pointcut("@annotation(net.jkcode.jksoa.dtx.tcc.TccMethod) && execution(* *(..))")
+    public fun tccMethodExecute() {
     }
 
     /**
      * 切入逻辑
      */
-    @Around("tccMethod()")
+    @Around("tccMethodExecute()")
     public fun interceptTccMethod(pjp: ProceedingJoinPoint): Any? {
         return TccTransactionManager.current().interceptTccMethod(pjp)
     }
