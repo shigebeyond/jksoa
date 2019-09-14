@@ -78,12 +78,18 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
             return endBranchTransaction(pjp)
         }
 
-        // 2 有事务, 则添加参与者
-        val tx = this.tx!!
-        tx.addParticipant(TccParticipant(pjp))
-        tx.update()
+        // beginRootTransaction()/endBranchTransaction()中调用tx.commit()/rollback(), 而必须保证先更新事务状态, 再调用参与者的确认/取消方法, 因为参与者的确认/取消方法跟源方法可能是同一个方法, 因此会重复进入 TccTransactionManager.interceptTccMethod() 中, 但第一次是try阶段启动事务或添加参与者, 第二次是confirm/cancel阶段单纯的执行源方法, 因此需要保证事务状态是最新的
 
-        // 调用方法
+        val tx = this.tx!!
+        // 2 有事务 + try阶段, 则添加参与者
+        if(tx.status == TccTransactionModel.STATUS_TRYING) {
+            tx.addParticipant(TccParticipant(pjp))
+            tx.update()
+        }else{
+            // 3 有事务 + confirm/cancel阶段, 单纯调用源方法
+        }
+
+        // 调用源方法
         return pjp.proceed();
     }
 

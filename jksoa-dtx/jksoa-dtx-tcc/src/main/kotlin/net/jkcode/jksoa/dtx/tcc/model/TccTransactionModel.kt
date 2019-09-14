@@ -54,8 +54,6 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 
 	public var parentId:Long by property() // 父事务编号
 
-	public var type:Int by property() // 事务类型: 1 根事务 2 分支事务 
-
 	public var status:Int by property() // 事务状态: 1 尝试中 2 确认中 3 取消中
 
 	public var participants:MutableList<TccParticipant> by listProperty() // 参与者
@@ -146,6 +144,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 
 	/**
 	 * 提交事务: 调用参与者确认方法
+	 *   先更新事务状态, 再调用参与者的确认方法, 因为参与者的确认方法跟源方法可能是同一个方法, 因此会重复进入 TccTransactionManager.interceptTccMethod() 中, 但第一次是try阶段启动事务或添加参与者, 第二次是confirm阶段单纯的执行源方法, 因此需要保证事务状态是最新的
 	 */
 	public fun commit() {
 		// 1 确认中
@@ -177,6 +176,8 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	 */
 	override fun beforeCreate() {
 		created = System.currentTimeMillis() / 1000
+		retryCount = 0
+		version = 1
 	}
 
 	/**

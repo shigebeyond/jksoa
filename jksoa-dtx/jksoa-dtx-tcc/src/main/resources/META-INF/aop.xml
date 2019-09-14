@@ -5,8 +5,8 @@
     </aspects>
 
     <!-- only weave classes in our application-specific packages -->
-    <!--<weaver>-->
-    <weaver options="-verbose -debug -showWeaveInfo">
+    <weaver>
+    <!--<weaver options="-verbose -debug -showWeaveInfo">-->
         <include within="net.jkcode.jksoa.dtx.tcc.*"/>
     </weaver>
 

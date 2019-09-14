@@ -10,12 +10,12 @@ import org.junit.Test
 class TccTransactionTest {
 
     @TccMethod("", "", "test", "")
-    fun tccMethod(id: Int){
-        println(id)
+    fun handleBusiness(id: Int){
+        println("handleBusiness: " + id)
     }
 
     @Test
     fun testTcc(){
-        tccMethod(1)
+        handleBusiness(1)
     }
 }
