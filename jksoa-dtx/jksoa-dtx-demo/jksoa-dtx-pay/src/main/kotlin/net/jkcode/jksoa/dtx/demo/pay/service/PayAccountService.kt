@@ -28,13 +28,13 @@ class PayAccountService : IPayAccountService {
         // 1 买家
         val buyer = PayAccountModel()
         buyer.uid = 1
-        buyer.balance = randomInt(1000) * 100
+        buyer.balance = 100
         buyer.create()
 
         // 2 卖家
         val seller = PayAccountModel()
         seller.uid = 2
-        seller.balance = randomInt(1000) * 100
+        seller.balance = 100
         seller.create()
     }
 

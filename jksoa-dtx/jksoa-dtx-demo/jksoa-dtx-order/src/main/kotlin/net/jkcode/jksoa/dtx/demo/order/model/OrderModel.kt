@@ -12,7 +12,7 @@ import net.jkcode.jkmvc.orm.Orm
 class OrderModel(id:Long? = null): Orm(id) {
 
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(OrderModel::class, "订单", "ord_order", "id"){
+ 	companion object m: OrmMeta(OrderModel::class, "订单", "ord_order", "id", "dtx_ord"){
 
 		/**
 		 * 订单状态: 草稿

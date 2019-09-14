@@ -1,6 +1,6 @@
 -- 订单库
--- create database if not exists tcc_ord;
--- use tcc_ord;
+create database if not exists dtx_ord;
+use dtx_ord;
 create table if not exists `ord_product` (
     `id` int(11) unsigned not null auto_increment comment '商品编号',
     `seller_uid` int(11) unsigned not null default '0' comment '卖家编号',
@@ -44,8 +44,8 @@ create table if not exists `ord_order_item` (
 )comment='订单项目表' collate='utf8_general_ci' engine = innodb;
 
 -- 优惠券库
--- create database if not exists tcc_cpn;
--- use tcc_cpn;
+create database if not exists dtx_cpn;
+use dtx_cpn;
 create table if not exists `cpn_coupon` (
   `id` int(11) unsigned not null auto_increment comment '编号',
   `money` int(11) unsigned not null default '0' comment '金额',
@@ -56,8 +56,8 @@ create table if not exists `cpn_coupon` (
 )comment='红包表' collate='utf8_general_ci' engine = innodb;
 
 -- 支付库
--- create database if not exists tcc_pay;
--- use tcc_pay;
+create database if not exists dtx_pay;
+use dtx_pay;
 create table if not exists `pay_account` (
   `uid` int(11) unsigned not null auto_increment comment '用户编号',
   `balance` int(11) unsigned not null default '0' comment '余额, 单位:分',

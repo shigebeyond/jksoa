@@ -11,7 +11,7 @@ import net.jkcode.jkmvc.orm.Orm
  */
 class ProductModel(id:Int? = null): Orm(id) {
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(ProductModel::class, "商品", "ord_product", "id"){}
+ 	companion object m: OrmMeta(ProductModel::class, "商品", "ord_product", "id", "dtx_ord"){}
 
 	// 代理属性读写
 	public var id:Int by property() // 商品编号 
