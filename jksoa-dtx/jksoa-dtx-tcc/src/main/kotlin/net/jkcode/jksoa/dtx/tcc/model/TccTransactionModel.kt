@@ -20,12 +20,7 @@ import kotlin.reflect.KProperty1
 class TccTransactionModel(id:Int? = null): Orm(id) {
 
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(TccTransactionModel::class, "tcc事务", "tcc_transaction", "id", config["dbName"]!!){
-
-		/**
-		 * 配置
-		 */
-		public val config: Config = Config.instance("dtx-tcc", "yaml")
+ 	companion object m: OrmMeta(TccTransactionModel::class, "tcc事务", "tcc_transaction", "id", Config.instance("dtx-tcc", "yaml").getString("dbName")!!){
 
 		/**
 		 * 事务状态: 尝试中
@@ -92,7 +87,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 			return
 		// 2.1 第一层是参数序号
 		val i: Int = fields[0].toInt()
-		var value: Any? = pjp.args[i]
+		var value: Any? = pjp.args.getOrNull(i)
 		if(value == null)
 			return
 

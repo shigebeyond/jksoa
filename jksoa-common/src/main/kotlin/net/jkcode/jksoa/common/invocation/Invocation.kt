@@ -5,6 +5,7 @@ import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jkmvc.singleton.BeanSingletons
 import java.lang.reflect.Method
+import java.io.Serializable
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -19,7 +20,7 @@ import kotlin.reflect.jvm.javaMethod
 open class Invocation(public override val clazz: String, /* 服务接口类全名 */
                       public override val methodSignature: String, /* 方法签名：包含方法名+参数类型 */
                       public override val args: Array<Any?> = emptyArray() /* 实参 */
-): IInvocation {
+): IInvocation, Serializable {
 
     /**
      * 构造函数
@@ -40,23 +41,23 @@ open class Invocation(public override val clazz: String, /* 服务接口类全�
 
     /**
      * 被调用的bean
-     *   由于clazz属性在子类初始化，递延引用
      */
-    protected val bean:Any by lazy {
-        BeanSingletons.instance(clazz)
-    }
+    protected val bean:Any
+        //= BeanSingletons.instance(clazz) // 不能引用(包含递延引用), 否则会被序列化, 如在tcc场景下需要对confirm/cancel方法调用进行序列化
+        get() = BeanSingletons.instance(clazz)
 
     /**
      * 被调用的方法
-     *   由于clazz属性在子类初始化，递延引用
      */
-    protected val method: Method by lazy {
-        val c = Class.forName(clazz) // ClassNotFoundException
-        val m = c.getMethodBySignature(methodSignature)
-        if(m == null)
-            throw IllegalArgumentException("Bean Class [$clazz] has no method [$methodSignature]") // 无函数
-        m!!
-    }
+    protected val method: Method
+        // 不能引用(包含递延引用), 否则会被序列化, 如在tcc场景下需要对confirm/cancel方法调用进行序列化
+        get(){
+            val c = Class.forName(clazz) // ClassNotFoundException
+            val m = c.getMethodBySignature(methodSignature)
+            if(m == null)
+                throw IllegalArgumentException("Bean Class [$clazz] has no method [$methodSignature]") // 无函数
+            return m!!
+        }
 
     /**
      * 调用

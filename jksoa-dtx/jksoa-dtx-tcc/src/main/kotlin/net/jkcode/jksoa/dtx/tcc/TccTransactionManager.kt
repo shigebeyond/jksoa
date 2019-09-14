@@ -96,19 +96,17 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
      * @return
      */
     protected fun beginRootTransaction(pjp: ProceedingJoinPoint): Any? {
-        // 0 新建根事务
+        // 1 新建根事务
         val tx = TccTransactionModel()
         tx.id = generateId("tcc")
         tx.parentId = 0
         tx.status = TccTransactionModel.STATUS_TRYING
         tx.setBizProp(pjp)
+        tx.addParticipant(TccParticipant(pjp)) // 记录参与者
         tx.create()
 
-        // 1 作为当前事务
+        // 2 作为当前事务
         this.tx = tx
-
-        // 2 记录参与者
-        tx.addParticipant(TccParticipant(pjp))
 
         // 3 调用方法
         val method = (pjp.signature as MethodSignature).method
