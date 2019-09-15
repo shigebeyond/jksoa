@@ -75,7 +75,7 @@ class OrderService {
      * @param couponId 优惠券编号
      */
     @TccMethod("confirmMakeOrder", "cancelMakeOrder", "order.makeOrder", "0", true)
-    public fun makeOrder(id: Long, productId2quantity: Map<Int, Int>, couponId: Int): CompletableFuture<OrderModel>{
+    public fun makeOrder(id: Long, productId2quantity: Map<Int, Int>, couponId: Int): OrderModel {
         if(productId2quantity.isEmpty())
             throw IllegalArgumentException("购买商品为空")
 
@@ -90,7 +90,7 @@ class OrderService {
         // 1 先冻结优惠券
         val uid = 1
         val uname = "买家"
-        val couponFuture = couponService.freezeCoupon(uid, couponId, id)
+        couponService.freezeCoupon(uid, couponId, id).get()
 
         val order:OrderModel  = OrderModel.db.transaction {
             // 2 扣库存
@@ -137,9 +137,7 @@ class OrderService {
             order
         }
 
-        return couponFuture.thenApply {
-            order
-        }
+        return order
     }
 
     /**
@@ -148,7 +146,7 @@ class OrderService {
      * @param productId2quantity 商品编号映射购买数量
      * @param couponId 优惠券编号
      */
-    public fun confirmMakeOrder(id: Long, productId2quantity: Map<Int, Int>, couponId: Int): CompletableFuture<OrderModel>{
+    public fun confirmMakeOrder(id: Long, productId2quantity: Map<Int, Int>, couponId: Int): OrderModel{
         // 获得订单
         val order = OrderModel(id)
         if(!order.loaded)
@@ -160,7 +158,7 @@ class OrderService {
             order.update()
         }
 
-        return CompletableFuture.completedFuture(order)
+        return order
     }
 
     /**
@@ -169,17 +167,16 @@ class OrderService {
      * @param productId2quantity 商品编号映射购买数量
      * @param couponId 优惠券编号
      */
-    public fun cancelMakeOrder(id: Long, productId2quantity: Map<Int, Int>, couponId: Int): CompletableFuture<OrderModel>{
+    public fun cancelMakeOrder(id: Long, productId2quantity: Map<Int, Int>, couponId: Int): OrderModel{
         // 获得订单
         val order = OrderModel(id)
-        val result = CompletableFuture.completedFuture(order)
         // 被删掉了, 或创建失败
         if(!order.loaded)
-            return result
+            return order
 
         // 已处理
         if(order.status != OrderModel.STATUS_DRAFT)
-            return result
+            return order
 
         // 未处理
         // 查询商品
@@ -203,8 +200,8 @@ class OrderService {
             // 删除订单项
             OrderItemModel.queryBuilder().where("order_id", "=", id).delete();
         }
-        
-        return result
+
+        return order
     }
 
     /****************************** 余额支付 tcc ********************************/

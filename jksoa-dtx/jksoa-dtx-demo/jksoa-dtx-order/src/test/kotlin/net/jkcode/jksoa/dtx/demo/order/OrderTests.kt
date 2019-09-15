@@ -21,7 +21,7 @@ class OrderTests {
         val id2quantity = mapOf<Int, Int>(productId to quantitiy)
         // 创建订单
         val id = generateId("order") //订单编号, 预先生成, 以便tcc
-        val orderFuture = orderService.makeOrder(id, id2quantity, couponId)
-        println(orderFuture.get())
+        val order = orderService.makeOrder(id, id2quantity, couponId)
+        println(order)
     }
 }
