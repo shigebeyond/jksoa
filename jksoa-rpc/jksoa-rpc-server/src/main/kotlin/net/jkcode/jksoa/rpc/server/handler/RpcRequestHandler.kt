@@ -38,7 +38,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
     /**
      * 服务端处理rpc请求的拦截器
      */
-    public override val interceptors: List<IRpcRequestInterceptor> = config.classes2Instances("requestInterceptors")
+    public override val interceptors: List<IRpcRequestInterceptor> = config.classes2Instances("interceptors")
 
     /**
      * 服务端处理rpc请求的拦截器链表
