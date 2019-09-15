@@ -86,6 +86,11 @@ netty:
 
 ### 创建服务提供者
 
+发布rpc服务有4个约束：
+
+1. 在服务类上加上`@RemoteService`注解
+2. 服务方法的参数都须能序列化(实现`Serializable`接口)
+
 参考 jksoa-common/src/main/kotlin/net.jkcode.jksoa.rpc.example/ISimpleService.kt
 
 ```

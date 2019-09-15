@@ -26,7 +26,7 @@ create table if not exists `ord_order` (
   `pay_money` int(11) unsigned not null default '0' comment '要支付的金额, 单位:分',
   `total_money` int(11) unsigned not null default '0' comment '总金额, 单位:分',
 
-  `status` tinyint(4) unsigned not null default '0' comment '订单状态： 0 草稿 1 待支付 2 已支付 3 支付失败',
+  `status` tinyint(4) unsigned not null default '0' comment '订单状态： 0 草稿 1 待支付 2 支付中 3 已支付 4 支付失败',
   `created` int(11) unsigned not null default '0' comment '创建时间',
   `pay_time` int(11) unsigned not null default '0' comment '支付时间',
 

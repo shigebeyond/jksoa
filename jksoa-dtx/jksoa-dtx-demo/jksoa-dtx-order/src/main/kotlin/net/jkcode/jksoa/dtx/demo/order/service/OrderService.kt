@@ -154,7 +154,7 @@ class OrderService {
 
         // 未处理
         if(order.status == OrderModel.STATUS_DRAFT) {
-            order.status = OrderModel.STATUS_PAYING // 待支付
+            order.status = OrderModel.STATUS_UNPAID // 待支付
             order.update()
         }
 
@@ -222,6 +222,10 @@ class OrderService {
             throw Exception("订单[$id]未创建完毕")
         if(order.status != OrderModel.STATUS_PAYING)
             throw Exception("订单[$id]已支付过")
+
+        // 更新订单状态为支付中
+        order.status = OrderModel.STATUS_PAYING
+        order.update()
 
         // 优惠券支付
         val couponFuture = couponService.spendCoupon(order.buyerUid, order.couponId, order.id)

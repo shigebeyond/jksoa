@@ -22,17 +22,22 @@ class OrderModel(id:Long? = null): Orm(id) {
 		/**
 		 * 订单状态: 待支付
 		 */
-		public const val STATUS_PAYING: Int = 1
+		public const val STATUS_UNPAID: Int = 1
+
+		/**
+		 * 订单状态: 支付中
+		 */
+		public const val STATUS_PAYING: Int = 2
 
 		/**
 		 * 订单状态: 已支付
 		 */
-		public const val STATUS_PAID: Int = 2
+		public const val STATUS_PAID: Int = 3
 
 		/**
 		 * 订单状态: 支付失败
 		 */
-		public const val STATUS_PAY_FAILED: Int = 3
+		public const val STATUS_PAY_FAILED: Int = 4
 
 		init {
 			hasMany("items", OrderItemModel::class, "order_id")
@@ -59,7 +64,7 @@ class OrderModel(id:Long? = null): Orm(id) {
 
 	public var totalMoney:Int by property() // 总金额, 单位:分 
 
-	public var status:Int by property() // 订单状态： 0 草稿 1 待支付 2 已支付 3 支付失败
+	public var status:Int by property() // 订单状态： 0 草稿 1 待支付 2 支付中 3 已支付 4 支付失败
 
 	public var created:Long by property() // 创建时间
 
@@ -90,8 +95,9 @@ class OrderModel(id:Long? = null): Orm(id) {
 		val descs = mapOf(
 			0 to "草稿",
 			1 to "待支付",
-			2 to "已支付",
-			3 to "支付失败"
+			2 to "支付中",
+			3 to "已支付",
+			4 to "支付失败"
 		)
 		return descs[status]!!
 	}
