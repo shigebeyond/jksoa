@@ -124,11 +124,9 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
         dtxTccLogger.debug("根事务[{}]中调用目标方法: {}", tx.id, inv)
         return process(isResultFuture, inv) { r, ex ->
             if (ex == null) { // 3.1 调用成功, 则提交事务
-                dtxTccLogger.debug("根事务[{}]提交: transaction={}", tx.id, tx)
                 tx.commit()
             } else { // 3.2 调用失败, 则回滚事务
-                dtxTccLogger.warn("根事务[{}]回滚: transaction={}, exception={}", tx.id tx, ex)
-                tx.rollback()
+                tx.rollback(ex)
                 throw ex
             }
 
@@ -218,15 +216,13 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
 
         // 2 提交或回滚
         if (tx != null) {
-            if (txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) {
-                dtxTccLogger.warn("分支事务[{}]提交: transaction={}", tx.id, tx)
+            if (txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) 
                 tx.commit()
-            }else {
-                dtxTccLogger.warn("分支事务[{}]回滚: transaction={}", tx.id, tx)
+            else 
                 tx.rollback()
-            }
+            
         } else {
-            dtxTccLogger.error("{}分支事务[$txCtx]失败: 事务不存在", if (txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) "确认" else "取消")
+            dtxTccLogger.error("分支事务[{}]{}失败: 事务不存在", tx.id, if (txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) "提交" else "回滚")
         }
 
         // 3 返回默认的结果值, 其实返回啥都无所谓, 反正调用方不用结果值

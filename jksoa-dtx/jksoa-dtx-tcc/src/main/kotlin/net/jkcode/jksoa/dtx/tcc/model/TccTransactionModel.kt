@@ -158,6 +158,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	 *   先更新事务状态, 再调用参与者的确认方法, 因为参与者的确认方法跟源方法可能是同一个方法, 因此会重复进入 TccTransactionManager.interceptTccMethod() 中, 但第一次是try阶段启动事务或添加参与者, 第二次是confirm阶段单纯的执行源方法, 因此需要保证事务状态是最新的
 	 */
 	public fun commit() {
+		dtxTccLogger.warn("{}事务[{}]提交: transaction={}", if(tx.parentId == 0) "根" else "分支", tx.id, tx)
 		// 1 确认中
 		status = STATUS_CONFIRMING
 		retryCount = retryCount + 1
@@ -171,7 +172,11 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	/**
 	 * 回滚事务: 调用参与者取消方法
 	 */
-	public fun rollback() {
+	public fun rollback(ex: Throwable? = null) {
+		if(ex == null)
+			dtxTccLogger.warn("{}事务[{}]回滚: transaction={}", if(tx.parentId == 0) "根" else "分支", tx.id, tx)
+		else
+			dtxTccLogger.warn("{}事务[{}]回滚: transaction={}, exception={}", if(tx.parentId == 0) "根" else "分支", tx.id tx, ex)
 		// 1 取消中
 		status = STATUS_CANCELING
 		retryCount = retryCount + 1

@@ -142,8 +142,11 @@ class CouponService : ICouponService {
             throw Exception("用户[$uid]没有优惠券[$id]")
 
         // 检查订单
-        if(rp.bizOrderId != bizOrderId)
-            throw Exception("优惠券[$id]没有花费在业务订单[$bizOrderId]")
+        if(rp.bizOrderId != bizOrderId){
+            dtxTccLogger.error(("优惠券[$id]没有花费在业务订单[$bizOrderId]")
+            // 反正不是该订单的, 无所谓取消
+            return CompletableFuture.completedFuture(true)
+        }
 
         var result = true
         // 未处理
