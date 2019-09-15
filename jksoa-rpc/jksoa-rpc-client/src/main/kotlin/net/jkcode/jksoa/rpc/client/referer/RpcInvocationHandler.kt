@@ -1,9 +1,6 @@
 package net.jkcode.jksoa.rpc.client.referer
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.ThreadLocalInheritableThreadPool
-import net.jkcode.jkmvc.common.getMethodHandle
-import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcRequest
@@ -130,8 +127,17 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
         val req = RpcRequest(method, args)
 
         // 2 分发请求, 获得异步响应
+        //val threadLocalItct = ThreadLocalInheritableInterceptor()
         return interceptorChain.intercept(req) {
             dispatcher.dispatch(req)
+                    /*.whenComplete { r, ex ->
+                        threadLocalItct.beforeExecute() // 继承 ThreadLocal
+                        if(ex != null)
+                            throw ex
+                        r
+                        // TODO: 不能在这里清理 ThreadLocal, 否则后续回调就丢失 ThreadLocal
+                        //threadLocalItct.afterExecute() // 清理 ThreadLocal
+                    }*/
         }
     }
 

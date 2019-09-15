@@ -43,7 +43,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
     /**
      * 服务端处理rpc请求的拦截器链表
      */
-    private val interceptorChain = RequestInterceptorChain(RpcInvocationHandler.interceptors)
+    private val interceptorChain = RequestInterceptorChain(interceptors)
 
     /**
      * 处理请求: 调用Provider来处理
