@@ -4,7 +4,6 @@ import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.annotation.remoteService
 import java.lang.reflect.Method
-import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
@@ -43,10 +42,14 @@ class ShardingRpcRequest(clazz: String, //服务接口类全名
     }
 
     /**
-     * 调用
+     * 构建rpc请求
+     * @param 分片序号
      * @return
      */
-    public override fun invoke(): Any? {
-        return dispatcher.dispatchSharding(this)
+    public override fun buildRpcRequest(iSharding: Int): IRpcRequest {
+        val req = RpcRequest(serviceId, methodSignature, getShardingArgs(iSharding), version)
+        req.setAttachments(attachments)
+        return req
     }
+
 }

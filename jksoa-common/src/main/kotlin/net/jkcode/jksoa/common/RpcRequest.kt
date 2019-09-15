@@ -4,9 +4,7 @@ import net.jkcode.jkmvc.common.generateId
 import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.annotation.remoteService
-import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
 import java.lang.reflect.Method
-import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
@@ -23,14 +21,6 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
                       public override val args: Array<Any?> = emptyArray(), //实参
                       public override val version: Int = 0 //版本
 ): IRpcRequest, Cloneable {
-
-    companion object {
-        /**
-         * 请求分发者
-         */
-        @Transient
-        public val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance()
-    }
 
     /**
      * 请求标识，全局唯一
@@ -84,6 +74,9 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
      * @return
      */
     public override fun invoke(): Any? {
-        return dispatcher.dispatch(this)
+        //return IRpcRequestDispatcher.instance().dispatch(this) // 无拦截器链
+        //return RpcInvocationHandler.invokeRpcRequest(this) // 有拦截器链
+        // 没有依赖类所在的工程, 不能直接调用, 只能通过加入中间者来解耦依赖
+        return IRpcRequestInvoker.instance().invoke(this)
     }
 }

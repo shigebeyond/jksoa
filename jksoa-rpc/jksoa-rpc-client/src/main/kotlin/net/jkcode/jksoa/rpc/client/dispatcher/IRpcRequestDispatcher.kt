@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.common.dispatcher
+package net.jkcode.jksoa.rpc.client.dispatcher
 
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
@@ -19,7 +19,7 @@ interface IRpcRequestDispatcher {
         /**
          * 单例类的配置，内容是哈希 <单例名 to 单例类>
          */
-        public override val instsConfig: IConfig = Config.instance("rpc-dispatcher", "yaml")
+        public override val instsConfig: IConfig = Config.instance("rpc-req-dispatcher", "yaml")
     }
 
 

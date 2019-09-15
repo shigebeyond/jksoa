@@ -16,10 +16,6 @@ interface IShardingRpcRequest : IShardingInvocation, IRpcRequest {
      * @param 分片序号
      * @return
      */
-    fun buildRpcRequest(iSharding: Int): IRpcRequest {
-        val req = RpcRequest(serviceId, methodSignature, getShardingArgs(iSharding), version)
-        req.setAttachments(attachments)
-        return req
-    }
+    fun buildRpcRequest(iSharding: Int): IRpcRequest
 
 }

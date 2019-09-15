@@ -43,7 +43,7 @@ class ShardingInvocation(clazz: String, //服务接口类全名
      * @return
      */
     public override fun invoke(): Any? {
-        val futures = arrayOfNulls<CompletableFuture<Any?>>(shardingSize)
+        val futures = arrayOfNulls<Any?>(shardingSize)
         for(i in 0 until shardingSize){
             // 异步调用
             futures[i] = CompletableFuture.supplyAsync{

@@ -1,17 +1,22 @@
 package net.jkcode.jksoa.rpc.client.referer
 
-import net.jkcode.jkmvc.common.*
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.ThreadLocalInheritableThreadPool
+import net.jkcode.jkmvc.common.getMethodHandle
+import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
+import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.guard.MethodGuardInvoker
-import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.collections.set
 
 /**
  * rpc调用的代理实现
@@ -127,17 +132,28 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
         val req = RpcRequest(method, args)
 
         // 2 分发请求, 获得异步响应
+        return invokeRpcRequest(req)
+    }
+
+    /**
+     * 分发请求, 获得异步响应
+     *    调用拦截器链表
+     * @param req
+     * @return
+     */
+    @JvmStatic
+    public fun invokeRpcRequest(req: IRpcRequest): CompletableFuture<Any?> {
         //val threadLocalItct = ThreadLocalInheritableInterceptor()
         return interceptorChain.intercept(req) {
             dispatcher.dispatch(req)
-                    /*.whenComplete { r, ex ->
-                        threadLocalItct.beforeExecute() // 继承 ThreadLocal
-                        if(ex != null)
-                            throw ex
-                        r
-                        // TODO: 不能在这里清理 ThreadLocal, 否则后续回调就丢失 ThreadLocal
-                        //threadLocalItct.afterExecute() // 清理 ThreadLocal
-                    }*/
+            /*.whenComplete { r, ex ->
+                    threadLocalItct.beforeExecute() // 继承 ThreadLocal
+                    if(ex != null)
+                        throw ex
+                    r
+                    // TODO: 不能在这里清理 ThreadLocal, 否则后续回调就丢失 ThreadLocal
+                    //threadLocalItct.afterExecute() // 清理 ThreadLocal
+                }*/
         }
     }
 

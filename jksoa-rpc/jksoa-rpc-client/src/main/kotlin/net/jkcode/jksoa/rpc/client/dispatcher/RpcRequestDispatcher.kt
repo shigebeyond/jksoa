@@ -3,7 +3,6 @@ package net.jkcode.jksoa.rpc.client.dispatcher
 import net.jkcode.jkmvc.closing.ClosingOnShutdown
 import net.jkcode.jkmvc.common.*
 import net.jkcode.jksoa.common.*
-import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub

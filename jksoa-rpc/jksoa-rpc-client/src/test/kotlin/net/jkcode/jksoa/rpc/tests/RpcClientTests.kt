@@ -5,7 +5,7 @@ import net.jkcode.jkmvc.serialize.FstSerializer
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.rpc.client.protocol.netty.NettyRpcClient
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.example.IGuardService
