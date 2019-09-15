@@ -1,6 +1,0 @@
-# rpc客户端的插件
-rpcClientPlugins:
-    - net.jkcode.jksoa.dtx.tcc.interceptor.RpcClientTccInterceptor
-# rpc服务端的插件
-rpcServerPlugins:
-    - net.jkcode.jksoa.dtx.tcc.interceptor.RpcServerTccInterceptor
