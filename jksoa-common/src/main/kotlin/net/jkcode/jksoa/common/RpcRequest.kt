@@ -76,7 +76,9 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
     public override fun invoke(): Any? {
         //return IRpcRequestDispatcher.instance().dispatch(this) // 无拦截器链
         //return RpcInvocationHandler.invokeRpcRequest(this) // 有拦截器链
-        // 没有依赖类所在的工程, 不能直接调用, 只能通过加入中间者来解耦依赖
-        return IRpcRequestInvoker.instance().invoke(this)
+        // 没有依赖 IRpcRequestDispatcher/RpcInvocationHandler类所在的rpc-client工程, 不能直接调用, 只能通过中间类+反射来解耦依赖
+        val clazz = Class.forName("net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler")
+        val invoker = clazz.kotlin.objectInstance as IRpcRequestInvoker // object
+        return invoker.invoke(this)
     }
 }
