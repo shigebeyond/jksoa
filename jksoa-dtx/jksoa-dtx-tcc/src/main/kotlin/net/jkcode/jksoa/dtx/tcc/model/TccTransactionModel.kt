@@ -3,12 +3,11 @@ package net.jkcode.jksoa.dtx.tcc.model
 import net.jkcode.jkmvc.common.Application
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.getProperty
-import net.jkcode.jkmvc.orm.OrmMeta
 import net.jkcode.jkmvc.orm.Orm
-import net.jkcode.jksoa.common.RpcRequest
+import net.jkcode.jkmvc.orm.OrmMeta
+import net.jkcode.jksoa.common.invocation.IInvocation
+import net.jkcode.jksoa.dtx.tcc.dtxTccLogger
 import net.jkcode.jksoa.dtx.tcc.tccMethod
-import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.reflect.MethodSignature
 import kotlin.reflect.KProperty1
 
 /**
@@ -67,12 +66,16 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	public var version:Int by property() // 版本
 
 	/**
-	 * 设置事务的业务相关字段: 业务类型 + 业务主体编号
-	 * @param pjp
+	 * 当前确认或取消的参与者
 	 */
-	public fun setBizProp(pjp: ProceedingJoinPoint){
-		val method = (pjp.signature as MethodSignature).method
-		val annotation = method.tccMethod!!
+	internal lateinit var currEndingparticipant: TccParticipant
+
+	/**
+	 * 设置事务的业务相关字段: 业务类型 + 业务主体编号
+	 * @param inv
+	 */
+	public fun setBizProp(inv: IInvocation){
+		val annotation = inv.method.tccMethod!!
 
 		// 1 业务类型
 		this.bizType = Application.name + '.' + annotation.bizType
@@ -85,7 +88,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 			return
 		// 2.1 第一层是参数序号
 		val i: Int = fields[0].toInt()
-		var value: Any? = pjp.args.getOrNull(i)
+		var value: Any? = inv.args.getOrNull(i)
 		if(value == null)
 			return
 
@@ -105,6 +108,19 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	}
 
 	/**
+	 * 添加参与者+保存
+	 * @param participant
+	 * @return
+	 */
+	public fun addParticipantAndSave(inv: IInvocation): TccParticipant {
+		val participant = TccParticipant(inv)
+		addParticipant(participant)
+		update()
+		dtxTccLogger.debug("事务[{}]添加参与者: {}", id, participant)
+		return participant
+	}
+
+	/**
 	 * 添加参与者
 	 * @param participant
 	 */
@@ -114,32 +130,27 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	}
 
 	/**
-	 * 获得当前的rpc类型的参与者
-	 * @return
-	 */
-	public fun currentRpcParticipant(): TccParticipant {
-		// 当前参与者 = 最后的参与者
-		val last = participants.last()
-		if(last.confirmInvocation is RpcRequest)
-			return last
-
-		throw IllegalStateException("当前参与者不是rpc类型")
-	}
-
-	/**
 	 * 确认事务: 调用参与者确认方法
 	 */
 	public fun confirm() {
-		for (participant in participants)
+		for (participant in participants) {
+			// 记录当前确认的参与者
+			currEndingparticipant = participant
+			// 调用确认方法
 			participant.confirm()
+		}
 	}
 
 	/**
 	 * 取消事务: 调用参与者取消方法
 	 */
 	public fun cancel() {
-		for (participant in participants)
+		for (participant in participants) {
+			// 记录当前取消的参与者
+			currEndingparticipant = participant
+			// 调用取消方法
 			participant.cancel()
+		}
 	}
 
 	/**

@@ -1,7 +1,8 @@
 package net.jkcode.jksoa.dtx.tcc
 
+import net.jkcode.jksoa.common.invocation.IInvocation
+import net.jkcode.jksoa.dtx.tcc.model.TccParticipant
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
-import org.aspectj.lang.ProceedingJoinPoint
 
 /**
  * tcc事务的管理者
@@ -30,7 +31,7 @@ interface ITccTransactionManager {
      * @param pjp
      * @return
      */
-    fun interceptTccMethod(pjp: ProceedingJoinPoint): Any?
+    fun interceptTccMethod(pjp: IInvocation): Any?
 
     /**
      * 恢复事务, 即失败重试

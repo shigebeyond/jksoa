@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.dtx.tcc
 
+import net.jkcode.jksoa.dtx.tcc.invocation.JoinPointInvocation
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -26,6 +27,7 @@ class TccMethodAspect {
      */
     @Around("tccMethodExecute()")
     public fun interceptTccMethod(pjp: ProceedingJoinPoint): Any? {
-        return TccTransactionManager.current().interceptTccMethod(pjp)
+        val inv = JoinPointInvocation(pjp)
+        return TccTransactionManager.current().interceptTccMethod(inv)
     }
 }

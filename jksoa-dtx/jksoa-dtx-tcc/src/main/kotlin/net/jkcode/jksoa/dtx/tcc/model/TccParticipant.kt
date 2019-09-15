@@ -7,8 +7,6 @@ import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.common.invocation.Invocation
 import net.jkcode.jksoa.dtx.tcc.tccMethod
-import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.reflect.MethodSignature
 import java.io.Serializable
 import java.lang.reflect.Method
 
@@ -36,9 +34,9 @@ class TccParticipant : Serializable{
 
     /**
      * 构造函数
-     * @param pjp
+     * @param inv
      */
-    public constructor(pjp: ProceedingJoinPoint):this((pjp.signature as MethodSignature).method, pjp.args)
+    public constructor(inv: IInvocation):this(inv.method, inv.args)
 
     /**
      * 构造函数
@@ -91,5 +89,9 @@ class TccParticipant : Serializable{
      */
     public fun cancel() {
         cancelInvocation.invoke()
+    }
+
+    public override fun toString(): String {
+        return "branchId=$branchId, confirmInvocation=$confirmInvocation, cancelInvocation=$cancelInvocation"
     }
 }

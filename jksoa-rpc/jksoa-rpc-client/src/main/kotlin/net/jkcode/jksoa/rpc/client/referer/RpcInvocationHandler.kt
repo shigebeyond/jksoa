@@ -7,6 +7,7 @@ import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
+import net.jkcode.jksoa.common.IRpcRequestInvoker
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.guard.MethodGuardInvoker
@@ -25,7 +26,7 @@ import kotlin.collections.set
  * @author shijianhang<772910474@qq.com>
  * @date 2017-11-08 7:25 PM
  */
-object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
+object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcRequestInvoker {
 
     /**
      * client配置
@@ -132,7 +133,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
         val req = RpcRequest(method, args)
 
         // 2 分发请求, 获得异步响应
-        return invokeRpcRequest(req)
+        return invoke(req)
     }
 
     /**
@@ -141,8 +142,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler {
      * @param req
      * @return
      */
-    @JvmStatic
-    public fun invokeRpcRequest(req: IRpcRequest): CompletableFuture<Any?> {
+    public override fun invoke(req: IRpcRequest): CompletableFuture<Any?> {
         //val threadLocalItct = ThreadLocalInheritableInterceptor()
         return interceptorChain.intercept(req) {
             dispatcher.dispatch(req)

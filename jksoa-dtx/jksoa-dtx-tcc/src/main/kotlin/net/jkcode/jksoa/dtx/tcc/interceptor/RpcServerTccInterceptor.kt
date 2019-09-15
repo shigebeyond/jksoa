@@ -1,10 +1,12 @@
 package net.jkcode.jksoa.dtx.tcc.interceptor
 
 import net.jkcode.jkmvc.common.trySupplierFuture
-import net.jkcode.jksoa.dtx.tcc.TccTransactionContext
-import net.jkcode.jksoa.dtx.tcc.TccTransactionManager
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
+import net.jkcode.jksoa.dtx.tcc.TccTransactionContext
+import net.jkcode.jksoa.dtx.tcc.TccTransactionManager
+import net.jkcode.jksoa.dtx.tcc.dtxTccLogger
+import net.jkcode.jksoa.dtx.tcc.tccMethod
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -24,12 +26,17 @@ class RpcServerTccInterceptor: IRpcRequestInterceptor {
      * @return
      */
     public override fun intercept(req: IRpcRequest, action: () -> Any?): CompletableFuture<Any?> {
-        val id: Long? = req.getAttachment("tccId") // 当前事务id
-        if(id != null) {
-            // 识别事务id+事务状态
-            val branchId: Long = req.getAttachment("tccBranchId")!! // 分支事务id
-            val status: Int = req.getAttachment("tccStatus")!! // 事务状态
-            TccTransactionManager.current().txCtx = TccTransactionContext(id, branchId, status)
+        // 有tcc注解
+        val method = req.method
+        if(method.tccMethod != null) {
+            val id: Long? = req.getAttachment("tccId") // 当前事务id
+            if (id != null) {
+                // 识别事务id+事务状态
+                val branchId: Long = req.getAttachment("tccBranchId")!! // 分支事务id
+                val status: Int = req.getAttachment("tccStatus")!! // 事务状态
+                dtxTccLogger.debug("rpc server端接收tcc事务信息: tccId={}, tccBranchId={}, tccStatus={}", id, branchId, status)
+                TccTransactionManager.current().txCtx = TccTransactionContext(id, branchId, status)
+            }
         }
 
         // 转future

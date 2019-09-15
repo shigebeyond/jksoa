@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.dtx.demo.order
 
 import net.jkcode.jkmvc.common.generateId
+import net.jkcode.jksoa.dtx.demo.order.controller.OrderController
 import net.jkcode.jksoa.dtx.demo.order.service.OrderService
 import org.junit.Test
 
@@ -22,6 +23,18 @@ class OrderTests {
         // 创建订单
         val id = generateId("order") //订单编号, 预先生成, 以便tcc
         val order = orderService.makeOrder(id, id2quantity, couponId)
-        println(order)
+        println("生成订单: " + order)
     }
+
+    @Test
+    fun testBalancePayOrder(){
+        val order = OrderModel.queryBuilder().where("status", "=", OrderModel.STATUS_PAYING).findModel<OrderModel>()
+        if(order == null){
+            println("没有要支付的订单")
+            return
+        }
+        val future = orderService.balancePayOrder(order.id)
+        println("支付订单: " + future.get())
+    }
+
 }
