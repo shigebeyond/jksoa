@@ -1,0 +1,5 @@
+dependencies{
+    // other project
+    compile project(':jksoa-dtx:jksoa-dtx-mq')
+    compile project(':jksoa-dtx:jksoa-dtx-tcc')
+}

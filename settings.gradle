@@ -15,7 +15,7 @@ include 'jksoa-tracer:jksoa-tracer-common', 'jksoa-tracer:jksoa-tracer-agent', '
 // 分布式事务
 include 'jksoa-dtx:jksoa-dtx-mq', 'jksoa-dtx:jksoa-dtx-tcc'
 // 分布式事务的案例
-include 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon-api', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay-api', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-order'
+include 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-common', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon-api', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay-api', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-order'
 
 // 添加jkmvc子项目
 include 'jkmvc-common'
