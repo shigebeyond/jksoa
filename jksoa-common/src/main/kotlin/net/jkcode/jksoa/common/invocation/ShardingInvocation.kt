@@ -42,7 +42,7 @@ class ShardingInvocation(clazz: String, //服务接口类全名
      * 调用
      * @return
      */
-    public override fun invoke(): CompletableFuture<Any?> {
+    public override fun invoke(): Any? {
         val futures = arrayOfNulls<CompletableFuture<Any?>>(shardingSize)
         for(i in 0 until shardingSize){
             // 异步调用
@@ -50,6 +50,6 @@ class ShardingInvocation(clazz: String, //服务接口类全名
                 method.invoke(bean, *getShardingArgs(i)) // 调用bean方法
             }
         }
-        return (futures as Array<CompletableFuture<Any?>>).join() as CompletableFuture<Any?>
+        return (futures as Array<CompletableFuture<Any?>>).join()
     }
 }

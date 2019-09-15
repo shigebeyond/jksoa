@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.common
 
 import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.getMethodBySignature
 import net.jkcode.jksoa.common.annotation.remoteMethod
 import net.jkcode.jksoa.common.invocation.IInvocation
 import java.lang.reflect.Method
@@ -64,9 +63,8 @@ interface IRpcRequestMeta: IInvocation {
             val default: Long = config["requestTimeoutMillis"]!!
             try {
                 // 获得自定义超时
-                val clazz = Class.forName(this.clazz)
-                val method = clazz.getMethodBySignature(this.methodSignature)
-                if(method != null && method.remoteMethod != null){
+                val method = this.method
+                if(method.remoteMethod != null){
                     // 1 通过 setMethodRequestTimeoutMillis() 设置的超时
                     val sv = methodRequestTimeoutMillis[method]
                     if(sv != null)

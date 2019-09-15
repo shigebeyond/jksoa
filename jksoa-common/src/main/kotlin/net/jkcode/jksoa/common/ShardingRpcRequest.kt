@@ -46,7 +46,7 @@ class ShardingRpcRequest(clazz: String, //服务接口类全名
      * 调用
      * @return
      */
-    public override fun invoke(): CompletableFuture<Any?> {
-        return dispatcher.dispatchSharding(this) as CompletableFuture<Any?>
+    public override fun invoke(): Any? {
+        return dispatcher.dispatchSharding(this)
     }
 }

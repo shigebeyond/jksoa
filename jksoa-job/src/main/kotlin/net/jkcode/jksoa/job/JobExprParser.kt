@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jkmvc.common.getMethodBySignature
+import net.jkcode.jkmvc.common.getMethodByClassAndSignature
 import net.jkcode.jkmvc.validator.ArgsParser
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.ShardingRpcRequest
@@ -55,16 +55,13 @@ object JobExprParser: IJobParser {
         val argsExpr: String = subexprs[3]
         val argsPerSharding: Int = if(subexprs.size == 4) 0 else subexprs[4].toInt()
 
-        val c = Class.forName(clazz) // ClassNotFoundException
-        val m = c.getMethodBySignature(methodSignature)
-        if(m == null)
-            throw JobException("Class [$clazz] has no method [$methodSignature]") // 无函数
-        val args = ArgsParser.parse(argsExpr, m!!)
+        val method = getMethodByClassAndSignature(clazz, methodSignature)
+        val args = ArgsParser.parse(argsExpr, method)
         val inv: IInvocation = when(type){
-            "lpc" -> Invocation(m, args)
-            "rpc" -> RpcRequest(m, args)
-            "shardingLpc" -> ShardingInvocation(m, args, argsPerSharding)
-            "shardingRpc" -> ShardingRpcRequest(m, args, argsPerSharding)
+            "lpc" -> Invocation(method, args)
+            "rpc" -> RpcRequest(method, args)
+            "shardingLpc" -> ShardingInvocation(method, args, argsPerSharding)
+            "shardingRpc" -> ShardingRpcRequest(method, args, argsPerSharding)
             else -> throw JobException("无效作业类型: $type")
         }
         return InvocationJob(inv)

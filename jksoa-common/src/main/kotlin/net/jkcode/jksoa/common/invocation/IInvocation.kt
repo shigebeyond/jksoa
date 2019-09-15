@@ -1,6 +1,8 @@
 package net.jkcode.jksoa.common.invocation
 
+import net.jkcode.jkmvc.common.getMethodByClassAndSignature
 import net.jkcode.jkmvc.common.toExpr
+import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 import java.util.function.Supplier
@@ -25,6 +27,13 @@ interface IInvocation {
     val methodSignature: String
 
     /**
+     * 方法
+     */
+    val method: Method
+        // 不能引用(包含递延引用), 否则会被序列化, 如在tcc场景下需要对confirm/cancel方法调用进行序列化
+        get() = getMethodByClassAndSignature(clazz, methodSignature)
+
+    /**
      * 实参
      */
     val args: Array<Any?>
@@ -33,7 +42,7 @@ interface IInvocation {
      * 调用
      * @return
      */
-    fun invoke(): CompletableFuture<Any?>
+    fun invoke(): Any?
 
     /**
      * 转为描述

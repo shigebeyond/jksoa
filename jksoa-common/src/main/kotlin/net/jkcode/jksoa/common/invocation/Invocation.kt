@@ -1,11 +1,10 @@
 package net.jkcode.jksoa.common.invocation
 
-import net.jkcode.jkmvc.common.getMethodBySignature
 import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jkmvc.singleton.BeanSingletons
-import java.lang.reflect.Method
 import java.io.Serializable
+import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -47,25 +46,10 @@ open class Invocation(public override val clazz: String, /* 服务接口类全�
         get() = BeanSingletons.instance(clazz)
 
     /**
-     * 被调用的方法
-     */
-    protected val method: Method
-        // 不能引用(包含递延引用), 否则会被序列化, 如在tcc场景下需要对confirm/cancel方法调用进行序列化
-        get(){
-            val c = Class.forName(clazz) // ClassNotFoundException
-            val m = c.getMethodBySignature(methodSignature)
-            if(m == null)
-                throw IllegalArgumentException("Bean Class [$clazz] has no method [$methodSignature]") // 无函数
-            return m!!
-        }
-
-    /**
      * 调用
      * @return
      */
-    public override fun invoke(): CompletableFuture<Any?> {
-        return trySupplierFuture {
-            method.invoke(bean, *args)
-        }
+    public override fun invoke(): Any? {
+        return method.invoke(bean, *args)
     }
 }

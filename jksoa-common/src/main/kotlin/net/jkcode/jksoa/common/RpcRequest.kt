@@ -83,7 +83,7 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
      * 调用
      * @return
      */
-    public override fun invoke(): CompletableFuture<Any?> {
+    public override fun invoke(): Any? {
         return dispatcher.dispatch(this)
     }
 }
