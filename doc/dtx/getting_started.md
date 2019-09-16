@@ -185,4 +185,121 @@ jksoa-dtx-tcc 使用了 jksoa-rpc 作为底层的rpc框架
 
 # 快速入门
 
-## 
+## 发布Tcc服务
+发布一个Tcc服务方法，可被远程调用并参与到Tcc事务中，发布Tcc服务方法有下面3个约束：
+
+1. 在服务方法上加上`@TccMethod`注解
+2. 服务方法的参数都须能序列化(实现`Serializable`接口)
+jksoa-dtx-tcc 在执行服务过程中会将Tcc服务的上下文持久化，包括所有参数，内部默认实现为将入参使用fast serializer的序列化机制序列化为为byte流，所以需要实现`Serializable`接口.
+3. try方法、confirm方法和cancel方法入参类型须一样
+
+jksoa-dtx-tcc 通过aspectj来对有`@TccMethod`注解的方法为切点, 对该方法实现织入tcc事务的逻辑.
+
+```
+package net.jkcode.jksoa.dtx.tcc
+
+import net.jkcode.jksoa.dtx.tcc.invocation.JoinPointInvocation
+import org.aspectj.lang.ProceedingJoinPoint
+import org.aspectj.lang.annotation.Around
+import org.aspectj.lang.annotation.Aspect
+import org.aspectj.lang.annotation.Pointcut
+
+/**
+ * tcc方法的切入处理
+ *
+ * @author shijianhang<772910474@qq.com>
+ * @date 2019-9-8 6:04 PM
+ */
+@Aspect
+class TccMethodAspect {
+
+    /**
+     * 切入点: 有@Compensable注解的方法
+     */
+    @Pointcut("@annotation(net.jkcode.jksoa.dtx.tcc.TccMethod) && execution(* *(..))")
+    public fun tccMethodExecute() {
+    }
+
+    /**
+     * 切入逻辑
+     */
+    @Around("tccMethodExecute()")
+    public fun interceptTccMethod(pjp: ProceedingJoinPoint): Any? {
+        val inv = JoinPointInvocation(pjp)
+        return TccTransactionManager.current().interceptTccMethod(inv)
+    }
+}
+```
+
+1. try阶段方法为`@TccMethod`注解的方法
+2. confirm阶段方法为`@TccMethod`中属性`confirmMethod`指定的方法
+3. cancel阶段方法为`@TccMethod`中属性`cancelMethod`指定的方法
+
+
+
+本地Tcc服务 + 调用远程Tcc服务
+调用远程Tcc服务，将远程Tcc服务参与到本地Tcc事务中，本地的服务方法也需要声明为Tcc服务
+不同的是远程Tcc服务中的`confirmMethod`属性与`cancelMethod`属性为空字符串
+
+在demo中优惠券服务中的发布服务
+
+
+1. 远程服务
+
+```
+    /**
+     * 消费优惠券 -- try
+     * @param uid 用户编号
+     * @param id 优惠券编号
+     * @param bizOrderId 业务订单编号
+     * @return
+     */
+    @TccMethod("", "", "coupon.spendCoupon", "2")
+    fun spendCoupon(uid: Int, id: Int, bizOrderId: Long): CompletableFuture<Boolean>
+```
+
+2. 本地服务
+
+```
+    /**
+     * 消费优惠券 -- try
+     *   只是检查状态是否冻结
+     *
+     * @param uid 用户编号
+     * @param id 优惠券编号
+     * @param bizOrderId 业务订单编号
+     * @return
+     */
+    @TccMethod("confirmSpendCoupon", "cancelSpendCoupon", "coupon.spendCoupon", "2")
+    override fun spendCoupon(uid: Int, id: Int, bizOrderId: Long): CompletableFuture<Boolean> {
+        ...
+    }
+
+    /**
+     * 消费优惠券 -- confirm
+     *    修改状态为已消费
+     *
+     * @param uid 用户编号
+     * @param id 优惠券编号
+     * @param bizOrderId 业务订单编号
+     * @return
+     */
+    public fun confirmSpendCoupon(uid: Int, id: Int, bizOrderId: Long): CompletableFuture<Boolean> {
+        ...
+    }
+
+    /**
+     * 消费优惠券 -- cancel
+     *    修改状态为未消费
+     *
+     * @param uid 用户编号
+     * @param id 优惠券编号
+     * @param bizOrderId 业务订单编号
+     * @return
+     */
+    public fun cancelSpendCoupon(uid: Int, id: Int, bizOrderId: Long): CompletableFuture<Boolean> {
+      ...
+    }
+```
+
+
