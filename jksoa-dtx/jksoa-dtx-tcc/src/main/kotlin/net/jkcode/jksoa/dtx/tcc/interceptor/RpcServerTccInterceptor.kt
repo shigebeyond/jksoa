@@ -3,7 +3,7 @@ package net.jkcode.jksoa.dtx.tcc.interceptor
 import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
-import net.jkcode.jksoa.dtx.tcc.TccTransactionContext
+import net.jkcode.jksoa.dtx.tcc.TccRpcContext
 import net.jkcode.jksoa.dtx.tcc.TccTransactionManager
 import net.jkcode.jksoa.dtx.tcc.dtxTccLogger
 import net.jkcode.jksoa.dtx.tcc.tccMethod
@@ -35,7 +35,7 @@ class RpcServerTccInterceptor: IRpcRequestInterceptor {
                 val branchId: Long = req.getAttachment("tccBranchId")!! // 分支事务id
                 val status: Int = req.getAttachment("tccStatus")!! // 事务状态
                 dtxTccLogger.debug("rpc server端接收tcc事务信息: tccId={}, tccBranchId={}, tccStatus={}", id, branchId, status)
-                TccTransactionManager.current().txCtx = TccTransactionContext(id, branchId, status)
+                TccTransactionManager.current().txCtx = TccRpcContext(id, branchId, status)
             }
         }
 

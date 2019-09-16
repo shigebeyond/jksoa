@@ -7,6 +7,7 @@ import net.jkcode.jksoa.dtx.demo.coupon.entity.CouponEntity
 import net.jkcode.jksoa.dtx.demo.coupon.model.CouponModel
 import net.jkcode.jksoa.dtx.mq.MqTransactionManager
 import net.jkcode.jksoa.dtx.tcc.TccMethod
+import net.jkcode.jksoa.dtx.tcc.dtxTccLogger
 import java.io.File
 import java.util.concurrent.CompletableFuture
 
@@ -143,7 +144,7 @@ class CouponService : ICouponService {
 
         // 检查订单
         if(rp.bizOrderId != bizOrderId){
-            dtxTccLogger.error(("优惠券[$id]没有花费在业务订单[$bizOrderId]")
+            dtxTccLogger.error("优惠券[$id]没有花费在业务订单[$bizOrderId]")
             // 反正不是该订单的, 无所谓取消
             return CompletableFuture.completedFuture(true)
         }

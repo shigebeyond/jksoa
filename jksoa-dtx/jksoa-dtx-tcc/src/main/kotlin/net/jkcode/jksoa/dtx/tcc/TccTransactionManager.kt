@@ -45,7 +45,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
     /**
      * 事务上下文
      */
-    public override var txCtx: TccTransactionContext? = null
+    public override var txCtx: TccRpcContext? = null
 
     /**
      * 当前事务
@@ -56,6 +56,10 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
      *   3. 不需要事务层级, tx为null表示第一级, 非null表示其他级
      */
     public override var tx: TccTransactionModel? = null
+
+    init {
+        dtxTccLogger.debug("-------- 新建 TccTransactionManager")
+    }
 
     /**
      * 拦截tcc方法调用
@@ -222,7 +226,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
                 tx.rollback()
             
         } else {
-            dtxTccLogger.error("分支事务[{}]{}失败: 事务不存在", tx.id, if (txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) "提交" else "回滚")
+            dtxTccLogger.error("分支事务[{}]{}失败: 事务不存在", txCtx, if (txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) "提交" else "回滚")
         }
 
         // 3 返回默认的结果值, 其实返回啥都无所谓, 反正调用方不用结果值

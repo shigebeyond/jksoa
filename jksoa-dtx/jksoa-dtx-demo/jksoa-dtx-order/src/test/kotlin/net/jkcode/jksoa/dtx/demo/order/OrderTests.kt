@@ -28,11 +28,13 @@ class OrderTests {
 
     @Test
     fun testBalancePayOrder(){
-        val order = OrderModel.queryBuilder().where("status", "=", OrderModel.STATUS_PAYING).findModel<OrderModel>()
+        // 查询待支付订单
+        val order = OrderModel.queryBuilder().where("status", "=", OrderModel.STATUS_UNPAID).findModel<OrderModel>()
         if(order == null){
             println("没有要支付的订单")
             return
         }
+        // 余额支付
         val future = orderService.balancePayOrder(order.id)
         println("支付订单: " + future.get())
     }

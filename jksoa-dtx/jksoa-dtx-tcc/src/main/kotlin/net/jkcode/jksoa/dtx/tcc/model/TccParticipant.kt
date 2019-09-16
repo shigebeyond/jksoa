@@ -1,11 +1,13 @@
 package net.jkcode.jksoa.dtx.tcc.model
 
 import net.jkcode.jkmvc.common.generateId
+import net.jkcode.jkmvc.common.getMethodBySignature
 import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.common.invocation.Invocation
+import net.jkcode.jksoa.dtx.tcc.TccException
 import net.jkcode.jksoa.dtx.tcc.tccMethod
 import java.io.Serializable
 import java.lang.reflect.Method
@@ -61,8 +63,14 @@ class TccParticipant : Serializable{
                                     else
                                         targetMethod + methodSignature.substring(method.name.length) // 方法名 + 参数签名
 
-        // 构建方法调用
+        // 检查方法是否存在
         val clazz = method.declaringClass
+        if(clazz.getMethodBySignature(targetMethodSignature) == null) {
+            val methodType = if(isConfirm) "confirmMethod" else "cancelMethod"
+            throw TccException("对类[$clazz]的tryMethod[$methodSignature], 没有对应的$methodType[$targetMethodSignature], 可能方法不存在或方法签名不匹配")
+        }
+
+        // 构建方法调用
         val isRpc = clazz.isInterface && clazz.remoteService != null
         return buildInvocation(isRpc, clazz, targetMethodSignature, args)
     }
@@ -92,6 +100,6 @@ class TccParticipant : Serializable{
     }
 
     public override fun toString(): String {
-        return "branchId=$branchId, confirmInvocation=$confirmInvocation, cancelInvocation=$cancelInvocation"
+        return "TccParticipant: branchId=$branchId, confirmInvocation=$confirmInvocation, cancelInvocation=$cancelInvocation"
     }
 }

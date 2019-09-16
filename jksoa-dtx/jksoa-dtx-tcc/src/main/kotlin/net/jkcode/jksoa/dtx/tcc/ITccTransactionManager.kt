@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.dtx.tcc
 
 import net.jkcode.jksoa.common.invocation.IInvocation
-import net.jkcode.jksoa.dtx.tcc.model.TccParticipant
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
 
 /**
@@ -16,7 +15,7 @@ interface ITccTransactionManager {
     /**
      * 事务上下文
      */
-    var txCtx: TccTransactionContext?
+    var txCtx: TccRpcContext?
 
     /**
      * 当前事务

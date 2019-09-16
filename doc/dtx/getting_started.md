@@ -5,106 +5,10 @@
 gradle :jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-order:appRun -x test
 
 
-## 配置
+TCC服务是由Try/Confirm/Cancel业务构成的，其Try/Confirm/Cancel业务在执行时，会访问资源管理器（Resource Manager，下文简称RM）来存取数据。
 
-2. META-INF/aop.xml
+这些存取操作，必须要参与RM本地事务，以使其更改的数据要么都commit，要么都rollback。
 
-```
-<aspectj>
-    <!-- weave in just this aspect -->
-    <aspects>
-        <aspect name="net.jkcode.jksoa.dtx.tcc.TccMethodAspect"/>
-    </aspects>
-
-    <!-- only weave classes in our application-specific packages -->
-    <!--<weaver>-->
-    <weaver options="-verbose -showWeaveInfo">
-        <include within="net.jkcode.jksoa.dtx.demo..*"/>
-    </weaver>
-
-</aspectj>
-```
-
-3. 数据库配置 -- dataSources.yaml
-
-```
-# 默认库, 放tcc_transaction表
-default:
-  # 主库
-  master:
-    driverClass: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1/test?useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: root
-  # 多个从库, 可省略
-  slaves:
-# 订单库, 放商品表与业务订单表
-dtx_ord:
-  # 主库
-  master:
-    driverClass: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1/dtx_ord?useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: root
-  # 多个从库, 可省略
-  slaves:
-# 优惠券库, 放优惠券表
-dtx_cpn:
-  # 主库
-  master:
-    driverClass: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1/dtx_cpn?useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: root
-  # 多个从库, 可省略
-  slaves:
-# 支付库, 放支付账号与支付订单表
-dtx_pay:
-  # 主库
-  master:
-    driverClass: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1/dtx_pay?useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: root
-  # 多个从库, 可省略
-  slaves:
-```
-
-4. db配置 -- db.yaml
-
-```
-columnUnderlineDbs: default,dtx_ord,dtx_cpn,dtx_pay
-```
-
-5. rpc拦截器配置
-rpc-client.yaml
-```
-interceptors: # 拦截器
-    - net.jkcode.jksoa.dtx.tcc.interceptor.RpcClientTccInterceptor
-```
-
-rpc-server.yaml
-```
-interceptors: # 拦截器
-    - net.jkcode.jksoa.dtx.tcc.interceptor.RpcServerTccInterceptor
-```
-
-6. dtx-tcc.yaml
-
-```
-# tcc事务配置
-dbName: default
-rertySeconds: 20 # 重试的时间间隔, 单位秒
-maxRetryCount: 3 # 最大的重试次数
-```
-
-当Tcc事务异常后，恢复Job将会定期恢复事务, 根据配置项`rertySeconds`的时间间隔来定时重试, 重试次数超过`maxRetryCount`停止重试
-
-# 运行
-添加jvm参数
-```
--javaagent:/home/shi/.gradle/caches/modules-2/files-2.1/org.aspectj/aspectjweaver/1.8.12/87be4d5a1c68004a247a62c011fa63da786965fb/aspectjweaver-1.8.12.jar
-```
 
 Try: 尝试执行业务
     完成所有业务检查（一致性）
@@ -181,11 +85,10 @@ jksoa-dtx-tcc 使用了 jksoa-rpc 作为底层的rpc框架
 
 ## 背景
 
-
-
 # 快速入门
 
 ## 发布Tcc服务
+
 发布一个Tcc服务方法，可被远程调用并参与到Tcc事务中，发布Tcc服务方法有下面3个约束：
 
 1. 在服务方法上加上`@TccMethod`注解
@@ -193,48 +96,27 @@ jksoa-dtx-tcc 使用了 jksoa-rpc 作为底层的rpc框架
 jksoa-dtx-tcc 在执行服务过程中会将Tcc服务的上下文持久化，包括所有参数，内部默认实现为将入参使用fast serializer的序列化机制序列化为为byte流，所以需要实现`Serializable`接口.
 3. try方法、confirm方法和cancel方法入参类型须一样
 
-jksoa-dtx-tcc 通过aspectj来对有`@TccMethod`注解的方法为切点, 对该方法实现织入tcc事务的逻辑.
+
+## 注解 @TccMethod
+
+关于注解 `@TccMethod` 的描述直接看源码:
 
 ```
-package net.jkcode.jksoa.dtx.tcc
-
-import net.jkcode.jksoa.dtx.tcc.invocation.JoinPointInvocation
-import org.aspectj.lang.ProceedingJoinPoint
-import org.aspectj.lang.annotation.Around
-import org.aspectj.lang.annotation.Aspect
-import org.aspectj.lang.annotation.Pointcut
-
-/**
- * tcc方法的切入处理
- *
- * @author shijianhang<772910474@qq.com>
- * @date 2019-9-8 6:04 PM
- */
-@Aspect
-class TccMethodAspect {
-
-    /**
-     * 切入点: 有@Compensable注解的方法
-     */
-    @Pointcut("@annotation(net.jkcode.jksoa.dtx.tcc.TccMethod) && execution(* *(..))")
-    public fun tccMethodExecute() {
-    }
-
-    /**
-     * 切入逻辑
-     */
-    @Around("tccMethodExecute()")
-    public fun interceptTccMethod(pjp: ProceedingJoinPoint): Any? {
-        val inv = JoinPointInvocation(pjp)
-        return TccTransactionManager.current().interceptTccMethod(inv)
-    }
-}
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class TccMethod(
+        public val confirmMethod: String = "", // 确认方法, 如果为空字符串, 则使用原方法
+        public val cancelMethod: String = "", // 取消方法, 如果为空字符串, 则使用原方法
+        public val bizType: String = "", // 业务类型, 如果为空则取 Application.name
+        public val bizIdParamField: String = "", // 业务主体编号所在的参数字段表达式, 如 0.name, 表示取第0个参数的name字段值作为业务主体编号
+        public val cancelOnResultFutureException: Boolean = false // 如果方法的返回类型是 CompletableFuture 且 CompletableFuture 完成时发生异常, 控制是否回滚, 仅对根事务有效
+)
 ```
 
+识别tcc的3个方法:
 1. try阶段方法为`@TccMethod`注解的方法
 2. confirm阶段方法为`@TccMethod`中属性`confirmMethod`指定的方法
 3. cancel阶段方法为`@TccMethod`中属性`cancelMethod`指定的方法
-
 
 
 本地Tcc服务 + 调用远程Tcc服务
@@ -300,6 +182,66 @@ class TccMethodAspect {
     public fun cancelSpendCoupon(uid: Int, id: Int, bizOrderId: Long): CompletableFuture<Boolean> {
       ...
     }
+```
+
+## 配置
+
+### tcc事务配置
+dtx-tcc.yaml
+
+```
+# tcc事务配置
+dbName: default
+rertySeconds: 20 # 重试的时间间隔, 单位秒
+maxRetryCount: 3 # 最大的重试次数
+```
+
+说明:
+1. `dbName`: tcc事务存储的数据库名: 引用的是 `dataSources.yaml` 中配置的数据库名
+2. `rertySeconds`: 重试的时间间隔: 当Tcc事务异常后，恢复Job将会定期恢复事务, 根据配置项`rertySeconds`的时间间隔来定时重试
+3. `maxRetryCount`: 最大的重试次数: 重试次数超过`maxRetryCount`停止重试
+
+### rpc拦截器配置
+
+rpc-client.yaml
+
+```
+interceptors: # 拦截器
+    - net.jkcode.jksoa.dtx.tcc.interceptor.RpcClientTccInterceptor # 添加tcc事务参与者+传递tcc事务信息
+```
+
+rpc-server.yaml
+```
+interceptors: # 拦截器
+    - net.jkcode.jksoa.dtx.tcc.interceptor.RpcServerTccInterceptor # 接收tcc事务信息
+```
+
+### aspectj配置
+
+META-INF/aop.xml
+
+```
+<aspectj>
+    <!-- weave in just this aspect -->
+    <aspects>
+        <aspect name="net.jkcode.jksoa.dtx.tcc.TccMethodAspect"/>
+    </aspects>
+
+    <!-- only weave classes in our application-specific packages -->
+    <!--<weaver>-->
+    <weaver options="-verbose -showWeaveInfo">
+        <include within="net.jkcode.jksoa.dtx.demo..*"/>
+    </weaver>
+
+</aspectj>
+```
+
+## 运行
+
+启动java程序时, 需要添加vm参数, 来应用aspectj的javaagent
+
+```
+-javaagent:/home/shi/.gradle/caches/modules-2/files-2.1/org.aspectj/aspectjweaver/1.8.12/87be4d5a1c68004a247a62c011fa63da786965fb/aspectjweaver-1.8.12.jar
 ```
 
 

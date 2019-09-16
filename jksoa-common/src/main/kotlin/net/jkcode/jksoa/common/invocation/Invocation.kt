@@ -52,4 +52,8 @@ open class Invocation(public override val clazz: String, /* 服务接口类全�
     public override fun invoke(): Any? {
         return method.invoke(bean, *args)
     }
+
+    override fun toString(): String {
+        return "Invocation: " + toDesc()
+    }
 }

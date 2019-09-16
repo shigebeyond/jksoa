@@ -74,7 +74,7 @@ class OrderService {
      * @param productId2quantity 商品编号映射购买数量
      * @param couponId 优惠券编号
      */
-    @TccMethod("confirmMakeOrder", "cancelMakeOrder", "order.makeOrder", "0", true)
+    @TccMethod("confirmMakeOrder", "cancelMakeOrder", "order.makeOrder", "0")
     public fun makeOrder(id: Long, productId2quantity: Map<Int, Int>, couponId: Int): OrderModel {
         if(productId2quantity.isEmpty())
             throw IllegalArgumentException("购买商品为空")
@@ -220,7 +220,7 @@ class OrderService {
         // 检查状态
         if(order.status == OrderModel.STATUS_DRAFT)
             throw Exception("订单[$id]未创建完毕")
-        if(order.status != OrderModel.STATUS_PAYING)
+        if(order.status != OrderModel.STATUS_UNPAID)
             throw Exception("订单[$id]已支付过")
 
         // 更新订单状态为支付中

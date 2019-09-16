@@ -57,7 +57,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         }
 
         // 2 返回响应
-        val threadLocalItct = ThreadLocalInheritableInterceptor()
+        val threadLocalItct = ThreadLocalInheritableInterceptor() // 需要触发 ClosingOnRequestEnd, 有可能有 ThreadLocal 数据
         future.whenComplete{ r, ex ->
             threadLocalItct.beforeExecute() // 继承 ThreadLocal
             endResponse(req, r, ex, ctx) // 返回响应
@@ -100,8 +100,11 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      */
     private fun endResponse(req: IRpcRequest, result: Any?, r: Throwable?, ctx: ChannelHandlerContext) {
         var ex:Exception? = null
-        if(r != null && r !is RpcServerException) // 封装业务异常
-            ex = RpcBusinessException(r)
+        if(r != null) {
+            r.printStackTrace()
+            if (r !is RpcServerException)// 封装业务异常
+                ex = RpcBusinessException(r)
+        }
 
         serverLogger.debug(" ------ send response ------ ")
         serverLogger.debug("Server处理请求：{}，结果: {}, 异常: {}", req, result, r)

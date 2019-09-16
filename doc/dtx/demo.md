@@ -1,0 +1,50 @@
+3. 数据库配置 -- dataSources.yaml
+
+```
+# 默认库, 放tcc_transaction表
+default:
+  # 主库
+  master:
+    driverClass: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1/test?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+  # 多个从库, 可省略
+  slaves:
+# 订单库, 放商品表与业务订单表
+dtx_ord:
+  # 主库
+  master:
+    driverClass: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1/dtx_ord?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+  # 多个从库, 可省略
+  slaves:
+# 优惠券库, 放优惠券表
+dtx_cpn:
+  # 主库
+  master:
+    driverClass: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1/dtx_cpn?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+  # 多个从库, 可省略
+  slaves:
+# 支付库, 放支付账号与支付订单表
+dtx_pay:
+  # 主库
+  master:
+    driverClass: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1/dtx_pay?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+  # 多个从库, 可省略
+  slaves:
+```
+
+4. db配置 -- db.yaml
+
+```
+columnUnderlineDbs: default,dtx_ord,dtx_cpn,dtx_pay
+```
