@@ -42,9 +42,9 @@ class RpcServerTccInterceptor: IRpcRequestInterceptor {
         val branchId: Long = req.getAttachment("tccBranchId")!! // 分支事务id
         val status: Int = req.getAttachment("tccStatus")!! // 事务状态
         dtxTccLogger.debug("rpc server端接收tcc事务信息: tccId={}, tccBranchId={}, tccStatus={}", id, branchId, status)
-        val holder = TccTransactionManager.holder
+        val holder = TccRpcContext.holder
         return holder.newScope {
-            holder.get().txCtx = TccRpcContext(id, branchId, status)
+            holder.set(TccRpcContext(id, branchId, status))
             trySupplierFuture(action)
         }
     }
