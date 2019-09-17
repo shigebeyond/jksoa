@@ -1,3 +1,5 @@
+gradle :jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-order:appRun -x test
+
 3. 数据库配置 -- dataSources.yaml
 
 ```
