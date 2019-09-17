@@ -31,7 +31,7 @@ class RpcClientTccInterceptor: IRpcRequestInterceptor {
         // 有tcc注解
         val method = req.method
         if(method.tccMethod != null) {
-            val txMgr = TccTransactionManager.current()
+            val txMgr = TccTransactionManager.holder.get(false)
             // 有事务
             val tx = txMgr.tx
             if (tx != null) {

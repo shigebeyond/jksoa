@@ -26,21 +26,27 @@ class RpcServerTccInterceptor: IRpcRequestInterceptor {
      * @return
      */
     public override fun intercept(req: IRpcRequest, action: () -> Any?): CompletableFuture<Any?> {
-        // 有tcc注解
+        // 1 无tcc注解
         val method = req.method
-        if(method.tccMethod != null) {
-            val id: Long? = req.getAttachment("tccId") // 当前事务id
-            if (id != null) {
-                // 识别事务id+事务状态
-                val branchId: Long = req.getAttachment("tccBranchId")!! // 分支事务id
-                val status: Int = req.getAttachment("tccStatus")!! // 事务状态
-                dtxTccLogger.debug("rpc server端接收tcc事务信息: tccId={}, tccBranchId={}, tccStatus={}", id, branchId, status)
-                TccTransactionManager.current().txCtx = TccRpcContext(id, branchId, status)
-            }
-        }
+        if(method.tccMethod == null)
+            return trySupplierFuture(action)
 
-        // 转future
-        return trySupplierFuture(action)
+        // 2 有tcc注解
+        // 2.1 无事务
+        val id: Long? = req.getAttachment("tccId") // 当前事务id
+        if (id == null)
+            return trySupplierFuture(action)
+
+        // 2.2 有事务
+        // 识别事务id+事务状态
+        val branchId: Long = req.getAttachment("tccBranchId")!! // 分支事务id
+        val status: Int = req.getAttachment("tccStatus")!! // 事务状态
+        dtxTccLogger.debug("rpc server端接收tcc事务信息: tccId={}, tccBranchId={}, tccStatus={}", id, branchId, status)
+        val holder = TccTransactionManager.holder
+        return holder.newScope {
+            holder.get().txCtx = TccRpcContext(id, branchId, status)
+            trySupplierFuture(action)
+        }
     }
 
 }

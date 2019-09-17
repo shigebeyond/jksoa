@@ -36,17 +36,20 @@ interface IMethodGuard {
     /**
      * 方法的key合并器
      *    兼容方法返回类型是CompletableFuture
+     *    异步执行, 注意Threadlocal无法传递
      */
     val keyCombiner: KeyFutureSupplierCombiner<Any, Any?>?
 
     /**
      * 方法的group合并器
      *    兼容方法返回类型是CompletableFuture
+     *    异步执行, 注意Threadlocal无法传递
      */
     val groupCombiner: GroupFutureSupplierCombiner<Any, Any?, Any>?
 
     /**
      * 缓存处理器
+     *    异步执行, 注意Threadlocal无法传递
      */
     val cacheHandler: ICacheHandler?
 

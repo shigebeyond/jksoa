@@ -4,6 +4,8 @@ import java.lang.reflect.Method
 
 /**
  * 针对key的进行合并的注解
+ *    异步执行, 注意Threadlocal无法传递
+ *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-02-22 6:04 PM
  */

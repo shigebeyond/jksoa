@@ -4,10 +4,9 @@ import io.netty.channel.ChannelHandlerContext
 import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.common.ThreadLocalInheritableInterceptor
 import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
-import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
+import net.jkcode.jkmvc.ttl.SttlInterceptor
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcResponse
@@ -57,12 +56,9 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         }
 
         // 2 返回响应
-        val threadLocalItct = ThreadLocalInheritableInterceptor() // 需要触发 ClosingOnRequestEnd, 有可能有 ThreadLocal 数据
-        future.whenComplete{ r, ex ->
-            threadLocalItct.beforeExecute() // 继承 ThreadLocal
+        future.whenComplete(SttlInterceptor.interceptToBiConsumer { r, ex ->
             endResponse(req, r, ex, ctx) // 返回响应
-            threadLocalItct.afterExecute() // 清理 ThreadLocal
-        }
+        })
     }
 
     /**

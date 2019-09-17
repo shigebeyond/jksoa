@@ -2,6 +2,7 @@ package net.jkcode.jksoa.dtx.tcc
 
 import net.jkcode.jkmvc.common.*
 import net.jkcode.jkmvc.db.Db
+import net.jkcode.jkmvc.ttl.ScopedTransferableThreadLocal
 import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.dtx.tcc.model.TccParticipant
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
@@ -18,12 +19,19 @@ import java.util.concurrent.CompletableFuture
  */
 class TccTransactionManager private constructor() : ITccTransactionManager {
 
-    companion object : ICurrentHolder<TccTransactionManager>({ TccTransactionManager() }) {
+    companion object{
 
         /**
          * 配置
          */
         public val config: Config = Config.instance("dtx-tcc", "yaml")
+
+        /**
+         * 线程安全的tcc事务管理者
+         */
+        public val holder: ScopedTransferableThreadLocal<TccTransactionManager> = ScopedTransferableThreadLocal{
+            TccTransactionManager()
+        }
 
         init {
             // 初始化时建表: tcc_transaction
@@ -39,7 +47,6 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
             val sql = File(sqlFile).readText()
             Db.instance(db).execute(sql)
         }
-
     }
 
     /**
@@ -134,9 +141,6 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
                 throw ex
             }
 
-            // 4 清理当前事务
-            removeCurrent()
-
             r
         }
     }
@@ -183,27 +187,22 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
      * @return
      */
     protected fun beginBranchTransaction(inv: IInvocation): Any? {
-        try {
-            // 1 新建分支事务
-            val tx = TccTransactionModel()
-            tx.id = txCtx!!.branchId // 分支事务id
-            tx.parentId = txCtx!!.id // 父事务id
-            tx.status = TccTransactionModel.STATUS_TRYING
-            tx.setBizProp(inv)
-            tx.addParticipant(TccParticipant(inv)) // 记录参与者
-            tx.create()
-            dtxTccLogger.debug("创建分支事务: {}", tx)
+        // 1 新建分支事务
+        val tx = TccTransactionModel()
+        tx.id = txCtx!!.branchId // 分支事务id
+        tx.parentId = txCtx!!.id // 父事务id
+        tx.status = TccTransactionModel.STATUS_TRYING
+        tx.setBizProp(inv)
+        tx.addParticipant(TccParticipant(inv)) // 记录参与者
+        tx.create()
+        dtxTccLogger.debug("创建分支事务: {}", tx)
 
-            // 2 作为当前事务
-            this.tx = tx
+        // 2 作为当前事务
+        this.tx = tx
 
-            // 3 调用方法
-            dtxTccLogger.debug("分支事务[{}]中调用目标方法: {}", tx.id, inv)
-            return inv.invoke()
-        } finally {
-            // 4 清理当前事务
-            removeCurrent()
-        }
+        // 3 调用方法
+        dtxTccLogger.debug("分支事务[{}]中调用目标方法: {}", tx.id, inv)
+        return inv.invoke()
     }
 
     /**

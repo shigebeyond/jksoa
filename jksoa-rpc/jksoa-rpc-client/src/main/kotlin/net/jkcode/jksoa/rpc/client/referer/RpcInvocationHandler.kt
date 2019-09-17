@@ -1,10 +1,10 @@
 package net.jkcode.jksoa.rpc.client.referer
 
 import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.ThreadLocalInheritableThreadPool
 import net.jkcode.jkmvc.common.getMethodHandle
 import net.jkcode.jkmvc.common.getSignature
 import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
+import net.jkcode.jkmvc.ttl.SttlInterceptor
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.IRpcRequestInvoker
@@ -53,11 +53,6 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
      */
     private val hash2Class = ConcurrentHashMap<Int, Class<*>>()
 
-    init{
-        // 修改 CompletableFuture.asyncPool 属性为 ThreadLocalInheritableThreadPool.commonPool
-        ThreadLocalInheritableThreadPool.applyCommonPoolToCompletableFuture()
-    }
-
     /**
      * 创建服务代理
      *
@@ -102,7 +97,6 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
         if (methodSignature == "hashCode()")
             return hash
 
-
         if (methodSignature == "toString()")
             return "RpcInvocationHandler[" + serviceClass.name + "]"
 
@@ -143,18 +137,14 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
      * @return
      */
     public override fun invoke(req: IRpcRequest): CompletableFuture<Any?> {
-        //val threadLocalItct = ThreadLocalInheritableInterceptor()
-        return interceptorChain.intercept(req) {
-            dispatcher.dispatch(req)
-            /*.whenComplete { r, ex ->
-                    threadLocalItct.beforeExecute() // 继承 ThreadLocal
-                    if(ex != null)
-                        throw ex
-                    r
-                    // TODO: 不能在这里清理 ThreadLocal, 否则后续回调就丢失 ThreadLocal
-                    //threadLocalItct.afterExecute() // 清理 ThreadLocal
-                }*/
-        }
+        return interceptorChain.intercept(
+                req,
+                // RpcInvocationHandler 继承 MethodGuardInvoker, 在做合并请求/缓存等方法守护的处理时, 会切换线程, 从而导致 Threadlocal 丢失
+                // 但是合并请求是多个请求, 肯定多线程, 也无法确定使用哪个 Threadlocal, 因此不予处理
+                SttlInterceptor.intercept { ->
+                    dispatcher.dispatch(req)
+                }
+        )
     }
 
 }
