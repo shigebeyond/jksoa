@@ -1,5 +1,7 @@
 package net.jkcode.jksoa.dtx.tcc
 
+import net.jkcode.jkmvc.ttl.ScopedTransferableThreadLocal
+
 /**
  * tcc事务的rpc上下文
  *    由于 TccRpcContext 的作用域大于 TccTransactionManager 的, 因此不能混用同一个 ScopedTransferableThreadLocal 对象, 必须独立对象

@@ -53,7 +53,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
      * 事务上下文
      *     由于 TccRpcContext 的作用域大于 TccTransactionManager 的, 因此不能混用同一个 ScopedTransferableThreadLocal 对象, 必须独立对象
      */
-    public val txCtx: TccRpcContext? 
+    public override val txCtx: TccRpcContext?
         get() = TccRpcContext.holder.get(false)
 
     /**

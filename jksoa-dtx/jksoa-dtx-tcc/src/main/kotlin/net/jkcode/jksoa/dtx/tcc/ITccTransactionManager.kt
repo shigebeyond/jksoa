@@ -15,7 +15,7 @@ interface ITccTransactionManager {
     /**
      * 事务上下文
      */
-    var txCtx: TccRpcContext?
+    val txCtx: TccRpcContext?
 
     /**
      * 当前事务

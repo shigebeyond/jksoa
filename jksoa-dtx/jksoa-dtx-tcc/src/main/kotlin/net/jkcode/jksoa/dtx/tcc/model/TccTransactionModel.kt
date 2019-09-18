@@ -126,6 +126,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	 */
 	public fun addParticipant(participant: TccParticipant) {
 		participants.add(participant)
+		dtxTccLogger.warn("{}事务[{}]添加参与者: {}", if(parentId == 0L) "根" else "分支", id, participant)
 		setDirty("participants")
 	}
 
@@ -137,6 +138,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 			// 记录当前确认的参与者
 			currEndingparticipant = participant
 			// 调用确认方法
+			dtxTccLogger.warn("{}事务[{}]参与者确认: {}", if(parentId == 0L) "根" else "分支", id, participant)
 			participant.confirm()
 		}
 	}
@@ -149,6 +151,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 			// 记录当前取消的参与者
 			currEndingparticipant = participant
 			// 调用取消方法
+			dtxTccLogger.warn("{}事务[{}]参与者取消: {}", if(parentId == 0L) "根" else "分支", id, participant)
 			participant.cancel()
 		}
 	}

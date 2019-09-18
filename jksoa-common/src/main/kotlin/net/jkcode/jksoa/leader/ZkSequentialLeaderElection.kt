@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.leader
 
-import net.jkcode.jkmvc.closing.ClosingOnShutdown
+import net.jkcode.jkmvc.scope.ClosingOnShutdown
 import net.jkcode.jkmvc.common.Application
 import net.jkcode.jkmvc.common.commonLogger
 import net.jkcode.jksoa.zk.ZkClientFactory

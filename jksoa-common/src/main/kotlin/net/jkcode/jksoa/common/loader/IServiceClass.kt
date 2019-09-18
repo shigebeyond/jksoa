@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common.loader
 
-import net.jkcode.jkmvc.closing.ClosingOnShutdown
+import net.jkcode.jkmvc.scope.ClosingOnShutdown
 import net.jkcode.jkmvc.common.getMethodBySignature
 import java.lang.reflect.Method
 

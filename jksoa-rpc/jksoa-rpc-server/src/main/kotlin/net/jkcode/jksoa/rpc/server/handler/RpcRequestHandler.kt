@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.rpc.server.handler
 
 import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jkmvc.closing.ClosingOnRequestEnd
+import net.jkcode.jkmvc.scope.GlobalRequestScope
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.common.trySupplierFuture
@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * Rpc请求处理者
+ *   在请求处理前后调用 GlobalRequestScope 的 beginScope()/endScope()
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -109,8 +110,8 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         var res: RpcResponse = RpcResponse(req.id, result, ex)
         ctx.writeAndFlush(res)
 
-        // 2 请求处理后，关闭资源
-        ClosingOnRequestEnd.triggerClosings()
+        // 2 请求处理后，结束作用域(关闭资源)
+        GlobalRequestScope.endScope()
     }
 
     /**
@@ -132,7 +133,11 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @return
      */
     public override fun invokeAfterGuard(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
+        // 1 请求处理前，开始作用域
+        GlobalRequestScope.beginScope()
+
         return trySupplierFuture {
+            // 2 真正的调用方法
             method.invoke(obj, *args)
         }
     }

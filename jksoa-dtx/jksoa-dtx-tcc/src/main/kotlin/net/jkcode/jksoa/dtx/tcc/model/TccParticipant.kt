@@ -88,15 +88,15 @@ class TccParticipant : Serializable{
     /**
      * 调用确认方法
      */
-    public fun confirm() {
-        confirmInvocation.invoke()
+    public fun confirm(): Any? {
+        return confirmInvocation.invoke()
     }
 
     /**
      * 调用取消方法
      */
-    public fun cancel() {
-        cancelInvocation.invoke()
+    public fun cancel(): Any? {
+        return cancelInvocation.invoke()
     }
 
     public override fun toString(): String {
