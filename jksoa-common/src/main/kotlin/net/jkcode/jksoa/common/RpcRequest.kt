@@ -56,7 +56,7 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
      * @return
      */
     public override fun toString(): String {
-        return "RpcRequest: " + toDesc()
+        return "RpcRequest: id=$id, " + toDesc()
     }
 
     /**

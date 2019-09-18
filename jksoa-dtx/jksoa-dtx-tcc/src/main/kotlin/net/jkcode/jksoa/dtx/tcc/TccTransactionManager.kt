@@ -131,54 +131,26 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
         this.tx = tx
 
         // 3 调用方法
-        val method = inv.method
-        // 方法的返回类型是 CompletableFuture + CompletableFuture 完成时发生异常要回滚
-        val isResultFuture = method.returnType == CompletableFuture::class.java && method.tccMethod!!.cancelOnResultFutureException
-        dtxTccLogger.debug("根事务[{}]中调用目标方法: {}", tx.id, inv)
-        return process(isResultFuture, inv) { r, ex ->
-            if (ex == null) { // 3.1 调用成功, 则提交事务
-                tx.commit()
-            } else { // 3.2 调用失败, 则回滚事务
-                tx.rollback(ex)
-                throw ex
-            }
-
-            r
-        }
-    }
-
-    /**
-     * 调用方法
-     * @param isResultFuture 是否异步结果
-     * @param inv
-     * @param complete
-     * @return
-     */
-    protected inline fun process(isResultFuture: Boolean, inv: IInvocation, crossinline complete: (Any?, Throwable?) -> Any?): Any? {
-        // 1 异步结果
-        if (isResultFuture) {
-            // 1.1 调用方法
-            var resFuture = trySupplierFuture {
-                inv.invoke();
-            }
-
-            // 1.2 处理结果
-            return resFuture.whenComplete { r, ex ->
-                complete.invoke(r, ex)
-            }
+        val resFuture = CompletableFuture<Any?>()
+        trySupplierFuture {
+            dtxTccLogger.debug("根事务[{}]中调用目标方法: {}", tx.id, inv)
+            inv.invoke()
+        }.whenComplete { r, ex ->
+            // 结束事务: 提交/回滚
+            tx.end(ex == null, ex)
+                    .whenComplete { r2, ex2 ->
+                        if(ex2 != null)
+                            ex2.printStackTrace()
+                        // 设置结果
+                        if(ex == null)
+                            resFuture.complete(r)
+                        else
+                            resFuture.completeExceptionally(ex)
+                    }
         }
 
-        // 2 同步结果
-        var result: Any? = null
-        var rh: Throwable? = null
-        try {
-            // 2.1 调用方法
-            result = inv.invoke()
-        } catch (r: Throwable) {
-            rh = r
-        } finally {
-            return complete.invoke(result, rh)
-        }
+        // 从异步结果获得返回值
+        return inv.method.resultFromFuture(resFuture)
     }
 
     /**
@@ -219,19 +191,18 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
                 .where("parent_id", txCtx!!.id) // 父事务id
                 .findModel<TccTransactionModel>()
 
-        // 2 提交或回滚
-        if (tx != null) {
-            if (txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) 
-                tx.commit()
-            else 
-                tx.rollback()
-            
-        } else {
+        // 无事务
+        if (tx == null) {
             dtxTccLogger.error("分支事务[{}]{}失败: 事务不存在", txCtx, if (txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) "提交" else "回滚")
+            // 返回默认的结果值, 其实返回啥都无所谓, 反正调用方不用结果值
+            return inv.method.defaultResult
         }
 
-        // 3 返回默认的结果值, 其实返回啥都无所谓, 反正调用方不用结果值
-        return inv.method.defaultResult
+        // 2 结束事务: 提交/回滚
+        val future = tx.end(txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING)
+
+        // 从异步结果获得返回值
+        return inv.method.resultFromFuture(future)
     }
 
     /**
@@ -253,10 +224,9 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
 
         // 提交/回滚
         for (tx in txs) {
-            if (tx.status == TccTransactionModel.STATUS_CONFIRMING) // 提交
-                tx.commit()
-            else // 回滚
-                tx.rollback()
+            // 结束事务: 提交/回滚
+            val future = tx.end(tx.status == TccTransactionModel.STATUS_CONFIRMING)
+
         }
     }
 

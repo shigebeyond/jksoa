@@ -1,9 +1,13 @@
 package net.jkcode.jksoa.dtx.demo.order
 
 import net.jkcode.jkmvc.common.generateId
+import net.jkcode.jkmvc.ttl.ScopedTransferableThreadLocal
+import net.jkcode.jksoa.dtx.demo.coupon.service.ICouponService
 import net.jkcode.jksoa.dtx.demo.order.controller.OrderController
 import net.jkcode.jksoa.dtx.demo.order.service.OrderService
+import net.jkcode.jksoa.rpc.client.referer.Referer
 import org.junit.Test
+import java.util.concurrent.CompletableFuture
 
 /**
  *
@@ -13,6 +17,26 @@ import org.junit.Test
 class OrderTests {
 
     val orderService: OrderService = OrderService()
+
+    val couponService: ICouponService = Referer.getRefer<ICouponService>()
+
+    @Test
+    fun testScopedTransferableThreadLocal(){
+        val msgs = ScopedTransferableThreadLocal<String>()
+        var future: CompletableFuture<Boolean> = CompletableFuture<Boolean>()
+        msgs.newScope {
+            msgs.set("a")
+            future = couponService.freezeCoupon(1, 1, 1)
+            future.whenComplete { r, ex ->
+                // 不同线程检查 ScopedTransferableThreadLocal
+                println("r=$r, ex=$ex")
+                println("msg=" + msgs.get())
+            }
+        }
+
+        println(future.get())
+
+    }
 
     @Test
     fun testMakeOrder(){

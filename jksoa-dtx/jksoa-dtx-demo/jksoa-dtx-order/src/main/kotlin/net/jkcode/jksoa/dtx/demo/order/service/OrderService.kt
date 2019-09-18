@@ -210,7 +210,7 @@ class OrderService {
      * @param id
      * @return
      */
-    @TccMethod("confirmBalancePayOrder", "cancelBalancePayOrder", "order.payOrder", "0", true)
+    @TccMethod("confirmBalancePayOrder", "cancelBalancePayOrder", "order.payOrder", "0")
     public fun balancePayOrder(id: Long): CompletableFuture<Boolean> {
         // 获得订单
         val order = OrderModel(id)

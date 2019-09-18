@@ -115,7 +115,6 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 		val participant = TccParticipant(inv)
 		addParticipant(participant)
 		update()
-		dtxTccLogger.debug("事务[{}]添加参与者: {}", id, participant)
 		return participant
 	}
 
@@ -155,14 +154,14 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 			// 记录当前取消的参与者
 			currEndingparticipant = participant
 			// 调用取消方法
-			dtxTccLogger.debug("{}事务[{}]开始调用参与者{}: {}", if(parentId == 0L) "根" else "分支", id, if(committed) "确认" else "取消", participant)
+			dtxTccLogger.debug("{}事务[{}]开始调用参与者{}方法: invocation={}", if(parentId == 0L) "根" else "分支", id, if(committed) "确认" else "取消", if(committed) participant.confirmInvocation else participant.cancelInvocation)
 			futures[i++] = trySupplierFuture {
 				if(committed) // 确认
 					participant.confirm()
 				else // 取消
 					participant.cancel()
 			}.exceptionally { ex ->
-				dtxTccLogger.error("{}事务[{}]调用参与者失败: transaction={}, exception={}", if(parentId == 0L) "根" else "分支", id, this, ex)
+				dtxTccLogger.error("{}事务[{}]调用参与者{}失败: invocation={}, exception={}", if(parentId == 0L) "根" else "分支", id, if(committed) "确认" else "取消", if(committed) participant.confirmInvocation else participant.cancelInvocation, ex)
 				throw ex
 			}
 
@@ -173,6 +172,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	/**
 	 * 提交事务: 调用参与者确认方法
 	 *   先更新事务状态, 再调用参与者的确认方法, 因为参与者的确认方法跟源方法可能是同一个方法, 因此会重复进入 TccTransactionManager.interceptTccMethod() 中, 但第一次是try阶段启动事务或添加参与者, 第二次是confirm阶段单纯的执行源方法, 因此需要保证事务状态是最新的
+	 * @return
 	 */
 	public fun commit(): CompletableFuture<Void> {
 		dtxTccLogger.debug("{}事务[{}]提交: transaction={}", if(parentId == 0L) "根" else "分支", id, this)
@@ -190,6 +190,8 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 
 	/**
 	 * 回滚事务: 调用参与者取消方法
+	 * @param ex
+	 * @return
 	 */
 	public fun rollback(ex: Throwable? = null): CompletableFuture<Void> {
 		if(ex == null)
@@ -205,6 +207,19 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 			// 3 删除事务
 			delete()
 		}
+	}
+
+	/**
+	 * 结束事务: 提交/回滚
+	 * @param committed 是否提交
+	 * @param ex
+	 * @return
+	 */
+	public fun end(committed: Boolean, ex: Throwable? = null): CompletableFuture<Void> {
+		return if(committed)
+					commit()
+				else
+					rollback(ex)
 	}
 
 	/**
