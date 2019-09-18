@@ -137,14 +137,12 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
      * @return
      */
     public override fun invoke(req: IRpcRequest): CompletableFuture<Any?> {
-        return interceptorChain.intercept(
-                req,
-                // RpcInvocationHandler 继承 MethodGuardInvoker, 在做合并请求/缓存等方法守护的处理时, 会切换线程, 从而导致 Threadlocal 丢失
-                // 但是合并请求是多个请求, 肯定多线程, 也无法确定使用哪个 Threadlocal, 因此不予处理
-                SttlInterceptor.intercept { ->
-                    dispatcher.dispatch(req)
-                }
-        )
+        return interceptorChain.intercept(req){
+            // RpcInvocationHandler 继承 MethodGuardInvoker, 在做合并请求/缓存等方法守护的处理时, 会切换线程, 从而导致 Threadlocal 丢失
+            // 但是合并请求是多个请求, 肯定多线程, 也无法确定使用哪个 Threadlocal, 因此不予处理
+            // 下面包装一下 CompletableFuture, 返回新 CompletableFuture, 以便传递 Threadlocal
+            SttlInterceptor.intercept(dispatcher.dispatch(req))
+        }
     }
 
 }
