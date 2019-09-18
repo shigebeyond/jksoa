@@ -6,7 +6,8 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 2. jksoa-job: 分布式任务调度的组件
 3. jksoa-guard: 应用守护者组件, 提供了请求合并/流量统计/熔断/限流/降级/缓存等多功能的守护
 4. jksoa-tracer: 分布式跟踪的组件, 包含 agent / collector / web 的3个子组件
-5. jksoa-mq: 消息队列的组件, 包含, 包含 mq-registry / mq-client / mq-broker 的3个子组件
+5. jksoa-mq: 消息队列的组件, 包含 mq-registry / mq-client / mq-broker 的3个子组件
+6. jksoa-dtx: 分布式事务的组件, 包含 dtx-mq / dtx-tcc 的2个子组件
 
 # 公共组件
 1. [插件机制](doc/common/plugin.md)
@@ -143,6 +144,22 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 16. [消息流转流程](doc/mq/mq-flow.md)
 17. [路由](doc/mq/route.md)
 18. [有序消息](doc/mq/ordered_message.md)
+
+# jksoa-dtx
+
+分布式事务的组件
+
+## 基于本地消息实现的分布式事务
+
+1. [快速开始](doc/dtx/mq/getting_started.md)
+
+## tcc实现的分布式事务
+
+1. [快速开始](doc/dtx/tcc/getting_started.md)
+2. [示例](doc/dtx/tcc/demo.md)
+3. [架构](doc/dtx/tcc/architecture.md)
+
+### mq
 
 # 其他
 [变更历史](doc/changelog.md)
