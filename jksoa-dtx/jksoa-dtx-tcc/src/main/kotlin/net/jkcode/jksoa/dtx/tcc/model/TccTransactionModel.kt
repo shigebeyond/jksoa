@@ -1,13 +1,12 @@
 package net.jkcode.jksoa.dtx.tcc.model
 
-import net.jkcode.jkmvc.common.Application
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.getProperty
+import net.jkcode.jkmvc.common.*
 import net.jkcode.jkmvc.orm.Orm
 import net.jkcode.jkmvc.orm.OrmMeta
 import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.dtx.tcc.dtxTccLogger
 import net.jkcode.jksoa.dtx.tcc.tccMethod
+import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KProperty1
 
 /**
@@ -126,68 +125,86 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 	 */
 	public fun addParticipant(participant: TccParticipant) {
 		participants.add(participant)
-		dtxTccLogger.warn("{}事务[{}]添加参与者: {}", if(parentId == 0L) "根" else "分支", id, participant)
+		dtxTccLogger.debug("{}事务[{}]添加参与者: {}", if(parentId == 0L) "根" else "分支", id, participant)
 		setDirty("participants")
 	}
 
 	/**
-	 * 确认事务: 调用参与者确认方法
+	 * 调用参与者确认方法
 	 */
-	public fun confirm() {
-		for (participant in participants) {
-			// 记录当前确认的参与者
-			currEndingparticipant = participant
-			// 调用确认方法
-			dtxTccLogger.warn("{}事务[{}]参与者确认: {}", if(parentId == 0L) "根" else "分支", id, participant)
-			participant.confirm()
-		}
+	protected fun confirmParticipants(): CompletableFuture<Array<Any?>> {
+		return endParticipants(true)
 	}
 
 	/**
-	 * 取消事务: 调用参与者取消方法
+	 * 调用参与者取消方法
 	 */
-	public fun cancel() {
+	protected fun cancelParticipants(): CompletableFuture<Array<Any?>> {
+		return endParticipants(false)
+	}
+
+	/**
+	 * 调用参与者确认/取消方法
+	 * @param committed 是否提交
+	 * @return
+	 */
+	protected fun endParticipants(committed: Boolean): CompletableFuture<Array<Any?>> {
+		val futures = arrayOfNulls<CompletableFuture<Any?>>(participants.size)
+		var i = 0
 		for (participant in participants) {
 			// 记录当前取消的参与者
 			currEndingparticipant = participant
 			// 调用取消方法
-			dtxTccLogger.warn("{}事务[{}]参与者取消: {}", if(parentId == 0L) "根" else "分支", id, participant)
-			participant.cancel()
+			dtxTccLogger.debug("{}事务[{}]开始调用参与者{}: {}", if(parentId == 0L) "根" else "分支", id, if(committed) "确认" else "取消", participant)
+			futures[i++] = trySupplierFuture {
+				if(committed) // 确认
+					participant.confirm()
+				else // 取消
+					participant.cancel()
+			}.exceptionally { ex ->
+				dtxTccLogger.error("{}事务[{}]调用参与者失败: transaction={}, exception={}", if(parentId == 0L) "根" else "分支", id, this, ex)
+				throw ex
+			}
+
 		}
+		return (futures as Array<CompletableFuture<Any?>>).join()
 	}
 
 	/**
 	 * 提交事务: 调用参与者确认方法
 	 *   先更新事务状态, 再调用参与者的确认方法, 因为参与者的确认方法跟源方法可能是同一个方法, 因此会重复进入 TccTransactionManager.interceptTccMethod() 中, 但第一次是try阶段启动事务或添加参与者, 第二次是confirm阶段单纯的执行源方法, 因此需要保证事务状态是最新的
 	 */
-	public fun commit() {
-		dtxTccLogger.warn("{}事务[{}]提交: transaction={}", if(parentId == 0L) "根" else "分支", id, this)
+	public fun commit(): CompletableFuture<Void> {
+		dtxTccLogger.debug("{}事务[{}]提交: transaction={}", if(parentId == 0L) "根" else "分支", id, this)
 		// 1 确认中
 		status = STATUS_CONFIRMING
 		retryCount = retryCount + 1
 		update()
 		// 2 调用事务确认
-		confirm()
-		// 3 删除
-		delete()
+		return confirmParticipants().thenRun {
+			// 3 删除
+			delete()
+		}
+		
 	}
 
 	/**
 	 * 回滚事务: 调用参与者取消方法
 	 */
-	public fun rollback(ex: Throwable? = null) {
+	public fun rollback(ex: Throwable? = null): CompletableFuture<Void> {
 		if(ex == null)
-			dtxTccLogger.warn("{}事务[{}]回滚: transaction={}", if(parentId == 0L) "根" else "分支", id, this)
+			dtxTccLogger.debug("{}事务[{}]回滚: transaction={}", if(parentId == 0L) "根" else "分支", id, this)
 		else
-			dtxTccLogger.warn("{}事务[{}]回滚: transaction={}, exception={}", if(parentId == 0L) "根" else "分支", id, this, ex)
+			dtxTccLogger.error("{}事务[{}]回滚: transaction={}, exception={}", if(parentId == 0L) "根" else "分支", id, this, ex)
 		// 1 取消中
 		status = STATUS_CANCELING
 		retryCount = retryCount + 1
 		update()
 		// 2 调用事务取消
-		cancel()
-		// 3 删除事务
-		delete()
+		return cancelParticipants().thenRun {
+			// 3 删除事务
+			delete()
+		}
 	}
 
 	/**
