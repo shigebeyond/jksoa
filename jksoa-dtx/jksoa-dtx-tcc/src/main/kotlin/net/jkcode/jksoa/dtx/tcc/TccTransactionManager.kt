@@ -139,8 +139,6 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
             // 结束事务: 提交/回滚
             tx.end(ex == null, ex)
                     .whenComplete { r2, ex2 ->
-                        if(ex2 != null)
-                            ex2.printStackTrace()
                         // 设置结果
                         if(ex == null)
                             resFuture.complete(r)

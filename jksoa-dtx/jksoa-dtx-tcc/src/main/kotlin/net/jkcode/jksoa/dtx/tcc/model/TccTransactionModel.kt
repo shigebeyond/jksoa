@@ -162,6 +162,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 					participant.cancel()
 			}.exceptionally { ex ->
 				dtxTccLogger.error("{}事务[{}]调用参与者{}失败: invocation={}, exception={}", if(parentId == 0L) "根" else "分支", id, if(committed) "确认" else "取消", if(committed) participant.confirmInvocation else participant.cancelInvocation, ex)
+				ex.printStackTrace()
 				throw ex
 			}
 

@@ -39,6 +39,7 @@ interface ICouponService {
      * @param bizOrderId 业务订单编号
      * @return
      */
+    @TccMethod("", "", "coupon.freezeCoupon", "2")
     fun freezeCoupon(uid: Int, id: Int, bizOrderId: Long): CompletableFuture<Boolean>
 
     /**
