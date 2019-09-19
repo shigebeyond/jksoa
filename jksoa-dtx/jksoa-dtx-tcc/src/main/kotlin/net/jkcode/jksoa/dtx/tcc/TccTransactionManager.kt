@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 /**
  * tcc事务的管理者
  *   1. 在根事务/分支事务开始时, 要记录到 this.tx, 即记录当前事务, 因为后续步骤添加参与者时要用到
- *   2. 在根事务/分支事务结束时, 要清空当前事务, 即调用 removeCurrent()
+ *   2. 在根事务/分支事务结束时, 不需要清空当前事务, 因为他通过 ScopedTransferableThreadLocal 的作用域自动释放了
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-09-7 5:36 PM
@@ -223,6 +223,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
         // 提交/回滚
         for (tx in txs) {
             // 结束事务: 提交/回滚
+            this.tx = tx;
             val future = tx.end(tx.status == TccTransactionModel.STATUS_CONFIRMING)
 
         }
