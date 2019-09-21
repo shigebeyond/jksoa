@@ -52,6 +52,11 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @param req
      */
     public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext) {
+        // 0 请求处理前，开始作用域
+        // 必须在拦截器之前调用, 因为拦截器可能引用请求域的资源
+        GlobalAllRequestScope.beginScope()
+        GlobalRpcRequestScope.beginScope()
+
         // 1 调用provider方法
         val future = interceptorChain.intercept(req) {
             callProvider(req, ctx)
@@ -80,15 +85,10 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         if (method == null)
             throw RpcServerException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
-        // 3 请求处理前，开始作用域
-        // 必须在创建RpcServerContext之前调用, 因为RpcServerContext自身就是一个请求域的资源
-        GlobalAllRequestScope.beginScope()
-        GlobalRpcRequestScope.beginScope()
-
-        // 4 初始化rpc上下文: 因为rpc的方法可能有异步执行, 因此在方法体的开头就要获得并持有当前的rpc上下文
+        // 3 初始化rpc上下文: 因为rpc的方法可能有异步执行, 因此在方法体的开头就要获得并持有当前的rpc上下文
         RpcServerContext(req, ctx)
 
-        // 5 调用方法
+        // 4 调用方法
         //return method.invoke(provider.service, *req.args)
         return guardInvoke(method, provider.service, req.args)
     }
