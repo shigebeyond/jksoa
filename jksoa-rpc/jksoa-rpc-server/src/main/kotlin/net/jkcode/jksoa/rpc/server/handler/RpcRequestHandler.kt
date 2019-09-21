@@ -1,11 +1,12 @@
 package net.jkcode.jksoa.rpc.server.handler
 
 import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jkmvc.scope.GlobalRequestScope
+import net.jkcode.jkmvc.scope.GlobalAllRequestScope
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.common.trySupplierFuture
 import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
+import net.jkcode.jkmvc.scope.GlobalRpcRequestScope
 import net.jkcode.jkmvc.ttl.SttlInterceptor
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
@@ -111,7 +112,8 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         ctx.writeAndFlush(res)
 
         // 2 请求处理后，结束作用域(关闭资源)
-        GlobalRequestScope.endScope()
+        GlobalAllRequestScope.endScope()
+        GlobalRpcRequestScope.endScope()
     }
 
     /**
@@ -134,7 +136,8 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      */
     public override fun invokeAfterGuard(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
         // 1 请求处理前，开始作用域
-        GlobalRequestScope.beginScope()
+        GlobalAllRequestScope.beginScope()
+        GlobalRpcRequestScope.beginScope()
 
         return trySupplierFuture {
             // 2 真正的调用方法

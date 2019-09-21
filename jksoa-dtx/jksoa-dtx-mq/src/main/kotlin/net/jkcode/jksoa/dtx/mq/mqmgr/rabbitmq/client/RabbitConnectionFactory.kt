@@ -3,7 +3,10 @@ package net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.client
 import com.rabbitmq.client.Connection
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkmvc.ttl.AllRequestScopedTransferableThreadLocal
 import org.apache.commons.pool2.impl.GenericObjectPool
+import redis.clients.jedis.Jedis
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -14,6 +17,7 @@ class ConnectionHolder(public val conn: Connection){
     public val channel: ConfirmableChannel by lazy{
         ConfirmableChannel(conn.createChannel())
     }
+
 }
 
 /**
@@ -55,8 +59,20 @@ object RabbitConnectionFactory {
     /**
      * 线程安全的rabbit连接
      */
-    private val conns:ThreadLocal<MutableMap<String, ConnectionHolder>> = ThreadLocal.withInitial {
-        HashMap<String, ConnectionHolder>();
+    private val conns: AllRequestScopedTransferableThreadLocal<HashMap<String, ConnectionHolder>> = object: AllRequestScopedTransferableThreadLocal<HashMap<String, ConnectionHolder>>({ HashMap() }){ // 所有请求域的可传递的 ThreadLocal
+        public override fun doEndScope() {
+            // 请求结束要调用 close() 来关闭连接
+            val holders = get()
+            for((name, holder) in holders){
+                // 1 关闭channel: channel包含各种client状态与监听, 只能销毁
+                holder.channel.close()
+                // 2 归还connection: connection包含连接与线程等大资源, 只能复用
+                getPool(name).returnObject(holder.conn)
+            }
+            holders.clear()
+
+            super.doEndScope()
+        }
     }
 
     /**

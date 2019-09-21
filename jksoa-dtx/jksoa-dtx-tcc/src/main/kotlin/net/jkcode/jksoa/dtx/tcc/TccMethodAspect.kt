@@ -28,9 +28,6 @@ class TccMethodAspect {
     @Around("tccMethodExecute()")
     public fun interceptTccMethod(pjp: ProceedingJoinPoint): Any? {
         val inv = JoinPointInvocation(pjp)
-        val holder = TccTransactionManager.holder
-        return holder.newScope {
-            holder.get().interceptTccMethod(inv)
-        }
+        return TccTransactionManager.current().interceptTccMethod(inv)
     }
 }

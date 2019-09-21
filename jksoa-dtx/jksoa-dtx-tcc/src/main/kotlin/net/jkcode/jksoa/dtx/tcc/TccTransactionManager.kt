@@ -2,7 +2,9 @@ package net.jkcode.jksoa.dtx.tcc
 
 import net.jkcode.jkmvc.common.*
 import net.jkcode.jkmvc.db.Db
+import net.jkcode.jkmvc.ttl.AllRequestScopedTransferableThreadLocal
 import net.jkcode.jkmvc.ttl.ScopedTransferableThreadLocal
+import net.jkcode.jkmvc.ttl.SttlCurrentHolder
 import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.dtx.tcc.model.TccParticipant
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
@@ -19,19 +21,12 @@ import java.util.concurrent.CompletableFuture
  */
 class TccTransactionManager private constructor() : ITccTransactionManager {
 
-    companion object{
+    companion object: SttlCurrentHolder<TccTransactionManager>(AllRequestScopedTransferableThreadLocal{ TccTransactionManager() }) { // 所有请求域的可传递的 ThreadLocal
 
         /**
          * 配置
          */
         public val config: Config = Config.instance("dtx-tcc", "yaml")
-
-        /**
-         * 线程安全的tcc事务管理者
-         */
-        public val holder: ScopedTransferableThreadLocal<TccTransactionManager> = ScopedTransferableThreadLocal{
-            TccTransactionManager()
-        }
 
         init {
             // 初始化时建表: tcc_transaction
@@ -53,8 +48,8 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
      * 事务上下文
      *     由于 TccRpcContext 的作用域大于 TccTransactionManager 的, 因此不能混用同一个 ScopedTransferableThreadLocal 对象, 必须独立对象
      */
-    public override val txCtx: TccRpcContext?
-        get() = TccRpcContext.holder.get(false)
+    public override val txCtx: TccRpcServerContext?
+        get() = TccRpcServerContext.currentOrNull()
 
     /**
      * 当前事务
@@ -76,21 +71,23 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
      * @return
      */
     public override fun interceptTccMethod(inv: IInvocation): Any? {
+        dtxTccLogger.debug("拦截tcc方法: {}", inv)
         // 1 无事务, 则创建事务
         if (tx == null) {
             // 1.1 开始根事务
             if (txCtx == null) {
-                dtxTccLogger.debug("无事务, 开始根事务")
+                dtxTccLogger.debug("开始根事务")
                 return beginRootTransaction(inv)
             }
 
             // 1.2 开始分支事务
             if (txCtx!!.status == TccTransactionModel.STATUS_TRYING) {
-                dtxTccLogger.debug("无事务, 开始分支事务")
+                dtxTccLogger.debug("开始分支事务")
                 return beginBranchTransaction(inv)
             }
 
             // 1.3 结束分支事务: 提交或回滚
+            dtxTccLogger.debug("结束分支事务")
             return endBranchTransaction(inv)
         }
 

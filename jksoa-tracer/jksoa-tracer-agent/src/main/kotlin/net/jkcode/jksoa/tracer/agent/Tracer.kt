@@ -2,8 +2,9 @@ package net.jkcode.jksoa.tracer.agent
 
 import net.jkcode.jkmvc.common.Application
 import net.jkcode.jkmvc.common.DoneFlagList
-import net.jkcode.jkmvc.common.ICurrentHolder
+import net.jkcode.jkmvc.ttl.SttlCurrentHolder
 import net.jkcode.jkmvc.common.generateId
+import net.jkcode.jkmvc.ttl.AllRequestScopedTransferableThreadLocal
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.tracer.agent.loader.AnnotationTraceableServiceLoader
@@ -34,7 +35,7 @@ import kotlin.collections.HashMap
  */
 class Tracer protected constructor() : ITracer() {
 
-    companion object: ICurrentHolder<Tracer>({ Tracer() }) {
+    companion object: SttlCurrentHolder<Tracer>(AllRequestScopedTransferableThreadLocal{ Tracer() }) { // 所有请求域的可传递的 ThreadLocal
 
         /**
          * 取样器
@@ -226,13 +227,6 @@ class Tracer protected constructor() : ITracer() {
         parentSpan = span
 
         return ServerSpanner(this, span).apply { start() }
-    }
-
-    /**
-     * 清理
-     */
-    internal fun clear(){
-        removeCurrent()
     }
 
 }

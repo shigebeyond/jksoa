@@ -1,7 +1,8 @@
 package net.jkcode.jksoa.rpc.server
 
 import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jkmvc.common.ICurrentHolder
+import net.jkcode.jkmvc.ttl.SttlCurrentHolder
+import net.jkcode.jkmvc.ttl.RpcRequestScopedTransferableThreadLocal
 import net.jkcode.jksoa.common.IRpcRequest
 
 /**
@@ -16,7 +17,7 @@ data class RpcServerContext(public val req: IRpcRequest /* 请求 */,
                             public val ctx: ChannelHandlerContext /* netty channel上下文 */
 ){
 
-    companion object: ICurrentHolder<RpcServerContext>(){
+    companion object: SttlCurrentHolder<RpcServerContext>(RpcRequestScopedTransferableThreadLocal()){ // rpc请求域的可传递的 ThreadLocal
 
         /**
          * 获得当前请求
