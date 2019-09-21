@@ -80,10 +80,15 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         if (method == null)
             throw RpcServerException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
-        // 3 初始化rpc上下文: 因为rpc的方法可能有异步执行, 因此在方法体的开头就要获得并持有当前的rpc上下文
+        // 3 请求处理前，开始作用域
+        // 必须在创建RpcServerContext之前调用, 因为RpcServerContext自身就是一个请求域的资源
+        GlobalAllRequestScope.beginScope()
+        GlobalRpcRequestScope.beginScope()
+
+        // 4 初始化rpc上下文: 因为rpc的方法可能有异步执行, 因此在方法体的开头就要获得并持有当前的rpc上下文
         RpcServerContext(req, ctx)
 
-        // 4 调用方法
+        // 5 调用方法
         //return method.invoke(provider.service, *req.args)
         return guardInvoke(method, provider.service, req.args)
     }
@@ -135,12 +140,8 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @return
      */
     public override fun invokeAfterGuard(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
-        // 1 请求处理前，开始作用域
-        GlobalAllRequestScope.beginScope()
-        GlobalRpcRequestScope.beginScope()
-
         return trySupplierFuture {
-            // 2 真正的调用方法
+            // 真正的调用方法
             method.invoke(obj, *args)
         }
     }

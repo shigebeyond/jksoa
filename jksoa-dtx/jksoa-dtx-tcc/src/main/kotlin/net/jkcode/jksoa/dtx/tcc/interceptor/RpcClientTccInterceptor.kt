@@ -33,7 +33,7 @@ class RpcClientTccInterceptor: IRpcRequestInterceptor {
         if(method.tccMethod != null) {
             val txMgr = TccTransactionManager.currentOrNull()
             // 有事务
-            val tx = txMgr.tx
+            val tx = txMgr?.tx
             if (tx != null) {
                 val participant: TccParticipant
                 if (tx.status == TccTransactionModel.STATUS_TRYING) { // 1 try阶段, 添加参与者
