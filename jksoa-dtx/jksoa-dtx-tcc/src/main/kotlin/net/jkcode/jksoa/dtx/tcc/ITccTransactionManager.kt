@@ -31,11 +31,4 @@ interface ITccTransactionManager {
      * @return
      */
     fun interceptTccMethod(pjp: IInvocation): Any?
-
-    /**
-     * 恢复事务, 即失败重试
-     *    1. 查询到期的确认中/取消中的根事务, 进而提交/回滚该事务
-     *    2. 只有根事务才能发起恢复, 分支事务无权发起恢复, 反正根事务会调用分支事务的确认/取消方法
-     */
-    fun recover()
 }

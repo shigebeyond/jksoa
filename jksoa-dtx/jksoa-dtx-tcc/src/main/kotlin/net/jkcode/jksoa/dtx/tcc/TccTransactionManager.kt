@@ -199,32 +199,5 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
         // 从异步结果获得返回值
         return inv.method.resultFromFuture(future)
     }
-
-    /**
-     * 恢复事务, 即失败重试
-     *    1. 查询到期的确认中/取消中的根事务, 进而提交/回滚该事务
-     *    2. 只有根事务才能发起恢复, 分支事务无权发起恢复, 反正根事务会调用分支事务的确认/取消方法
-     */
-    public override fun recover() {
-        // 查询到期的确认中/取消中的根事务
-        val rertySeconds: Int = config["rertySeconds"]!! // 重试秒数
-        val maxRetryCount: Int = config["maxRetryCount"]!! // 最大的重试次数
-        val now: Long = System.currentTimeMillis() / 1000
-        val txs = TccTransactionModel.queryBuilder()
-                .where("parent_id", "=", 0) // 根事务
-                .where("status", "IN", arrayOf(TccTransactionModel.STATUS_CONFIRMING, TccTransactionModel.STATUS_CANCELING)) // 确认中/取消中的事务
-                .where("updated", "<=", now - rertySeconds) // 过了重试秒数
-                .where("retry_count", "<", maxRetryCount) // 过了重试秒数
-                .findAllModels<TccTransactionModel>()
-
-        // 提交/回滚
-        for (tx in txs) {
-            // 结束事务: 提交/回滚
-            this.tx = tx;
-            val future = tx.end(tx.status == TccTransactionModel.STATUS_CONFIRMING)
-
-        }
-    }
-
 }
 

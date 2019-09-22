@@ -3,6 +3,7 @@ package net.jkcode.jksoa.job.trigger
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
 import net.jkcode.jkmvc.common.*
+import net.jkcode.jkmvc.scope.GlobalAllRequestScope
 import net.jkcode.jksoa.job.IJob
 import net.jkcode.jksoa.job.ITrigger
 import net.jkcode.jksoa.job.jobLogger
@@ -80,6 +81,9 @@ abstract class BaseTrigger : ITrigger {
         // 线程池中执行作业
         CommonThreadPool.execute {
             for(job in jobs){
+                // 请求域的开始
+                GlobalAllRequestScope.beginScope()
+
                 // 获得作业执行的上下文
                 val ctx = contexts.getOrPut(job.id){
                     JobExecutionContext(job.id, this)
@@ -97,9 +101,13 @@ abstract class BaseTrigger : ITrigger {
                     }*/
                 }
 
-                // 记录执行异常
-                resFuture.exceptionally{
-                    job.logExecutionException(it)
+                resFuture.whenComplete { r, ex ->
+                    // 记录执行异常
+                    if(ex != null)
+                        job.logExecutionException(ex)
+
+                    // 请求域的结束
+                    GlobalAllRequestScope.endScope()
                 }
             }
 

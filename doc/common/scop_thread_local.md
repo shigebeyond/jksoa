@@ -31,7 +31,7 @@ IScope -- 作用域
 
 ## IScope -- 作用域对象
 
-1. 实现该接口, 必须承诺 `beginScope()`/`endScope()` 会在作用域开始与结束时调用
+1. 实现该接口, 必须承诺 `beginScope()`/`endScope()` 会在作用域开始与结束时调用, 一般用于初始化与销毁资源/状态, 以保证作用域内的状态干净.
 
 2. 父作用域的  `beginScope()`/`endScope()`  会自动调用子作用域的  `beginScope()`/`endScope()`
 
@@ -52,6 +52,8 @@ IScope -- 作用域
 目前框架只支持rpc请求与http请求, 均在rpc请求处理器与http请求处理器中实现: 在请求处理前后调用其  `beginScope()`/`endScope()`
 
 但对于非rpc请求与http请求的场景, 我要求开发者自行确定请求的作用域, 并在处理前后调用  `beginScope()`/`endScope()`
+
+如我在 jksoa-job 任务调用框架中的实现, 在`BaseTrigger`处理job的前后调用`GlobalAllRequestScope.beginScope()`与`GlobalAllRequestScope.endScope()`
 
 # 有作用域的 ThreadLocal
 

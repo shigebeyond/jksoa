@@ -23,8 +23,8 @@ jksoa-dtx-mq 是基于本地消息实现的分布式事务
 dbName: default
 mqType: rabbitmq # 消息队列类型: rabbitmq / jkmq
 sendPageSize: 100 # 每次发送的消息数
-resendSeconds: 20 # 重发的时间间隔, 单位秒, 为0则不重发
-autoStartSendMqJob: false # 自动启动定时发送事务消息表中的消息的作业, 你可以在其他应用中启动
+retrySeconds: 20 # 重发的时间间隔, 单位秒, 为0则不重发
+recoverTimerSeconds: false # 定时恢复(重发消息)的时间间隔, 为0则不启动定时恢复, 你可以在其他应用中启动
 ```
 
 ## 添加本地消息

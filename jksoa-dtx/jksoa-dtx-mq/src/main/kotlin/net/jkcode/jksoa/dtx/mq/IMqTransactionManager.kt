@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.dtx.mq
 
 import net.jkcode.jkmvc.common.Application
+import net.jkcode.jksoa.dtx.mq.model.MqTransactionModel
 
 /**
  * 事务消息的管理者
@@ -20,7 +21,9 @@ interface IMqTransactionManager {
     fun addMq(topic: String, msg: ByteArray, bizType: String = Application.name, bizId: String = "")
 
     /**
-     * 启动定时发送消息的作业
+     * 处理单个消息发送
+     * @param msg
      */
-    fun startSendMqJob()
+    fun sendMq(msg: MqTransactionModel)
+
 }

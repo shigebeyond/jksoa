@@ -4,8 +4,6 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.db.Db
 import net.jkcode.jksoa.dtx.mq.model.MqTransactionModel
 import net.jkcode.jksoa.dtx.mq.mqmgr.IMqManager
-import net.jkcode.jksoa.job.job.LambdaJob
-import net.jkcode.jksoa.job.trigger.CronTrigger
 import java.io.File
 
 /**
@@ -29,10 +27,6 @@ object MqTransactionManager : IMqTransactionManager {
     init {
         // 初始化时建表: mq_transaction
         createTable(config["dbName"]!!)
-
-        // 启动定时发送消息的作业
-        if(config["autoStartSendMqJob"]!!)
-            startSendMqJob()
     }
 
     /**
@@ -66,7 +60,7 @@ object MqTransactionManager : IMqTransactionManager {
         // 2 在事务完成回调中发送消息
         MqTransactionModel.db.addTransactionCallback { commited ->
             if(commited)
-                processMq(mq)
+                sendMq(mq)
         }
     }
 
@@ -77,43 +71,14 @@ object MqTransactionManager : IMqTransactionManager {
      */
     private fun calculateNextSendTime(tryCount: Int): Long {
         val now: Long = System.currentTimeMillis() / 1000
-        return now + config.getInt("resendSeconds", 10)!! * tryCount
-    }
-
-    /**
-     * 启动定时发送消息的作业
-     */
-    public override fun startSendMqJob(){
-        // 定义job
-        val job = LambdaJob{
-            processExpiredMqs()
-        }
-        // 定义trigger
-        val trigger = CronTrigger("0/5 * * * * ?")
-        // 给trigger添加要触发的job
-        trigger.addJob(job)
-        // 启动trigger, 开始定时触发作业
-        trigger.start()
-    }
-
-    /**
-     * 处理到期消息发送
-     */
-    private fun processExpiredMqs(){
-        dtxMqLogger.debug("定时处理事务消息")
-        // 查询事务消息
-        val limit: Int = config["sendPageSize"]!!
-        val now: Long = System.currentTimeMillis() / 1000
-        val msgs = MqTransactionModel.queryBuilder().where("next_send_time", "<=", now).limit(limit).findAllModels<MqTransactionModel>()
-        for (msg in msgs)
-            processMq(msg)
+        return now + config.getInt("retrySeconds", 10)!! * tryCount
     }
 
     /**
      * 处理单个消息发送
      * @param msg
      */
-    private fun processMq(msg: MqTransactionModel) {
+    public override fun sendMq(msg: MqTransactionModel) {
         // 更新下一次的重发时间: TODO: 可批量更新, 直接将 calculateNextSendTime()中的时间计算算法写成sql
         msg.nextSendTime = calculateNextSendTime(msg.tryCount + 1)
         msg.update()
@@ -129,9 +94,5 @@ object MqTransactionManager : IMqTransactionManager {
         }
     }
 
-    @JvmStatic
-    fun main(args: Array<String>) {
-        startSendMqJob()
-    }
 
 }
