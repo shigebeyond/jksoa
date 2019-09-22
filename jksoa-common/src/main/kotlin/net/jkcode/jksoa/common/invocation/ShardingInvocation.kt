@@ -10,8 +10,8 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
 /**
- * 分片的rpc请求
- *    远端方法调用的描述: 方法 + 参数
+ * 分片的本地方法调用
+ *    本地方法调用的描述: 方法 + 参数
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:03 AM

@@ -35,11 +35,13 @@ jksoa-job的核心组件有2个：
 ## 分别定义 job 与 trigger
 
 ```
+import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.job.job.remote.RpcJob
 import net.jkcode.jksoa.job.trigger.CronTrigger
 
 // 定义job
-val job = RpcJob(ISimpleService::echo, arrayOf<Any?>("测试消息"))
+val req = RpcRequest(ISimpleService::echo, arrayOf<Any?>("测试消息"))
+val job = InvocationJob(req)
 // 定义trigger
 val trigger = CronTrigger("0/3 * * * * ?")
 // 给trigger添加要触发的job

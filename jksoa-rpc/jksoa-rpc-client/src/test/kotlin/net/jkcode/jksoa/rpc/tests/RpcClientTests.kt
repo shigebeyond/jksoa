@@ -161,9 +161,9 @@ class RpcClientTests {
         val args:Array<Any?> = Array(3) { i ->
             "第${i}个分片的参数" // ISimpleService::echo 的实参
         }
-        val job = ShardingRpcRequest(ISimpleService::echo, args, 1)
+        val req = ShardingRpcRequest(ISimpleService::echo, args, 1)
         val dispatcher = IRpcRequestDispatcher.instance()
-        val futures = dispatcher.dispatchSharding(job)
+        val futures = dispatcher.dispatchSharding(req)
         futures.print()
     }
 }

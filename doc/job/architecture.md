@@ -102,7 +102,7 @@ trigger.start()
 
 如10台机器处理10w条数据, 分片之后, 则每台机器处理1w条数据, 并行度增加10倍, 而耗时降低10倍.
 
-为了更简单的表达分片, 我设计的作业分片只针对`用方法调用来实现的作业`, 即包含 `LpcJob/RpcJob/ShardingLpcJob/ShardingRpcJob`, 而每个分片对应一次调用的实参数组.
+为了更简单的表达分片, 我设计的作业分片只针对`用方法调用来实现的作业`, 即包含 `ShardingInvocation`/`ShardingRpcRequest`, 而每个分片对应一次调用的实参数组.
 
 因此, 所谓作业分片调度, 就是按每个分片来调度, 就是以每个分片的的实参数组来调用方法, 每个分片的调用是要分派给具体的执行者来执行.
 
@@ -128,10 +128,11 @@ rpc的分片作业的创建如下:
 
 ```
 // rpc的分片作业
-val args:Array<Array<*>> = Array(3) { i ->
-    arrayOf("第${i}个分片的参数") // IEchoService::sayHi 的实参
+val args:Array<Any?> = Array(3) { i ->
+    "第${i}个分片的参数" // ISimpleService::echo 的实参
 }
-val job = ShardingRpcJob(ISimpleService::echo, args)
+val req = ShardingRpcRequest(ISimpleService::echo, args, 1)
+val job = InvocationJob(req)
 ```
 
 作业调度时, 先分片, 后执行, 而分片分派结果的日志输出:
