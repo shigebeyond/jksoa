@@ -7,16 +7,33 @@
 ## 功能
 1. 用户列表, 显示用户编号/用户名/拥有的余额/拥有的优惠券, 只有2个用户: 1 买家 2 卖家
 
+![user-list](https://github.com/shigebeyond/jksoa/blob/master/jksoa-dtx/jksoa-dtx-demo/jksoa-dtx-order/src/main/webapp/img/user-list.png)
+
 2. 商品列表, 显示商品名/价格/库存, 可选中某商品来进行购买
+
+![product-list](https://github.com/shigebeyond/jksoa/blob/master/jksoa-dtx/jksoa-dtx-demo/jksoa-dtx-order/src/main/webapp/img/product-list.png)
 
 3. 购买页面, 可选择要购买的数量与抵扣的优惠券, 点击"购买"按钮生成待支付的订单
 
 生成订单的方法, 是一个tcc方法, 需要同时扣库存/冻结优惠券/创建订单
+
+![buy](https://github.com/shigebeyond/jksoa/blob/master/jksoa-dtx/jksoa-dtx-demo/jksoa-dtx-order/src/main/webapp/img/buy.png)
+
 4. 订单列表, 可选中某个待支付的订单进行支付
 
-5. 支付页面, 显示订单的总金额, 优惠券抵扣的金额, 还有要支付的金额, 点击"余额支付"按钮使用余额来支付
+![order-list](https://github.com/shigebeyond/jksoa/blob/master/jksoa-dtx/jksoa-dtx-demo/jksoa-dtx-order/src/main/webapp/img/order-list.png)
+
+5. 支付页面, 显示订单的总金额, 优惠券抵扣的金额, 还有要支付的金额
+
+![selectPay](https://github.com/shigebeyond/jksoa/blob/master/jksoa-dtx/jksoa-dtx-demo/jksoa-dtx-order/src/main/webapp/img/selectPay.png)
+
+5.1 "余额支付"按钮使用余额来支付
 
 用余额支付订单的方法, 是一个tcc方法, 需要消费优惠券/给买家扣钱/给卖家加钱/更新订单状态为已支付
+
+5.2 "充值支付(模拟支付成功通知)"按钮模拟支付成功通知
+
+通知处理是使用mq实现来分布式事务, 因为支付成功的通知是一定要处理, 而且能确定该事务必定能提交, 因此直接使用mq来确保事务执行与提交.
 
 ## 参与者
 1. 1个本地服务: 

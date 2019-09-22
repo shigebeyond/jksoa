@@ -3,6 +3,7 @@ dependencies{
     compile project(':jkmvc-http')
     compile project(':jkmvc-server-jetty')
     compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon-api')
+    //compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon')
     compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay-api')
 
     // jdbc

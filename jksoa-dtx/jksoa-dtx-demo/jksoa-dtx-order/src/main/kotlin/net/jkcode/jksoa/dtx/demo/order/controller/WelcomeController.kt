@@ -28,11 +28,19 @@ class WelcomeController: Controller()
     }
 
     /**
-     * 主页
+     * 首页
      */
     public fun indexAction()
     {
         res.renderView("index")
+    }
+
+    /**
+     * 主页
+     */
+    public fun mainAction()
+    {
+        res.renderView("main")
     }
 
     /**
