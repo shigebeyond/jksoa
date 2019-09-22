@@ -7,7 +7,7 @@ TCC服务是由try/confirm/cancel3个模块组成, 属于两阶段提交, try阶
 1. 简单, 易用, 轻量, 易扩展；
 2. 一个注解即可声明tcc服务, 基于apectj织入tcc事务逻辑, 对开发者透明, 方便易用;
 3. 不同于其他市面上的开源实现, 我做到了真正的异步非阻塞, 基于jksoa-rpc框架来实现参与者的异步非阻塞的rpc, 可应用在tcc事务的try/confirm/cancel阶段, 同时根据异步结果来确定tcc事务的提交或回滚;
-4. 使用`ScopedTransferableThreadLocal`有作用域的可传递的 ThreadLocal 版本, 来实现同一个tcc事务中发起方与异步rpc参与方之间的事务上下文的传递;
+4. 使用`ScopedTransferableThreadLocal`/`AllRequestScopedTransferableThreadLocal`有作用域的可传递的 ThreadLocal 版本, 来实现同一个tcc事务中发起方与异步rpc参与方之间的事务上下文的传递;
 5. 故障恢复, 目前仅限于confirm/cancel阶段, 失败重试.
 
 ## 背景
@@ -79,7 +79,7 @@ TCC服务与普通的服务一样，只需要暴露一个接口，也就是它�
 
 # 快速入门
 
-可参考demo子工程: jksoa-dtx/jksoa-dtx-demo
+可参考demo子工程 jksoa-dtx/jksoa-dtx-demo 与 [demo说明](demo.md)
 
 ## 发布Tcc服务
 
