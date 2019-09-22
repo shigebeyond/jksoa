@@ -33,12 +33,12 @@ object MqTransactionRecovery {
      * 恢复: 重发到期消息
      */
     private fun recover(){
-        dtxMqLogger.debug("定时处理事务消息")
         // 查询事务消息
         val limit: Int = MqTransactionManager.config["sendPageSize"]!!
         val now: Long = System.currentTimeMillis() / 1000
         val msgs = MqTransactionModel.queryBuilder().where("next_send_time", "<=", now).limit(limit).findAllModels<MqTransactionModel>()
         // 发送消息
+        dtxMqLogger.debug("定时重发 {} 个事务消息", msgs.size)
         for (msg in msgs)
             MqTransactionManager.sendMq(msg)
     }

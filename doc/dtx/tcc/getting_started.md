@@ -183,14 +183,19 @@ annotation class TccMethod(
 ```
 # tcc事务配置
 dbName: default
-rertySeconds: 20 # 重试的时间间隔, 单位秒
+retrySeconds: 20 # 重试的时间间隔, 单位秒
 maxRetryCount: 3 # 最大的重试次数
+recoverTimerSeconds: !!java.lang.Long 60 # 定时恢复(重试)的时间间隔, 为0则不启动定时恢复, 你可以在其他应用中启动
 ```
 
 说明:
 1. `dbName`: tcc事务存储的数据库名: 引用的是 `dataSources.yaml` 中配置的数据库名
-2. `rertySeconds`: 重试的时间间隔: 当Tcc事务异常后，恢复Job将会定期恢复事务, 根据配置项`rertySeconds`的时间间隔来定时重试
+
+2. `retrySeconds`: 重试的时间间隔: 当Tcc事务异常后，恢复Job将会定期恢复事务, 根据配置项`rertySeconds`的时间间隔来定时重试
+
 3. `maxRetryCount`: 最大的重试次数: 重试次数超过`maxRetryCount`停止重试
+
+4. `recoverTimerSeconds`: 定时恢复(重试)的时间间隔, 为0则不启动定时恢复, 你可以在其他应用中启动, 启动`net.jkcode.jksoa.dtx.tcc.TccTransactionRecovery` 主类即可
 
 ### rpc拦截器配置
 
@@ -234,4 +239,3 @@ META-INF/aop.xml
 ```
 -javaagent:/home/shi/.gradle/caches/modules-2/files-2.1/org.aspectj/aspectjweaver/1.8.12/87be4d5a1c68004a247a62c011fa63da786965fb/aspectjweaver-1.8.12.jar
 ```
-

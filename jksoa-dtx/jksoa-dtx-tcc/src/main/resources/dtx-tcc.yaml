@@ -2,3 +2,4 @@
 dbName: default
 retrySeconds: 20 # 重试的时间间隔, 单位秒
 maxRetryCount: 3 # 最大的重试次数
+recoverTimerSeconds: !!java.lang.Long 60 # 定时恢复(重试)的时间间隔, 为0则不启动定时恢复, 你可以在其他应用中启动

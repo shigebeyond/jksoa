@@ -37,6 +37,7 @@ object MqTransactionManager : IMqTransactionManager {
         val sqlFile = Thread.currentThread().contextClassLoader.getResource("mq_transaction.mysql.sql").getFile()
         val sql = File(sqlFile).readText()
         Db.instance().execute(sql)
+        dtxMqLogger.debug("建表: mq_transaction")
     }
 
     /**

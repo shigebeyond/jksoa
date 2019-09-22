@@ -1,7 +1,11 @@
 package net.jkcode.jksoa.dtx.tcc
 
+import net.jkcode.jkmvc.common.CommonSecondTimer
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.newPeriodic
 import net.jkcode.jkmvc.scope.GlobalAllRequestScope
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
+import java.util.concurrent.TimeUnit
 
 /**
  * tcc事务的恢复者
@@ -9,6 +13,22 @@ import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
  * @date 2019-09-22 4:33 PM
  */
 object TccTransactionRecovery {
+
+    /**
+     * 配置
+     */
+    private val config: Config = Config.instance("dtx-tcc", "yaml")
+
+    /**
+     * 定时时间间隔
+     */
+    private val timerSeconds: Long = config["recoverTimerSeconds"]!!
+
+    init{
+        // 启动定时恢复(重试confirm/cancel)
+        if(timerSeconds > 0)
+            start(timerSeconds)
+    }
 
     /**
      * 恢复事务, 即失败重试
@@ -28,6 +48,7 @@ object TccTransactionRecovery {
                 .findAllModels<TccTransactionModel>()
 
         // 结束事务: 提交/回滚
+        dtxTccLogger.debug("定时恢复 {} 个事务", txs.size)
         for (tx in txs) {
             endTransaction(tx)
         }
@@ -38,18 +59,30 @@ object TccTransactionRecovery {
      * @param tx
      */
     private fun endTransaction(tx: TccTransactionModel) {
+        dtxTccLogger.debug("结束事务: {}", tx)
         // 启动新的请求域, 对应新的TccTransactionManager
         GlobalAllRequestScope.newScope{
             // 结束事务: 提交/回滚
             val mgr = TccTransactionManager.current()
             mgr.tx = tx;
             val future = tx.end(tx.status == TccTransactionModel.STATUS_CONFIRMING)
+            future
         }
+    }
+
+    /**
+     * 启动定时恢复(重发消息)
+     * @param timerSeconds
+     */
+    public fun start(timerSeconds: Long){
+        CommonSecondTimer.newPeriodic({
+            recover()
+        }, timerSeconds, TimeUnit.SECONDS)
     }
 
     @JvmStatic
     fun main(args: Array<String>) {
-        recover()
+        start(timerSeconds)
     }
 
 }

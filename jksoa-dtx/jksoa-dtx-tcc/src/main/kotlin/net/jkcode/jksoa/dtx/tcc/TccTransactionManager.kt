@@ -38,6 +38,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
          * @param db
          */
         private fun createTable(db: String) {
+            dtxTccLogger.debug("建表: tcc_transaction")
             val sqlFile = Thread.currentThread().contextClassLoader.getResource("tcc_transaction.mysql.sql").getFile()
             val sql = File(sqlFile).readText()
             Db.instance(db).execute(sql)
