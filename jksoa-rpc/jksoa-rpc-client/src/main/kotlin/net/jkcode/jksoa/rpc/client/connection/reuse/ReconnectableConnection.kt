@@ -9,6 +9,7 @@ import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -81,20 +82,36 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
      * @return
      */
     protected fun getOrReConnect(): BaseConnection {
-        if(conn == null){
-            synchronized(this){
-                if(conn == null) {
-                    // 根据rpc协议获得对应的client
-                    val client = IRpcClient.instance(url.protocol)
-                    // 连接server
-                    conn = client.connect(url) as BaseConnection
-                    // 连接关闭回调
-                    conn!!.closeCallback = {
-                        onConnectionClosed()
-                    }
+        // 1 有连接: 检查是否有效
+        if(conn != null){
+            // 1.1 有效连接
+            if(conn!!.isValid())
+                return conn!!
+
+            // 1.2 无效连接: 关闭连接
+            clientLogger.debug("关闭无效连接: {}", conn)
+            synchronized(this) {
+                if(conn != null) {
+                    conn!!.close()
+                    conn = null
                 }
             }
         }
+
+        // 2 无连接: 创建新连接
+        synchronized(this){
+            if(conn == null) {
+                // 根据rpc协议获得对应的client
+                val client = IRpcClient.instance(url.protocol)
+                // 连接server
+                conn = client.connect(url) as BaseConnection
+                // 连接关闭回调
+                conn!!.closeCallback = {
+                    onConnectionClosed()
+                }
+            }
+        }
+        clientLogger.debug("创建无效连接: {}", conn)
         return conn!!
     }
 

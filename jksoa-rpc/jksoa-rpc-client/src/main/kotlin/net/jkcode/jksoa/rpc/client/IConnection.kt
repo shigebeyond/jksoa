@@ -33,6 +33,12 @@ interface IConnection: Closeable {
     fun send(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): IRpcResponseFuture
 
     /**
+     * 是否有效连接
+     * @return
+     */
+    fun isValid(): Boolean
+
+    /**
      * 改写 hashCode(), 用在 ConsistentHash 计算哈希
      */
     override fun hashCode(): Int

@@ -82,6 +82,14 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
     }
 
     /**
+     * 是否有效连接
+     * @return
+     */
+    public override fun isValid(): Boolean {
+        return channel.isOpen && channel.isActive
+    }
+
+    /**
      * 关闭连接
      *   触发时机
      *   1. 在ConnectionHub.handleServiceUrlsChange()中server被摘掉时

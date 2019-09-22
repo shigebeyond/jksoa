@@ -19,6 +19,14 @@ abstract class BaseConnection(public override val url: Url /* 服务端地址 */
     internal var closeCallback: ((BaseConnection) -> Unit)? = null
 
     /**
+     * 是否有效连接
+     * @return
+     */
+    public override fun isValid(): Boolean{
+        return true;
+    }
+
+    /**
      * 改写 hashCode(), 用在 ConsistentHash 计算哈希
      */
     public override fun hashCode(): Int {

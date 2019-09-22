@@ -2,13 +2,12 @@ package net.jkcode.jksoa.rpc.client.connection.pool
 
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jksoa.rpc.client.IConnection
-import net.jkcode.jksoa.rpc.client.protocol.netty.NettyConnection
-import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
+import net.jkcode.jksoa.rpc.client.IConnection
+import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import org.apache.commons.pool2.impl.GenericObjectPool
 import java.util.concurrent.ConcurrentHashMap
 
@@ -34,17 +33,17 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
         /**
          * 连接池的池
          */
-        protected var pools: ConcurrentHashMap<IUrl, GenericObjectPool<NettyConnection>> = ConcurrentHashMap();
+        protected var pools: ConcurrentHashMap<IUrl, GenericObjectPool<IConnection>> = ConcurrentHashMap();
 
         /**
          * 根据地址获得连接池
          * @param url
          * @return
          */
-        public fun getPool(url: Url): GenericObjectPool<NettyConnection> {
+        public fun getPool(url: Url): GenericObjectPool<IConnection> {
             return pools.getOrPut(url){
                 // 创建连接池
-                val pool = GenericObjectPool<NettyConnection>(PooledConnectionFactory(url))
+                val pool = GenericObjectPool<IConnection>(PooledConnectionFactory(url))
                 pool.setTestOnBorrow(true) // borrow时调用 validateObject() 来校验
                 pool.setMaxTotal(config["pooledConnectionMaxTotal"]!!) // 池化连接的最大数
                 pool.setTimeBetweenEvictionRunsMillis(60000 * 10) // 定时逐出时间间隔: 10min
@@ -67,7 +66,7 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
         // 根据 serverPart 来引用连接池
         val pool = getPool(url.serverPart)
 
-        var conn: NettyConnection? = null
+        var conn: IConnection? = null
         try {
             // 获得连接
             conn = pool.borrowObject()
