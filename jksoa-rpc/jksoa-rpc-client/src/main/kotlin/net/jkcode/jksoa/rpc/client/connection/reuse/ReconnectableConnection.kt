@@ -105,10 +105,6 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
                 val client = IRpcClient.instance(url.protocol)
                 // 连接server
                 conn = client.connect(url) as BaseConnection
-                // 连接关闭回调
-                conn!!.closeCallback = {
-                    onConnectionClosed()
-                }
             }
         }
         clientLogger.debug("创建无效连接: {}", conn)
@@ -127,17 +123,6 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
 
         // 发送请求
         return getOrReConnect().send(req, requestTimeoutMillis)
-    }
-
-    /**
-     * 处理连接被关闭事件
-     *   由netty被动触发
-     */
-    protected fun onConnectionClosed() {
-        // 1 调用回调
-        closeCallback?.invoke(conn!!)
-        // 2 清空被代理的连接
-        conn = null
     }
 
     /**

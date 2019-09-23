@@ -14,11 +14,6 @@ abstract class BaseConnection(public override val url: Url /* 服务端地址 */
 ) : IConnection {
 
     /**
-     * 连接关闭的回调
-     */
-    internal var closeCallback: ((BaseConnection) -> Unit)? = null
-
-    /**
      * 是否有效连接
      * @return
      */

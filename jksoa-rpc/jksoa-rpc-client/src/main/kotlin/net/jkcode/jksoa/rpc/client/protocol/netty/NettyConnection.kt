@@ -104,9 +104,6 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
 
         // 2 删除引用
         channel.attr<NettyConnection>(connKey).set(null)
-
-        // 3 调用回调
-        closeCallback?.invoke(this)
     }
 
 }
