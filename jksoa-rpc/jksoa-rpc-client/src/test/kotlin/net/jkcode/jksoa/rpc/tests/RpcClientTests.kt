@@ -28,15 +28,22 @@ import kotlin.reflect.jvm.javaMethod
 class RpcClientTests {
 
     @Test
-    fun testJson(){
+    fun testRequestJson(){
         val o = RpcRequest(ISimpleService::echo, arrayOf<Any?>("shi"))
         var json = JSON.toJSONString(o)
-        println(json) // 输出 {"age":12,"id":105254286010613760,"name":"shi"}
-
-        json = JSON.toJSONString(o, SerializerFeature.WriteSlashAsSpecial)
-        println(json) // 输出: {"age":12,"id":105254286010613760,"name":"shi"}
+        println(json) // 输出 {"args":["shi"],"attachments":{},"clazz":"net.jkcode.jksoa.rpc.example.ISimpleService","id":105333247373737984,"methodSignature":"echo(String)","version":1}
 
         val o2 = JSON.parseObject(json, RpcRequest::class.java);
+        println(o2)
+    }
+
+    @Test
+    fun testResponseJson(){
+        val o = RpcResponse(1, "shi")
+        var json = JSON.toJSONString(o)
+        println(json) // {"requestId":1,"value":"shi"}
+
+        val o2 = JSON.parseObject(json, RpcResponse::class.java);
         println(o2)
     }
 

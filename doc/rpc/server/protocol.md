@@ -13,6 +13,7 @@
 server: # 服务端的实现类
     rmi: net.jkcode.jksoa.rpc.server.protocol.rmi.RmiRpcServer
     jkr: net.jkcode.jksoa.rpc.server.protocol.jkr.JkrRpcServer
+    jsonr: net.jkcode.jksoa.rpc.server.protocol.jsonr.JsonrRpcServer
 ```
 
 1. `RmiRpcServer`, 实现rmi协议

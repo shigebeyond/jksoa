@@ -13,6 +13,7 @@ import net.jkcode.jkmvc.common.commonLogger
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.RpcResponse
+import net.jkcode.jksoa.rpc.server.netty.isServer
 import java.net.InetSocketAddress
 
 /**
@@ -158,10 +159,10 @@ class JsonMessageCoder : MessageToMessageCodec<Any, Any>() {
     }
 
     /**
-     * todo: 是否server
+     * 是否server
      */
     protected fun isServer(ctx: ChannelHandlerContext): Boolean {
-        return ctx.channel() is ServerChannel
+        return ctx.channel().isServer()
     }
 
     /**
@@ -180,6 +181,5 @@ class JsonMessageCoder : MessageToMessageCodec<Any, Any>() {
             throw IllegalArgumentException("Message is not a valid json: " + json)
         return msg
     }
-
 
 }

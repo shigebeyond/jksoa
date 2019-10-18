@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.common.loader
 
+import net.jkcode.jkmvc.common.getMethodByName
 import net.jkcode.jkmvc.scope.ClosingOnShutdown
 import net.jkcode.jkmvc.common.getMethodBySignature
 import java.lang.reflect.Method
@@ -35,7 +36,12 @@ abstract class IServiceClass: ClosingOnShutdown() {
      * @return
      */
     public fun getMethod(methodSignature: String): Method?{
-        return `interface`.getMethodBySignature(methodSignature)
+        // 1 根据方法签名来查
+        if(methodSignature.endsWith(')'))
+            return `interface`.getMethodBySignature(methodSignature)
+
+        // 2 根据方法名来查: 忽略参数类型, 一般只用在没有重载的方法中, 方便非java语言(如php)客户端的调用, 不用关心方法签名
+        return `interface`.getMethodByName(methodSignature)
     }
 
 }

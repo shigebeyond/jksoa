@@ -102,10 +102,11 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @param ctx
      */
     private fun endResponse(req: IRpcRequest, result: Any?, r: Throwable?, ctx: ChannelHandlerContext) {
-        var ex:Exception? = null
+        var ex:Exception? = r as Exception?
         if(r != null) {
             r.printStackTrace()
-            if (r !is RpcServerException)// 封装业务异常
+            // 如果非参数错误+非server调度错误, 则封装业务异常
+            if (r !is IllegalArgumentException && r !is RpcServerException)
                 ex = RpcBusinessException(r)
         }
 

@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.common
 
+import com.alibaba.fastjson.annotation.JSONField
 import net.jkcode.jksoa.common.exception.RpcClientException
 import java.io.Serializable
 
@@ -30,6 +31,7 @@ interface IRpcResponse: Serializable {
     /**
      * 是否失败
      */
+    @get:JSONField(serialize=false)
     val failed: Boolean
         get() = exception is RpcClientException
 
@@ -37,5 +39,6 @@ interface IRpcResponse: Serializable {
      * 获得结果值或抛出异常
      * @return
      */
+    @JSONField(serialize=false)
     fun getOrThrow(): Any?
 }
