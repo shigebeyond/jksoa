@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.server.protocol.netty
+package net.jkcode.jksoa.rpc.server.netty
 
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.buffer.ByteBufAllocator
@@ -11,26 +11,28 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.timeout.IdleStateHandler
 import io.netty.util.concurrent.DefaultThreadFactory
 import net.jkcode.jkmvc.common.Config
-import net.jkcode.jksoa.rpc.client.protocol.netty.NettyResponseHandler
-import net.jkcode.jksoa.rpc.client.protocol.netty.codec.NettyMessageDecoder
-import net.jkcode.jksoa.rpc.client.protocol.netty.codec.NettyMessageEncoder
 import net.jkcode.jksoa.common.serverLogger
+import net.jkcode.jksoa.rpc.client.netty.NettyResponseHandler
 import net.jkcode.jksoa.rpc.server.IRpcServer
-import java.util.*
 
 /**
- * netty协议-rpc服务端
+ * netty实现的rpc服务端
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-open class NettyRpcServer : IRpcServer() {
+abstract class NettyRpcServer : IRpcServer() {
 
     /**
      * 服务端的netty配置
      */
     public val nettyConfig = Config.instance("rpc-server.netty", "yaml")
+
+    /**
+     * 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
+     */
+    protected open val duplex: Boolean = config["duplex"]!!
 
     /**
      * 启动选项
@@ -82,17 +84,26 @@ open class NettyRpcServer : IRpcServer() {
                         serverLogger.info("NettyRpcServer收到client连接: {}", channel)
                         // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
                         val pipeline = channel.pipeline()
-                        pipeline
-                                .addLast(NettyMessageDecoder(1024 * 1024)) // 解码
-                                .addLast(NettyMessageEncoder()) // 编码
-                                .addLast(IdleStateHandler(nettyConfig["readerIdleTimeSecond"]!!, nettyConfig["writerIdleTimeSeconds"]!!, nettyConfig["allIdleTimeSeconds"]!!)) // channel空闲检查
+                        pipeline.addLast(IdleStateHandler(nettyConfig["readerIdleTimeSecond"]!!, nettyConfig["writerIdleTimeSeconds"]!!, nettyConfig["allIdleTimeSeconds"]!!)) // channel空闲检查
 
-                        // 自定义子channel处理器
-                        for(h in customChildChannelHandlers())
+                        // 自定义编码相关的子channel处理器
+                        for(h in customCodecChildChannelHandlers())
                             pipeline.addLast(h)
+
+                        // 处理请求的子channel处理器
+                        pipeline.addLast(NettyRequestHandler())
+
+                        if(duplex)  // 双工
+                            // 处理响应的子channel处理器, 如在mq项目中让broker调用consumer, 并处理consumer的响应
+                            pipeline.addLast(NettyResponseHandler())
                     }
                 })
     }
+
+    /**
+     * 自定义编码相关的channel处理器
+     */
+    protected abstract fun customCodecChildChannelHandlers(): MutableList<ChannelHandler>
 
     /**
      * 启动server
@@ -114,22 +125,6 @@ open class NettyRpcServer : IRpcServer() {
            serverLogger.error("NettyRpcServer运行异常", e)
            e.printStackTrace()
        }
-    }
-
-    /**
-     * 自定义channel处理器
-     */
-    protected fun customChildChannelHandlers(): List<ChannelHandler>{
-        val handlers = LinkedList<ChannelHandler>()
-
-        // 处理请求
-        handlers.add(NettyRequestHandler())
-
-        if(config["duplex"]!!)  // 双工
-            // 处理响应, 如在mq项目中让broker调用consumer, 并处理consumer的响应
-            handlers.add(NettyResponseHandler())
-
-        return handlers
     }
 
     /**

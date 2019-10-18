@@ -1,12 +1,12 @@
-package net.jkcode.jksoa.rpc.client.protocol.netty.codec
+package net.jkcode.jksoa.rpc.client.netty.codec
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.serialize.ISerializer
-import net.jkcode.jksoa.common.clientLogger
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder
+import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkmvc.common.commonLogger
+import net.jkcode.jkmvc.serialize.ISerializer
 
 /**
  * 解码
@@ -49,7 +49,7 @@ class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(ma
                 return result
             }
         }catch (e: Exception){
-            clientLogger.error("NettyMessageDecoder解码接收到的消息失败", e)
+            commonLogger.error("NettyMessageDecoder解码接收到的消息失败", e)
             throw e
         }
     }

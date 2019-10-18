@@ -1,11 +1,11 @@
-package net.jkcode.jksoa.rpc.client.protocol.netty.codec
+package net.jkcode.jksoa.rpc.client.netty.codec
 
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.serialize.ISerializer
-import net.jkcode.jksoa.common.clientLogger
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
+import net.jkcode.jkmvc.common.commonLogger
 
 /**
  * 编码
@@ -50,7 +50,7 @@ class NettyMessageEncoder : MessageToByteEncoder<Any>() {
             out.writeBytes(bytes)
             //clientLogger.debug("NettyMessageEncoder编码要发送的消息: {}", msg)
         }catch (e: Exception){
-            clientLogger.error("NettyMessageEncoder编码要发送的消息失败", e)
+            commonLogger.error("NettyMessageEncoder编码要发送的消息失败", e)
             throw e
         }
     }

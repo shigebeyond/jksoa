@@ -12,12 +12,12 @@
 # 协议类型
 server: # 服务端的实现类
     rmi: net.jkcode.jksoa.rpc.server.protocol.rmi.RmiRpcServer
-    netty: net.jkcode.jksoa.rpc.server.protocol.netty.NettyRpcServer
+    jkr: net.jkcode.jksoa.rpc.server.protocol.jkr.JkrRpcServer
 ```
 
 1. `RmiRpcServer`, 实现rmi协议
 
-2. `NettyRpcServer`, 实现netty协议
+2. `JkrRpcServer`, 实现jkr协议, 默认协议
 
 # server的协议
 

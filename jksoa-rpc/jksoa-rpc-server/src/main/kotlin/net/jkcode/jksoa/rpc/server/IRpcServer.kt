@@ -61,17 +61,17 @@ abstract class IRpcServer: Closeable {
     /**
      * 服务器url
      */
-    val serverUrl: Url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!)
+    public val serverUrl: Url = Url(config["protocol"]!!, config.getString("host", getIntranetHost())!!, config["port"]!!)
 
     /**
      * 服务器url
      */
-    val serverName = serverUrl.serverName
+    public val serverName = serverUrl.serverName
 
     /**
      * 服务器名
      */
-    val name: String
+    public val name: String
         get(){
             val clazz = this.javaClass.name
             val i = clazz.lastIndexOf('.')
@@ -83,7 +83,7 @@ abstract class IRpcServer: Closeable {
      * @param waitingClose 是否等待关闭
      * @param callback 启动后回调
      */
-    fun start(waitingClose: Boolean = true, callback: (() -> Unit)? = null){
+    public fun start(waitingClose: Boolean = true, callback: (() -> Unit)? = null){
         // 启动服务器
         try{
             serverLogger.debug(" ------ start rpc server ------ ")
@@ -115,12 +115,12 @@ abstract class IRpcServer: Closeable {
      * @param waitingClose 是否等待关闭
      * @param callback 启动后回调
      */
-    abstract fun doStart(waitingClose: Boolean, callback: () -> Unit)
+    public abstract fun doStart(waitingClose: Boolean, callback: () -> Unit)
 
     /**
      * 关闭server
      */
-    override fun close(){
+    public override fun close(){
         // 关闭插件
         for(p in plugins)
             p.close()

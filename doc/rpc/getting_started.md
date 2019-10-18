@@ -58,7 +58,7 @@ RPC（Remote Procedure Call Protocol，远程过程调用），调用远程服�
 ```
 # 服务端配置
 duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
-protocol: netty # 协议
+protocol: jkr # 协议
 #host: 192.168.0.17 # ip
 port: 9080 # 端口
 parameters: # 参数
@@ -82,6 +82,7 @@ netty:
     readerIdleTimeSecond: 600
     writerIdleTimeSeconds: 600
     allIdleTimeSeconds: 600
+    maxContentLength: 1048576
 ```
 
 ### 创建服务提供者

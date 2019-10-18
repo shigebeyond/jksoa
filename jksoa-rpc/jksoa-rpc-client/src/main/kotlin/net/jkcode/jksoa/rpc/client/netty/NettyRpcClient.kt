@@ -1,21 +1,18 @@
-package net.jkcode.jksoa.rpc.client.protocol.netty
+package net.jkcode.jksoa.rpc.client.netty
 
 import io.netty.bootstrap.Bootstrap
 import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioSocketChannel
-import net.jkcode.jkmvc.scope.ClosingOnShutdown
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jksoa.rpc.client.IConnection
-import net.jkcode.jksoa.rpc.client.IRpcClient
-import net.jkcode.jksoa.rpc.client.protocol.netty.codec.NettyMessageDecoder
-import net.jkcode.jksoa.rpc.client.protocol.netty.codec.NettyMessageEncoder
+import net.jkcode.jkmvc.scope.ClosingOnShutdown
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
-import java.util.*
+import net.jkcode.jksoa.rpc.client.IConnection
+import net.jkcode.jksoa.rpc.client.IRpcClient
 
 
 /**
@@ -25,7 +22,7 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-open class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
+abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
 
     /**
      * 客户端配置
@@ -54,56 +51,39 @@ open class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
                 .option(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
                 .option(ChannelOption.SO_REUSEADDR, true) // 复用端口
 
-        // 自定义启动选项
-        for((k, v) in customBootstrapOptions())
-            bootstrap.option(k, v)
-
         return bootstrap
                 .handler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
                         clientLogger.debug("NettyRpcClient连接server: {}", channel)
                         // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
                         val pipeline = channel.pipeline()
-                        pipeline.addLast(NettyMessageDecoder(1024 * 1024)) // 解码
-                                .addLast(NettyMessageEncoder()) // 编码
 
-                        // 自定义channel处理器
-                        for(h in customChannelHandlers())
+                        // 自定义编码相关的channel处理器
+                        for(h in customCodecChannelHandlers())
                             pipeline.addLast(h)
+
+                        // 处理响应的channel处理器
+                        pipeline.addLast(NettyResponseHandler())
+
+                        if(config["duplex"]!!) { // 双工
+                            // 处理请求的channel处理器, 如在mq项目中让broker调用consumer
+                            //handlers.add(NettyRequestHandler())
+                            try {
+                                val clazz = Class.forName("net.jkcode.jksoa.rpc.server.protocol.jkr.JkrRequestHandler")
+                                val handler = clazz.newInstance() as ChannelHandler
+                                pipeline.addLast(handler)
+                            }catch (e: ClassNotFoundException){
+                                clientLogger.info("双工模式下找不到类[NettyRequestHandler], 变为单工模式")
+                            }
+                        }
                     }
                 })
     }
 
     /**
-     * 自定义启动选项
+     * 自定义编码相关的channel处理器
      */
-    protected open fun customBootstrapOptions(): Map<ChannelOption<Any>, Any>{
-        return emptyMap()
-    }
-
-    /**
-     * 自定义channel处理器
-     */
-    protected fun customChannelHandlers(): List<ChannelHandler>{
-        val handlers = LinkedList<ChannelHandler>()
-
-        // 处理响应
-        handlers.add(NettyResponseHandler())
-
-        if(config["duplex"]!!) { // 双工
-            // 处理请求, 如在mq项目中让broker调用consumer
-            //handlers.add(NettyRequestHandler())
-            try {
-                val clazz = Class.forName("net.jkcode.jksoa.rpc.server.protocol.netty.NettyRequestHandler")
-                val handler = clazz.newInstance() as ChannelHandler
-                handlers.add(handler)
-            }catch (e: ClassNotFoundException){
-                clientLogger.info("双工模式下找不到类[NettyRequestHandler], 变为单工模式")
-            }
-        }
-
-        return handlers
-    }
+    protected abstract fun customCodecChannelHandlers(): List<ChannelHandler>
 
     /**
      * 连接server

@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.common.invocation
 
+import com.alibaba.fastjson.annotation.JSONField
 import net.jkcode.jkmvc.common.getMethodByClassAndSignature
 import net.jkcode.jkmvc.common.toExpr
 import java.lang.reflect.Method
@@ -29,6 +30,7 @@ interface IInvocation {
     /**
      * 方法
      */
+    @get:JSONField(serialize=false)
     val method: Method
         // 不能引用(包含递延引用), 否则会被序列化, 如在tcc场景下需要对confirm/cancel方法调用进行序列化
         get() = getMethodByClassAndSignature(clazz, methodSignature)

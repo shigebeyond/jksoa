@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.server.protocol.netty
+package net.jkcode.jksoa.rpc.server.netty
 
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.clientLogger

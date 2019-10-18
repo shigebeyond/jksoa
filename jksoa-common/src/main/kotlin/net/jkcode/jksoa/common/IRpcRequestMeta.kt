@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.common
 
+import com.alibaba.fastjson.annotation.JSONField
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jksoa.common.annotation.remoteMethod
 import net.jkcode.jksoa.common.invocation.IInvocation
@@ -57,6 +58,7 @@ interface IRpcRequestMeta: IInvocation {
     /**
      * 请求超时
      */
+    @get:JSONField(serialize=false)
     val requestTimeoutMillis: Long
         get(){
             // 默认超时

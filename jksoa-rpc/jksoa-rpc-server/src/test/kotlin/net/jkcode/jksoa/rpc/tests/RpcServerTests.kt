@@ -4,7 +4,7 @@ import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.getIntranetHost
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.rpc.server.IRpcServer
-import net.jkcode.jksoa.rpc.server.protocol.netty.NettyRpcServer
+import net.jkcode.jksoa.rpc.server.protocol.jkr.JkrRpcServer
 import net.jkcode.jksoa.rpc.server.protocol.rmi.RmiRpcServer
 import org.junit.Test
 
@@ -36,8 +36,8 @@ class RpcServerTests {
     }
 
     @Test
-    fun testNettyRpcServer(){
-        NettyRpcServer().start()
+    fun testJkrRpcServer(){
+        JkrRpcServer().start()
         println("启动服务")
     }
 

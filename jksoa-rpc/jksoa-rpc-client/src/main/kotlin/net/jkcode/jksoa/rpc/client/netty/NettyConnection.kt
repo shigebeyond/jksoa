@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.protocol.netty
+package net.jkcode.jksoa.rpc.client.netty
 
 import io.netty.channel.Channel
 import io.netty.util.AttributeKey

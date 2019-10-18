@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.common
 
+import com.alibaba.fastjson.annotation.JSONField
 import net.jkcode.jksoa.common.invocation.IInvocation
 import java.io.Serializable
 
@@ -21,6 +22,7 @@ interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
     /**
      * 服务标识，即接口类全名
      */
+    @get:JSONField(serialize=false)
     val serviceId: String
         get() = clazz
 

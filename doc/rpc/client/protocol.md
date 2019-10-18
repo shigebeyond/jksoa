@@ -12,7 +12,7 @@
 # 协议类型
 client: # 客户端的实现类
     rmi: net.jkcode.jksoa.rpc.client.protocol.rmi.RmiRpcClient
-    netty: net.jkcode.jksoa.rpc.client.protocol.netty.NettyRpcClient
+    jkr: net.jkcode.jksoa.rpc.client.protocol.jkr.JkrRpcClient
 ```
 
 # client的协议

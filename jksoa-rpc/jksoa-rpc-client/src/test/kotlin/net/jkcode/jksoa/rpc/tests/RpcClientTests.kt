@@ -1,12 +1,16 @@
 package net.jkcode.jksoa.rpc.tests
 
+import com.alibaba.fastjson.JSON
+import com.alibaba.fastjson.serializer.SerializerFeature
 import net.jkcode.jkmvc.common.*
 import net.jkcode.jkmvc.serialize.FstSerializer
+import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
-import net.jkcode.jksoa.rpc.client.protocol.netty.NettyRpcClient
+import net.jkcode.jksoa.rpc.client.netty.NettyRpcClient
+import net.jkcode.jksoa.rpc.client.protocol.jkr.JkrRpcClient
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.example.IGuardService
 import net.jkcode.jksoa.rpc.example.ISimpleService
@@ -22,6 +26,19 @@ import kotlin.reflect.jvm.javaMethod
  * @date 2017-12-14 3:11 PM
  */
 class RpcClientTests {
+
+    @Test
+    fun testJson(){
+        val o = RpcRequest(ISimpleService::echo, arrayOf<Any?>("shi"))
+        var json = JSON.toJSONString(o)
+        println(json) // 输出 {"age":12,"id":105254286010613760,"name":"shi"}
+
+        json = JSON.toJSONString(o, SerializerFeature.WriteSlashAsSpecial)
+        println(json) // 输出: {"age":12,"id":105254286010613760,"name":"shi"}
+
+        val o2 = JSON.parseObject(json, RpcRequest::class.java);
+        println(o2)
+    }
 
     @Test
     fun testResponse(){
@@ -94,7 +111,7 @@ class RpcClientTests {
 
     @Test
     fun testClient(){
-        val client = NettyRpcClient()
+        val client = JkrRpcClient()
         val ip = getIntranetHost()
         val url1 = Url("netty://$ip:9080/net.jkcode.jksoa.rpc.example.ISimpleService?weight=1")
         val conn1 = client.connect(url1)

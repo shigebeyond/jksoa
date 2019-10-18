@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.protocol.netty
+package net.jkcode.jksoa.rpc.client.netty
 
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler

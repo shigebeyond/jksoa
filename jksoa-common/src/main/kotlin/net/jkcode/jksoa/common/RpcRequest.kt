@@ -19,14 +19,9 @@ import kotlin.reflect.jvm.javaMethod
 open class RpcRequest(public override val clazz: String, //服务接口类全名
                       public override val methodSignature: String, //方法签名：包含方法名+参数类型
                       public override val args: Array<Any?> = emptyArray(), //实参
-                      public override val version: Int = 0 //版本
+                      public override val version: Int = 0, //版本
+                      public override var id: Long = generateId("rpc") // 请求标识，全局唯一, 注: 放到这里是因为json反序列化要设置该属性, 而不是自动生成id
 ): IRpcRequest, Cloneable {
-
-    /**
-     * 请求标识，全局唯一
-     */
-    public override var id: Long = generateId("rpc")
-        protected set
 
     /**
      * 附加参数
