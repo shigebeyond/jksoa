@@ -139,7 +139,7 @@ val job = InvocationJob(req)
 
 ```
 分片分派结果, 将 3 个分片分派给 2 个节点:
-net.jkcode.jksoa.rpc.client.connection.reuse.ReconnectableConnection(netty://192.168.61.183:9080) => net.jkcode.jkmvc.bit.SetBitIterator(0, 2),
-net.jkcode.jksoa.rpc.client.connection.reuse.ReconnectableConnection(netty://192.168.61.184:9080) => net.jkcode.jkmvc.bit.SetBitIterator(1)
+net.jkcode.jksoa.rpc.client.connection.reuse.ReconnectableConnection(jkr://192.168.61.183:9080) => net.jkcode.jkmvc.bit.SetBitIterator(0, 2),
+net.jkcode.jksoa.rpc.client.connection.reuse.ReconnectableConnection(jkr://192.168.61.184:9080) => net.jkcode.jkmvc.bit.SetBitIterator(1)
 ```
 

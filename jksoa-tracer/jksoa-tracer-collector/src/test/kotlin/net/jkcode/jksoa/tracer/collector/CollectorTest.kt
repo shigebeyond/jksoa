@@ -8,7 +8,7 @@ class CollectorTest {
     @Test
     fun testServer(){
         // 启动server
-        IRpcServer.instance("netty").start()
+        IRpcServer.instance("jkr").start()
     }
 
 }

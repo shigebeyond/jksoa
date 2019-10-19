@@ -7,7 +7,7 @@ import net.jkcode.jksoa.rpc.server.netty.NettyRpcServer
 import java.util.*
 
 /**
- * netty协议-rpc服务端
+ * jkr协议-rpc服务端
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

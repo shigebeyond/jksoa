@@ -26,7 +26,7 @@ class BrokerServiceTests {
 
     @Test
     fun testServer(){
-        IRpcServer.instance("netty").start()
+        IRpcServer.instance("jkr").start()
     }
 
     @Test

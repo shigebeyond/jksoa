@@ -18,7 +18,7 @@ data class ConsumerUrl(
         public val topic: String, // 主题
         public val groupId: Int, // 分组
         public val channel: Channel // 连接
-): Url("netty", channel.remoteAddress() as InetSocketAddress) {
+): Url("jkr", channel.remoteAddress() as InetSocketAddress) {
 
     // 构造函数
     public constructor(topic: String, group: String, channel: Channel): this(topic, GroupSequence.get(group), channel)

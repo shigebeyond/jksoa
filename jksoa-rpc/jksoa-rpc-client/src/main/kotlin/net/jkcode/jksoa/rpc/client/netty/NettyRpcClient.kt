@@ -16,7 +16,7 @@ import net.jkcode.jksoa.rpc.client.IRpcClient
 
 
 /**
- * netty协议-rpc客户端
+ * netty实现的rpc客户端
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

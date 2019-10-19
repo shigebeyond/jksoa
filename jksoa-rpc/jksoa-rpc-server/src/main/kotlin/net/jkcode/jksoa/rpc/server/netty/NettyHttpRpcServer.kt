@@ -8,7 +8,7 @@ import io.netty.handler.stream.ChunkedWriteHandler
 import java.util.*
 
 /**
- * netty协议-rpc服务端
+ * netty实现http通讯的rpc服务端
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

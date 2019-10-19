@@ -9,11 +9,11 @@ url用于封装与传递服务节点信息, 包含协议/ip/端口/服务标识/
 ```
 jksoa
     net.jkcode.jksoa.rpc.example.ISimpleService # 服务标识 = 接口类名
-        netty:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
-        netty:192.168.0.1:8080
+        jkr:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
+        jkr:192.168.0.1:8080
     net.jkcode.jksoa.rpc.example.ISimpleService
-        netty:192.168.0.1:8080
-        netty:192.168.0.1:8080
+        jkr:192.168.0.1:8080
+        jkr:192.168.0.1:8080
 ```
 
 第一层: /jksoa
@@ -29,16 +29,16 @@ jksoa
 ```
 jksoa
     net.jkcode.jksoa.rpc.example.ISimpleService # 服务标识 = 接口类名
-        netty:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
+        jkr:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
 ```
 
 则可以用以下url对象来表达
 
 ```
-val url = Url("netty", "192.168.0.1", 8080, "net.jkcode.jksoa.rpc.example.ISimpleService", mapOf("weight" to 1))
+val url = Url("jkr", "192.168.0.1", 8080, "net.jkcode.jksoa.rpc.example.ISimpleService", mapOf("weight" to 1))
 println(url)
 ```
 
 输出结果是:
 
-netty://192.168.0.1:8080/net.jkcode.jksoa.rpc.example.ISimpleService?weight=1
+jkr://192.168.0.1:8080/net.jkcode.jksoa.rpc.example.ISimpleService?weight=1

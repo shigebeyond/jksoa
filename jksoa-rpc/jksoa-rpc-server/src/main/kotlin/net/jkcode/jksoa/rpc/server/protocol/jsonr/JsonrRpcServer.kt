@@ -5,7 +5,7 @@ import net.jkcode.jksoa.rpc.server.netty.NettyHttpRpcServer
 import net.jkcode.jksoa.rpc.server.protocol.jsonr.codec.JsonMessageCoder
 
 /**
- * netty协议-rpc服务端
+ * jsonr协议-rpc服务端
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

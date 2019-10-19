@@ -16,7 +16,7 @@ class MyFilter() : JkFilter() {
         super.init(filterConfig)
 
         // 启动rpc server
-        val server = IRpcServer.instance("netty")
+        val server = IRpcServer.instance("jkr")
         server.start(false)
     }
 

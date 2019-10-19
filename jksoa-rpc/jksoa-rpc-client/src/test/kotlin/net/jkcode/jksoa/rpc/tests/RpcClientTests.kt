@@ -120,11 +120,11 @@ class RpcClientTests {
     fun testClient(){
         val client = JkrRpcClient()
         val ip = getIntranetHost()
-        val url1 = Url("netty://$ip:9080/net.jkcode.jksoa.rpc.example.ISimpleService?weight=1")
+        val url1 = Url("jkr://$ip:9080/net.jkcode.jksoa.rpc.example.ISimpleService?weight=1")
         val conn1 = client.connect(url1)
         println(conn1)
         makeThreads(1){
-            val url2 = Url("netty://$ip:9080/net.jkcode.jksoa.rpc.example.ISimpleService?weight=1")
+            val url2 = Url("jkr://$ip:9080/net.jkcode.jksoa.rpc.example.ISimpleService?weight=1")
             val conn2 = client.connect(url2)
             println(conn2)
         }

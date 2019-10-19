@@ -7,7 +7,7 @@ jksoa-rpc 是一个分布式服务框架，提供高性能的RPC远程服务调�
 
 - 2、异步高性能: 支持同步调用与异步调用(CompletableFuture)；
 
-- 3、多通讯协议：支持rmi协议, netty实现的协议；
+- 3、多通讯协议：支持rmi/jkr/jsonr协议；
 
 - 4、多序列化方案：支持 fst/kryo/hessian/protostuff  等方案；
 

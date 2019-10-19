@@ -8,7 +8,7 @@ import java.util.*
 
 
 /**
- * netty协议-rpc客户端
+ * jkr协议-rpc客户端
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

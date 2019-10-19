@@ -4,19 +4,19 @@
 
 1. rmi协议
 
-2. netty实现的协议, 默认使用这种协议
+2. jkr实现的协议, 默认使用这种协议
 
 因此导致client也有两种实现
 
 1. `RmiRpcClient`, 实现rmi协议
 
-2. `NettyRpcClient`, 实现netty协议
+2. `JkrRpcClient`, 实现jkr协议
 
 其类族如下
 
 ```
 IRpcClient
-	NettyRpcClient
+	JkrRpcClient
 	RmiRpcClient
 ```
 
@@ -86,6 +86,6 @@ interface IRpcClient: Closeable {
 
 实现很简单, `connect(url)` 返回的是 `RmiConnection` 对象
 
-2. `NettyRpcClient`
+2. `JkrRpcClient`
 
 实现就比较复杂, `connect(url)` 返回的是 `NettyConnection` 对象

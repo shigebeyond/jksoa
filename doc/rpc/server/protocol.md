@@ -4,7 +4,9 @@
 
 1. rmi协议
 
-2. netty实现的协议, 默认使用这种协议
+2. jkr协议, 默认使用这种协议
+
+3. jsonr协议, 使用http协议通讯, 使用json来序列化请求与响应, 多用于跨语言调用
 
 不同协议对应有不同的server实现类, 声明在 `protocol.yaml` 配置文件中的 `server` 属性:
 
@@ -33,11 +35,11 @@ server启动后的注册结果如下:
 ```
 jksoa
     net.jkcode.jksoa.rpc.example.ISimpleService # 服务标识 = 接口类名
-        netty:192.168.0.1:8080 # server节点, 格式是`协议:ip:端口`, 节点数据是参数, 如weight=1
-        netty:192.168.0.1:8080
+        jkr:192.168.0.1:8080 # server节点, 格式是`协议:ip:端口`, 节点数据是参数, 如weight=1
+        jkr:192.168.0.1:8080
     net.jkcode.jksoa.rpc.example.ISimpleService
-        netty:192.168.0.1:8080
-        netty:192.168.0.1:8080
+        jkr:192.168.0.1:8080
+        jkr:192.168.0.1:8080
 ```
 
-其中对于`netty:192.168.0.1:8080`, 即表示注册的server中ip是 192.168.0.1, 端口是8080, 协议是netty
+其中对于`jkr:192.168.0.1:8080`, 即表示注册的server中ip是 192.168.0.1, 端口是8080, 协议是jkr

@@ -19,7 +19,7 @@ class RpcServerTests {
 
     @Test
     fun testServer(){
-        IRpcServer.instance("netty").start()
+        IRpcServer.instance("jkr").start()
     }
 
     @Test

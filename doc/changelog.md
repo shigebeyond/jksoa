@@ -3,7 +3,7 @@
 
 2. 实现rpc机制, 支持以下的策略, 如果不满足需求, 可自行扩展策略
 
-2.1 支持多种rpc协议(netty/rmi)
+2.1 支持多种rpc协议(jkr/jsonr/rmi)
 
 2.2 支持多种序列化协议(原生/fast/kryo/hessian/protostuff)
 

@@ -39,7 +39,7 @@
 
 ## server启动流程
 
-1. 启动rmi/netty的server
+1. 启动rmi/jkr/jsonr协议的的server
 
 2. 调用 `ProviderLoader.load()` 来扫描加载`Provider`服务
 

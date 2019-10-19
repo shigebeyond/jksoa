@@ -9,7 +9,7 @@
 ```
 IConnection
 	BaseConnection
-		NettyConnection -- netty协议的连接
+		NettyConnection -- jkr/jsonr协议的连接
 		LocalConnection -- 本地连接
 		ReconnectableConnection -- 自动重连的连接
 		RmiConnection -- rmi协议的连接

@@ -41,11 +41,11 @@ Provider需要向注册中心注册其提供的服务节点信息, 包含:
 ```
 jksoa
     net.jkcode.jksoa.rpc.example.ISimpleService # 服务标识 = 接口类名
-        netty:192.168.0.1:8080 # server节点, 格式是`协议:ip:端口`, 节点数据是参数, 如weight=1
-        netty:192.168.0.1:8080
+        jkr:192.168.0.1:8080 # server节点, 格式是`协议:ip:端口`, 节点数据是参数, 如weight=1
+        jkr:192.168.0.1:8080
     net.jkcode.jksoa.rpc.example.ISimpleService
-        netty:192.168.0.1:8080
-        netty:192.168.0.1:8080
+        jkr:192.168.0.1:8080
+        jkr:192.168.0.1:8080
 ```
 
 1. 第一层: /jksoa
@@ -80,6 +80,6 @@ val registry: IRegistry = IRegistry.instance("注册中心名")
 // 服务发现, 获得服务的提供者节点url
 val urls = registry.discover("net.jkcode.jksoa.rpc.example.ISimpleService")
 // 服务注册, 注册服务提供者节点url
-val url = Url("netty", "192.168.0.1", 8080, "net.jkcode.jksoa.rpc.example.ISimpleService", mapOf("weight" to 1))
+val url = Url("jkr", "192.168.0.1", 8080, "net.jkcode.jksoa.rpc.example.ISimpleService", mapOf("weight" to 1))
 registry.register(url)
 ```
