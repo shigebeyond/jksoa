@@ -41,6 +41,7 @@ class JsonrConnection(url: Url): BaseConnection(url){
     public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
         // 序列化请求
         val json = JSON.toJSONString(req)
+        // 发送请求, 并返回异步响应
         return httpClient.post("", json)
                 .thenApply { resp ->
                     // 反序列化响应

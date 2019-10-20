@@ -131,3 +131,10 @@
 2. 支持基于mq的分布式事务
 
 3. 支持tcc的分布式事务
+
+4. 支持http server, 基于netty实现
+
+5. 支持异步的http client, 基于asynchttpclient实现
+
+6. 支持jsonr的rpc协议
+
