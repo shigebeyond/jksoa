@@ -1,9 +1,7 @@
 package net.jkcode.jksoa.rpc.server.netty
 
 import io.netty.channel.ChannelHandler
-import io.netty.handler.codec.http.HttpObjectAggregator
-import io.netty.handler.codec.http.HttpRequestDecoder
-import io.netty.handler.codec.http.HttpResponseEncoder
+import io.netty.handler.codec.http.*
 import io.netty.handler.stream.ChunkedWriteHandler
 import java.util.*
 
@@ -22,12 +20,10 @@ open class NettyHttpRpcServer : NettyRpcServer() {
     protected override fun customCodecChildChannelHandlers(): MutableList<ChannelHandler>{
         // 添加http编码解码
         val handlers = LinkedList<ChannelHandler>()
-        handlers.add(HttpRequestDecoder()) // http解码
-        handlers.add(HttpObjectAggregator(nettyConfig["maxContentLength"]!!)) //
-        handlers.add(HttpResponseEncoder()) // http编码
-        handlers.add(ChunkedWriteHandler())
+        handlers.add(HttpServerCodec()) // http编码解码, 等于 HttpResponseEncoder + HttpRequestDecoder
+        handlers.add(HttpObjectAggregator(nettyConfig["maxContentLength"]!!)) // 聚合header+body成完整的请求FullHttpRequest/响应FullHttpResponse
+        handlers.add(ChunkedWriteHandler()) // 大块写
+        handlers.add(HttpContentCompressor(9)) // 压缩
         return handlers
     }
-
-
 }

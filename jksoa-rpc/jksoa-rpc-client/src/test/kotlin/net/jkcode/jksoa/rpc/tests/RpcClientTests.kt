@@ -140,9 +140,12 @@ class RpcClientTests {
 
     @Test
     fun testReferer(){
-        val service = Referer.getRefer<ISimpleService>()
-        val pong = service.ping()
-        println("调用服务[ISimpleService.ping()]结果： $pong")
+        // 对单个server, 循环rpc, 可测试client是否复用连接
+        for(i in 0..2) {
+            val service = Referer.getRefer<ISimpleService>()
+            val pong = service.ping()
+            println("第${i}次调用服务[ISimpleService.ping()]结果： $pong")
+        }
     }
 
     @Test

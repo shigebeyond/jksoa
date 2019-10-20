@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.common
 
+import net.jkcode.jkmvc.common.buildQueryString
 import net.jkcode.jkmvc.common.getAndConvert
 import net.jkcode.jkmvc.common.joinHashCode
 import java.net.InetSocketAddress
@@ -209,22 +210,10 @@ open class Url(public override var protocol: String /* 协议 */,
         // 参数
         if(withQuery && parameters.isNotEmpty()) {
             str.append('?')
-            buildQueryString(str)
+            parameters.buildQueryString(str)
         }
 
         return str.toString()
-    }
-
-    /**
-     * 将参数转为查询字符串
-     * @param str
-     */
-    protected fun buildQueryString(str: StringBuilder) {
-        parameters.entries.joinTo(str, "&") {
-            // fix bug: java.lang.ClassCastException: java.lang.Integer cannot be cast to java.lang.String
-            //it.key + '=' + it.value
-            "${it.key}=${it.value}"
-        }
     }
 
     /**
@@ -233,7 +222,7 @@ open class Url(public override var protocol: String /* 协议 */,
      */
     public fun getQueryString(): String {
         val str = StringBuilder()
-        buildQueryString(str)
+        parameters.buildQueryString(str)
         return str.toString()
     }
 

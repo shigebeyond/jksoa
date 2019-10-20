@@ -107,7 +107,7 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
                 conn = client.connect(url) as BaseConnection
             }
         }
-        clientLogger.debug("创建无效连接: {}", conn)
+        clientLogger.debug("创建新连接: {}", conn)
         return conn!!
     }
 

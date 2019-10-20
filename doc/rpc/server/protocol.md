@@ -22,6 +22,8 @@ server: # 服务端的实现类
 
 2. `JkrRpcServer`, 实现jkr协议, 默认协议
 
+3. `JsonrRpcServer`, 实现jsonr协议
+
 # server的协议
 
 ## server启动的协议
