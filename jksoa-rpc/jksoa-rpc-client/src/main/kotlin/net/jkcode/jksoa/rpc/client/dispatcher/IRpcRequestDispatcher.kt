@@ -5,6 +5,7 @@ import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IShardingRpcRequest
+import net.jkcode.jksoa.rpc.client.IConnection
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -22,6 +23,14 @@ interface IRpcRequestDispatcher {
         public override val instsConfig: IConfig = Config.instance("rpc-req-dispatcher", "yaml")
     }
 
+    /**
+     * 发送请求, 支持失败重试
+     * @param req
+     * @param requestTimeoutMillis
+     * @param connSelector 连接选择器, 参数是 tryCount, 据此来明确失败重试时的连接选择策略
+     * @return 异步结果
+     */
+    fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis, connSelector: (tryCount: Int) -> IConnection): CompletableFuture<Any?>
 
     /**
      * 分发一个请求到任一节点

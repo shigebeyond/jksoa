@@ -61,6 +61,24 @@ class RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
     }
 
     /**
+     * 发送请求, 支持失败重试
+     * @param req
+     * @param requestTimeoutMillis
+     * @param connSelector 连接选择器, 参数是 tryCount, 据此来明确失败重试时的连接选择策略
+     * @return 异步结果
+     */
+    public override fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long, connSelector: (tryCount: Int) -> IConnection): CompletableFuture<Any?> {
+        return FailoverRpcResponseFuture(config["maxTryCount"]!!) { tryCount: Int ->
+            clientLogger.debug(" ------ dispatch request ------ ")
+            // 1 选择连接
+            val conn = connSelector.invoke(tryCount)
+
+            // 2 发送请求，并获得异步响应
+            conn.send(req, requestTimeoutMillis)
+        }.thenApply(IRpcResponse::getOrThrow)
+    }
+
+    /**
      * 分发一个请求到任一节点
      *    调用 IConnectionHub.select(req) 来获得单个节点(连接)
      *
@@ -74,24 +92,6 @@ class RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
         return sendFailover(req, requestTimeoutMillis){ tryCount: Int -> // 选择连接
             connHub.select(req)
         }
-    }
-
-    /**
-     * 发送请求, 支持失败重试
-     * @param req
-     * @param requestTimeoutMillis
-     * @param connSelector 连接选择器, 参数是 tryCount, 据此来明确失败重试时的连接选择策略
-     * @return 异步结果
-     */
-    public fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis, connSelector: (tryCount: Int) -> IConnection): CompletableFuture<Any?> {
-        return FailoverRpcResponseFuture(config["maxTryCount"]!!) { tryCount: Int ->
-            clientLogger.debug(" ------ dispatch request ------ ")
-            // 1 选择连接
-            val conn = connSelector.invoke(tryCount)
-
-            // 2 发送请求，并获得异步响应
-            conn.send(req, requestTimeoutMillis)
-        }.thenApply(IRpcResponse::getOrThrow)
     }
 
     /**

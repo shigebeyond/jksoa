@@ -8,6 +8,7 @@ import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqBrokerLogger
 import net.jkcode.jksoa.mq.connection.ConsumerConnectionHub
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
+import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
 
 /**
  * 消费推送者
@@ -18,6 +19,11 @@ import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
  * @date 2019-02-21 9:41 PM
  */
 object MqPusher : IMqPusher {
+
+    /**
+     * 请求分发者
+     */
+    private val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance()
 
     /**
      * 给消费者推送单个消息
@@ -42,7 +48,7 @@ object MqPusher : IMqPusher {
                 return
 
             // 发送请求, 支持失败重试
-            RpcRequestDispatcher.sendFailover(req) { tryCount: Int ->
+            dispatcher.sendFailover(req) { tryCount: Int ->
                 // 该分组选一个连接
                 connHub.selectGroupConnection(groupId, msg)
             }
