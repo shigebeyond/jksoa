@@ -1,6 +1,9 @@
 dependencies{
     // 存储
-    compile project(':jkmvc-orm')
+    if(env == 'dev')
+        compile project(':jkmvc-orm')
+    else
+        compile "net.jkcode.jkmvc:jkmvc-orm:$jkmvc_version"
 
     // 切面
     compile "org.aspectj:aspectjrt:${aspectjVersion}"

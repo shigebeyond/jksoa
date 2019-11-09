@@ -1,8 +1,11 @@
 dependencies{
     // other project
-    compile project(':jkmvc-orm')
     compile project(':jksoa-rpc:jksoa-rpc-server')
     compile project(':jksoa-mq:jksoa-mq-common')
+    if(env == 'dev')
+        compile project(':jkmvc-orm')
+    else
+        compile "net.jkcode.jkmvc:jkmvc-orm:$jkmvc_version"
 
     // lsm kv store
     compile 'com.indeed:lsmtree-core:1.0.7'

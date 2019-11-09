@@ -1,4 +1,7 @@
 dependencies{
     // other project
-    compile project(':jkmvc-common')
+    if(env == 'dev') 
+        compile project(':jkmvc-common')
+    else
+        compile "net.jkcode.jkmvc:jkmvc-common:$jkmvc_version"
 }

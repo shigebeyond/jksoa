@@ -1,7 +1,10 @@
 dependencies{
     // other project
-    compile project(':jkmvc-common')
     compile project(':jksoa-guard')
+    if(env == 'dev') 
+        compile project(':jkmvc-common')
+    else
+        compile "net.jkcode.jkmvc:jkmvc-common:$jkmvc_version"
 
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     compile 'org.jetbrains.kotlin:kotlin-reflect'

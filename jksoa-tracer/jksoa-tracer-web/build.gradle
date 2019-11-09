@@ -1,8 +1,13 @@
 dependencies{
     // other project
-    compile project(':jkmvc-http')
-    compile project(':jkmvc-server-jetty')
     compile project(':jksoa-tracer:jksoa-tracer-common')
+    if(env == 'dev'){
+        compile project(':jkmvc-http')
+        compile project(':jkmvc-server-jetty')
+    }else{
+        compile "net.jkcode.jkmvc:jkmvc-http:$jkmvc_version"
+        compile "net.jkcode.jkmvc:jkmvc-server-jetty:$jkmvc_version"
+    }
 }
 
 apply plugin: 'org.akhikhl.gretty'

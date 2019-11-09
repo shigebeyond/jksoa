@@ -1,6 +1,9 @@
 dependencies{
     // 存储
-    compile project(':jkmvc-orm')
+    if(env == 'dev')
+        compile project(':jkmvc-orm')
+    else
+        compile "net.jkcode.jkmvc:jkmvc-orm:$jkmvc_version"
 
     // jksoa-mq
     compile project(':jksoa-mq:jksoa-mq-client')

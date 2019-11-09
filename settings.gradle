@@ -18,14 +18,16 @@ include 'jksoa-dtx:jksoa-dtx-mq', 'jksoa-dtx:jksoa-dtx-tcc'
 include 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-common', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon-api', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay-api', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay', 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-order'
 
 // 添加jkmvc子项目
-include 'jkmvc-common'
-project(':jkmvc-common').projectDir = new File('../jkmvc/jkmvc-common')
+if(env == 'dev'){
+    include 'jkmvc-common'
+    project(':jkmvc-common').projectDir = new File('../jkmvc/jkmvc-common')
 
-include 'jkmvc-orm'
-project(':jkmvc-orm').projectDir = new File('../jkmvc/jkmvc-orm')
+    include 'jkmvc-orm'
+    project(':jkmvc-orm').projectDir = new File('../jkmvc/jkmvc-orm')
 
-include 'jkmvc-http'
-project(':jkmvc-http').projectDir = new File('../jkmvc/jkmvc-http')
+    include 'jkmvc-http'
+    project(':jkmvc-http').projectDir = new File('../jkmvc/jkmvc-http')
 
-include 'jkmvc-server-jetty'
-project(':jkmvc-server-jetty').projectDir = new File('../jkmvc/jkmvc-server-jetty')
+    include 'jkmvc-server-jetty'
+    project(':jkmvc-server-jetty').projectDir = new File('../jkmvc/jkmvc-server-jetty')
+}

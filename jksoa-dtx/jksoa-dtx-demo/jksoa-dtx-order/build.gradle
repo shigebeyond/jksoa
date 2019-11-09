@@ -1,10 +1,15 @@
 dependencies{
     // other project
-    compile project(':jkmvc-http')
-    compile project(':jkmvc-server-jetty')
     compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon-api')
     //compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-coupon')
     compile project(':jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-pay-api')
+    if(env == 'dev'){
+        compile project(':jkmvc-http')
+        compile project(':jkmvc-server-jetty')
+    }else{
+        compile "net.jkcode.jkmvc:jkmvc-http:$jkmvc_version"
+        compile "net.jkcode.jkmvc:jkmvc-server-jetty:$jkmvc_version"
+    }
 
     // jdbc
     runtime "mysql:mysql-connector-java:5.1.6"
