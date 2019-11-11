@@ -1,5 +1,8 @@
 package net.jkcode.jksoa.rpc.client.connection
 
+import io.netty.util.Timeout
+import io.netty.util.TimerTask
+import net.jkcode.jkmvc.common.CommonMilliTimer
 import net.jkcode.jkmvc.common.Config
 import net.jkcode.jkmvc.common.IConfig
 import net.jkcode.jksoa.rpc.client.IConnection
@@ -10,6 +13,7 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 
 /**
  * 某个service的rpc连接集中器
@@ -38,6 +42,12 @@ open class ConnectionHub: IConnectionHub() {
     protected val connections: ConcurrentHashMap<String, IConnection> = ConcurrentHashMap()
 
     /**
+     * 关闭连接的延时
+     *   10秒
+     */
+    protected val closeDelayMillis = 10000L
+
+    /**
      * 处理服务地址新增
      * @param url
      * @param allUrls
@@ -61,7 +71,15 @@ open class ConnectionHub: IConnectionHub() {
     public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
         val conn = connections.remove(url.serverName)!!
         clientLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
-        conn.close() // 关闭连接
+
+        // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
+        //conn.close() // 关闭连接
+        CommonMilliTimer.newTimeout(object : TimerTask {
+            override fun run(timeout: Timeout) {
+                conn.close() // 关闭连接
+            }
+        }, closeDelayMillis, TimeUnit.MILLISECONDS)
+
     }
 
     /**
