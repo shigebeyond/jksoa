@@ -9,6 +9,7 @@ import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.dtx.tcc.model.TccParticipant
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
 import java.io.File
+import java.io.InputStreamReader
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -39,8 +40,9 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
          */
         private fun createTable(db: String) {
             dtxTccLogger.debug("建表: tcc_transaction")
-            val sqlFile = Thread.currentThread().contextClassLoader.getResource("tcc_transaction.mysql.sql").getFile()
-            val sql = File(sqlFile).readText()
+
+            val `is` = Thread.currentThread().contextClassLoader.getResourceAsStream("tcc_transaction.mysql.sql")
+            val sql = InputStreamReader(`is`).readText()
             Db.instance(db).execute(sql)
         }
     }

@@ -5,6 +5,7 @@ import net.jkcode.jkmvc.db.Db
 import net.jkcode.jksoa.dtx.mq.model.MqTransactionModel
 import net.jkcode.jksoa.dtx.mq.mqmgr.IMqManager
 import java.io.File
+import java.io.InputStreamReader
 
 /**
  * 事务消息的管理者
@@ -34,8 +35,8 @@ object MqTransactionManager : IMqTransactionManager {
      * @param db
      */
     private fun createTable(db: String) {
-        val sqlFile = Thread.currentThread().contextClassLoader.getResource("mq_transaction.mysql.sql").getFile()
-        val sql = File(sqlFile).readText()
+        val `is` = Thread.currentThread().contextClassLoader.getResourceAsStream("mq_transaction.mysql.sql")
+        val sql = InputStreamReader(`is`).readText()
         Db.instance().execute(sql)
         dtxMqLogger.debug("建表: mq_transaction")
     }
