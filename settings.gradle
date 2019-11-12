@@ -30,4 +30,10 @@ if(env == 'dev'){
 
     include 'jkmvc-server-jetty'
     project(':jkmvc-server-jetty').projectDir = new File('../jkmvc/jkmvc-server-jetty')
+
+    include 'benchmark-common'
+    project(':benchmark-common').projectDir = new File('../jksoa-benchmark/common')
+    
+    include 'benchmark-rpc'
+    project(':benchmark-rpc').projectDir = new File('../jksoa-benchmark/jksoa-rpc')
 }
