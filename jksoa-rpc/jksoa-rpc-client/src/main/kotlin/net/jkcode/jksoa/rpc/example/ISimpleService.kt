@@ -30,4 +30,10 @@ interface ISimpleService /*: Remote // rmi协议服务接口 */ {
         println("call default method, with parameter: $msg")
     }
 
+    /**
+     * 抛个异常
+     */
+    @Throws(RemoteException::class) // rim异常
+    fun ex()
+
 }

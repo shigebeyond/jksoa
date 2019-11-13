@@ -18,6 +18,7 @@ import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.guard.MethodGuardInvoker
 import net.jkcode.jksoa.rpc.server.RpcServerContext
 import net.jkcode.jksoa.rpc.server.provider.ProviderLoader
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
 
@@ -111,7 +112,10 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         }
 
         serverLogger.debug(" ------ send response ------ ")
-        serverLogger.debug("Server处理请求：{}，结果: {}, 异常: {}", req, result, r)
+        if(r == null)
+            serverLogger.debug("Server处理请求成功：{}，结果: {}", req, result)
+        else
+            serverLogger.error("Server处理请求失败：$req", r)
 
         // 1 返回响应
         var res: RpcResponse = RpcResponse(req.id, result, ex)
@@ -143,7 +147,11 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
     public override fun invokeAfterGuard(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
         return trySupplierFuture {
             // 真正的调用方法
-            method.invoke(obj, *args)
+            try {
+                method.invoke(obj, *args)
+            }catch (e: InvocationTargetException){ // InvocationTargetException 包装 targetException, 但不传递 message, 导致调用链上游丢失 message
+                throw e.targetException
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package net.jkcode.jksoa.rpc.example
 import net.jkcode.jkmvc.common.randomLong
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.rpc.server.RpcServerContext
+import java.lang.IllegalArgumentException
 import java.rmi.RemoteException
 
 /**
@@ -39,6 +40,15 @@ class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服�
     @Throws(RemoteException::class) // rim异常
     public override fun checkVersion(){
         val v = RpcServerContext.currentRequest().version
-        println("version=$v")
+        serverLogger.debug("version=$v")
+    }
+
+    /**
+     * 抛个异常
+     */
+    @Throws(RemoteException::class) // rim异常
+    public override fun ex(){
+        val ex = IllegalArgumentException("hello exception")
+        throw ex
     }
 }

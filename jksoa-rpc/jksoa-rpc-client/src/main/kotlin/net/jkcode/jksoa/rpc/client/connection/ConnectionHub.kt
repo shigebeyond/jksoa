@@ -76,6 +76,7 @@ open class ConnectionHub: IConnectionHub() {
         //conn.close() // 关闭连接
         CommonMilliTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
+                clientLogger.debug("延迟关闭连接: {}", conn)
                 conn.close() // 关闭连接
             }
         }, closeDelayMillis, TimeUnit.MILLISECONDS)
