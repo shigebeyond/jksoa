@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.broker.serialize
+package net.jkcode.jksoa.mq.broker.repository.lsm.serialize
 
 import com.indeed.util.serialization.LengthVIntSerializer
 import com.indeed.util.serialization.Serializer
@@ -13,7 +13,7 @@ import java.io.IOException
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-14 2:25 PM
  */
-class FstObjectSerializer : Serializer<Any> {
+class FstObjectLsmSerializer : Serializer<Any> {
 
     companion object {
 

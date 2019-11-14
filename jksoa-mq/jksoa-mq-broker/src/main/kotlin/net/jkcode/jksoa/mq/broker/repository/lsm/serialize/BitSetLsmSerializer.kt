@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.mq.broker.serialize
+package net.jkcode.jksoa.mq.broker.repository.lsm.serialize
 
 import com.indeed.util.serialization.Serializer
 import com.indeed.util.serialization.array.LongArraySerializer
@@ -14,7 +14,7 @@ import java.util.*
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-19 8:12 PM
  */
-class BitSetSerializer: Serializer<BitSet> {
+class BitSetLsmSerializer: Serializer<BitSet> {
 
     companion object{
 

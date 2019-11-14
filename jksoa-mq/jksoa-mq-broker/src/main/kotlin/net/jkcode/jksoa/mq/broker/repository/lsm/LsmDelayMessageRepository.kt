@@ -8,7 +8,7 @@ import net.jkcode.jkmvc.common.SimpleObjectPool
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.repository.IDelayMessageRepository
-import net.jkcode.jksoa.mq.broker.serialize.FstObjectSerializer
+import net.jkcode.jksoa.mq.broker.repository.lsm.serialize.FstObjectLsmSerializer
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.TopicSequence
 import net.jkcode.jksoa.mq.common.mqBrokerLogger
@@ -68,7 +68,7 @@ object LsmDelayMessageRepository : IDelayMessageRepository {
     init {
         // 创建队列存储
         val queueStoreDir = File(queueDir)
-        queueStore = StoreBuilder(queueStoreDir, LongSerializer(), FstObjectSerializer() as Serializer<List<MessageId>>) // key是时间戳, value是延迟消息id列表
+        queueStore = StoreBuilder(queueStoreDir, LongSerializer(), FstObjectLsmSerializer() as Serializer<List<MessageId>>) // key是时间戳, value是延迟消息id列表
                 .setMaxVolatileGenerationSize(BrokerConfig.maxVolatileGenerationSize)
                 .setStorageType(BrokerConfig.storageType)
                 .setCodec(BrokerConfig.compressionCodec)
