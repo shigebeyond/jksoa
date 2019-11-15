@@ -56,7 +56,7 @@ class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
 
         // 如果当前开始时间>旧开始时间: 重置
         if (startTime > bucket.startTime)
-            synchronized(this){
+            synchronized(bucket){
                 bucket.reset(startTime)
             }
 
