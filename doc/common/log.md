@@ -2,7 +2,7 @@
 
 框架默认使用 `log4j` 日志技术
 
-# ModuleLogSwitcher -- 组件日志的启用切换器
+# ModuleLogSwitcher -- 组件日志级别的切换器
 
 ## 背景
 
@@ -12,20 +12,20 @@ jksoa微服务框架中本项目中有多个组件, 如rpc/job/tracer/mq等, 组
 
 但一个组件会配置有多个logger(如rpc有register/client/server等几个logger), 禁用该组件日志, 要禁用这多个logger的 `log4j.properties` 配置, 很繁琐
 
-因此, 我设计了`ModuleLogSwitcher`, 直接在组件级别来控制是否启用日志, 如同`开关`, 啪一下就开, 啪一下就关, 很方便, 但只用于jksoa相关组件的开发.
+因此, 我设计了`ModuleLogSwitcher`, 直接在组件级别来控制日志级别, 如同`开关`, 啪一下就开, 啪一下就关, 很方便, 但只用于jksoa相关组件的开发.
 
 ## 配置 module-log-switcher.yaml
 
 每个组件都做成一个开关配置
 
 ```
-# 按组件来切换启用日志
-common: true
-rpc: true
-job: true
-guard: false
-tracer: true
-mq: true
+# 按组件来切换日志级别: trace/debug/info/warn/error
+common: info
+rpc: info
+job: info
+guard: info
+tracer: info
+mq: info
 ```
 
 ## 使用
