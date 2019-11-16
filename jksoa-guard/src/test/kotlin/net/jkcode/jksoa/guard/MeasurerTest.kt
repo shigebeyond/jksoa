@@ -1,6 +1,8 @@
 package net.jkcode.jksoa.guard
 
+import net.jkcode.jkmvc.common.currMillisCached
 import net.jkcode.jkmvc.common.randomBoolean
+import net.jkcode.jkmvc.common.randomLong
 import net.jkcode.jksoa.guard.measure.HashedWheelMeasurer
 import org.junit.Test
 
@@ -10,14 +12,17 @@ open class MeasurerTest {
 
     @Test
     fun testMeasurer() {
+        currMillisCached = false
         // 添加计数
-        for(i in 0 until 100) {
-            measurer.currentBucket().addTotal()
+        for(i in 0 until 10) {
+            val bucket = measurer.currentBucket()
+            bucket.addTotal()
             if (randomBoolean()) { // 异常
-                measurer.currentBucket().addSuccess()
+                bucket.addSuccess()
             } else {
-                measurer.currentBucket().addException()
+                bucket.addException()
             }
+            bucket.addCostTime(randomLong(1000))
         }
 
         // 汇总计数

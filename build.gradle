@@ -1,11 +1,12 @@
 //gradle脚本自身需要使用的资源
 buildscript {
     repositories {
-        jcenter()
-        mavenCentral()
+        mavenLocal()
         maven {
             url 'http://maven.aliyun.com/nexus/content/repositories/snapshots'
         }
+        jcenter()
+        mavenCentral()
         maven {
             url "http://dl.bintray.com/kotlin/kotlin"
         }
@@ -42,10 +43,11 @@ subprojects{
     apply plugin: 'maven'
 
     repositories {
-        mavenCentral()
+        mavenLocal()
         maven {
             url 'http://maven.aliyun.com/nexus/content/repositories/snapshots'
         }
+        mavenCentral()
         maven {
             url "http://dl.bintray.com/kotlin/kotlin"
         }

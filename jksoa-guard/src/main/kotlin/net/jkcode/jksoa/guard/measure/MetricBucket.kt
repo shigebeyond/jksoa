@@ -80,6 +80,54 @@ abstract class MetricBucket : IMetricBucket() {
     public override val slow: Long
         get() = this[MetricType.SLOW]
 
+    /*
+ * 请求耗时在 [0,1] 毫秒的请求数
+ */
+    public override val rtAbove0: Long
+        get() = this[MetricType.RT_ABOVE0]
+
+    /*
+     * 请求耗时在 (1,5] 毫秒的请求数
+     */
+    public override val rtAbove1: Long
+        get() = this[MetricType.RT_ABOVE1]
+
+    /*
+     * 请求耗时在 (5,10] 毫秒的请求数
+     */
+    public override val rtAbove5: Long
+        get() = this[MetricType.RT_ABOVE5]
+
+    /*
+     * 请求耗时在 (10,50] 毫秒的请求数
+     */
+    public override val rtAbove10: Long
+        get() = this[MetricType.RT_ABOVE10]
+
+    /*
+     * 请求耗时在 (50,100] 毫秒的请求数
+     */
+    public override val rtAbove50: Long
+        get() = this[MetricType.RT_ABOVE50]
+
+    /*
+     * 请求耗时在 (100,500] 毫秒的请求数
+     */
+    public override val rtAbove100: Long
+        get() = this[MetricType.RT_ABOVE100]
+
+    /*
+     * 请求耗时在 (500,1000] 毫秒的请求数
+     */
+    public override val rtAbove500: Long
+        get() = this[MetricType.RT_ABOVE500]
+
+    /*
+     * 请求耗时在 > 1000 毫秒的请求数
+     */
+    public override val rtAbove1000: Long
+        get() = this[MetricType.RT_ABOVE1000]
+
     /**
      * 增加请求总数
      * @param n
@@ -117,8 +165,29 @@ abstract class MetricBucket : IMetricBucket() {
         if(costTime > slowRequestMillis)
             add(MetricType.SLOW, 1)
 
+        // 增加分段耗时的请求数
+        if (costTime >= 0 && costTime <= 1)
+            add(MetricType.RT_ABOVE0, 1)
+        else if (costTime > 1 && costTime <= 5)
+            add(MetricType.RT_ABOVE1, 1)
+        else if (costTime > 5 && costTime <= 10)
+            add(MetricType.RT_ABOVE5, 1)
+        else if (costTime > 10 && costTime <= 50)
+            add(MetricType.RT_ABOVE10, 1)
+        else if (costTime > 50 && costTime <= 100)
+            add(MetricType.RT_ABOVE50, 1)
+        else if (costTime > 100 && costTime <= 500)
+            add(MetricType.RT_ABOVE100, 1)
+        else if (costTime > 500 && costTime <= 1000)
+            add(MetricType.RT_ABOVE500, 1)
+        else if (costTime > 1000)
+            add(MetricType.RT_ABOVE1000, 1)
+
         // 增加请求耗时
         return add(MetricType.COST_TIME, costTime)
     }
+
+
+
 
 }
