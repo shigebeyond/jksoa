@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.guard.measure
 
+import java.lang.StringBuilder
 import java.text.MessageFormat
 
 /**
@@ -94,21 +95,24 @@ abstract class IMetricBucket {
     }
 
     /**
-     * 输出统计信息
-     * @param statisticTime 统计时间, 单位秒
+     * 转描述
+     * @param runTime 运行时间, 单位秒
+     * @return
      */
-    public fun printStatistics(statisticTime: Long){
-        println(MessageFormat.format("Requests: {0}, Success: {1}%({2}), Error: {3}%({4})", total, success * 100 / total, success, exception * 100 / total, exception))
-        println(MessageFormat.format("Avg TPS: {0}", total / statisticTime))
-        println(MessageFormat.format("Avg ResponseTime: {0}ms", costTime.toFloat() / total.toFloat() / 1000f))
+    public fun toDesc(runTime: Long): String {
+        return StringBuilder()
+                .append(MessageFormat.format("Requests: {0}, Success: {1}%({2}), Error: {3}%({4})", total, success * 100 / total, success, exception * 100 / total, exception))
+                .append(MessageFormat.format("Avg TPS: {0}", total / runTime))
+                .append(MessageFormat.format("Avg ResponseTime: {0}ms", costTime.toFloat() / total.toFloat() / 1000f))
 
-        println(MessageFormat.format("RT [0,1]: {0}% {1}/{2}", rtAbove0 * 100 / total, rtAbove0, total))
-        println(MessageFormat.format("RT (1,5]: {0}% {1}/{2}", rtAbove1 * 100 / total, rtAbove1, total))
-        println(MessageFormat.format("RT (5,10]: {0}% {1}/{2}", rtAbove5 * 100 / total, rtAbove5, total))
-        println(MessageFormat.format("RT (10,50]: {0}% {1}/{2}", rtAbove10 * 100 / total, rtAbove10, total))
-        println(MessageFormat.format("RT (50,100]: {0}% {1}/{2}", rtAbove50 * 100 / total, rtAbove50, total))
-        println(MessageFormat.format("RT (100,500]: {0}% {1}/{2}", rtAbove100 * 100 / total, rtAbove100, total))
-        println(MessageFormat.format("RT (500,1000]: {0}% {1}/{2}", rtAbove500 * 100 / total, rtAbove500, total))
-        println(MessageFormat.format("RT >1000: {0}% {1}/{2}", rtAbove1000 * 100 / total, rtAbove1000, total))
+                .append(MessageFormat.format("RT [0,1]: {0}% {1}/{2}", rtAbove0 * 100 / total, rtAbove0, total))
+                .append(MessageFormat.format("RT (1,5]: {0}% {1}/{2}", rtAbove1 * 100 / total, rtAbove1, total))
+                .append(MessageFormat.format("RT (5,10]: {0}% {1}/{2}", rtAbove5 * 100 / total, rtAbove5, total))
+                .append(MessageFormat.format("RT (10,50]: {0}% {1}/{2}", rtAbove10 * 100 / total, rtAbove10, total))
+                .append(MessageFormat.format("RT (50,100]: {0}% {1}/{2}", rtAbove50 * 100 / total, rtAbove50, total))
+                .append(MessageFormat.format("RT (100,500]: {0}% {1}/{2}", rtAbove100 * 100 / total, rtAbove100, total))
+                .append(MessageFormat.format("RT (500,1000]: {0}% {1}/{2}", rtAbove500 * 100 / total, rtAbove500, total))
+                .append(MessageFormat.format("RT >1000: {0}% {1}/{2}", rtAbove1000 * 100 / total, rtAbove1000, total))
+                .toString()
     }
 }
