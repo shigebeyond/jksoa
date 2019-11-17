@@ -36,14 +36,14 @@ class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(ma
      */
     public override fun decode(ctx: ChannelHandlerContext, `in`: ByteBuf): Any? {
         // 1 解析长度
-        val frame = super.decode(ctx, `in`) as ByteBuf?
+        val frame = super.decode(ctx, `in`) as ByteBuf? // 调用 extractFrame() 调用 buffer.retainedSlice() 引用+1
         if(frame == null)
             return null
 
         // 2 解析数据
         try {
             // 反序列化
-            ByteBufInputStream(frame).use {
+            ByteBufInputStream(frame, true /* 引用-1 */).use {
                 val result = serializer.unserialize(it)
                 //clientLogger.debug("NettyMessageDecoder解码接收到的消息: {}", result)
                 return result
