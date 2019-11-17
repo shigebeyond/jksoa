@@ -60,13 +60,13 @@ abstract class MetricBucket : IMetricBucket() {
      * 请求异常数
      */
     public override val exception: Long
-        get() = this[MetricType.SUCCESS]
+        get() = this[MetricType.EXCEPTION]
 
     /**
      * 请求成功数
      */
     public override val success: Long
-        get() = this[MetricType.EXCEPTION]
+        get() = this[MetricType.SUCCESS]
 
     /**
      * 请求总耗时
