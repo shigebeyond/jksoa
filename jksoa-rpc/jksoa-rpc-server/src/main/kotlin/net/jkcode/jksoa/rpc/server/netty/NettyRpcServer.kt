@@ -91,7 +91,7 @@ abstract class NettyRpcServer : IRpcServer() {
                             pipeline.addLast(h)
 
                         // 处理请求的子channel处理器
-                        pipeline.addLast(NettyRequestHandler())
+                        pipeline.addLast(NettyRequestHandler(nettyConfig["handleRequestInIOThread"]!!))
 
                         if(duplex)  // 双工
                             // 处理响应的子channel处理器, 如在mq项目中让broker调用consumer, 并处理consumer的响应

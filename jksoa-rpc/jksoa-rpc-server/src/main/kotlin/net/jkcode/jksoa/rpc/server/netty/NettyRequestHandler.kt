@@ -10,6 +10,7 @@ import io.netty.channel.unix.Errors
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
 import net.jkcode.jkmvc.common.CommonThreadPool
+import net.jkcode.jkmvc.common.Config
 
 /**
  * netty服务端请求处理器
@@ -18,7 +19,14 @@ import net.jkcode.jkmvc.common.CommonThreadPool
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-30 12:48 PM
  */
-open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
+open class NettyRequestHandler(
+        protected val handleRequestInIOThread: Boolean // 请求处理是否放到IO线程执行, 否则放到公共线程池中执行
+) : SimpleChannelInboundHandler<IRpcRequest>() {
+
+    /**
+     * 服务端的netty配置
+     */
+    public val nettyConfig = Config.instance("rpc-server.netty", "yaml")
 
     /**
      * 处理收到请求事件
@@ -33,7 +41,17 @@ open class NettyRequestHandler : SimpleChannelInboundHandler<IRpcRequest>() {
         // 处理请求
         serverLogger.debug(" ------ receive request ------ ")
         serverLogger.debug("NettyRequestHandler收到请求: {}", req)
-        // 异步处理, 不阻塞io线程
+        // 请求处理放到IO线程执行
+        if(handleRequestInIOThread) {
+            try {
+                RpcRequestHandler.handle(req, ctx)
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+            return
+        }
+        
+        // 请求处理放到公共线程池中执行, 不阻塞IO线程
         CommonThreadPool.execute {
             try {
                 RpcRequestHandler.handle(req, ctx)
