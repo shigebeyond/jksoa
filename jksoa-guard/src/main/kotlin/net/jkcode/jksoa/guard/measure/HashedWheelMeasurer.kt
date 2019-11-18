@@ -13,7 +13,8 @@ import net.jkcode.jksoa.rpc.client.combiner.annotation.Metric
  */
 class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
                           public val bucketMillis: Int = 1000, // 每个槽的时长, 单位: 毫秒
-                          public val slowRequestMillis: Long = 10000 // 慢请求的阀值, 请求耗时超过该时间则为慢请求, 单位: 毫秒
+                          public val slowRequestMillis: Long = 10000, // 慢请求的阀值, 请求耗时超过该时间则为慢请求, 单位: 毫秒
+                          public val rtMsFraction: Int = 1 // 耗时的毫秒分数, 即耗时的单位 = 1毫秒 / rtUnitMilliFraction, 用于描述比毫秒更小的耗时
 ):IMeasurer {
 
     /**
@@ -92,6 +93,13 @@ class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
      * 桶的集合
      */
     protected inner class BucketCollection: MetricBucketCollection(){
+
+        /**
+         * 耗时的毫秒分数, 即耗时的单位 = 1毫秒 / rtUnitMilliFraction, 用于描述比毫秒更小的耗时
+         */
+        public override val rtMsFraction: Int
+            get() = this@HashedWheelMeasurer.rtMsFraction
+
         /**
          * 获得迭代器
          */
@@ -107,6 +115,12 @@ class HashedWheelMeasurer(public val bucketCount: Int = 60, // 槽的数量
     public inner class HashedWheelBucket(
             var startTime: Long = 0 // 开始时间
     ): MetricBucket(){
+
+        /**
+         * 耗时的毫秒分数, 即耗时的单位 = 1毫秒 / rtUnitMilliFraction, 用于描述比毫秒更小的耗时
+         */
+        public override val rtMsFraction: Int
+            get() = this@HashedWheelMeasurer.rtMsFraction
 
         /**
          * 慢请求的阀值, 请求耗时超过该时间则为慢请求, 单位: 毫秒

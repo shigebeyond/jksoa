@@ -173,26 +173,29 @@ abstract class MetricBucket : IMetricBucket() {
      * @return
      */
     public fun addRt(rt: Long): MetricBucket {
+        // 转毫秒
+        val ms = rt.toDouble() / rtMsFraction
+
         // 增加慢请求数
-        if(rt > slowRequestMillis)
+        if(ms > slowRequestMillis)
             add(MetricType.SLOW, 1)
 
         // 增加分段耗时的请求数
-        if (rt >= 0 && rt <= 1)
+        if (ms >= 0 && ms <= 1)
             add(MetricType.RT_ABOVE0, 1)
-        else if (rt > 1 && rt <= 5)
+        else if (ms > 1 && ms <= 5)
             add(MetricType.RT_ABOVE1, 1)
-        else if (rt > 5 && rt <= 10)
+        else if (ms > 5 && ms <= 10)
             add(MetricType.RT_ABOVE5, 1)
-        else if (rt > 10 && rt <= 50)
+        else if (ms > 10 && ms <= 50)
             add(MetricType.RT_ABOVE10, 1)
-        else if (rt > 50 && rt <= 100)
+        else if (ms > 50 && ms <= 100)
             add(MetricType.RT_ABOVE50, 1)
-        else if (rt > 100 && rt <= 500)
+        else if (ms > 100 && ms <= 500)
             add(MetricType.RT_ABOVE100, 1)
-        else if (rt > 500 && rt <= 1000)
+        else if (ms > 500 && ms <= 1000)
             add(MetricType.RT_ABOVE500, 1)
-        else if (rt > 1000)
+        else if (ms > 1000)
             add(MetricType.RT_ABOVE1000, 1)
 
         // 线程不安全不要紧
