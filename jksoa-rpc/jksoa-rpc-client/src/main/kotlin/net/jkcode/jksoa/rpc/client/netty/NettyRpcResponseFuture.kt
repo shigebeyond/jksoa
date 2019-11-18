@@ -36,11 +36,6 @@ class NettyRpcResponseFuture(req: IRpcRequest, /* 请求 */
         }
     }, requestTimeoutMillis, TimeUnit.MILLISECONDS)
 
-    init{
-        // 记录异步响应，以便响应到来时设置结果
-        NettyResponseHandler.putResponseFuture(reqId, this)
-    }
-
     /**
      * 处理超时
      * @param requestTimeoutMillis 超时时间

@@ -44,25 +44,14 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
     public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
         clientLogger.debug("NettyConnection发送请求: {}", req)
 
-        // 1 发送请求
+        // 1 提前创建好异步响应
+        // 当client调用本机server时, client很快收到响应, 甚至在代码 writeFuture.awaitUninterruptibly() 执行之前就收到响应了, 如果在该代码之后才创建并记录异步响应, 则无法识别并处理早已收到的响应
+        val resFuture = NettyRpcResponseFuture(req, channel, requestTimeoutMillis)
+        // 记录异步响应，以便响应到来时设置结果
+        NettyResponseHandler.putResponseFuture(req.id, resFuture)
+
+        // 2 发送请求
         val writeFuture = channel.writeAndFlush(req)
-
-        // wrong： 关注响应回来事件，而不是发送完成事件
-        // 添加发送完成事件
-        /*val listener = object : GenericFutureListener<Future<Void>> {
-            override fun operationComplete(future: Future<Void>) {
-                writeFuture.removeListener(this) // 删除监听器
-                if (future.isSuccess() || future.isDone()) { // 成功
-                    println(future.now)
-                }
-            }
-        }
-        writeFuture.addListener(listener)*/
-
-        // 2 在debug环境下提前创建好异步响应
-        // 当client调用本机server时, client很快收到响应
-        // 而在debug环境下, 在代码 writeFuture.awaitUninterruptibly() 执行之前就收到响应了, 如果在该代码之后才创建并记录异步响应, 则无法识别并处理早已收到的响应
-        val resFuture: NettyRpcResponseFuture? = if(Application.isDebug) NettyRpcResponseFuture(req, channel, requestTimeoutMillis) else null
 
         // 3 阻塞等待发送完成，有超时
         val result = writeFuture.awaitUninterruptibly(req.requestTimeoutMillis, TimeUnit.MILLISECONDS)
@@ -71,13 +60,18 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
         if (result && writeFuture.isSuccess())
             return if(resFuture != null) resFuture else NettyRpcResponseFuture(req, channel, requestTimeoutMillis) // 返回异步响应
 
-        // 3.2 超时
+        // 3.2 发送失败
+        clientLogger.error("发送请求失败: {}", req)
+        // 删除异步响应的记录
+        NettyResponseHandler.removeResponseFuture(req.id)
+
+        // 超时
         if (writeFuture.cause() == null){
             writeFuture.cancel(false)
             throw RpcClientException("远程调用超时: $req")
         }
 
-        // 3.3 io异常
+        // io异常
         throw RpcClientException("远程调用发生io异常: $req", writeFuture.cause())
     }
 
