@@ -53,8 +53,8 @@ public enum class CircuitBreakType {
         override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.exceptionRatio
     },
     // 请求平均耗时
-    AVG_COST_TIME {
-        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.avgCostTime
+    AVG_RT {
+        override fun calculateCompareValue(bucket: IMetricBucket): Double = bucket.avgRt
     },
     // 慢请求数
     SLOW_COUNT {

@@ -28,7 +28,17 @@ abstract class IMetricBucket {
     /**
      * 请求总耗时
      */
-    public abstract val costTime: Long
+    public abstract val rt: Long
+
+    /**
+     * 最小耗时
+     */
+    public abstract val minRt: Long
+
+    /**
+     * 最大耗时
+     */
+    public abstract val maxRt: Long
 
     /**
      * 慢请求数
@@ -78,8 +88,8 @@ abstract class IMetricBucket {
     /**
      * 请求平均耗时
      */
-    public val avgCostTime: Double
-        get() = costTime / (success + exception).toDouble()
+    public val avgRt: Double
+        get() = rt / (success + exception).toDouble()
 
     /**
      * 异常比例
@@ -91,7 +101,7 @@ abstract class IMetricBucket {
      * 转字符串
      */
     public override fun toString(): String {
-        return "total=$total, exception=$exception, success=$success, costTime=$costTime, slow=$slow, rtAbove0=$rtAbove0, rtAbove1=$rtAbove1, rtAbove5=$rtAbove5, rtAbove10=$rtAbove10, rtAbove50=$rtAbove50, rtAbove100=$rtAbove100, rtAbove500=$rtAbove500, rtAbove1000=$rtAbove1000";
+        return "total=$total, exception=$exception, success=$success, rt=$rt, slow=$slow, rtAbove0=$rtAbove0, rtAbove1=$rtAbove1, rtAbove5=$rtAbove5, rtAbove10=$rtAbove10, rtAbove50=$rtAbove50, rtAbove100=$rtAbove100, rtAbove500=$rtAbove500, rtAbove1000=$rtAbove1000";
     }
 
     /**
@@ -103,7 +113,7 @@ abstract class IMetricBucket {
         return StringBuilder()
                 .appendln(MessageFormat.format("Requests: {0}, Success: {1}%({2}), Error: {3}%({4})", total, success * 100 / total, success, exception * 100 / total, exception))
                 .appendln(MessageFormat.format("Avg TPS: {0,number,#.##}", total.toDouble() / runTime * 1000))
-                .appendln(MessageFormat.format("Avg ResponseTime: {0,number,#.##}ms", costTime.toDouble() / total))
+                .appendln(MessageFormat.format("Avg RT: {0,number,#.##}ms, Min RT: {1}ms, Max RT: {2}ms", rt.toDouble() / total, minRt, maxRt))
 
                 .appendln(MessageFormat.format("RT [0,1]: {0,number,#.##}% {1}/{2}", rtAbove0.toDouble() * 100 / total, rtAbove0, total))
                 .appendln(MessageFormat.format("RT (1,5]: {0,number,#.##}% {1}/{2}", rtAbove1.toDouble() * 100 / total, rtAbove1, total))

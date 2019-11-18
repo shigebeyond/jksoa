@@ -5,9 +5,7 @@ import net.jkcode.jkmvc.common.resultFromFuture
 import net.jkcode.jkmvc.common.toExpr
 import net.jkcode.jksoa.rpc.client.combiner.annotation.degrade
 import java.lang.reflect.Method
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Future
 
 /**
  * 带守护的方法调用者
@@ -116,7 +114,7 @@ abstract class MethodGuardInvoker : IMethodGuardInvoker {
         // 2 真正的调用
         val resFuture = invokeAfterGuard(method, obj, args).whenComplete { r, e ->
             // 1.2 添加请求耗时
-            methodGuard.measurer?.currentBucket()?.addCostTime(currMillis() - startTime)
+            methodGuard.measurer?.currentBucket()?.addRt(currMillis() - startTime)
 
             if (e == null) {
                 // 1.3 添加成功计数

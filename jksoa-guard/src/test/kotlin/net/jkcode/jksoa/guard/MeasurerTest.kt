@@ -22,7 +22,7 @@ open class MeasurerTest {
             } else {
                 bucket.addException()
             }
-            bucket.addCostTime(randomLong(1000))
+            bucket.addRt(randomLong(1000))
         }
 
         // 汇总计数

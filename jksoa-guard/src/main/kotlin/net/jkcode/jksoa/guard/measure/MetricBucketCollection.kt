@@ -30,8 +30,20 @@ abstract class MetricBucketCollection : IMetricBucket(), Iterable<IMetricBucket>
     /**
      * 请求总耗时
      */
-    public override val costTime: Long
-        get() = this.sumByLong { it.costTime }
+    public override val rt: Long
+        get() = this.sumByLong { it.rt }
+
+    /**
+     * 最小耗时
+     */
+    public override val minRt: Long
+        get() = this.minBy { it.rt }?.rt ?: 0
+
+    /**
+     * 最大耗时
+     */
+    public override val maxRt: Long
+        get() = this.maxBy { it.rt }?.rt ?: 0
 
     /**
      * 慢请求数

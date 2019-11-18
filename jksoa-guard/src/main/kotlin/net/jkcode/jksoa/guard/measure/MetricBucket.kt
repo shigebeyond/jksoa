@@ -22,6 +22,18 @@ abstract class MetricBucket : IMetricBucket() {
     protected val counters: Array<LongAdder> = MetricType.values().mapToArray { LongAdder() }
 
     /**
+     * 最小耗时
+     */
+    @Volatile
+    public override var minRt: Long = 0
+
+    /**
+     * 最大耗时
+     */
+    @Volatile
+    public override var maxRt: Long = 0
+
+    /**
      * 重置计数器
      * @return
      */
@@ -71,8 +83,8 @@ abstract class MetricBucket : IMetricBucket() {
     /**
      * 请求总耗时
      */
-    public override val costTime: Long
-        get() = this[MetricType.COST_TIME]
+    public override val rt: Long
+        get() = this[MetricType.RT]
 
     /**
      * 慢请求数
@@ -157,34 +169,42 @@ abstract class MetricBucket : IMetricBucket() {
 
     /**
      * 增加请求耗时
-     * @param costTime
+     * @param rt
      * @return
      */
-    public fun addCostTime(costTime: Long): MetricBucket {
+    public fun addRt(rt: Long): MetricBucket {
         // 增加慢请求数
-        if(costTime > slowRequestMillis)
+        if(rt > slowRequestMillis)
             add(MetricType.SLOW, 1)
 
         // 增加分段耗时的请求数
-        if (costTime >= 0 && costTime <= 1)
+        if (rt >= 0 && rt <= 1)
             add(MetricType.RT_ABOVE0, 1)
-        else if (costTime > 1 && costTime <= 5)
+        else if (rt > 1 && rt <= 5)
             add(MetricType.RT_ABOVE1, 1)
-        else if (costTime > 5 && costTime <= 10)
+        else if (rt > 5 && rt <= 10)
             add(MetricType.RT_ABOVE5, 1)
-        else if (costTime > 10 && costTime <= 50)
+        else if (rt > 10 && rt <= 50)
             add(MetricType.RT_ABOVE10, 1)
-        else if (costTime > 50 && costTime <= 100)
+        else if (rt > 50 && rt <= 100)
             add(MetricType.RT_ABOVE50, 1)
-        else if (costTime > 100 && costTime <= 500)
+        else if (rt > 100 && rt <= 500)
             add(MetricType.RT_ABOVE100, 1)
-        else if (costTime > 500 && costTime <= 1000)
+        else if (rt > 500 && rt <= 1000)
             add(MetricType.RT_ABOVE500, 1)
-        else if (costTime > 1000)
+        else if (rt > 1000)
             add(MetricType.RT_ABOVE1000, 1)
 
+        // 最小耗时
+        if (minRt == 0L || rt < minRt)
+            minRt = rt
+
+        // 最大耗时
+        if (rt > maxRt)
+            maxRt = rt
+
         // 增加请求耗时
-        return add(MetricType.COST_TIME, costTime)
+        return add(MetricType.RT, rt)
     }
 
 

@@ -10,7 +10,7 @@ enum class MetricType {
     TOTAL, // 请求总数
     SUCCESS, // 请求成功数
     EXCEPTION, // 请求异常数
-    COST_TIME, // 请求总耗时
+    RT, // 请求总耗时
     SLOW, // 慢请求, 请求耗时超过阀值
     RT_ABOVE0, // 请求耗时在 [0,1] 毫秒的请求数
     RT_ABOVE1, // 请求耗时在 (1,5] 毫秒的请求数
