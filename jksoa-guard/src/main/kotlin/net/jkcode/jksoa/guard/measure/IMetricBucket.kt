@@ -101,7 +101,7 @@ abstract class IMetricBucket {
      * 转字符串
      */
     public override fun toString(): String {
-        return "total=$total, exception=$exception, success=$success, rt=$rt, slow=$slow, rtAbove0=$rtAbove0, rtAbove1=$rtAbove1, rtAbove5=$rtAbove5, rtAbove10=$rtAbove10, rtAbove50=$rtAbove50, rtAbove100=$rtAbove100, rtAbove500=$rtAbove500, rtAbove1000=$rtAbove1000";
+        return "total=$total, exception=$exception, success=$success, rt=$rt, minRt=$minRt, maxRt=$maxRt slow=$slow, rtAbove0=$rtAbove0, rtAbove1=$rtAbove1, rtAbove5=$rtAbove5, rtAbove10=$rtAbove10, rtAbove50=$rtAbove50, rtAbove100=$rtAbove100, rtAbove500=$rtAbove500, rtAbove1000=$rtAbove1000";
     }
 
     /**

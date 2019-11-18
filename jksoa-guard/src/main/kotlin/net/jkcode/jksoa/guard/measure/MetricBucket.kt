@@ -195,10 +195,10 @@ abstract class MetricBucket : IMetricBucket() {
         else if (rt > 1000)
             add(MetricType.RT_ABOVE1000, 1)
 
+        // 线程不安全不要紧
         // 最小耗时
         if (minRt == 0L || rt < minRt)
             minRt = rt
-
         // 最大耗时
         if (rt > maxRt)
             maxRt = rt
@@ -206,8 +206,5 @@ abstract class MetricBucket : IMetricBucket() {
         // 增加请求耗时
         return add(MetricType.RT, rt)
     }
-
-
-
 
 }
