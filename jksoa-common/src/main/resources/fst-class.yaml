@@ -1,0 +1,4 @@
+# fst注册类
+# key是类名, value是空
+net.jkcode.jksoa.common.RpcRequest:
+net.jkcode.jksoa.common.RpcResponse:
