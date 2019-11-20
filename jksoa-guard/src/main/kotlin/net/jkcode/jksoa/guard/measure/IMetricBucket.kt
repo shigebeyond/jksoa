@@ -110,6 +110,16 @@ abstract class IMetricBucket {
     }
 
     /**
+     * 转简报
+     * @param runTime 运行时间, 单位见 rtMsFraction
+     * @return
+     */
+    public fun toSummary(runTime: Long): String {
+        val runMs = runTime.toDouble() / rtMsFraction
+        return MessageFormat.format("Runtime: {0,number,#.##} ms, Avg TPS: {1,number,#.##}, Avg RT: {2,number,#.##}ms", runMs, total.toDouble() / runMs * 1000, rt.toDouble() / rtMsFraction / total)
+    }
+
+    /**
      * 转描述
      * @param runTime 运行时间, 单位见 rtMsFraction
      * @return

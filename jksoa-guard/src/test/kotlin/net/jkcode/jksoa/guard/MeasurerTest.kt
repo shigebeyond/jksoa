@@ -29,6 +29,7 @@ open class MeasurerTest {
         val c = measurer.bucketCollection()
         println(c)
         println(c.toDesc(10))
+        println(c.toSummary(10))
     }
 
     @Test
@@ -46,5 +47,6 @@ open class MeasurerTest {
         val c = measurer.bucketCollection()
         println(c)
         println(c.toDesc(10))
+        println(c.toSummary(10))
     }
 }
