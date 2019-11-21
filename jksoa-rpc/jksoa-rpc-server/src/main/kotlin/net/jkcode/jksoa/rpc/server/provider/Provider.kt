@@ -31,17 +31,20 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
 
         /**
          * 注册中心
-         * TODO: 支持多个配置中心, 可用组合模式
+         *   TODO: 支持多个配置中心, 可用组合模式
+         *   如果配置了 registering, 根本不需要注册中心, 因此延迟创建
          */
-        public val registry: IRegistry = IRegistry.instance("zk")
+        public val registry: IRegistry by lazy{
+            IRegistry.instance("zk")
+        }
     }
 
     /**
-     * 是否注册 = 是否启动了server
+     * 是否注册: 配置 + 是否启动了server
      *    只有启动了server, 暴露了server端口才能注册
      *    如果是纯粹的client(如mq consumer提供IMqPushConsumerService服务), 但不能向注册中心注册, 也因为他没有暴露server端口, 无法让client来连接并调用
      */
-    public val registerable: Boolean = IRpcServer.current() != null
+    public val registering: Boolean = config["registering"]!! && IRpcServer.current() != null
 
     /**
      * 接口类
@@ -70,7 +73,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
 
     init{
         // 创建+注册服务
-        if(`interface`.remoteService?.onlyLeader ?: false){ // 要选举leader
+        if(registering && `interface`.remoteService?.onlyLeader ?: false){ // 要选举leader
             // 先选举leader才创建+注册服务
             val election = ZkLeaderElection("service/" + serviceId)
             election.run(){
@@ -87,7 +90,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
         // 创建服务实例
         service = BeanSingletons.instance(clazz)
 
-        if (registerable) {
+        if (registering) {
             serverLogger.info("Provider注册服务: {}", serviceUrl)
             // 1 注册注册中心的服务
             registry.register(serviceUrl)
@@ -101,7 +104,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
      * 注销服务
      */
     public override fun close() {
-        if(registerable){
+        if(registering){
             serverLogger.info("Provider.close(): 注销服务")
             registry.unregister(serviceUrl)
         }

@@ -9,6 +9,7 @@ servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.dtx.demo # dtx组件的demo的服务
 interceptors: # 拦截器
     - net.jkcode.jksoa.dtx.tcc.interceptor.RpcServerTccInterceptor
+registering: true # 是否注册到注册中心
 # netty启动参数
 netty:
     keepAlive: true # 保持心跳
