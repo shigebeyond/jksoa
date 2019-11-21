@@ -92,7 +92,7 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
     public override fun close() {
         // 1 在shutdown时, 需手动关闭channel
         if(channel.isOpen && channel.isActive){
-            clientLogger.info("Close active channel {}, when shutdown", channel)
+            clientLogger.debug("Close active channel {}, when shutdown", channel)
             channel.close()
         }
 

@@ -98,7 +98,7 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
      * @return
      */
     public override fun connect(url: Url): IConnection {
-        clientLogger.info("NettyRpcClient连接server: {}", url)
+        clientLogger.debug("NettyRpcClient连接server: {}", url)
         // 连接server
         val f: ChannelFuture = bootstrap.connect(url.host, url.port)
         // 添加监听

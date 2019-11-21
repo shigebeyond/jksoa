@@ -81,7 +81,7 @@ abstract class NettyRpcServer : IRpcServer() {
         bootstrap.group(bossGroup, workerGroup)
                 .childHandler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
-                        serverLogger.info("NettyRpcServer收到client连接: {}", channel)
+                        serverLogger.debug("NettyRpcServer收到client连接: {}", channel)
                         try {
                             // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
                             val pipeline = channel.pipeline()
@@ -139,7 +139,7 @@ abstract class NettyRpcServer : IRpcServer() {
     public override fun close() {
         super.close()
 
-        serverLogger.debug("NettyRpcServer关闭netty工作线程池")
+        serverLogger.info("NettyRpcServer关闭netty工作线程池")
         workerGroup.shutdownGracefully();
         bossGroup.shutdownGracefully();
     }

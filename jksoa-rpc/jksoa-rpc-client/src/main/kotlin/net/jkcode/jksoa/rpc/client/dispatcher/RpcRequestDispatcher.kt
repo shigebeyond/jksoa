@@ -146,7 +146,7 @@ class RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
         val msg = conn2Shds.joinToString(", ", "分片分派结果, 将 $shardingSize 个分片分派给 $connSize 个节点: ")  { shds ->
             "${conns[iConn++]} => ${shds.iterator().toDesc()}"
         }
-        clientLogger.info(msg)
+        clientLogger.debug(msg)
 
         // 2 逐个分片构建并发送rpc请求
         val futures = arrayOfNulls<CompletableFuture<Any?>>(shardingSize)

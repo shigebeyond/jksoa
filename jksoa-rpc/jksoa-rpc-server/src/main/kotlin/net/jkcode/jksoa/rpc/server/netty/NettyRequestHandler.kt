@@ -11,6 +11,7 @@ import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
 import net.jkcode.jkmvc.common.CommonThreadPool
 import net.jkcode.jkmvc.common.Config
+import java.nio.channels.ClosedChannelException
 
 /**
  * netty服务端请求处理器
@@ -100,11 +101,13 @@ open class NettyRequestHandler(
      * 处理channel发生异常事件
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        clientLogger.error("NettyRequestHandler捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
         // 当连接关闭时报错异常: io.netty.channel.unix.Errors$NativeIoException: epoll_ctl(..) failed: No such file or directory
-        if(cause is Errors.NativeIoException && cause.message == "epoll_ctl(..) failed: No such file or directory")
+        if(cause is Errors.NativeIoException && cause.message == "epoll_ctl(..) failed: No such file or directory" || cause is ClosedChannelException) {
+            clientLogger.debug("NettyRequestHandler捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.simpleName, cause.message)
             return
+        }
 
+        clientLogger.error("NettyRequestHandler捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
         super.exceptionCaught(ctx, cause)
     }
 

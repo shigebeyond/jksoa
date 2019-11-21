@@ -19,6 +19,8 @@ jksoa微服务框架中本项目中有多个组件, 如rpc/job/tracer/mq等, 组
 每个组件都做成一个开关配置
 
 ```
+# 是否启用
+enable: true
 # 按组件来切换日志级别: trace/debug/info/warn/error
 common: info
 rpc: info

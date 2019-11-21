@@ -16,7 +16,7 @@ jksoa-rpc 是通过 JDK 的 `ShutdownHook` 来完成优雅停机的，所以如�
 public override fun close() {
     super.close()
 
-    serverLogger.debug("NettyRpcServer关闭netty工作线程池")
+    serverLogger.info("NettyRpcServer关闭netty工作线程池")
     workerGroup.shutdownGracefully();
     bossGroup.shutdownGracefully();
 }

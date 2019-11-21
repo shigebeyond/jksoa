@@ -81,7 +81,7 @@ class Referer(public override val `interface`:Class<*> /* 接口类 */,
      */
     public override fun close() {
         if(!local) {
-            clientLogger.info("Referer.close(): 取消监听服务变化")
+            clientLogger.debug("Referer.close(): 取消监听服务变化")
             registry.unsubscribe(serviceId, IConnectionHub.instance(`interface`))
         }
     }
