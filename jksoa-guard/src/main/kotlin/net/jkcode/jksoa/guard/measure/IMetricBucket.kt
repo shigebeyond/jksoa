@@ -116,7 +116,7 @@ abstract class IMetricBucket {
      */
     public fun toSummary(runTime: Long): String {
         val runMs = runTime.toDouble() / rtMsFraction
-        return MessageFormat.format("Runtime: {0,number,#.##} ms, Avg TPS: {1,number,#.##}, Avg RT: {2,number,#.##}ms", runMs, total.toDouble() / runMs * 1000, rt.toDouble() / rtMsFraction / total)
+        return MessageFormat.format("Runtime: {0,number,#.##} ms, Avg TPS: {1,number,#.##}, Avg RT: {2,number,#.##} ms, Error: {3}%", runMs, total.toDouble() / runMs * 1000, rt.toDouble() / rtMsFraction / total, exception * 100 / total)
     }
 
     /**
