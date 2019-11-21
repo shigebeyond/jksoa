@@ -82,20 +82,26 @@ abstract class NettyRpcServer : IRpcServer() {
                 .childHandler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
                         serverLogger.info("NettyRpcServer收到client连接: {}", channel)
-                        // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
-                        val pipeline = channel.pipeline()
-                        pipeline.addLast(IdleStateHandler(nettyConfig["readerIdleTimeSecond"]!!, nettyConfig["writerIdleTimeSeconds"]!!, nettyConfig["allIdleTimeSeconds"]!!)) // channel空闲检查
+                        try {
+                            // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
+                            val pipeline = channel.pipeline()
+                            pipeline.addLast(IdleStateHandler(nettyConfig["readerIdleTimeSecond"]!!, nettyConfig["writerIdleTimeSeconds"]!!, nettyConfig["allIdleTimeSeconds"]!!)) // channel空闲检查
 
-                        // 自定义编码相关的子channel处理器
-                        for(h in customCodecChildChannelHandlers())
-                            pipeline.addLast(h)
+                            // 自定义编码相关的子channel处理器
+                            for (h in customCodecChildChannelHandlers())
+                                pipeline.addLast(h)
 
-                        // 处理请求的子channel处理器
-                        pipeline.addLast(NettyRequestHandler(nettyConfig["handleRequestInIOThread"]!!))
+                            // 处理请求的子channel处理器
+                            pipeline.addLast(NettyRequestHandler(nettyConfig["handleRequestInIOThread"]!!))
 
-                        if(duplex)  // 双工
+                            if (duplex)  // 双工
                             // 处理响应的子channel处理器, 如在mq项目中让broker调用consumer, 并处理consumer的响应
-                            pipeline.addLast(NettyResponseHandler())
+                                pipeline.addLast(NettyResponseHandler())
+                        }catch (e: Exception){
+                            // 还是输出异常, 防止各种handler初始化失败, 导致channel断掉了, 而又没有报错
+                            e.printStackTrace()
+                            throw e
+                        }
                     }
                 })
     }

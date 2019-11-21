@@ -58,12 +58,18 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
                         // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
                         val pipeline = channel.pipeline()
 
-                        // 自定义编码相关的channel处理器
-                        for(h in customCodecChannelHandlers())
-                            pipeline.addLast(h)
+                        try{
+                            // 自定义编码相关的channel处理器
+                            for(h in customCodecChannelHandlers())
+                                pipeline.addLast(h)
 
-                        // 处理响应的channel处理器
-                        pipeline.addLast(NettyResponseHandler())
+                            // 处理响应的channel处理器
+                            pipeline.addLast(NettyResponseHandler())
+                        }catch (e: Exception){
+                            // 还是输出异常, 防止各种handler初始化失败, 导致channel断掉了, 而又没有报错
+                            e.printStackTrace()
+                            throw e
+                        }
 
                         if(config["duplex"]!!) { // 双工
                             // 处理请求的channel处理器, 如在mq项目中让broker调用consumer
