@@ -35,5 +35,5 @@ if(env == 'dev'){
     project(':benchmark-common').projectDir = new File('../jksoa-benchmark/common')
     
     include 'benchmark-rpc'
-    project(':benchmark-rpc').projectDir = new File('../jksoa-benchmark/jksoa-rpc')
+    project(':benchmark-rpc').projectDir = new File('../jksoa-benchmark/jkrpc')
 }
