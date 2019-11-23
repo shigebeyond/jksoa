@@ -2,8 +2,8 @@ package net.jkcode.jksoa.mq.broker.repository.lsm.serialize
 
 import com.indeed.util.serialization.LengthVIntSerializer
 import com.indeed.util.serialization.Serializer
-import net.jkcode.jkmvc.serialize.FstSerializer
-import net.jkcode.jkmvc.serialize.ISerializer
+import net.jkcode.jkutil.serialize.FstSerializer
+import net.jkcode.jkutil.serialize.ISerializer
 import java.io.DataInput
 import java.io.DataOutput
 import java.io.IOException

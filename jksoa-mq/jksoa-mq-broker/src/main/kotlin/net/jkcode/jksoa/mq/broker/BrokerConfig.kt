@@ -4,8 +4,8 @@ import com.indeed.lsmtree.core.StorageType
 import com.indeed.util.compress.CompressionCodec
 import com.indeed.util.compress.GzipCodec
 import com.indeed.util.compress.SnappyCodec
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.fileSize2Bytes
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.fileSize2Bytes
 
 /**
  * broker配置

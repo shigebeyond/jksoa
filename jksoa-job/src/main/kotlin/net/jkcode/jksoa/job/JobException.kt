@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jkmvc.common.JkException
+import net.jkcode.jkutil.common.JkException
 
 /**
  * 作业异常

@@ -5,9 +5,9 @@ import io.netty.channel.*
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioSocketChannel
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.scope.ClosingOnShutdown
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.scope.ClosingOnShutdown
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException

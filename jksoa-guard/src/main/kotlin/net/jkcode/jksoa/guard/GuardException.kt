@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard
 
-import net.jkcode.jkmvc.common.JkException
+import net.jkcode.jkutil.common.JkException
 
 /**
  * 守护异常

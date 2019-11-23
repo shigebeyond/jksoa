@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.consumer
 
-import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkutil.common.Config
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.rpc.server.provider.ProviderLoader

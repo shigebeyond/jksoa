@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.dtx.tcc
 
-import net.jkcode.jkmvc.common.CommonSecondTimer
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.newPeriodic
-import net.jkcode.jkmvc.scope.GlobalAllRequestScope
+import net.jkcode.jkutil.common.CommonSecondTimer
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.newPeriodic
+import net.jkcode.jkutil.scope.GlobalAllRequestScope
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
 import java.util.concurrent.TimeUnit
 

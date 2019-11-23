@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.agent
 
-import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkutil.common.getSignature
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.tracer.agent.spanner.ISpanner
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span

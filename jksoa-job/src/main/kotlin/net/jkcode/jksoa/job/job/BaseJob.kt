@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job.job
 
-import net.jkcode.jkmvc.common.generateId
+import net.jkcode.jkutil.common.generateId
 import net.jkcode.jksoa.job.IJob
 
 /**

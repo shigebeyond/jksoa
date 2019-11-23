@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.rpc.client.connection.pool
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url

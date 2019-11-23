@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.demo.order.controller
 
-import net.jkcode.jkmvc.common.generateId
+import net.jkcode.jkutil.common.generateId
 import net.jkcode.jkmvc.http.controller.Controller
 import net.jkcode.jksoa.dtx.demo.order.service.OrderService
 import net.jkcode.jksoa.dtx.demo.pay.service.IPayAccountService

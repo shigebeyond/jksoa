@@ -1,11 +1,9 @@
 package net.jkcode.jksoa.common.invocation
 
-import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jkmvc.common.trySupplierFuture
-import net.jkcode.jkmvc.singleton.BeanSingletons
+import net.jkcode.jkutil.common.getSignature
+import net.jkcode.jkutil.singleton.BeanSingletons
 import java.io.Serializable
 import java.lang.reflect.Method
-import java.util.concurrent.CompletableFuture
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 

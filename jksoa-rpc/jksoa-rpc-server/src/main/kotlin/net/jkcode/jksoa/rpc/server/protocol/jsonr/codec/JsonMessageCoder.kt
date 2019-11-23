@@ -9,7 +9,7 @@ import io.netty.handler.codec.MessageToMessageCodec
 import io.netty.handler.codec.http.*
 import io.netty.handler.codec.http.websocketx.*
 import io.netty.handler.ssl.SslHandler
-import net.jkcode.jkmvc.common.commonLogger
+import net.jkcode.jkutil.common.commonLogger
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.RpcResponse

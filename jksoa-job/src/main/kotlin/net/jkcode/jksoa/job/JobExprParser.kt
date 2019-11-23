@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jkmvc.common.getMethodByClassAndSignature
-import net.jkcode.jkmvc.validator.ArgsParser
+import net.jkcode.jkutil.common.getMethodByClassAndSignature
+import net.jkcode.jkutil.validator.ArgsParser
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.invocation.IInvocation

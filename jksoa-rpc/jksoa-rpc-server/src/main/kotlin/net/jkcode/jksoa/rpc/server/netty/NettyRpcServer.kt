@@ -10,7 +10,7 @@ import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.timeout.IdleStateHandler
 import io.netty.util.concurrent.DefaultThreadFactory
-import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkutil.common.Config
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.rpc.client.netty.NettyResponseHandler
 import net.jkcode.jksoa.rpc.server.IRpcServer

@@ -1,13 +1,13 @@
 package net.jkcode.jksoa.rpc.server.handler
 
 import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jkmvc.scope.GlobalAllRequestScope
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.common.trySupplierFuture
-import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
-import net.jkcode.jkmvc.scope.GlobalRpcRequestScope
-import net.jkcode.jkmvc.ttl.SttlInterceptor
+import net.jkcode.jkutil.scope.GlobalAllRequestScope
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.common.trySupplierFuture
+import net.jkcode.jkutil.interceptor.RequestInterceptorChain
+import net.jkcode.jkutil.scope.GlobalRpcRequestScope
+import net.jkcode.jkutil.ttl.SttlInterceptor
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcResponse

@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.rpc.client.connection
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.getConstructorOrNull
-import net.jkcode.jkmvc.common.getOrPutOnce
-import net.jkcode.jkmvc.common.isSuperClass
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.getConstructorOrNull
+import net.jkcode.jkutil.common.getOrPutOnce
+import net.jkcode.jkutil.common.isSuperClass
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.annotation.remoteService

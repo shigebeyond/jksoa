@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.common
 
-import net.jkcode.jkmvc.common.ModuleLogSwitcher
+import net.jkcode.jkutil.common.ModuleLogSwitcher
 
 /**
  * 主题的正则

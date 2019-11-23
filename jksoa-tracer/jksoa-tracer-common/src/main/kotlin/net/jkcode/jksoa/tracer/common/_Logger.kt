@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.common
 
-import net.jkcode.jkmvc.common.ModuleLogSwitcher
+import net.jkcode.jkutil.common.ModuleLogSwitcher
 import org.slf4j.LoggerFactory
 
 // 跟踪者的日志

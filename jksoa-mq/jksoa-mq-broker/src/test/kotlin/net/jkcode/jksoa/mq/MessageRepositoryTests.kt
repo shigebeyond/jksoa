@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq
 
-import net.jkcode.jkmvc.common.randomString
+import net.jkcode.jkutil.common.randomString
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmMessageRepository
 import net.jkcode.jksoa.mq.common.Message
 import org.junit.Test

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common.loader
 
-import net.jkcode.jkmvc.common.*
+import net.jkcode.jkutil.common.*
 import net.jkcode.jksoa.common.annotation.remoteService
 import kotlin.collections.set
 

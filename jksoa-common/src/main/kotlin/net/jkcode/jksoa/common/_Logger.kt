@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common
 
-import net.jkcode.jkmvc.common.ModuleLogSwitcher
+import net.jkcode.jkutil.common.ModuleLogSwitcher
 
 internal val switcher = ModuleLogSwitcher("rpc")
 // 注册中心的日志

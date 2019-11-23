@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.sequence
 
-import net.jkcode.jkmvc.scope.ClosingOnShutdown
-import net.jkcode.jkmvc.common.Application
-import net.jkcode.jkmvc.common.getOrPutOnce
+import net.jkcode.jkutil.scope.ClosingOnShutdown
+import net.jkcode.jkutil.common.Application
+import net.jkcode.jkutil.common.getOrPutOnce
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.IZkChildListener
 import org.I0Itec.zkclient.ZkClient

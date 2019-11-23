@@ -1,15 +1,13 @@
 package net.jkcode.jksoa.rpc.tests
 
 import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.serializer.SerializerFeature
-import net.jkcode.jkmvc.common.*
-import net.jkcode.jkmvc.serialize.FstSerializer
+import net.jkcode.jkutil.common.*
+import net.jkcode.jkutil.serialize.FstSerializer
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
-import net.jkcode.jksoa.rpc.client.netty.NettyRpcClient
 import net.jkcode.jksoa.rpc.client.protocol.jkr.JkrRpcClient
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.example.IGuardService

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.tcc.interceptor
 
-import net.jkcode.jkmvc.common.trySupplierFuture
+import net.jkcode.jkutil.common.trySupplierFuture
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.dtx.tcc.TccTransactionManager

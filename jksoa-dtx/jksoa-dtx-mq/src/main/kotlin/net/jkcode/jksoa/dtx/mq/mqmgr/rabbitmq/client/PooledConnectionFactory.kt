@@ -2,7 +2,7 @@ package net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.client
 
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
-import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkutil.common.IConfig
 import org.apache.commons.pool2.BasePooledObjectFactory
 import org.apache.commons.pool2.PooledObject
 import org.apache.commons.pool2.impl.DefaultPooledObject

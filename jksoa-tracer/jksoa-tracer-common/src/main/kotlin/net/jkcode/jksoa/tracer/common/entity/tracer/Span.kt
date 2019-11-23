@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.tracer.common.entity.tracer
 
-import net.jkcode.jkmvc.common.currMillis
-import net.jkcode.jkmvc.common.getLocalHostPort
+import net.jkcode.jkutil.common.currMillis
+import net.jkcode.jkutil.common.getLocalHostPort
 import net.jkcode.jkmvc.orm.OrmEntity
 
 /**

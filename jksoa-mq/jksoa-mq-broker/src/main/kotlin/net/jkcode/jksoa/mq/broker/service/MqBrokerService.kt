@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.broker.service
 
-import net.jkcode.jkmvc.common.UnitFuture
+import net.jkcode.jkutil.common.UnitFuture
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.pusher.DelayMessagePushTimer
 import net.jkcode.jksoa.mq.broker.pusher.MqPusher

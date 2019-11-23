@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.rpc.tests
 
-import net.jkcode.jkmvc.common.randomInt
+import net.jkcode.jkutil.common.randomInt
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.rpc.example.ISimpleService
 import net.jkcode.jksoa.rpc.loadbalance.ILoadBalancer

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.rpc.tests
 
-import net.jkcode.jkmvc.common.randomLong
+import net.jkcode.jkutil.common.randomLong
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
 import org.I0Itec.zkclient.exception.ZkNodeExistsException

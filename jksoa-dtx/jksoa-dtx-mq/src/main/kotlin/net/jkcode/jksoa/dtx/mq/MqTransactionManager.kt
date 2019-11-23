@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.mq
 
-import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkutil.common.Config
 import net.jkcode.jkmvc.db.Db
 import net.jkcode.jksoa.dtx.mq.model.MqTransactionModel
 import net.jkcode.jksoa.dtx.mq.mqmgr.IMqManager

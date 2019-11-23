@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.guard.measure
 
-import net.jkcode.jkmvc.common.currMillis
-import net.jkcode.jkmvc.common.mapToArray
-import net.jkcode.jkmvc.iterator.ArrayFilteredIterator
+import net.jkcode.jkutil.common.currMillis
+import net.jkcode.jkutil.common.mapToArray
+import net.jkcode.jkutil.iterator.ArrayFilteredIterator
 import net.jkcode.jksoa.rpc.client.combiner.annotation.Metric
 
 /**

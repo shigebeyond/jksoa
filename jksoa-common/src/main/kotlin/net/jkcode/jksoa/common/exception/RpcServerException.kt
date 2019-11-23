@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common.exception
 
-import net.jkcode.jkmvc.common.JkException
+import net.jkcode.jkutil.common.JkException
 
 /**
  * rpc服务端异常

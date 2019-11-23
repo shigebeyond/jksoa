@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.agent.sample
 
-import net.jkcode.jkmvc.common.currMillis
+import net.jkcode.jkutil.common.currMillis
 
 import java.util.concurrent.atomic.AtomicLong
 

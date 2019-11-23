@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.rpc.server
 
 import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jkmvc.ttl.SttlCurrentHolder
-import net.jkcode.jkmvc.ttl.RpcRequestScopedTransferableThreadLocal
+import net.jkcode.jkutil.ttl.SttlCurrentHolder
+import net.jkcode.jkutil.ttl.RpcRequestScopedTransferableThreadLocal
 import net.jkcode.jksoa.common.IRpcRequest
 
 /**

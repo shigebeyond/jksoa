@@ -3,8 +3,8 @@ package net.jkcode.jksoa.rpc.client.netty
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.channel.unix.Errors
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException

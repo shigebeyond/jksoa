@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.guard
 
 import com.google.common.util.concurrent.RateLimiter
-import net.jkcode.jkmvc.common.currMillis
-import net.jkcode.jkmvc.common.makeThreads
+import net.jkcode.jkutil.common.currMillis
+import net.jkcode.jkutil.common.makeThreads
 import net.jkcode.jksoa.guard.rate.IRateLimiter
 import net.jkcode.jksoa.guard.rate.SmoothBurstyRateLimiter
 import net.jkcode.jksoa.guard.rate.SmoothWarmingUpRateLimiter

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.agent.plugin
 
-import net.jkcode.jkmvc.common.IPlugin
+import net.jkcode.jkutil.common.IPlugin
 import net.jkcode.jkmvc.http.handler.HttpRequestHandler
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.agent.interceptor.HttpServerTraceInterceptor

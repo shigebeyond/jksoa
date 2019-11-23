@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.common.exception
 
-import net.jkcode.jkmvc.common.JkException
+import net.jkcode.jkutil.common.JkException
 
 /**
  * 注册异常

@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.dtx.tcc.model
 
-import net.jkcode.jkmvc.common.generateId
-import net.jkcode.jkmvc.common.getMethodBySignature
-import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkutil.common.generateId
+import net.jkcode.jkutil.common.getMethodBySignature
+import net.jkcode.jkutil.common.getSignature
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.invocation.IInvocation

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.common.exception
 
-import net.jkcode.jkmvc.common.JkException
+import net.jkcode.jkutil.common.JkException
 
 /**
  * mq服务端异常

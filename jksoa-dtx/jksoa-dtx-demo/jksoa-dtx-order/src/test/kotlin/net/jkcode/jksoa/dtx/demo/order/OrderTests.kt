@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.dtx.demo.order
 
-import net.jkcode.jkmvc.common.generateId
-import net.jkcode.jkmvc.ttl.ScopedTransferableThreadLocal
+import net.jkcode.jkutil.common.generateId
+import net.jkcode.jkutil.ttl.ScopedTransferableThreadLocal
 import net.jkcode.jksoa.dtx.demo.coupon.service.ICouponService
 import net.jkcode.jksoa.dtx.demo.order.controller.OrderController
 import net.jkcode.jksoa.dtx.demo.order.service.OrderService

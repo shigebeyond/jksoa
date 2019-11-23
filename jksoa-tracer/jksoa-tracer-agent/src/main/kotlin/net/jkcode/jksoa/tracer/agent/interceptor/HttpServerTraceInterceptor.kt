@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.agent.interceptor
 
-import net.jkcode.jkmvc.common.trySupplierFuture
+import net.jkcode.jkutil.common.trySupplierFuture
 import net.jkcode.jkmvc.http.HttpRequest
 import net.jkcode.jkmvc.http.IHttpRequestInterceptor
 import net.jkcode.jksoa.tracer.agent.Tracer

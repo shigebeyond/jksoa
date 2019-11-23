@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.broker.pusher
 
-import net.jkcode.jkmvc.bit.SetBitIterator
+import net.jkcode.jkutil.bit.SetBitIterator
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher
 import net.jkcode.jksoa.common.RpcRequest

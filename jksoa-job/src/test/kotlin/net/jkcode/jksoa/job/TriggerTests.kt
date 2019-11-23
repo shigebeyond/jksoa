@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jkmvc.common.format
+import net.jkcode.jkutil.common.format
 import net.jkcode.jksoa.job.job.LambdaJob
 import org.junit.Test
 

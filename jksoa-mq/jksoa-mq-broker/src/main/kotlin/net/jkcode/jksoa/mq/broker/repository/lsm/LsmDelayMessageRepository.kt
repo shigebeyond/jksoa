@@ -4,7 +4,7 @@ import com.indeed.lsmtree.core.Store
 import com.indeed.lsmtree.core.StoreBuilder
 import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.Serializer
-import net.jkcode.jkmvc.common.SimpleObjectPool
+import net.jkcode.jkutil.common.SimpleObjectPool
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.repository.IDelayMessageRepository

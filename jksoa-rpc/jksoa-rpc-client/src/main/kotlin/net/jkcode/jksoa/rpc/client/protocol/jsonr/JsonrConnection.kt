@@ -1,15 +1,12 @@
 package net.jkcode.jksoa.rpc.client.protocol.jsonr
 
 import com.alibaba.fastjson.JSON
-import net.jkcode.jkmvc.http.HttpClient
+import net.jkcode.jkutil.http.HttpClient
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
-import net.jkcode.jksoa.rpc.client.referer.RefererLoader
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
-import javax.naming.InitialContext
 
 /**
  * jsonr协议的连接

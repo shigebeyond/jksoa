@@ -1,10 +1,10 @@
 package net.jkcode.jksoa.mq.consumer
 
 import io.netty.util.concurrent.DefaultEventExecutorGroup
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.UnitFuture
-import net.jkcode.jkmvc.common.selectExecutor
-import net.jkcode.jkmvc.flusher.UnitRequestQueueFlusher
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.UnitFuture
+import net.jkcode.jkutil.common.selectExecutor
+import net.jkcode.jkutil.flusher.UnitRequestQueueFlusher
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqClientLogger

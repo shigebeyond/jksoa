@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.tests
 
-import net.jkcode.jkmvc.common.format
-import net.jkcode.jkmvc.common.generateId
+import net.jkcode.jkutil.common.format
+import net.jkcode.jkutil.common.generateId
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.sequence.ISequence

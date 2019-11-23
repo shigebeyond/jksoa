@@ -4,9 +4,9 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.commonLogger
-import net.jkcode.jkmvc.serialize.ISerializer
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.commonLogger
+import net.jkcode.jkutil.serialize.ISerializer
 
 /**
  * 解码

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.rpc.example
 
-import net.jkcode.jkmvc.common.randomLong
+import net.jkcode.jkutil.common.randomLong
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.rpc.server.RpcServerContext
 import java.lang.IllegalArgumentException

@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.guard
 
-import net.jkcode.jkmvc.common.print
-import net.jkcode.jkmvc.common.randomInt
-import net.jkcode.jkmvc.common.randomLong
-import net.jkcode.jkmvc.common.randomString
+import net.jkcode.jkutil.common.print
+import net.jkcode.jkutil.common.randomInt
+import net.jkcode.jkutil.common.randomLong
+import net.jkcode.jkutil.common.randomString
 import net.jkcode.jksoa.guard.combiner.GroupSupplierCombiner
 import org.junit.Test
 import java.util.concurrent.CompletableFuture

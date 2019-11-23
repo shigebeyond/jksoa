@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.demo.order.controller
 
-import net.jkcode.jkmvc.common.randomInt
+import net.jkcode.jkutil.common.randomInt
 import net.jkcode.jkmvc.db.Db
 import net.jkcode.jkmvc.http.controller.Controller
 import net.jkcode.jksoa.dtx.demo.coupon.service.ICouponService

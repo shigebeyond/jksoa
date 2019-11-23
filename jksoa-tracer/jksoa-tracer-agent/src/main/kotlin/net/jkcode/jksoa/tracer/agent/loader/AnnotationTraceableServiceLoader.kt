@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.tracer.agent.loader
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.LambdaClassScanner
-import net.jkcode.jkmvc.common.classPath2class
-import net.jkcode.jkmvc.common.isNullOrEmpty
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.LambdaClassScanner
+import net.jkcode.jkutil.common.classPath2class
+import net.jkcode.jkutil.common.isNullOrEmpty
 import net.jkcode.jksoa.tracer.agent.TraceableService
 import java.util.*
 

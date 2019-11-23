@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.rpc.server.provider
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.common.getConstructorOrNull
-import net.jkcode.jkmvc.common.isAbstract
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.common.getConstructorOrNull
+import net.jkcode.jkutil.common.isAbstract
 import net.jkcode.jksoa.common.loader.ServiceClassLoader
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.rpc.server.IProvider

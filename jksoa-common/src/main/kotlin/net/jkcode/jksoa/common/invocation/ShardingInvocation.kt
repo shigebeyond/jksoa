@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.common.invocation
 
-import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jkmvc.common.join
-import net.jkcode.jkmvc.common.trySupplierFuture
+import net.jkcode.jkutil.common.getSignature
+import net.jkcode.jkutil.common.join
+import net.jkcode.jkutil.common.trySupplierFuture
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture

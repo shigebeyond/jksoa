@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.rpc.tests
 
-import net.jkcode.jkmvc.common.makeThreads
-import net.jkcode.jkmvc.common.print
-import net.jkcode.jkmvc.common.randomString
+import net.jkcode.jkutil.common.makeThreads
+import net.jkcode.jkutil.common.print
+import net.jkcode.jkutil.common.randomString
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.example.IGuardService
 import net.jkcode.jksoa.rpc.example.User

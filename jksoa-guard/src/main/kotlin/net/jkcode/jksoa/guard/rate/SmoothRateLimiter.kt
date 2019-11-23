@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.rate
 
-import net.jkcode.jkmvc.common.currMillis
+import net.jkcode.jkutil.common.currMillis
 import java.util.concurrent.atomic.AtomicLong
 
 /**

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.measure
 
-import net.jkcode.jkmvc.common.currMillis
+import net.jkcode.jkutil.common.currMillis
 
 /**
  * 计量器

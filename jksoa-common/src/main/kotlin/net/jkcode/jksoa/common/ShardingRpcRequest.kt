@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common
 
-import net.jkcode.jkmvc.common.getSignature
+import net.jkcode.jkutil.common.getSignature
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.annotation.remoteService
 import java.lang.reflect.Method

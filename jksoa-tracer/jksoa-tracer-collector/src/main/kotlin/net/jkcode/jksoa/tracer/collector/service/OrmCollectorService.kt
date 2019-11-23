@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.collector.service
 
-import net.jkcode.jkmvc.common.Application
+import net.jkcode.jkutil.common.Application
 import net.jkcode.jkmvc.orm.collectColumn
 import net.jkcode.jkmvc.orm.toMap
 import net.jkcode.jksoa.guard.combiner.GroupRunCombiner

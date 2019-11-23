@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.guard
 
-import net.jkcode.jkmvc.common.currMillisCached
-import net.jkcode.jkmvc.common.randomBoolean
-import net.jkcode.jkmvc.common.randomLong
+import net.jkcode.jkutil.common.currMillisCached
+import net.jkcode.jkutil.common.randomBoolean
+import net.jkcode.jkutil.common.randomLong
 import net.jkcode.jksoa.guard.measure.HashedWheelMeasurer
 import org.junit.Test
 

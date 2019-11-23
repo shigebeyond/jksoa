@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.rpc.loadbalance
 
-import net.jkcode.jkmvc.common.ConsistentHash
+import net.jkcode.jkutil.common.ConsistentHash
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.rpc.client.IConnection
 import java.util.concurrent.ConcurrentHashMap

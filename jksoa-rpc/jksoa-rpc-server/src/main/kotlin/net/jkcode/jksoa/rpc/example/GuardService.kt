@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.rpc.example
 
-import net.jkcode.jkmvc.common.randomBoolean
-import net.jkcode.jkmvc.common.randomString
+import net.jkcode.jkutil.common.randomBoolean
+import net.jkcode.jkutil.common.randomString
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicInteger
 

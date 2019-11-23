@@ -2,7 +2,7 @@ package net.jkcode.jksoa.mq.broker.pusher
 
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
-import net.jkcode.jkmvc.common.CommonMilliTimer
+import net.jkcode.jkutil.common.CommonMilliTimer
 import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.repository.lsm.LsmDelayMessageRepository
 import java.util.concurrent.TimeUnit

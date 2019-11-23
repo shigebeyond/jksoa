@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.registry.zk
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.mq.common.exception.MqRegistryException
 import net.jkcode.jksoa.mq.registry.*

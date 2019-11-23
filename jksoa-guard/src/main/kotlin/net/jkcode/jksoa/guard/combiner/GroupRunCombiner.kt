@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.guard.combiner
 
-import net.jkcode.jkmvc.common.VoidFuture
-import net.jkcode.jkmvc.flusher.UnitRequestQueueFlusher
+import net.jkcode.jkutil.common.VoidFuture
+import net.jkcode.jkutil.flusher.UnitRequestQueueFlusher
 import java.util.concurrent.CompletableFuture
 
 /**

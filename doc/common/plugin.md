@@ -12,7 +12,7 @@ jksoa将系统抽象为3个端: rpc-client端, rpc-server端, http-server端
 
 3. httpServerPlugins: http服务端的插件, 在http filter初始化 `net.jkcode.jkmvc.http.JkFilter.init()` 时调用
 
-插件接口是 `net.jkcode.jkmvc.common.IPlugin`, 主要有 `start()` 方法, 在3端启动时调用, 从而增加自定义的逻辑处理.
+插件接口是 `net.jkcode.jkutil.common.IPlugin`, 主要有 `start()` 方法, 在3端启动时调用, 从而增加自定义的逻辑处理.
 
 # 自定义插件
 

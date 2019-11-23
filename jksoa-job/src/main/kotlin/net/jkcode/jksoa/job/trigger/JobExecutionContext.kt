@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.job.trigger
 
-import net.jkcode.jkmvc.common.DirtyFlagMap
-import net.jkcode.jkmvc.common.format
+import net.jkcode.jkutil.common.DirtyFlagMap
+import net.jkcode.jkutil.common.format
 import net.jkcode.jksoa.job.IJobExecutionContext
 import net.jkcode.jksoa.job.ITrigger
 import java.util.*

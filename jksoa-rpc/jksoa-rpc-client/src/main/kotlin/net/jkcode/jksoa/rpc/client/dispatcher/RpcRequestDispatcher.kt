@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.rpc.client.dispatcher
 
-import net.jkcode.jkmvc.scope.ClosingOnShutdown
-import net.jkcode.jkmvc.common.*
+import net.jkcode.jkutil.scope.ClosingOnShutdown
+import net.jkcode.jkutil.common.*
 import net.jkcode.jksoa.common.*
 import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.IConnection

@@ -3,7 +3,7 @@ package net.jkcode.jksoa.rpc.client.netty
 import io.netty.channel.Channel
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
-import net.jkcode.jkmvc.common.CommonMilliTimer
+import net.jkcode.jkutil.common.CommonMilliTimer
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.clientLogger

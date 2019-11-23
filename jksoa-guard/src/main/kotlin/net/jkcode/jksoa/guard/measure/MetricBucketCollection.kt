@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.measure
 
-import net.jkcode.jkmvc.common.sumByLong
+import net.jkcode.jkutil.common.sumByLong
 
 /**
  * 计量的槽的集合

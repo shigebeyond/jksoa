@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.dtx.demo.order.service
 
-import net.jkcode.jkmvc.common.randomInt
-import net.jkcode.jkmvc.serialize.ISerializer
+import net.jkcode.jkutil.common.randomInt
+import net.jkcode.jkutil.serialize.ISerializer
 import net.jkcode.jksoa.dtx.demo.coupon.service.ICouponService
 import net.jkcode.jksoa.dtx.demo.order.OrderItemModel
 import net.jkcode.jksoa.dtx.demo.order.OrderModel

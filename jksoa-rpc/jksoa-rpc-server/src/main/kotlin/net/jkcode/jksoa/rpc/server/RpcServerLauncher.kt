@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.rpc.server
 
-import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkutil.common.Config
 
 /**
  * 服务器启动

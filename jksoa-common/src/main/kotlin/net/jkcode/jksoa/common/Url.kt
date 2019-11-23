@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.common
 
-import net.jkcode.jkmvc.common.buildQueryString
-import net.jkcode.jkmvc.common.getAndConvert
-import net.jkcode.jkmvc.common.joinHashCode
+import net.jkcode.jkutil.common.buildQueryString
+import net.jkcode.jkutil.common.getAndConvert
+import net.jkcode.jkutil.common.joinHashCode
 import java.net.InetSocketAddress
 
 /**

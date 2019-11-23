@@ -1,11 +1,11 @@
 package net.jkcode.jksoa.rpc.server
 
-import net.jkcode.jkmvc.scope.ClosingOnShutdown
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.common.IPlugin
-import net.jkcode.jkmvc.common.getIntranetHost
-import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
+import net.jkcode.jkutil.scope.ClosingOnShutdown
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.common.IPlugin
+import net.jkcode.jkutil.common.getIntranetHost
+import net.jkcode.jkutil.singleton.NamedConfiguredSingletons
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger

@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.guard
 
-import net.jkcode.jkmvc.common.currMillis
-import net.jkcode.jkmvc.common.makeThreads
-import net.jkcode.jkmvc.common.randomBoolean
+import net.jkcode.jkutil.common.currMillis
+import net.jkcode.jkutil.common.makeThreads
+import net.jkcode.jkutil.common.randomBoolean
 import net.jkcode.jksoa.guard.circuit.CircuitBreakType
 import net.jkcode.jksoa.guard.circuit.CircuitBreaker
 import net.jkcode.jksoa.guard.measure.HashedWheelMeasurer

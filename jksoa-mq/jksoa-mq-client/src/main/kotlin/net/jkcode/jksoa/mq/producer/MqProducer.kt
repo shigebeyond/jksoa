@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.mq
 
-import net.jkcode.jkmvc.common.getWritableFinalField
-import net.jkcode.jkmvc.serialize.ISerializer
+import net.jkcode.jkutil.common.getWritableFinalField
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerLeaderService
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message

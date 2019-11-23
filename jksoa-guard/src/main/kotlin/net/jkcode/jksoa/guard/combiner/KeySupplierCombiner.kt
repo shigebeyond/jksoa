@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.combiner
 
-import net.jkcode.jkmvc.common.toFutureSupplier
+import net.jkcode.jkutil.common.toFutureSupplier
 
 /**
  * 针对每个key的无值操作合并

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.combiner
 
-import net.jkcode.jkmvc.common.toFutureSupplier
+import net.jkcode.jkutil.common.toFutureSupplier
 
 /**
  * 针对每个group的(单参数)取值操作合并, 每个group攒够一定数量/时间的请求才执行

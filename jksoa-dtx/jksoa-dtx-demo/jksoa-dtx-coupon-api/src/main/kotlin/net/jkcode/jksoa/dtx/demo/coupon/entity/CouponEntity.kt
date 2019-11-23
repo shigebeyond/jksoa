@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.demo.coupon.entity
 
-import net.jkcode.jkmvc.common.Formatter
+import net.jkcode.jkutil.common.Formatter
 import net.jkcode.jkmvc.orm.OrmEntity
 
 /**

@@ -19,8 +19,8 @@ include 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-common', 'jksoa-dtx:jksoa-dtx-demo:j
 
 // 添加jkmvc子项目
 if(env == 'dev'){
-    include 'jkmvc-common'
-    project(':jkmvc-common').projectDir = new File('../jkmvc/jkmvc-common')
+    include 'jkutil'
+    project(':jkutil').projectDir = new File('../jkutil')
 
     include 'jkmvc-orm'
     project(':jkmvc-orm').projectDir = new File('../jkmvc/jkmvc-orm')

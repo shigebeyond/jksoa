@@ -2,9 +2,9 @@ package net.jkcode.jksoa.rpc.client.connection
 
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
-import net.jkcode.jkmvc.common.CommonMilliTimer
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkutil.common.CommonMilliTimer
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.connection.reuse.ReusableConnection
 import net.jkcode.jksoa.rpc.client.connection.pool.PooledConnection

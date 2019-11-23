@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.measure
 
-import net.jkcode.jkmvc.common.mapToArray
+import net.jkcode.jkutil.common.mapToArray
 import java.util.concurrent.atomic.LongAdder
 
 /**

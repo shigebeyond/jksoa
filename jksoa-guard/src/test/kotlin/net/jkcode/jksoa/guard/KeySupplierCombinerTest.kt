@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard
 
-import net.jkcode.jkmvc.common.randomInt
+import net.jkcode.jkutil.common.randomInt
 import net.jkcode.jksoa.guard.combiner.KeySupplierCombiner
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger

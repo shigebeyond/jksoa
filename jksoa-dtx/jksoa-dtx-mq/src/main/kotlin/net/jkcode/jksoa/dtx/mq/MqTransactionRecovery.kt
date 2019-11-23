@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.dtx.mq
 
-import net.jkcode.jkmvc.common.CommonSecondTimer
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.newPeriodic
+import net.jkcode.jkutil.common.CommonSecondTimer
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.newPeriodic
 import net.jkcode.jksoa.dtx.mq.model.MqTransactionModel
 import java.util.concurrent.TimeUnit
 

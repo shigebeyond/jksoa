@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jkmvc.common.getMethodBySignature
+import net.jkcode.jkutil.common.getMethodBySignature
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.invocation.Invocation

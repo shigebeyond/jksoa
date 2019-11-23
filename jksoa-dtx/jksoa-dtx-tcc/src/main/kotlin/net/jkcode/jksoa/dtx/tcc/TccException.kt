@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.tcc
 
-import net.jkcode.jkmvc.common.JkException
+import net.jkcode.jkutil.common.JkException
 
 /**
  * tcc事务异常

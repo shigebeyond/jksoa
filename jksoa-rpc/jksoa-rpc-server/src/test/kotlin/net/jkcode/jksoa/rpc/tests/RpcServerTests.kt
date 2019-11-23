@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.rpc.tests
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.getIntranetHost
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.getIntranetHost
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.rpc.server.IRpcServer
 import net.jkcode.jksoa.rpc.server.protocol.jkr.JkrRpcServer

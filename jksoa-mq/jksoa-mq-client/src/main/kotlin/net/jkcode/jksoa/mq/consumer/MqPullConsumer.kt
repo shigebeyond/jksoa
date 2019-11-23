@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.consumer
 
-import net.jkcode.jkmvc.common.*
+import net.jkcode.jkutil.common.*
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message

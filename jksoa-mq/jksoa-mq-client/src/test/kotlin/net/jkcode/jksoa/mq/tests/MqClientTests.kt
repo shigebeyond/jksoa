@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.mq.tests
 
-import net.jkcode.jkmvc.common.format
-import net.jkcode.jkmvc.common.randomInt
-import net.jkcode.jkmvc.common.randomLong
-import net.jkcode.jkmvc.common.randomString
+import net.jkcode.jkutil.common.format
+import net.jkcode.jkutil.common.randomInt
+import net.jkcode.jkutil.common.randomLong
+import net.jkcode.jkutil.common.randomString
 import net.jkcode.jksoa.common.IRpcRequestMeta
 import net.jkcode.jksoa.mq.MqProducer
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService

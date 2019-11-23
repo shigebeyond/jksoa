@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.circuit
 
-import net.jkcode.jkmvc.common.currMillis
+import net.jkcode.jkutil.common.currMillis
 import net.jkcode.jksoa.guard.measure.IMeasurer
 import net.jkcode.jksoa.guard.rate.IRateLimiter
 import net.jkcode.jksoa.rpc.client.combiner.annotation.CircuitBreak

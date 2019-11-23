@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.connection
 
-import net.jkcode.jkmvc.common.ConsistentHash
+import net.jkcode.jkutil.common.ConsistentHash
 import net.jkcode.jksoa.rpc.client.IConnection
 
 /**

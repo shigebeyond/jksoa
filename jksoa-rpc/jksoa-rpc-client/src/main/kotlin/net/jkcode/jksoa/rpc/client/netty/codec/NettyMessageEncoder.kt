@@ -1,11 +1,11 @@
 package net.jkcode.jksoa.rpc.client.netty.codec
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.serialize.ISerializer
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.serialize.ISerializer
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
-import net.jkcode.jkmvc.common.commonLogger
+import net.jkcode.jkutil.common.commonLogger
 
 /**
  * 编码

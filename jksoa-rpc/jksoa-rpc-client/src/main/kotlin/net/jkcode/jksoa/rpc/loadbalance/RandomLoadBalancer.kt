@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.rpc.loadbalance
 
-import net.jkcode.jkmvc.common.get
-import net.jkcode.jkmvc.common.randomInt
+import net.jkcode.jkutil.common.get
+import net.jkcode.jkutil.common.randomInt
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.rpc.client.IConnection
 

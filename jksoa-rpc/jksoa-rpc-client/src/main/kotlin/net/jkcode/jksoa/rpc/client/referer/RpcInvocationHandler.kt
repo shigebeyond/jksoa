@@ -1,10 +1,10 @@
 package net.jkcode.jksoa.rpc.client.referer
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.getMethodHandle
-import net.jkcode.jkmvc.common.getSignature
-import net.jkcode.jkmvc.interceptor.RequestInterceptorChain
-import net.jkcode.jkmvc.ttl.SttlInterceptor
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.getMethodHandle
+import net.jkcode.jkutil.common.getSignature
+import net.jkcode.jkutil.interceptor.RequestInterceptorChain
+import net.jkcode.jkutil.ttl.SttlInterceptor
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.IRpcRequestInvoker

@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.common.invocation
 
 import com.alibaba.fastjson.annotation.JSONField
-import net.jkcode.jkmvc.common.getMethodByClassAndSignature
-import net.jkcode.jkmvc.common.toExpr
+import net.jkcode.jkutil.common.getMethodByClassAndSignature
+import net.jkcode.jkutil.common.toExpr
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor

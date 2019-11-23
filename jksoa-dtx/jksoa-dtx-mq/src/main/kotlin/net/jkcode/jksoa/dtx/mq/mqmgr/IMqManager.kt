@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.dtx.mq.mqmgr
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.singleton.NamedConfiguredSingletons
 import java.util.concurrent.CompletableFuture
 
 /**

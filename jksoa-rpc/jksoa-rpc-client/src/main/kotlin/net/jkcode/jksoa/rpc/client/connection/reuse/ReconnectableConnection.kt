@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.rpc.client.connection.reuse
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.common.getOrPutOnce
-import net.jkcode.jkmvc.common.currMillis
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.common.getOrPutOnce
+import net.jkcode.jkutil.common.currMillis
 import net.jkcode.jksoa.rpc.client.IRpcClient
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest

@@ -1,10 +1,10 @@
 package net.jkcode.jksoa.dtx.tcc
 
-import net.jkcode.jkmvc.common.*
+import net.jkcode.jkutil.common.*
 import net.jkcode.jkmvc.db.Db
-import net.jkcode.jkmvc.ttl.AllRequestScopedTransferableThreadLocal
-import net.jkcode.jkmvc.ttl.ScopedTransferableThreadLocal
-import net.jkcode.jkmvc.ttl.SttlCurrentHolder
+import net.jkcode.jkutil.ttl.AllRequestScopedTransferableThreadLocal
+import net.jkcode.jkutil.ttl.ScopedTransferableThreadLocal
+import net.jkcode.jkutil.ttl.SttlCurrentHolder
 import net.jkcode.jksoa.common.invocation.IInvocation
 import net.jkcode.jksoa.dtx.tcc.model.TccParticipant
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture
  */
 class TccTransactionManager private constructor() : ITccTransactionManager {
 
-    companion object: SttlCurrentHolder<TccTransactionManager>(AllRequestScopedTransferableThreadLocal{ TccTransactionManager() }) { // 所有请求域的可传递的 ThreadLocal
+    companion object: SttlCurrentHolder<TccTransactionManager>(AllRequestScopedTransferableThreadLocal { TccTransactionManager() }) { // 所有请求域的可传递的 ThreadLocal
 
         /**
          * 配置

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard
 
-import net.jkcode.jkmvc.common.ModuleLogSwitcher
+import net.jkcode.jkutil.common.ModuleLogSwitcher
 import org.slf4j.LoggerFactory
 
 // 守护者的日志

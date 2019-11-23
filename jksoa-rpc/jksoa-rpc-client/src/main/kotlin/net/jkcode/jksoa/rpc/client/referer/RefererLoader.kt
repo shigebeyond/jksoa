@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.rpc.client.referer
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.rpc.client.IReferer
 import net.jkcode.jksoa.common.loader.ServiceClassLoader
 

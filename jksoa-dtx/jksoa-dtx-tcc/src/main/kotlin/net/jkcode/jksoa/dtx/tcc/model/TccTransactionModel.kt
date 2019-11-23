@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.tcc.model
 
-import net.jkcode.jkmvc.common.*
+import net.jkcode.jkutil.common.*
 import net.jkcode.jkmvc.orm.Orm
 import net.jkcode.jkmvc.orm.OrmMeta
 import net.jkcode.jksoa.common.invocation.IInvocation

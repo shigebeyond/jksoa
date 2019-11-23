@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.demo.order
 
-import net.jkcode.jkmvc.common.Formatter
+import net.jkcode.jkutil.common.Formatter
 import net.jkcode.jkmvc.orm.OrmMeta
 import net.jkcode.jkmvc.orm.Orm 
 

@@ -9,8 +9,8 @@ import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.channel.unix.Errors
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
-import net.jkcode.jkmvc.common.CommonThreadPool
-import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkutil.common.CommonThreadPool
+import net.jkcode.jkutil.common.Config
 import java.nio.channels.ClosedChannelException
 
 /**

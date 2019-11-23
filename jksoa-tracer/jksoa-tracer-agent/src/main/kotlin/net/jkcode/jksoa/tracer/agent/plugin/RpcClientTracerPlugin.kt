@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.agent.plugin
 
-import net.jkcode.jkmvc.common.IPlugin
+import net.jkcode.jkutil.common.IPlugin
 import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
 import net.jkcode.jksoa.tracer.agent.interceptor.RpcClientTraceInterceptor
 

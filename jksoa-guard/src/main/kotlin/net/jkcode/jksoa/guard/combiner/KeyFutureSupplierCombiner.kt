@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.combiner
 
-import net.jkcode.jkmvc.common.getOrPutOnce
+import net.jkcode.jkutil.common.getOrPutOnce
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger

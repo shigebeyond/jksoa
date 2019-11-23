@@ -2,8 +2,8 @@ package net.jkcode.jksoa.job.trigger
 
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
-import net.jkcode.jkmvc.common.*
-import net.jkcode.jkmvc.scope.GlobalAllRequestScope
+import net.jkcode.jkutil.common.*
+import net.jkcode.jkutil.scope.GlobalAllRequestScope
 import net.jkcode.jksoa.job.IJob
 import net.jkcode.jksoa.job.ITrigger
 import net.jkcode.jksoa.job.jobLogger

@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.dtx.tcc
 
-import net.jkcode.jkmvc.ttl.RpcRequestScopedTransferableThreadLocal
-import net.jkcode.jkmvc.ttl.SttlCurrentHolder
+import net.jkcode.jkutil.ttl.RpcRequestScopedTransferableThreadLocal
+import net.jkcode.jkutil.ttl.SttlCurrentHolder
 
 /**
  * tcc事务的rpc服务端上下文

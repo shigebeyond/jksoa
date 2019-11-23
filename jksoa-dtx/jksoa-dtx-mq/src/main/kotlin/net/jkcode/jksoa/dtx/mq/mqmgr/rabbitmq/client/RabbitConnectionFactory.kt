@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.client
 
 import com.rabbitmq.client.Connection
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.ttl.AllRequestScopedTransferableThreadLocal
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.ttl.AllRequestScopedTransferableThreadLocal
 import org.apache.commons.pool2.impl.GenericObjectPool
 import redis.clients.jedis.Jedis
 import java.util.*

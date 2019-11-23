@@ -12,7 +12,7 @@ jksoa将系统抽象为3个端: rpc-client端, rpc-server端, http-server端
 
 3. http服务端的拦截器, 配置在 `http.yaml` 的 `interceptors` 属性, 会应用到 `HttpRequestHandler.interceptors`
 
-请求拦截器接口是 `net.jkcode.jkmvc.interceptor.IRequestInterceptor`, 主要有 `intercept()` 方法, 在3端的请求处理时调用, 从而增加自定义的逻辑处理.
+请求拦截器接口是 `net.jkcode.jkutil.interceptor.IRequestInterceptor`, 主要有 `intercept()` 方法, 在3端的请求处理时调用, 从而增加自定义的逻辑处理.
 
 # 自定义请求拦截器
 
@@ -20,7 +20,7 @@ jksoa将系统抽象为3个端: rpc-client端, rpc-server端, http-server端
 
 1.  `IRequestInterceptor` 接口定义如下:
 
-返回类型是 `CompletableFuture`, 1是给业务方调用, 让他能设置回调, 2是给拦截器链表的下一个拦截器调用, 让他能够更准确的确定后置处理的调用时机, 详情参考`net.jkcode.jkmvc.interceptor.RequestInterceptorChain`
+返回类型是 `CompletableFuture`, 1是给业务方调用, 让他能设置回调, 2是给拦截器链表的下一个拦截器调用, 让他能够更准确的确定后置处理的调用时机, 详情参考`net.jkcode.jkutil.interceptor.RequestInterceptorChain`
 
 ```
 /**

@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.mq.model
 
-import net.jkcode.jkmvc.common.Config
+import net.jkcode.jkutil.common.Config
 import net.jkcode.jkmvc.orm.Orm
 import net.jkcode.jkmvc.orm.OrmMeta
 

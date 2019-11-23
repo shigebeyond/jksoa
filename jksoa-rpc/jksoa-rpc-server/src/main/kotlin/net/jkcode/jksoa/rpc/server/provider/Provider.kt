@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.rpc.server.provider
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.singleton.BeanSingletons
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.singleton.BeanSingletons
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.serverLogger

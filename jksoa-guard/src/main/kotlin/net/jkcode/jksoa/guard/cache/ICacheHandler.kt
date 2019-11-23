@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.guard.cache
 
-import net.jkcode.jkmvc.cache.ICache
+import net.jkcode.jkutil.cache.ICache
 import net.jkcode.jksoa.rpc.client.combiner.annotation.Cache
 import java.util.concurrent.CompletableFuture
 

@@ -1,8 +1,5 @@
 package net.jkcode.jksoa.common
 
-import net.jkcode.jkmvc.common.Config
-import net.jkcode.jkmvc.common.IConfig
-import net.jkcode.jkmvc.singleton.NamedConfiguredSingletons
 import java.util.concurrent.CompletableFuture
 
 /**

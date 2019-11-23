@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common
 
-import net.jkcode.jkmvc.interceptor.IRequestInterceptor
+import net.jkcode.jkutil.interceptor.IRequestInterceptor
 
 // rpc请求处理的拦截器
 typealias IRpcRequestInterceptor = IRequestInterceptor<IRpcRequest>

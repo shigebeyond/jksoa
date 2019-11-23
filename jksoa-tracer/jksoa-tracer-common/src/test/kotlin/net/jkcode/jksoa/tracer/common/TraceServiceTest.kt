@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.common
 
-import net.jkcode.jkmvc.common.*
+import net.jkcode.jkutil.common.*
 import net.jkcode.jksoa.tracer.common.entity.tracer.Annotation
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.model.tracer.AnnotationModel

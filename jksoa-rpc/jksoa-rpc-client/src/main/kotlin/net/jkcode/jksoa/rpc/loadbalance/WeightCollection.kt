@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.rpc.loadbalance
 
-import net.jkcode.jkmvc.common.joinToString
+import net.jkcode.jkutil.common.joinToString
 import net.jkcode.jksoa.rpc.client.IConnection
 import java.util.NoSuchElementException
 

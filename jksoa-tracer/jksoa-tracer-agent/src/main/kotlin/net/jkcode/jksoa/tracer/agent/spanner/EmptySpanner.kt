@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.agent.spanner
 
-import net.jkcode.jkmvc.common.UnitFuture
+import net.jkcode.jkutil.common.UnitFuture
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import java.util.concurrent.CompletableFuture

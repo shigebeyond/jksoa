@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.mq.connection
 
-import net.jkcode.jkmvc.bit.SetBitIterator
-import net.jkcode.jkmvc.common.getOrPutOnce
-import net.jkcode.jkmvc.common.map
-import net.jkcode.jkmvc.common.randomInt
+import net.jkcode.jkutil.bit.SetBitIterator
+import net.jkcode.jkutil.common.getOrPutOnce
+import net.jkcode.jkutil.common.map
+import net.jkcode.jkutil.common.randomInt
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException

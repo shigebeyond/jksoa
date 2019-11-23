@@ -4,7 +4,7 @@ import com.indeed.lsmtree.core.StoreBuilder
 import com.indeed.util.serialization.IntSerializer
 import com.indeed.util.serialization.LongSerializer
 import com.indeed.util.serialization.Serializer
-import net.jkcode.jkmvc.common.getOrPutOnce
+import net.jkcode.jkutil.common.getOrPutOnce
 import net.jkcode.jksoa.mq.broker.BrokerConfig
 import net.jkcode.jksoa.mq.broker.repository.lsm.serialize.BitSetLsmSerializer
 import net.jkcode.jksoa.mq.broker.repository.lsm.serialize.FstObjectLsmSerializer
