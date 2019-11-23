@@ -26,7 +26,7 @@ import kotlin.collections.set
  * @author shijianhang<772910474@qq.com>
  * @date 2017-11-08 7:25 PM
  */
-object RpcInvocationHandler: net.jkcode.jkguard.MethodGuardInvoker(), InvocationHandler, IRpcRequestInvoker {
+object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcRequestInvoker {
 
     /**
      * client配置

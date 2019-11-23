@@ -30,7 +30,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-object RpcRequestHandler : IRpcRequestHandler, net.jkcode.jkguard.MethodGuardInvoker() {
+object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
 
     /**
      * 服务端配置

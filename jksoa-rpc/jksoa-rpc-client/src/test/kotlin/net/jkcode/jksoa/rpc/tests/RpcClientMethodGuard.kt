@@ -1,9 +1,9 @@
 package net.jkcode.jksoa.rpc.tests
 
+import net.jkcode.jkguard.MethodGuard
+import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
-import net.jkcode.jksoa.common.annotation.getServiceClass
-import net.jkcode.jkguard.MethodGuard
 import java.lang.reflect.Method
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -13,7 +13,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2019-04-19 2:22 PM
  */
-class RpcClientMethodGuard(method: Method): net.jkcode.jkguard.MethodGuard(method, RpcInvocationHandler) {
+class RpcClientMethodGuard(method: Method): MethodGuard(method, RpcInvocationHandler) {
 
     /**
      * 构造函数
