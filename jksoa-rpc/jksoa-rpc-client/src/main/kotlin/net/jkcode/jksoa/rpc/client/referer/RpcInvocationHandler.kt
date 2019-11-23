@@ -104,6 +104,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
         return guardInvoke(method, proxy, args)
     }
 
+    /***************** MethodGuardInvoker 实现 *****************/
     /**
      * 获得调用的对象
      * @param method

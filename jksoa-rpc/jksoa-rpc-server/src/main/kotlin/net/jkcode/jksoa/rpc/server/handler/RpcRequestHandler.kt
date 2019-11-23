@@ -126,6 +126,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         GlobalRpcRequestScope.endScope()
     }
 
+    /***************** MethodGuardInvoker 实现 *****************/
     /**
      * 获得调用的对象
      * @param method
