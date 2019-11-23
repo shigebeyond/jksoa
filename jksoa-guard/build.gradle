@@ -1,7 +1,0 @@
-dependencies{
-    // other project
-    if(env == 'dev') 
-        compile project(':jkutil')
-    else
-        compile "net.jkcode.jkutil:jkutil:$jkmvc_version"
-}

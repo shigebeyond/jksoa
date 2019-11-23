@@ -1,10 +1,12 @@
 dependencies{
     // other project
-    compile project(':jksoa-guard')
-    if(env == 'dev') 
+    if(env == 'dev'){
         compile project(':jkutil')
-    else
-        compile "net.jkcode.jkutil:jkutil:$jkmvc_version"
+        compile project(':jkguard')
+    }else{
+        compile "net.jkcode.jkutil:jkutil:$jkutil_version"
+        compile "net.jkcode.jkguard:jkguard:$jkguard_version"
+    }
 
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     compile 'org.jetbrains.kotlin:kotlin-reflect'

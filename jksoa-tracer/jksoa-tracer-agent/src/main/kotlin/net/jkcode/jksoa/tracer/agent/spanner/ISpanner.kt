@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.agent.spanner
 
-import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
+import net.jkcode.jkguard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.tracer.agent.Tracer
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.service.remote.ICollectorService

@@ -2,7 +2,7 @@ package net.jkcode.jksoa.rpc.example
 
 import net.jkcode.jksoa.rpc.client.combiner.annotation.*
 import net.jkcode.jksoa.common.annotation.RemoteService
-import net.jkcode.jksoa.guard.circuit.CircuitBreakType
+import net.jkcode.jkguard.circuit.CircuitBreakType
 import java.io.Serializable
 import java.util.concurrent.CompletableFuture
 

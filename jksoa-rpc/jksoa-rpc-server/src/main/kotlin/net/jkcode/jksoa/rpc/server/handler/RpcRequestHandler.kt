@@ -15,7 +15,7 @@ import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
-import net.jkcode.jksoa.guard.MethodGuardInvoker
+import net.jkcode.jkguard.MethodGuardInvoker
 import net.jkcode.jksoa.rpc.server.RpcServerContext
 import net.jkcode.jksoa.rpc.server.provider.ProviderLoader
 import java.lang.reflect.InvocationTargetException
@@ -30,7 +30,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 5:52 PM
  */
-object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
+object RpcRequestHandler : IRpcRequestHandler, net.jkcode.jkguard.MethodGuardInvoker() {
 
     /**
      * 服务端配置

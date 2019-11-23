@@ -6,8 +6,8 @@ import net.jkcode.jkutil.common.randomString
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.example.IGuardService
 import net.jkcode.jksoa.rpc.example.User
-import net.jkcode.jksoa.guard.combiner.GroupFutureSupplierCombiner
-import net.jkcode.jksoa.guard.combiner.KeyFutureSupplierCombiner
+import net.jkcode.jkguard.combiner.GroupFutureSupplierCombiner
+import net.jkcode.jkguard.combiner.KeyFutureSupplierCombiner
 import org.junit.Test
 import java.util.concurrent.CompletableFuture
 

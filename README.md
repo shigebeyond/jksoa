@@ -4,10 +4,9 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 
 1. jksoa-rpc: 远程方法调用的组件, 包含 registry / rpc-client / rpc-server 的3个子组件
 2. jksoa-job: 分布式任务调度的组件
-3. jksoa-guard: 应用守护者组件, 提供了请求合并/流量统计/熔断/限流/降级/缓存等多功能的守护
-4. jksoa-tracer: 分布式跟踪的组件, 包含 agent / collector / web 的3个子组件
-5. jksoa-mq: 消息队列的组件, 包含 mq-registry / mq-client / mq-broker 的3个子组件
-6. jksoa-dtx: 分布式事务的组件, 包含 dtx-mq / dtx-tcc(真正的异步非阻塞) 的2个子组件
+3. jksoa-tracer: 分布式跟踪的组件, 包含 agent / collector / web 的3个子组件
+4. jksoa-mq: 消息队列的组件, 包含 mq-registry / mq-client / mq-broker 的3个子组件
+5. jksoa-dtx: 分布式事务的组件, 包含 dtx-mq / dtx-tcc(真正的异步非阻塞) 的2个子组件
 
 # 公共组件
 1. [插件机制](doc/common/plugin.md)
@@ -72,27 +71,6 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 4. [架构](doc/job/architecture.md)
 5. [分片策略](doc/job/sharding_strategy.md)
 6. [调度者集群](doc/job/cluster.md)
-
-# jksoa-guard
-
-应用守护者组件, 提供了请求合并/流量统计/熔断/限流/降级/缓存等多功能的守护
-
-## 入门
-1. [快速开始](doc/guard/getting_started.md)
-2. [注解](doc/guard/annotation.md)
-
-### 合并组件
-3. [合并同key请求](doc/guard/key_combiner.md)
-4. [合并同group请求](doc/guard/group_combiner.md)
-5. [计量器](doc/guard/measure.md)
-6. [断路器](doc/guard/circuit_breaker.md)
-7. [限流器](doc/guard/rate_limiter.md)
-8. [降级](doc/guard/degrade.md)
-9. [缓存](doc/guard/cache.md)
-
-## 高级
-10. [架构](doc/guard/architecture.md)
-11. [方法级守护](doc/guard/method_guard.md)
 
 # jksoa-tracer
 

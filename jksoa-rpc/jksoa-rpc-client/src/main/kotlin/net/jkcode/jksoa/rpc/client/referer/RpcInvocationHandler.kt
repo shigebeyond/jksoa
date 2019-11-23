@@ -10,7 +10,7 @@ import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.IRpcRequestInvoker
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.getServiceClass
-import net.jkcode.jksoa.guard.MethodGuardInvoker
+import net.jkcode.jkguard.MethodGuardInvoker
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
@@ -26,7 +26,7 @@ import kotlin.collections.set
  * @author shijianhang<772910474@qq.com>
  * @date 2017-11-08 7:25 PM
  */
-object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcRequestInvoker {
+object RpcInvocationHandler: net.jkcode.jkguard.MethodGuardInvoker(), InvocationHandler, IRpcRequestInvoker {
 
     /**
      * client配置

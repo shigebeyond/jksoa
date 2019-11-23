@@ -3,7 +3,7 @@ package net.jkcode.jksoa.tracer.collector.service
 import net.jkcode.jkutil.common.Application
 import net.jkcode.jkmvc.orm.collectColumn
 import net.jkcode.jkmvc.orm.toMap
-import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
+import net.jkcode.jkguard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.tracer.common.entity.tracer.Span
 import net.jkcode.jksoa.tracer.common.entity.service.Service
 import net.jkcode.jksoa.tracer.common.model.service.AppModel

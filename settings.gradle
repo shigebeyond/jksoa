@@ -2,8 +2,6 @@ rootProject.name = 'jksoa'
 
 // 公共
 include 'jksoa-common'
-// 应用守护
-include 'jksoa-guard'
 // rpc
 include 'jksoa-rpc:jksoa-rpc-registry', 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc:jksoa-rpc-server'
 // 作业调度
@@ -21,6 +19,10 @@ include 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-common', 'jksoa-dtx:jksoa-dtx-demo:j
 if(env == 'dev'){
     include 'jkutil'
     project(':jkutil').projectDir = new File('../jkutil')
+
+    // 应用守护
+    include 'jkguard'
+    project(':jkguard').projectDir = new File('../jkguard')
 
     include 'jkmvc-orm'
     project(':jkmvc-orm').projectDir = new File('../jkmvc/jkmvc-orm')

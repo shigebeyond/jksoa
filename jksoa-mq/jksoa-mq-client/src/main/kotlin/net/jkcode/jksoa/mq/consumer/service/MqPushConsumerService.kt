@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.mq.consumer
 
-import net.jkcode.jksoa.guard.combiner.GroupRunCombiner
+import net.jkcode.jkguard.combiner.GroupRunCombiner
 import net.jkcode.jksoa.mq.common.Message
 import net.jkcode.jksoa.mq.common.mqClientLogger
 import net.jkcode.jksoa.mq.consumer.service.IMqPushConsumerService
