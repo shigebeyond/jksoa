@@ -17,8 +17,8 @@ public override fun close() {
     super.close()
 
     serverLogger.info("NettyRpcServer关闭netty工作线程池")
-    workerGroup.shutdownGracefully();
-    bossGroup.shutdownGracefully();
+    ioGroup.shutdownGracefully();
+    acceptGroup.shutdownGracefully();
 }
 ```
 
@@ -31,7 +31,7 @@ public override fun close() {
 ```
 public override fun close() {
     clientLogger.info("NettyRpcClient关闭netty工作线程池")
-    val f = workerGroup.shutdownGracefully()
+    val f = ioGroup.shutdownGracefully()
     f.syncUninterruptibly()
 }
 ```

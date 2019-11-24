@@ -40,30 +40,30 @@ abstract class NettyRpcServer : IRpcServer() {
     protected val bootstrap: ServerBootstrap
 
     /**
-     * 老板线程池：接收连接
+     * 接收连接的线程池
      */
-    protected val bossGroup: EventLoopGroup
+    protected val acceptGroup: EventLoopGroup
 
     /**
-     * 工作线程池：处理io
+     * 处理io的线程池
      */
-    protected val workerGroup: EventLoopGroup
+    protected val ioGroup: EventLoopGroup
 
     init{
         bootstrap = ServerBootstrap()
 
         if(Epoll.isAvailable()){
-            bossGroup = EpollEventLoopGroup(nettyConfig["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
-            workerGroup = EpollEventLoopGroup(nettyConfig["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
-            (bossGroup as EpollEventLoopGroup).setIoRatio(100)
-            (workerGroup as EpollEventLoopGroup).setIoRatio(100)
+            acceptGroup = EpollEventLoopGroup(nettyConfig["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
+            ioGroup = EpollEventLoopGroup(nettyConfig["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
+            (acceptGroup as EpollEventLoopGroup).setIoRatio(100)
+            (ioGroup as EpollEventLoopGroup).setIoRatio(100)
 
             bootstrap.channel(EpollServerSocketChannel::class.java)
             bootstrap.option(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED)
             bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED)
         }else{
-            bossGroup = NioEventLoopGroup(nettyConfig["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
-            workerGroup = NioEventLoopGroup(nettyConfig["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
+            acceptGroup = NioEventLoopGroup(nettyConfig["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
+            ioGroup = NioEventLoopGroup(nettyConfig["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
 
             bootstrap.channel(NioServerSocketChannel::class.java)
         }
@@ -78,7 +78,7 @@ abstract class NettyRpcServer : IRpcServer() {
                 .childOption(ChannelOption.SO_RCVBUF, nettyConfig["receiveBufferSize"]!!) // 接收的缓冲大小
                 .childOption<ByteBufAllocator>(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 
-        bootstrap.group(bossGroup, workerGroup)
+        bootstrap.group(acceptGroup, ioGroup)
                 .childHandler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
                         serverLogger.debug("NettyRpcServer收到client连接: {}", channel)
@@ -140,7 +140,7 @@ abstract class NettyRpcServer : IRpcServer() {
         super.close()
 
         serverLogger.info("NettyRpcServer关闭netty工作线程池")
-        workerGroup.shutdownGracefully();
-        bossGroup.shutdownGracefully();
+        ioGroup.shutdownGracefully();
+        acceptGroup.shutdownGracefully();
     }
 }

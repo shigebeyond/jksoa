@@ -30,9 +30,9 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
     public val config: IConfig = Config.instance("rpc-client", "yaml")
 
     /**
-     * 工作线程池：处理io
+     * 处理io的线程池
      */
-    protected val workerGroup: EventLoopGroup = NioEventLoopGroup(config["ioThreadNum"]!!)
+    protected val ioGroup: EventLoopGroup = NioEventLoopGroup(config["ioThreadNum"]!!)
 
     /**
      * client Bootstrap
@@ -45,7 +45,7 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
     protected fun buildBootstrap(): Bootstrap {
         // 通用启动选项
         val bootstrap = Bootstrap()
-                .group(workerGroup)
+                .group(ioGroup)
                 .channel(NioSocketChannel::class.java)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, config["connectTimeoutMillis"]!!) // 连接超时
                 .option(ChannelOption.SO_KEEPALIVE, true) // 保持心跳
@@ -128,7 +128,7 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
 
     public override fun close() {
         clientLogger.info("NettyRpcClient关闭netty工作线程池")
-        val f = workerGroup.shutdownGracefully()
+        val f = ioGroup.shutdownGracefully()
         f.syncUninterruptibly()
     }
 }

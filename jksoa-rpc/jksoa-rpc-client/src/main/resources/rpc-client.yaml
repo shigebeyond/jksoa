@@ -13,4 +13,4 @@ maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcRe
 reuseConnection: true # 是否复用连接: 1 true: 则使用连接 ReconnectableConnection 2 false: 则使用连接 PooledConnection
 lazyConnect: false # 是否延迟创建连接, 用在 ReconnectableConnection
 pooledConnectionMaxTotal: 2 # 池化连接的最大数, 用在 PooledConnection
-ioThreadNum: 0 # IO线程数, 如为0, 则为Runtime.getRuntime().availableProcessors()
+ioThreadNum: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数

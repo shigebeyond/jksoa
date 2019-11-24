@@ -78,8 +78,8 @@ netty:
     sendBufferSize: 65536 # 发送的缓存大小, 默认64K=1024*64
     receiveBufferSize: 65536 # 接收的缓冲大小, 默认64K=1024*64
     acceptorThreadNum: 1 # acceptor线程数
-    ioThreadNum: 0 # IO线程数, 如为0, 则为Runtime.getRuntime().availableProcessors()
-    handleRequestInIOThread: true # 请求处理是否放到IO线程执行, 否则放到公共线程池中执行
+    ioThreadNum: 0 # IO线程数, 用于处理非阻塞的io事件, 如为0 则为核数
+    workerThreadNum: 0 # 业务线程数, 用于处理阻塞的任务(如请求处理), 取决于线程的阻塞系数, 如为-1 则放到IO线程执行, 如为0 则为核数*8
     # IdleStateHandler 中channel空闲检查的时间配置
     readerIdleTimeSecond: 600
     writerIdleTimeSeconds: 600
@@ -158,7 +158,7 @@ maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcRe
 reuseConnection: true # 是否复用连接: 1 true: 则使用连接 ReconnectableConnection 2 false: 则使用连接 PooledConnection
 lazyConnect: false # 是否延迟创建连接, 用在 ReconnectableConnection
 pooledConnectionMaxTotal: 2 # 池化连接的最大数
-ioThreadNum: 0 # IO线程数, 如为0, 则为Runtime.getRuntime().availableProcessors()
+ioThreadNum: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数
 ```
 
 ### 获得服务引用者(stub)

@@ -62,8 +62,8 @@ netty:
     sendBufferSize: 65536 # 发送的缓存大小, 默认64K=1024*64
     receiveBufferSize: 65536 # 接收的缓冲大小, 默认64K=1024*64
     acceptorThreadNum: 1 # acceptor线程数
-    ioThreadNum: 0 # IO线程数, 如为0, 则为Runtime.getRuntime().availableProcessors()
-    handleRequestInIOThread: true # 请求处理是否放到IO线程执行, 否则放到公共线程池中执行
+    ioThreadNum: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数
+    workerThreadNum: 0 # 业务线程数, 用于处理阻塞的任务(如请求处理), 取决于线程的阻塞系数, 如为-1 则放到IO线程执行, 如为0 则为核数*8
     # IdleStateHandler 中channel空闲检查的时间配置
     readerIdleTimeSecond: 600
     writerIdleTimeSeconds: 600

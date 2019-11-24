@@ -33,9 +33,13 @@ if(env == 'dev'){
     include 'jkmvc-server-jetty'
     project(':jkmvc-server-jetty').projectDir = new File('../jkmvc/jkmvc-server-jetty')
 
+    // 性能测试
+    include 'jkbenchmark-test'
+    project(':jkbenchmark-test').projectDir = new File('../jkbenchmark/jkbenchmark-test')
+
     include 'benchmark-common'
     project(':benchmark-common').projectDir = new File('../jksoa-benchmark/common')
-    
+
     include 'benchmark-rpc'
     project(':benchmark-rpc').projectDir = new File('../jksoa-benchmark/jkrpc')
 }
