@@ -102,7 +102,9 @@ open class NettyRequestHandler(
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
         // 当连接关闭时报错异常: io.netty.channel.unix.Errors$NativeIoException: epoll_ctl(..) failed: No such file or directory
-        if(cause is Errors.NativeIoException && cause.message == "epoll_ctl(..) failed: No such file or directory" || cause is ClosedChannelException) {
+        val closeMsg = "epoll_ctl(..) failed: No such file or directory"
+        val closeMsg2 = "epoll_ctl(..) failed: 没有那个文件或目录"
+        if(cause is Errors.NativeIoException && (cause.message == closeMsg || cause.message == closeMsg2) || cause is ClosedChannelException) {
             clientLogger.debug("NettyRequestHandler捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.simpleName, cause.message)
             return
         }
