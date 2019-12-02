@@ -45,7 +45,7 @@ object TccTransactionRecovery {
                 .where("status", "IN", arrayOf(TccTransactionModel.STATUS_CONFIRMING, TccTransactionModel.STATUS_CANCELING)) // 确认中/取消中的事务
                 .where("updated", "<=", now - retrySeconds) // 过了重试秒数
                 .where("retry_count", "<", maxRetryCount) // 过了重试秒数
-                .findAllModels<TccTransactionModel>()
+                .findModels<TccTransactionModel>()
 
         // 结束事务: 提交/回滚
         dtxTccLogger.debug("定时恢复 {} 个事务", txs.size)

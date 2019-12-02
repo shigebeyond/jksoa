@@ -45,7 +45,7 @@ class OrmCollectorService : ICollectorService {
         val appId = app!!.id
 
         // 查询service
-        val oldServices = ServiceModel.queryBuilder().where("app_id", app.id).findAllModels<ServiceModel>()
+        val oldServices = ServiceModel.queryBuilder().where("app_id", app.id).findModels<ServiceModel>()
         val oldServiceNames = oldServices.collectColumn("name")
 
         // 新建service -- 只新增, 不删除
@@ -62,7 +62,7 @@ class OrmCollectorService : ICollectorService {
         }
 
         // 返回全部service
-        return ServiceModel.queryBuilder().findAllModels<ServiceModel>().toMap<String, Int>("name", "id") as Map<String, Int>
+        return ServiceModel.queryBuilder().findModels<ServiceModel>().toMap<String, Int>("name", "id") as Map<String, Int>
     }
 
     /**

@@ -38,7 +38,7 @@ class CouponService : ICouponService {
      * @return
      */
     override fun getUnspentCouponByUid(uid: Int): List<CouponEntity> {
-        return CouponModel.queryBuilder().where("uid", "=", uid).where("status", "=", CouponModel.STATUS_UNSPENT).findAllEntities<CouponModel, CouponEntity>()
+        return CouponModel.queryBuilder().where("uid", "=", uid).where("status", "=", CouponModel.STATUS_UNSPENT).findEntities<CouponModel, CouponEntity>()
     }
 
     /**

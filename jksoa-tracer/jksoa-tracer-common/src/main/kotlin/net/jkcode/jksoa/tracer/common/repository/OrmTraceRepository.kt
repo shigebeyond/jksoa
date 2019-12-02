@@ -68,7 +68,7 @@ class OrmTraceRepository : ITraceRepository {
      * @return
      */
     public override fun getTraceInfo(traceId: Long): JSONObject {
-        val spans = SpanModel.queryBuilder().with("annotations").where("trace_id", traceId).findAllModels<SpanModel>()
+        val spans = SpanModel.queryBuilder().with("annotations").where("trace_id", traceId).findModels<SpanModel>()
 
         val trace = JSONObject()
 
@@ -121,7 +121,7 @@ class OrmTraceRepository : ITraceRepository {
                 .where("duration", "<=", durationMax)
                 .where("duration", ">=", durationMin)
                 .limit(limit)
-                .findAllModels<TraceModel>()
+                .findModels<TraceModel>()
 
         val array = JSONArray()
         for (trace in items) {
@@ -158,7 +158,7 @@ class OrmTraceRepository : ITraceRepository {
                 .where("annotation.key", Annotation.EXCEPTION)
                 .groupBy("span_id")
                 .limit(limit)
-                .findAllModels<AnnotationModel>()
+                .findModels<AnnotationModel>()
 
         val array = JSONArray()
         for (annotation in items) {

@@ -17,7 +17,7 @@ class ServiceController: Controller()
      */
     public fun appListAction()
     {
-        val items = AppModel.queryBuilder().findAllModels<AppModel>()
+        val items = AppModel.queryBuilder().findModels<AppModel>()
         res.renderJson(items)
     }
 
@@ -26,7 +26,7 @@ class ServiceController: Controller()
      */
     public fun listAction(){
         val appId: Int = req.getRouteParameter("id")!!
-        val items = ServiceModel.queryBuilder().where("app_id", appId).findAllModels<ServiceModel>()
+        val items = ServiceModel.queryBuilder().where("app_id", appId).findModels<ServiceModel>()
         res.renderJson(items)
     }
 

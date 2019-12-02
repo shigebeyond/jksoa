@@ -52,7 +52,7 @@ class OrderService {
      * @return
      */
     public fun getAllOrders(): List<OrderModel> {
-        return OrderModel.queryBuilder().findAllModels<OrderModel>()
+        return OrderModel.queryBuilder().findModels<OrderModel>()
     }
 
     /**

@@ -14,7 +14,7 @@ class ProductService {
      * @return
      */
     public fun getAllProducts(): List<ProductModel> {
-        return ProductModel.queryBuilder().findAllModels<ProductModel>()
+        return ProductModel.queryBuilder().findModels<ProductModel>()
     }
 
     /**
@@ -34,7 +34,7 @@ class ProductService {
      * @return
      */
     public fun getProductsByIds(ids: Collection<Int>): List<ProductModel> {
-        return ProductModel.queryBuilder().where("id", "IN", ids).findAllModels<ProductModel>()
+        return ProductModel.queryBuilder().where("id", "IN", ids).findModels<ProductModel>()
     }
 
 }

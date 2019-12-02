@@ -36,7 +36,7 @@ object MqTransactionRecovery {
         // 查询事务消息
         val limit: Int = MqTransactionManager.config["sendPageSize"]!!
         val now: Long = System.currentTimeMillis() / 1000
-        val msgs = MqTransactionModel.queryBuilder().where("next_send_time", "<=", now).limit(limit).findAllModels<MqTransactionModel>()
+        val msgs = MqTransactionModel.queryBuilder().where("next_send_time", "<=", now).limit(limit).findModels<MqTransactionModel>()
         // 发送消息
         dtxMqLogger.debug("定时重发 {} 个事务消息", msgs.size)
         for (msg in msgs)
