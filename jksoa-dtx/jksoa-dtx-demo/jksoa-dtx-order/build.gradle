@@ -15,6 +15,7 @@ dependencies{
     runtime "mysql:mysql-connector-java:5.1.6"
 }
 
+apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 
 // 启动jetty

@@ -10,6 +10,7 @@ dependencies{
     }
 }
 
+apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 
 // 启动jetty
