@@ -17,7 +17,7 @@ import kotlin.reflect.jvm.javaMethod
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-14 3:11 PM
  */
-class MyTests {
+class SoaCommonTests {
 
     @Test
     fun testUrl(){
