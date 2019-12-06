@@ -5,7 +5,6 @@ import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jkutil.ttl.AllRequestScopedTransferableThreadLocal
 import org.apache.commons.pool2.impl.GenericObjectPool
-import redis.clients.jedis.Jedis
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -60,7 +59,7 @@ object RabbitConnectionFactory {
      * 线程安全的rabbit连接
      */
     private val conns: AllRequestScopedTransferableThreadLocal<HashMap<String, ConnectionHolder>> = object: AllRequestScopedTransferableThreadLocal<HashMap<String, ConnectionHolder>>({ HashMap() }){ // 所有请求域的可传递的 ThreadLocal
-        public override fun doEndScope() {
+        public override fun endScope() {
             // 请求结束要调用 close() 来关闭连接
             val holders = get()
             for((name, holder) in holders){
@@ -71,7 +70,7 @@ object RabbitConnectionFactory {
             }
             holders.clear()
 
-            super.doEndScope()
+            super.endScope()
         }
     }
 

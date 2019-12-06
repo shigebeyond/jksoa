@@ -1,13 +1,7 @@
 package net.jkcode.jksoa.rpc.server.handler
 
 import io.netty.channel.ChannelHandlerContext
-import net.jkcode.jkutil.scope.GlobalAllRequestScope
-import net.jkcode.jkutil.common.Config
-import net.jkcode.jkutil.common.IConfig
-import net.jkcode.jkutil.common.trySupplierFuture
-import net.jkcode.jkutil.interceptor.RequestInterceptorChain
-import net.jkcode.jkutil.scope.GlobalRpcRequestScope
-import net.jkcode.jkutil.ttl.SttlInterceptor
+import net.jkcode.jkguard.MethodGuardInvoker
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.common.RpcResponse
@@ -15,9 +9,14 @@ import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.exception.RpcBusinessException
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
-import net.jkcode.jkguard.MethodGuardInvoker
 import net.jkcode.jksoa.rpc.server.RpcServerContext
 import net.jkcode.jksoa.rpc.server.provider.ProviderLoader
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.common.trySupplierFuture
+import net.jkcode.jkutil.interceptor.RequestInterceptorChain
+import net.jkcode.jkutil.scope.GlobalRpcRequestScope
+import net.jkcode.jkutil.ttl.SttlInterceptor
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
@@ -53,20 +52,18 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @param req
      */
     public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext) {
-        // 0 请求处理前，开始作用域
-        // 必须在拦截器之前调用, 因为拦截器可能引用请求域的资源
-        GlobalAllRequestScope.beginScope()
-        GlobalRpcRequestScope.beginScope()
+        // 1 包装请求作用域的处理
+        GlobalRpcRequestScope.wrap {
+            // 2 调用provider方法
+            val future = interceptorChain.intercept(req) {
+                callProvider(req, ctx)
+            }
 
-        // 1 调用provider方法
-        val future = interceptorChain.intercept(req) {
-            callProvider(req, ctx)
+            // 3 返回响应
+            future.whenComplete(SttlInterceptor.interceptToBiConsumer { r, ex ->
+                endResponse(req, r, ex, ctx) // 返回响应
+            })
         }
-
-        // 2 返回响应
-        future.whenComplete(SttlInterceptor.interceptToBiConsumer { r, ex ->
-            endResponse(req, r, ex, ctx) // 返回响应
-        })
     }
 
     /**
@@ -117,13 +114,9 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         else
             serverLogger.error("Server处理请求失败：$req", r)
 
-        // 1 返回响应
+        // 返回响应
         var res: RpcResponse = RpcResponse(req.id, result, ex)
         ctx.writeAndFlush(res)
-
-        // 2 请求处理后，结束作用域(关闭资源)
-        GlobalAllRequestScope.endScope()
-        GlobalRpcRequestScope.endScope()
     }
 
     /***************** MethodGuardInvoker 实现 *****************/
