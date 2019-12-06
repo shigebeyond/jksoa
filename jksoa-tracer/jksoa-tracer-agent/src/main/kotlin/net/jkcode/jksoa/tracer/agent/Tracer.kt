@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.agent
 
-import net.jkcode.jkutil.common.Application
+import net.jkcode.jkutil.common.JkApp
 import net.jkcode.jkutil.common.DoneFlagList
 import net.jkcode.jkutil.ttl.SttlCurrentHolder
 import net.jkcode.jkutil.common.generateId
@@ -103,7 +103,7 @@ class Tracer protected constructor() : ITracer() {
             newServiceNames.removeAll(serviceMap.keys)
             if(newServiceNames.isNotEmpty()) {
                 // 同步service
-                val serviceMap = collectorService.syncServices(Application.name, newServiceNames)
+                val serviceMap = collectorService.syncServices(JkApp.name, newServiceNames)
                 this.serviceMap.putAll(serviceMap)
             }
             tracerLogger.debug("同步servcie: {}", serviceNames)

@@ -101,7 +101,7 @@ jksoa-dtx-tcc 在执行服务过程中会将Tcc服务的上下文持久化，包
 annotation class TccMethod(
         public val confirmMethod: String = "", // 确认方法, 如果为空字符串, 则使用原方法
         public val cancelMethod: String = "", // 取消方法, 如果为空字符串, 则使用原方法
-        public val bizType: String = "", // 业务类型, 如果为空则取 Application.name
+        public val bizType: String = "", // 业务类型, 如果为空则取 JkApp.name
         public val bizIdParamField: String = "" // 业务主体编号所在的参数字段表达式, 如 0.name, 表示取第0个参数的name字段值作为业务主体编号
 )
 ```

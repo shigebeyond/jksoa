@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.tracer.collector.service
 
-import net.jkcode.jkutil.common.Application
+import net.jkcode.jkutil.common.JkApp
 import net.jkcode.jkmvc.orm.collectColumn
 import net.jkcode.jkmvc.orm.toMap
 import net.jkcode.jkguard.combiner.GroupRunCombiner
@@ -35,11 +35,11 @@ class OrmCollectorService : ICollectorService {
      */
     public override fun syncServices(appName: String, serviceNames: List<String>): Map<String, Int> {
         // 查询app
-        var app = AppModel.queryBuilder().where("name", Application.name).findModel<AppModel>()
+        var app = AppModel.queryBuilder().where("name", JkApp.name).findModel<AppModel>()
         if(app == null){
             // 新建app
             app = AppModel()
-            app.name = Application.name
+            app.name = JkApp.name
             app.create()
         }
         val appId = app!!.id

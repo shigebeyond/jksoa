@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.mq
 
-import net.jkcode.jkutil.common.Application
+import net.jkcode.jkutil.common.JkApp
 import net.jkcode.jksoa.dtx.mq.model.MqTransactionModel
 
 /**
@@ -18,7 +18,7 @@ interface IMqTransactionManager {
      * @param bizType 业务类型
      * @param bizId 业务主体编号
      */
-    fun addMq(topic: String, msg: ByteArray, bizType: String = Application.name, bizId: String = "")
+    fun addMq(topic: String, msg: ByteArray, bizType: String = JkApp.name, bizId: String = "")
 
     /**
      * 处理单个消息发送

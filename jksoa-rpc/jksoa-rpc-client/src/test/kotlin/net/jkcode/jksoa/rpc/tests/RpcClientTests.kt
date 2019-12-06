@@ -148,7 +148,7 @@ class RpcClientTests {
 
     @Test
     fun testFuture(){
-        //ThreadLocalInheritableThreadPool.applyCommonPoolToCompletableFuture() // 已在 RpcInvocationHandler 调用
+        //SttlThreadPool.applyCommonPoolToCompletableFuture() // 已在 RpcInvocationHandler 调用
         val service = Referer.getRefer<IGuardService>()
         val msgs:ThreadLocal<String> = ThreadLocal()
         msgs.set("before")

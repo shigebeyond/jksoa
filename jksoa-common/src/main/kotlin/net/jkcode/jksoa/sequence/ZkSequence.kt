@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.sequence
 
 import net.jkcode.jkutil.scope.ClosingOnShutdown
-import net.jkcode.jkutil.common.Application
+import net.jkcode.jkutil.common.JkApp
 import net.jkcode.jkutil.common.getOrPutOnce
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.IZkChildListener
@@ -67,7 +67,7 @@ class ZkSequence protected constructor(public override val module: String /* 模
     /**
      * 成员数据
      */
-    protected val memberData: String = Application.fullWorkerId
+    protected val memberData: String = JkApp.fullWorkerId
 
     /**
      * 成员映射序号

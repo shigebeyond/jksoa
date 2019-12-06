@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.leader
 
 import net.jkcode.jkutil.scope.ClosingOnShutdown
-import net.jkcode.jkutil.common.Application
+import net.jkcode.jkutil.common.JkApp
 import net.jkcode.jkutil.common.commonLogger
 import net.jkcode.jksoa.zk.ZkClientFactory
 import org.I0Itec.zkclient.IZkChildListener
@@ -17,7 +17,7 @@ import java.util.*
  * @date 2019-01-11 12:24 PM
  */
 class ZkSequentialLeaderElection(public override val module: String /* 模块 */,
-                                 public override val memberData: String = Application.fullWorkerId /* 成员数据 */
+                                 public override val memberData: String = JkApp.fullWorkerId /* 成员数据 */
 ) : ILeaderElection, ClosingOnShutdown() {
 
     companion object {

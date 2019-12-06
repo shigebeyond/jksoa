@@ -77,7 +77,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 		val annotation = inv.method.tccMethod!!
 
 		// 1 业务类型
-		this.bizType = Application.name + '.' + annotation.bizType
+		this.bizType = JkApp.name + '.' + annotation.bizType
 
 		// 2 业务主体编号
 		if(annotation.bizIdParamField.isBlank())

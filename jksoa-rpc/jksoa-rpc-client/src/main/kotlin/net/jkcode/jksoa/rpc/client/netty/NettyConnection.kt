@@ -2,7 +2,6 @@ package net.jkcode.jksoa.rpc.client.netty
 
 import io.netty.channel.Channel
 import io.netty.util.AttributeKey
-import net.jkcode.jkutil.common.Application
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
