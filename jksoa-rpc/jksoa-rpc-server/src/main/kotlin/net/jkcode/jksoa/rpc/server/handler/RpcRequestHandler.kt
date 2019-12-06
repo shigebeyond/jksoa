@@ -16,7 +16,6 @@ import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jkutil.common.trySupplierFuture
 import net.jkcode.jkutil.interceptor.RequestInterceptorChain
 import net.jkcode.jkutil.scope.GlobalRpcRequestScope
-import net.jkcode.jkutil.ttl.SttlInterceptor
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.concurrent.CompletableFuture
@@ -53,7 +52,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      */
     public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext) {
         // 1 包装请求作用域的处理
-        GlobalRpcRequestScope.wrap {
+        GlobalRpcRequestScope.sttlWrap {
             // 2 调用provider方法
             val future = interceptorChain.intercept(req) {
                 callProvider(req, ctx)

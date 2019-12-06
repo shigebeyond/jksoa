@@ -3,10 +3,13 @@ package net.jkcode.jksoa.rpc.tests
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.getIntranetHost
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.rpc.example.ISimpleService
 import net.jkcode.jksoa.rpc.server.IRpcServer
+import net.jkcode.jksoa.rpc.server.handler.RpcRequestHandler
 import net.jkcode.jksoa.rpc.server.protocol.jkr.JkrRpcServer
 import net.jkcode.jksoa.rpc.server.protocol.rmi.RmiRpcServer
 import org.junit.Test
+import kotlin.reflect.jvm.javaMethod
 
 /**
  * 测试server
@@ -16,6 +19,13 @@ import org.junit.Test
  * @date 2017-12-14 3:11 PM
  */
 class RpcServerTests {
+
+    @Test
+    fun testRpcRequestHandler(){
+        val m = RpcRequestHandler.getMethodGuard(ISimpleService::echo.javaMethod!!)
+        val m2 = RpcRequestHandler.getMethodGuard(ISimpleService::echo.javaMethod!!)
+        println(m === m2)
+    }
 
     @Test
     fun testServer(){
