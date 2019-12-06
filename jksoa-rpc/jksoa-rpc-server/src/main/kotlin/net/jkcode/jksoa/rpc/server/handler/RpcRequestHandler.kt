@@ -60,9 +60,9 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
             }
 
             // 3 返回响应
-            future.whenComplete(SttlInterceptor.interceptToBiConsumer { r, ex ->
+            future.whenComplete{ r, ex ->
                 endResponse(req, r, ex, ctx) // 返回响应
-            })
+            }
         }
     }
 
