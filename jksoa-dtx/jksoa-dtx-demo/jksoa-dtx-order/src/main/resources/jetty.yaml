@@ -3,5 +3,5 @@ threadNum: 5 # 默认是Runtime.getRuntime().availableProcessors()
 port: 8080
 webDir: jksoa-dtx/jksoa-dtx-demo/jksoa-dtx-order/src/main/webapp
 contextPath: /jksoa-dtx-order
-logDir: jksoa-dtx/jksoa-dtx-demo/jksoa-dtx-order/jetty/logs
-tempDir: jksoa-dtx/jksoa-dtx-demo/jksoa-dtx-order/jetty/tmp
+logDir: logs
+tempDir: tmp

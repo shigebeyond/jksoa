@@ -3,5 +3,5 @@ threadNum: 5 # 默认是Runtime.getRuntime().availableProcessors()
 port: 8080
 webDir: jksoa-tracer/jksoa-tracer-web/src/main/webapp
 contextPath: /jksoa-tracer-web
-logDir: jksoa-tracer/jksoa-tracer-web/jetty/logs
-tempDir: jksoa-tracer/jksoa-tracer-web/jetty/tmp
+logDir: logs
+tempDir: tmp
