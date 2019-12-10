@@ -47,7 +47,7 @@ open class NettyRequestHandler(
             try {
                 RpcRequestHandler.handle(req, ctx)
             }catch (e: Exception){
-                e.printStackTrace()
+                serverLogger.error("NettyRequestHandler处理请求异常: $req", e)
             }
             return
         }
@@ -57,7 +57,7 @@ open class NettyRequestHandler(
             try {
                 RpcRequestHandler.handle(req, ctx)
             }catch (e: Exception){
-                e.printStackTrace()
+                serverLogger.error("NettyRequestHandler处理请求异常: $req", e)
             }
         }
     }

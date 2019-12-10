@@ -13,6 +13,7 @@ import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.IRpcClient
+import net.jkcode.jkutil.common.errorAndPrint
 
 
 /**
@@ -67,7 +68,7 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
                             pipeline.addLast(NettyResponseHandler())
                         }catch (e: Exception){
                             // 还是输出异常, 防止各种handler初始化失败, 导致channel断掉了, 而又没有报错
-                            e.printStackTrace()
+                            clientLogger.errorAndPrint("NettyRpcClient初始化channel处理器错误", e)
                             throw e
                         }
 

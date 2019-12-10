@@ -70,8 +70,8 @@ class TopicMessagesExecutor(
             if(e == null) { // 处理成功
                 mqClientLogger.error("TopicMessagesExecutor消费消息成功: {}", msgs)
             }else{ // 处理异常
-                e.printStackTrace()
                 mqClientLogger.error("TopicMessagesExecutor消费消息出错: msgs={}, exception={}", msgs, e.message)
+                e.printStackTrace()
             }
 
             // 反馈消息消费结果
