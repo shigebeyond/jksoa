@@ -10,4 +10,3 @@ import io.netty.channel.socket.ServerSocketChannel
 public fun Channel.isServer(): Boolean {
     return this.parent() is ServerSocketChannel
 }
-

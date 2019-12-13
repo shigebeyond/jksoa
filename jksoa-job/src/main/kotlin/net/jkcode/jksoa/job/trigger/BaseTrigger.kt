@@ -2,12 +2,13 @@ package net.jkcode.jksoa.job.trigger
 
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
-import net.jkcode.jkutil.common.*
-import net.jkcode.jkutil.scope.GlobalAllRequestScope
 import net.jkcode.jksoa.job.IJob
 import net.jkcode.jksoa.job.ITrigger
 import net.jkcode.jksoa.job.jobLogger
+import net.jkcode.jkutil.common.*
+import net.jkcode.jkutil.scope.GlobalAllRequestScope
 import java.util.*
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
@@ -79,40 +80,44 @@ abstract class BaseTrigger : ITrigger {
      */
     protected fun executeJob() {
         // 线程池中执行作业
-        CommonThreadPool.execute {
-            for(job in jobs){
-                // 请求域的开始
-                GlobalAllRequestScope.beginScope()
+        try {
+            CommonThreadPool.execute {
+                for(job in jobs){
+                    // 请求域的开始
+                    GlobalAllRequestScope.beginScope()
 
-                // 获得作业执行的上下文
-                val ctx = contexts.getOrPut(job.id){
-                    JobExecutionContext(job.id, this)
-                }!!
-                // 执行作业, 要处理好异常
-                val resFuture = trySupplierFuture {
-                    // 执行作业
-                    jobLogger.debug("{}执行作业: {}", this.javaClass.simpleName, ctx)
-                    job.execute(ctx)
+                    // 获得作业执行的上下文
+                    val ctx = contexts.getOrPut(job.id){
+                        JobExecutionContext(job.id, this)
+                    }!!
+                    // 执行作业, 要处理好异常
+                    val resFuture = trySupplierFuture {
+                        // 执行作业
+                        jobLogger.debug("{}执行作业: {}", this.javaClass.simpleName, ctx)
+                        job.execute(ctx)
 
-                    // 保存作业属性
-                    /*if(ctx.attrs.dirty) {
-                        // TODO: 保存 ctx.attrs
-                        ctx.attrs.cleanDirty()
-                    }*/
+                        // 保存作业属性
+                        /*if(ctx.attrs.dirty) {
+                            // TODO: 保存 ctx.attrs
+                            ctx.attrs.cleanDirty()
+                        }*/
+                    }
+
+                    resFuture.whenComplete { r, ex ->
+                        // 记录执行异常
+                        if(ex != null)
+                            job.logExecutionException(ex)
+
+                        // 请求域的结束
+                        GlobalAllRequestScope.endScope()
+                    }
                 }
 
-                resFuture.whenComplete { r, ex ->
-                    // 记录执行异常
-                    if(ex != null)
-                        job.logExecutionException(ex)
-
-                    // 请求域的结束
-                    GlobalAllRequestScope.endScope()
-                }
+                // 重复次数+1
+                triggerCount++
             }
-
-            // 重复次数+1
-            triggerCount++
+        }catch (e: RejectedExecutionException){
+            jobLogger.errorAndPrint("执行作业失败: 公共线程池已满", e)
         }
     }
 

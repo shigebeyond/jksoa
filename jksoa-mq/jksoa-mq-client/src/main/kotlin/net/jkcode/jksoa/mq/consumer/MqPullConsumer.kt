@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.mq.consumer
 
-import net.jkcode.jkutil.common.*
 import net.jkcode.jksoa.leader.ZkLeaderElection
 import net.jkcode.jksoa.mq.broker.service.IMqBrokerService
 import net.jkcode.jksoa.mq.common.Message
@@ -8,8 +7,10 @@ import net.jkcode.jksoa.mq.common.mqClientLogger
 import net.jkcode.jksoa.mq.consumer.suspend.MqPullConsumeSuspendException
 import net.jkcode.jksoa.mq.consumer.suspend.PullConsumeSuspendProgress
 import net.jkcode.jksoa.rpc.client.referer.Referer
+import net.jkcode.jkutil.common.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.TimeUnit
 
 /**
@@ -92,29 +93,33 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
         if(suspendProgress != null && currMillis() < suspendProgress.endTime)
             return
 
-        CommonThreadPool.execute() {
-            // 拉取消息
-            val msgsFuture: CompletableFuture<List<Message>>
-            if(suspendProgress == null) // 按上一次的读进度来拉取
-                msgsFuture = brokerService.pullMessagesByGroupProgress(topic, group, limit)
-            else{ // 按暂停进度来拉取
-                msgsFuture = brokerService.pullMessagesByGroup(topic, group, suspendProgress.startId, limit)
-                topicSuspendProgresses.remove(topic)
-            }
-            val msgs = msgsFuture.get()
+        try{
+            CommonThreadPool.execute() {
+                // 拉取消息
+                val msgsFuture: CompletableFuture<List<Message>>
+                if(suspendProgress == null) // 按上一次的读进度来拉取
+                    msgsFuture = brokerService.pullMessagesByGroupProgress(topic, group, limit)
+                else{ // 按暂停进度来拉取
+                    msgsFuture = brokerService.pullMessagesByGroup(topic, group, suspendProgress.startId, limit)
+                    topicSuspendProgresses.remove(topic)
+                }
+                val msgs = msgsFuture.get()
 
-            if(msgs.isNotEmpty()) {
-                // 异步消费消息, 消费完给broker反馈消费结果
-                val future = consumeMessages(topic, msgs)
-                future.whenComplete { r, ex ->
-                    if(ex is MqPullConsumeSuspendException){ // 有消费暂停的异常 => 暂停
-                        mqClientLogger.debug("消费主题[{}]消息出错, 暂停拉取定时器{}s", topic, ex.suspendSeconds)
-                        topicSuspendProgresses[topic] = PullConsumeSuspendProgress(currMillis() + ex.suspendSeconds * 1000, msgs.first().id)
-                    }else{ // 继续: 递归调用
-                        pull(topic)
+                if(msgs.isNotEmpty()) {
+                    // 异步消费消息, 消费完给broker反馈消费结果
+                    val future = consumeMessages(topic, msgs)
+                    future.whenComplete { r, ex ->
+                        if(ex is MqPullConsumeSuspendException){ // 有消费暂停的异常 => 暂停
+                            mqClientLogger.debug("消费主题[{}]消息出错, 暂停拉取定时器{}s", topic, ex.suspendSeconds)
+                            topicSuspendProgresses[topic] = PullConsumeSuspendProgress(currMillis() + ex.suspendSeconds * 1000, msgs.first().id)
+                        }else{ // 继续: 递归调用
+                            pull(topic)
+                        }
                     }
                 }
             }
+        }catch (e: RejectedExecutionException){
+            mqClientLogger.errorAndPrint("MqPullConsumer拉取消息错误: 公共线程池已满", e)
         }
     }
 }

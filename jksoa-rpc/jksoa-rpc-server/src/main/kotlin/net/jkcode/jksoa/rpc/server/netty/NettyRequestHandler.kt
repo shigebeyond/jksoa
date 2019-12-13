@@ -12,6 +12,7 @@ import io.netty.handler.timeout.IdleStateEvent
 import net.jkcode.jkutil.common.CommonThreadPool
 import net.jkcode.jkutil.common.Config
 import java.nio.channels.ClosedChannelException
+import java.util.concurrent.RejectedExecutionException
 
 /**
  * netty服务端请求处理器
@@ -53,12 +54,16 @@ open class NettyRequestHandler(
         }
         
         // 请求处理放到公共线程池中执行, 不阻塞IO线程
-        CommonThreadPool.execute {
-            try {
-                RpcRequestHandler.handle(req, ctx)
-            }catch (e: Exception){
-                serverLogger.error("NettyRequestHandler处理请求异常: $req", e)
+        try {
+            CommonThreadPool.execute {
+                try {
+                    RpcRequestHandler.handle(req, ctx)
+                } catch (e: Exception) {
+                    serverLogger.error("NettyRequestHandler处理请求异常: $req", e)
+                }
             }
+        }catch (e: RejectedExecutionException){
+            serverLogger.error("NettyRequestHandler处理请求异常: 公共线程池已满", e)
         }
     }
 

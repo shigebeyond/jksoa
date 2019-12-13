@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder
+import net.jkcode.jksoa.rpc.client.netty.toBytes
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.commonLogger
 import net.jkcode.jkutil.serialize.ISerializer
@@ -42,11 +43,10 @@ class NettyMessageDecoder(maxFrameLength: Int) : LengthFieldBasedFrameDecoder(ma
 
         // 2 解析数据
         try {
-            // 反序列化
+            // 反序列化: 两个语句都可以
+            //return serializer.unserialize(frame.toBytes())
             ByteBufInputStream(frame, true /* 引用-1 */).use {
-                val result = serializer.unserialize(it)
-                //clientLogger.debug("NettyMessageDecoder解码接收到的消息: {}", result)
-                return result
+                return serializer.unserialize(it)
             }
         }catch (e: Exception){
             commonLogger.error("NettyMessageDecoder解码接收到的消息失败", e)
