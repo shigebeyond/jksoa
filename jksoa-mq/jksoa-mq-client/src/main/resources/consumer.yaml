@@ -2,4 +2,4 @@
 group: "default" # 消费者分组
 pullPageSize: 100 # 每次拉取的消息数
 pullTimerSeconds: !!java.lang.Long 60 # 定时拉取的时间间隔, Long类型，单位秒
-threadNum: 10 # 消费处理的线程数
+consumeThreads: 10 # 消费处理的线程数

@@ -37,7 +37,7 @@ class TopicMessagesExecutor(
          * 消息处理的线程池
          */
         protected val excutorGroup: DefaultEventExecutorGroup by lazy{
-            DefaultEventExecutorGroup(config["threadNum"]!!)
+            DefaultEventExecutorGroup(config["consumeThreads"]!!)
         }
 
         /**

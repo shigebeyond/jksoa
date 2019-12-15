@@ -63,7 +63,8 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
         protected set
 
     init {
-        if(config["lazyConnect"]!!) // 延迟创建连接
+        val lazyConnect: Boolean = config["lazyConnect"]!!
+        if(!lazyConnect) // 不延迟创建连接: 预先创建
             getOrReConnect()
     }
 

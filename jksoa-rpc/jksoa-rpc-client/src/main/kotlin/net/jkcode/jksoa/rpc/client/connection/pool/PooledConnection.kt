@@ -1,13 +1,13 @@
 package net.jkcode.jksoa.rpc.client.connection.pool
 
-import net.jkcode.jkutil.common.Config
-import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
 import org.apache.commons.pool2.impl.GenericObjectPool
 import java.util.concurrent.ConcurrentHashMap
 
@@ -45,9 +45,15 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
                 // 创建连接池
                 val pool = GenericObjectPool<IConnection>(PooledConnectionFactory(url))
                 pool.setTestOnBorrow(true) // borrow时调用 validateObject() 来校验
-                pool.setMaxTotal(config["pooledConnectionMaxTotal"]!!) // 池化连接的最大数
+                pool.setMinIdle(config["minPooledConnections"]!!) // 池化连接的最小数
+                pool.setMaxTotal(config["maxPooledConnections"]!!) // 池化连接的最大数
                 pool.setTimeBetweenEvictionRunsMillis(60000 * 10) // 定时逐出时间间隔: 10min
                 pool.setMinEvictableIdleTimeMillis(60000 * 10) // 连接在空闲队列中等待逐出的时间: 10min
+
+                // 预先创建连接
+                val lazyConnect: Boolean = config["lazyConnect"]!!
+                if(!lazyConnect) // 不延迟创建连接: 预先创建
+                    pool.preparePool()
                 pool
             }
         }

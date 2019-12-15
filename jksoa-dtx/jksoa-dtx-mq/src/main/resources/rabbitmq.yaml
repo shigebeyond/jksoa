@@ -4,5 +4,5 @@ default:
     vhost: / # virtualHost
     username: root
     password: root
-    pooledConnectionMaxTotal: 10 # 池化连接的最大数
+    maxPooledConnections: 10 # 池化连接的最大数
 

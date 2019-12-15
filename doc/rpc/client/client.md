@@ -47,8 +47,9 @@ connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
 reuseConnection: true # 是否复用连接: 1 true: 则使用连接 ReconnectableConnection 2 false: 则使用连接 PooledConnection
-lazyConnect: false # 是否延迟创建连接, 用在 ReconnectableConnection
-pooledConnectionMaxTotal: 2 # 池化连接的最大数
+lazyConnect: false # 是否延迟创建连接
+minPooledConnections: 2 # 池化连接的最小数, 用在 PooledConnection
+maxPooledConnections: 10 # 池化连接的最大数
 ```
 
 ## IRpcClient 接口

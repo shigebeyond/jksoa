@@ -40,4 +40,4 @@ public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResp
 
 ## 配置最大连接数
 
-在 `rpc-client.yaml` 配置文件中的属性 `pooledConnectionMaxTotal` 即为池化连接的最大数
+在 `rpc-client.yaml` 配置文件中的属性 `maxPooledConnections` 即为池化连接的最大数

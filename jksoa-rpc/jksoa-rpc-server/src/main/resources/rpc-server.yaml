@@ -19,8 +19,8 @@ netty:
     backlog: 1024 # TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128*8
     sendBufferSize: 65536 # 发送的缓存大小, 默认64K=1024*64
     receiveBufferSize: 65536 # 接收的缓冲大小, 默认64K=1024*64
-    acceptorThreadNum: 1 # acceptor线程数
-    ioThreadNum: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数
+    acceptorThreads: 1 # acceptor线程数
+    ioThreads: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数
     handleRequestInIOThread: true # 请求处理是否放到IO线程执行, 否则放到公共线程池中执行
     # IdleStateHandler 中channel空闲检查的时间配置
     readerIdleTimeSecond: 600

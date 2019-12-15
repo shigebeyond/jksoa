@@ -33,7 +33,7 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
     /**
      * 处理io的线程池
      */
-    protected val ioGroup: EventLoopGroup = NioEventLoopGroup(config["ioThreadNum"]!!)
+    protected val ioGroup: EventLoopGroup = NioEventLoopGroup(config["ioThreads"]!!)
 
     /**
      * client Bootstrap

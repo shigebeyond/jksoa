@@ -77,8 +77,8 @@ netty:
     backlog: 1024 # TCP未连接接队列和已连接队列两个队列总和的最大值，参考lighttpd的128*8
     sendBufferSize: 65536 # 发送的缓存大小, 默认64K=1024*64
     receiveBufferSize: 65536 # 接收的缓冲大小, 默认64K=1024*64
-    acceptorThreadNum: 1 # acceptor线程数
-    ioThreadNum: 0 # IO线程数, 用于处理非阻塞的io事件, 如为0 则为核数
+    acceptorThreads: 1 # acceptor线程数
+    ioThreads: 0 # IO线程数, 用于处理非阻塞的io事件, 如为0 则为核数
     handleRequestInIOThread: true # 请求处理是否放到IO线程执行, 否则放到公共线程池中执行
     # IdleStateHandler 中channel空闲检查的时间配置
     readerIdleTimeSecond: 600
@@ -156,9 +156,10 @@ connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
 reuseConnection: true # 是否复用连接: 1 true: 则使用连接 ReconnectableConnection 2 false: 则使用连接 PooledConnection
-lazyConnect: false # 是否延迟创建连接, 用在 ReconnectableConnection
-pooledConnectionMaxTotal: 2 # 池化连接的最大数
-ioThreadNum: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数
+lazyConnect: false # 是否延迟创建连接
+minPooledConnections: 2 # 池化连接的最小数, 用在 PooledConnection
+maxPooledConnections: 10 # 池化连接的最大数
+ioThreads: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数
 ```
 
 ### 获得服务引用者(stub)

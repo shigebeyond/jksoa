@@ -54,8 +54,8 @@ abstract class NettyRpcServer : IRpcServer() {
         bootstrap = ServerBootstrap()
 
         if(Epoll.isAvailable()){
-            acceptGroup = EpollEventLoopGroup(nettyConfig["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
-            ioGroup = EpollEventLoopGroup(nettyConfig["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
+            acceptGroup = EpollEventLoopGroup(nettyConfig["acceptorThreads"]!!, DefaultThreadFactory("netty-acceptor-thread"))
+            ioGroup = EpollEventLoopGroup(nettyConfig["ioThreads"]!!, DefaultThreadFactory("netty-io-thread"))
             (acceptGroup as EpollEventLoopGroup).setIoRatio(100)
             (ioGroup as EpollEventLoopGroup).setIoRatio(100)
 
@@ -63,8 +63,8 @@ abstract class NettyRpcServer : IRpcServer() {
             bootstrap.option(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED)
             bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED)
         }else{
-            acceptGroup = NioEventLoopGroup(nettyConfig["acceptorThreadNum"]!!, DefaultThreadFactory("netty-acceptor-thread"))
-            ioGroup = NioEventLoopGroup(nettyConfig["ioThreadNum"]!!, DefaultThreadFactory("netty-io-thread"))
+            acceptGroup = NioEventLoopGroup(nettyConfig["acceptorThreads"]!!, DefaultThreadFactory("netty-acceptor-thread"))
+            ioGroup = NioEventLoopGroup(nettyConfig["ioThreads"]!!, DefaultThreadFactory("netty-io-thread"))
 
             bootstrap.channel(NioServerSocketChannel::class.java)
         }
