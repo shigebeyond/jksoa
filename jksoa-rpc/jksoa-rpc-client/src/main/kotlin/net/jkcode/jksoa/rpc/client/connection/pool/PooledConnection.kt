@@ -49,15 +49,16 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
                 pool.setMaxTotal(config["maxPooledConnections"]!!) // 池化连接的最大数
                 pool.setTimeBetweenEvictionRunsMillis(60000 * 10) // 定时逐出时间间隔: 10min
                 pool.setMinEvictableIdleTimeMillis(60000 * 10) // 连接在空闲队列中等待逐出的时间: 10min
-
-                // 预先创建连接
-                val lazyConnect: Boolean = config["lazyConnect"]!!
-                if(!lazyConnect) // 不延迟创建连接: 预先创建
-                    pool.preparePool()
                 pool
             }
         }
+    }
 
+    init {
+        // 预先创建连接
+        val lazyConnect: Boolean = config["lazyConnect"]!!
+        if(!lazyConnect) // 不延迟创建连接: 预先创建
+            getPool(url.serverPart).preparePool()
     }
 
     /**
