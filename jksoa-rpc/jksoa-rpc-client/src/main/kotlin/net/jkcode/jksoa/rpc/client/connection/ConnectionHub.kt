@@ -56,7 +56,7 @@ open class ConnectionHub: IConnectionHub() {
         clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
         val weight: Int = url.getParameter("weight", 1)!!
         // 创建连接
-        val conn: IConnection = if(reuseConnection == true)
+        val conn: IConnection = if(reuseConnection)
                                     ReusableConnection(url, weight) 
                                 else
                                     PooledConnection(url, weight) 
