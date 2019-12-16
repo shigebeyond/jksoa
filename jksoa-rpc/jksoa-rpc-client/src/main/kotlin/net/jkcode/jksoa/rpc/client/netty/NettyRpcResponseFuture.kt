@@ -3,12 +3,12 @@ package net.jkcode.jksoa.rpc.client.netty
 import io.netty.channel.Channel
 import io.netty.util.Timeout
 import io.netty.util.TimerTask
-import net.jkcode.jkutil.common.CommonMilliTimer
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcResponse
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.future.RpcResponseFuture
+import net.jkcode.jkutil.common.CommonMilliTimer
 import java.util.concurrent.TimeUnit
 
 /**
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
  * @date 2019-01-14 6:11 PM
  */
 class NettyRpcResponseFuture(req: IRpcRequest, /* 请求 */
-                             public val channel: Channel, /* netty channel, 仅用于在[NettyResponseHandler.channelInactive()]中删掉该channel对应的异步响应记录 */
+                             channel: Channel, /* netty channel, 用于超时删掉该channel对应的异步响应记录 */
                              requestTimeoutMillis: Long /* 请求超时 */
 ) : RpcResponseFuture(req) {
 
@@ -32,18 +32,20 @@ class NettyRpcResponseFuture(req: IRpcRequest, /* 请求 */
      */
     protected var timeout: Timeout = CommonMilliTimer.newTimeout(object : TimerTask {
         override fun run(timeout: Timeout) {
-            handleExpired(requestTimeoutMillis)
+            handleExpired(channel, requestTimeoutMillis)
         }
     }, requestTimeoutMillis, TimeUnit.MILLISECONDS)
 
     /**
      * 处理超时
+     * @param channel
      * @param requestTimeoutMillis 超时时间
      */
-    protected fun handleExpired(requestTimeoutMillis: Long) {
+    protected fun handleExpired(channel: Channel, requestTimeoutMillis: Long) {
         clientLogger.error("请求[{}]超时: {} MILLISECONDS -- {}", reqId, requestTimeoutMillis, req)
         // 1 删除异步响应的记录
-        NettyResponseHandler.removeResponseFuture(reqId)
+        val handler = channel.pipeline().get(NettyResponseHandler::class.java)
+        handler.removeResponseFuture(reqId)
         // 2 设置响应结果: 超时异常
         super.completeExceptionally(RpcClientException("请求[$reqId]超时: ${requestTimeoutMillis} MILLISECONDS"))
     }

@@ -47,7 +47,8 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
         // 当client调用本机server时, client很快收到响应, 甚至在代码 writeFuture.awaitUninterruptibly() 执行之前就收到响应了, 如果在该代码之后才创建并记录异步响应, 则无法识别并处理早已收到的响应
         val resFuture = NettyRpcResponseFuture(req, channel, requestTimeoutMillis)
         // 记录异步响应，以便响应到来时设置结果
-        NettyResponseHandler.putResponseFuture(req.id, resFuture)
+        val handler = channel.pipeline().get(NettyResponseHandler::class.java)
+        handler.putResponseFuture(req.id, resFuture)
 
         // 2 发送请求
         val writeFuture = channel.writeAndFlush(req)
@@ -62,7 +63,7 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
         // 3.2 发送失败
         clientLogger.error("发送请求失败: {}", req)
         // 删除异步响应的记录
-        NettyResponseHandler.removeResponseFuture(req.id)
+        handler.removeResponseFuture(req.id)
 
         // 超时
         if (writeFuture.cause() == null){

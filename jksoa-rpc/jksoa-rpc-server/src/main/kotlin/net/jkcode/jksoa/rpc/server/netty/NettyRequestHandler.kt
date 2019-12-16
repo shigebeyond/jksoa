@@ -16,6 +16,7 @@ import java.util.concurrent.RejectedExecutionException
 
 /**
  * netty服务端请求处理器
+ *    一个channel有一个NettyRequestHandler
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
