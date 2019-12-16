@@ -12,6 +12,7 @@ import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jkguard.MethodGuardInvoker
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jkutil.common.JkApp
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -82,6 +83,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
             return method.getMethodHandle().invokeWithArguments(proxy, *args)
 
         // 2 拦截Object的方法, 不进行远程调用
+        // 不能直接获得代理的类, 因为代理的类是动态生成的, 只能找服务接口类
         val hash = System.identityHashCode(proxy)
         val serviceClass = hash2Class[hash]!!
         val methodSignature = method.getSignature()
@@ -142,7 +144,11 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
             // RpcInvocationHandler 继承 MethodGuardInvoker, 在做合并请求/缓存等方法守护的处理时, 会切换线程, 从而导致 Threadlocal 丢失
             // 但是合并请求是多个请求, 肯定多线程, 也无法确定使用哪个 Threadlocal, 因此不予处理
             // 下面包装一下 CompletableFuture, 返回新 CompletableFuture, 以便传递 Threadlocal
-            SttlInterceptor.intercept(dispatcher.dispatch(req))
+            val future = dispatcher.dispatch(req)
+            if(JkApp.useSttl)
+                SttlInterceptor.intercept(future)
+            else
+                future
         }
     }
 
