@@ -51,8 +51,8 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
                 if(pool.maxIdle < min)
                     pool.maxIdle = min
                 pool.maxTotal = config["maxPooledConnections"]!! // 池化连接的最大数
-                pool.timeBetweenEvictionRunsMillis = 60000 * 10 // 定时逐出时间间隔: 10min
-                pool.minEvictableIdleTimeMillis = 60000 * 10 // 连接在空闲队列中等待逐出的时间: 10min
+                pool.timeBetweenEvictionRunsMillis = 1000 * 60 * 10 // 定时逐出时间间隔: 10min
+                pool.minEvictableIdleTimeMillis = 1000 * 60 * 60 // 连接在空闲队列中等待逐出的时间: 1hour
                 pool
             }
         }
@@ -61,8 +61,11 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
     init {
         // 预先创建连接
         val lazyConnect: Boolean = config["lazyConnect"]!!
-        if(!lazyConnect)  // 不延迟创建连接: 预先创建
-            getPool(url.serverPart).preparePool()
+        if(!lazyConnect) { // 不延迟创建连接: 预先创建
+            val pool = getPool(url.serverPart)
+            pool.preparePool()
+            println("-----------初始化连接池: ${url.serverPart} -- 连接数 ${pool.minIdle}")
+        }
     }
 
     /**

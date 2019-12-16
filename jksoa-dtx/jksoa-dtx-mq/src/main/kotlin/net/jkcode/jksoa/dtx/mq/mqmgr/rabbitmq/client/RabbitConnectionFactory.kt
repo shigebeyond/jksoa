@@ -48,8 +48,8 @@ object RabbitConnectionFactory {
             val pool = GenericObjectPool<Connection>(PooledConnectionFactory(config))
             pool.setTestOnBorrow(true) // borrow时调用 validateObject() 来校验
             pool.setMaxTotal(config["maxPooledConnections"]!!) // 池化连接的最大数
-            pool.setTimeBetweenEvictionRunsMillis(60000 * 10) // 定时逐出时间间隔: 10min
-            pool.setMinEvictableIdleTimeMillis(60000 * 10) // 连接在空闲队列中等待逐出的时间: 10min
+            pool.setTimeBetweenEvictionRunsMillis(1000 * 60 * 10) // 定时逐出时间间隔: 10min
+            pool.setMinEvictableIdleTimeMillis(1000 * 60 * 60) // 连接在空闲队列中等待逐出的时间: 1hour
             pool
         }
     }
