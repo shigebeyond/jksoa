@@ -43,9 +43,9 @@ class RpcClientTccInterceptor: IRpcRequestInterceptor {
                 }
 
                 // 传递事务id+事务状态
-                req.setAttachment("tccId", tx.id) // 当前事务id
-                req.setAttachment("tccBranchId", participant.branchId) // 当前参与者的分支事务id
-                req.setAttachment("tccStatus", tx.status)
+                req.putAttachment("tccId", tx.id) // 当前事务id
+                req.putAttachment("tccBranchId", participant.branchId) // 当前参与者的分支事务id
+                req.putAttachment("tccStatus", tx.status)
                 dtxTccLogger.debug("rpc client端传递tcc事务信息: tccId={}, tccBranchId={}, tccStatus={}", tx.id, participant.branchId, tx.status)
             }
         }

@@ -48,7 +48,8 @@ class ShardingRpcRequest(clazz: String, //服务接口类全名
      */
     public override fun buildRpcRequest(iSharding: Int): IRpcRequest {
         val req = RpcRequest(serviceId, methodSignature, getShardingArgs(iSharding), version)
-        req.setAttachments(attachments)
+        if(attachments != null)
+            req.putAttachments(attachments!!)
         return req
     }
 

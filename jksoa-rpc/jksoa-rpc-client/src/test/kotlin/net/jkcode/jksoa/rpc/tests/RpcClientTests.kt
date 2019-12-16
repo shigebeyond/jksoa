@@ -7,6 +7,8 @@ import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.annotation.RemoteService
+import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.rpc.client.protocol.jkr.JkrRpcClient
 import net.jkcode.jksoa.rpc.client.referer.Referer
@@ -24,6 +26,16 @@ import kotlin.reflect.jvm.javaMethod
  * @date 2017-12-14 3:11 PM
  */
 class RpcClientTests {
+
+
+    @Test
+    fun testAnnotation() {
+        val clazz = ISimpleService::class.java
+        println(clazz.name)
+        // java.lang.Class.annotationData() 每次都重新遍历祖先类来解析注解, 并创建新的注解对象
+        println(clazz.remoteService)
+        println(clazz.getCachedAnnotation(RemoteService::class.java))
+    }
 
     @Test
     fun testRequestJson(){

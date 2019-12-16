@@ -189,9 +189,9 @@ class Tracer protected constructor() : ITracer() {
             span.parentId = parentSpan!!.id
 
         // 向下游传递的参数
-        req.setAttachment("spanId", span.id)
-        req.setAttachment("parentId", span.parentId)
-        req.setAttachment("traceId", span.traceId)
+        req.putAttachment("spanId", span.id)
+        req.putAttachment("parentId", span.parentId)
+        req.putAttachment("traceId", span.traceId)
 
         return ClientSpanner(this, span).apply { start() }
     }

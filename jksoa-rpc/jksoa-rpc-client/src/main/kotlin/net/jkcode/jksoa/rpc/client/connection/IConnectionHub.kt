@@ -1,15 +1,12 @@
 package net.jkcode.jksoa.rpc.client.connection
 
-import net.jkcode.jkutil.common.Config
-import net.jkcode.jkutil.common.getConstructorOrNull
-import net.jkcode.jkutil.common.getOrPutOnce
-import net.jkcode.jkutil.common.isSuperClass
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.loadbalance.ILoadBalancer
 import net.jkcode.jksoa.rpc.registry.IDiscoveryListener
+import net.jkcode.jkutil.common.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -81,7 +78,7 @@ abstract class IConnectionHub: IDiscoveryListener {
          * @return
          */
         public fun instance(serviceClass: String): IConnectionHub{
-            return instance(Class.forName(serviceClass))
+            return instance(getClassByName(serviceClass))
         }
     }
 

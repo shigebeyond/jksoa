@@ -14,6 +14,7 @@ import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.IRpcClient
 import net.jkcode.jkutil.common.errorAndPrint
+import net.jkcode.jkutil.common.getClassByName
 
 
 /**
@@ -76,11 +77,11 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
                             // 处理请求的channel处理器, 如在mq项目中让broker调用consumer
                             //handlers.add(NettyRequestHandler())
                             try {
-                                val clazz = Class.forName("net.jkcode.jksoa.rpc.server.protocol.jkr.JkrRequestHandler")
+                                val clazz = getClassByName("net.jkcode.jksoa.rpc.server.protocol.jkr.JkrRequestHandler")
                                 val handler = clazz.newInstance() as ChannelHandler
                                 pipeline.addLast(handler)
                             }catch (e: ClassNotFoundException){
-                                clientLogger.info("双工模式下找不到类[NettyRequestHandler], 变为单工模式")
+                                clientLogger.debug("双工模式下找不到类[NettyRequestHandler], 变为单工模式")
                             }
                         }
                     }

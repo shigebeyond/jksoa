@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.common.annotation
 
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
 /**
@@ -20,5 +21,5 @@ annotation class RemoteMethod(
  */
 public val Method.remoteMethod: RemoteMethod?
     get(){
-        return getAnnotation(RemoteMethod::class.java)
+        return getCachedAnnotation()
     }

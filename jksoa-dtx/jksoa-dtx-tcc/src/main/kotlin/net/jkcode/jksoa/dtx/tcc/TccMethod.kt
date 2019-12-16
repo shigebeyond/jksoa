@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.dtx.tcc
 
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
@@ -24,5 +25,5 @@ annotation class TccMethod(
  */
 public val Method.tccMethod: TccMethod?
     get(){
-        return getAnnotation(TccMethod::class.java)
+        return getCachedAnnotation()
     }

@@ -4,7 +4,9 @@ import net.jkcode.jkutil.common.generateId
 import net.jkcode.jkutil.common.getSignature
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.annotation.remoteService
+import net.jkcode.jkutil.common.getClassByName
 import java.lang.reflect.Method
+import java.util.HashMap
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
@@ -34,8 +36,10 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
 
     /**
      * 附加参数
+     *   初始值为null, 节省内存与序列化消耗
      */
-    public override val attachments: MutableMap<String, Any?> = HashMap()
+    public override var attachments: MutableMap<String, Any?>? = null
+        protected set
 
     /**
      * 构造函数
@@ -53,6 +57,42 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
      * @param args 实参
      */
     public constructor(func: KFunction<*>, args: Array<Any?> = emptyArray()) : this(func.javaMethod!!, args)
+
+    /**
+     * 尝试获得附加参数, 如果为null则初始化
+     * @return
+     */
+    protected inline fun getOrInitAttachments(): MutableMap<String, Any?> {
+        if (attachments == null)
+            attachments = HashMap()
+        return attachments!!
+    }
+
+    /**
+     * 设置附加参数
+     * @param key
+     * @param value
+     */
+    public override fun putAttachment(key: String, value: Any?) {
+        getOrInitAttachments()[key] = value
+    }
+
+    /**
+     * 设置附加参数
+     * @param data
+     */
+    public override fun putAttachments(data: Map<String, Any?>) {
+        getOrInitAttachments().putAll(data)
+    }
+
+    /**
+     * 删除附加参数
+     * @param key
+     * @return
+     */
+    public override fun removeAttachment(key: String): Any? {
+        return attachments?.remove(key)
+    }
 
     /**
      * 转为字符串
@@ -81,7 +121,7 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
         //return IRpcRequestDispatcher.instance().dispatch(this) // 无拦截器链
         //return RpcInvocationHandler.invokeRpcRequest(this) // 有拦截器链
         // 没有依赖 IRpcRequestDispatcher/RpcInvocationHandler类所在的rpc-client工程, 不能直接调用, 只能通过中间类+反射来解耦依赖
-        val clazz = Class.forName("net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler")
+        val clazz = getClassByName("net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler")
         val invoker = clazz.kotlin.objectInstance as IRpcRequestInvoker // object
         return invoker.invoke(this)
     }

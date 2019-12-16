@@ -1,6 +1,6 @@
 # 附加参数
 
-可以通过 `RpcRequest` 上的 `setAttachment()` 和 `getAttachment()` 在client和server传递附加参数, 即rpc方法参数之外的参数.
+可以通过 `RpcRequest` 上的 `putAttachment()` 和 `getAttachment()` 在client和server传递附加参数, 即rpc方法参数之外的参数.
 
 如我在分布式跟踪模块 jksoa-tracer 中传递附加参数
 
@@ -8,7 +8,7 @@
 
 ```
 //  添加请求的附加参数
-req.setAttachment("traceId", span.traceId)
+req.putAttachment("traceId", span.traceId)
 ```
 
 2. server端获得附加参数

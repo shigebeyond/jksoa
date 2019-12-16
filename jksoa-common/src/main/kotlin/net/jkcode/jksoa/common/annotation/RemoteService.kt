@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.common.annotation
 
 import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
@@ -22,7 +23,7 @@ annotation class RemoteService(public val version: Int = 0, // 接口版本
  */
 public val Class<*>.remoteService: RemoteService?
     get(){
-        return getAnnotation(RemoteService::class.java)
+        return getCachedAnnotation()
     }
 
 /**

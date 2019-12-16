@@ -1,5 +1,7 @@
 package net.jkcode.jksoa.common
 
+import net.jkcode.jkutil.common.getClassByName
+
 /**
  * url与字符串互转的工具类
  *
@@ -43,7 +45,7 @@ interface IUrl {
      * 接口类名 = 路径 = 服务标识
      */
     val `interface`: Class<*>
-        get() = Class.forName(path)
+        get() = getClassByName(path)
 
     /**
      * 服务路径

@@ -29,7 +29,7 @@ interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
     /**
      * 附加数据
      */
-    val attachments: MutableMap<String, Any?>
+    val attachments: Map<String, Any?>?
 
     /**
      * 获得附加参数
@@ -60,7 +60,7 @@ interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
      * @return
      */
     public fun <T> getAttachment(key: String, defaultValue: T? = null): T?{
-        return attachments.getOrDefault(key, defaultValue) as T?
+        return attachments?.getOrDefault(key, defaultValue) as T?
     }
 
     /**
@@ -69,7 +69,7 @@ interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
      * @param value
      */
     public operator fun set(key: String, value: Any?) {
-        setAttachment(key, value)
+        putAttachment(key, value)
     }
 
     /**
@@ -77,24 +77,18 @@ interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
      * @param key
      * @param value
      */
-    public fun setAttachment(key: String, value: Any?) {
-        attachments[key] = value
-    }
+    public fun putAttachment(key: String, value: Any?)
 
     /**
      * 设置附加参数
      * @param data
      */
-    public fun setAttachments(data: Map<String, Any?>) {
-        attachments.putAll(data)
-    }
+    public fun putAttachments(data: Map<String, Any?>)
 
     /**
      * 删除附加参数
      * @param key
      * @return
      */
-    public fun removeAttachment(key: String): Any? {
-        return attachments.remove(key)
-    }
+    public fun removeAttachment(key: String): Any?
 }
