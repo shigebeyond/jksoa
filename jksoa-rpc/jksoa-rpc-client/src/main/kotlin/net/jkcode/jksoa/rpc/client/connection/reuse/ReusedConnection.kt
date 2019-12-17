@@ -11,7 +11,7 @@ import net.jkcode.jksoa.common.*
  * @author shijianhang
  * @create 2017-12-15 下午9:25
  **/
-class ReusableConnection(
+class ReusedConnection(
         public override val url: Url, // 服务端地址
         public override var weight: Int = 1, // 权重
         protected val conn: IConnection = ReconnectableConnection.instance(url.serverPart).incrRef() // 根据 serverPart 来复用 ReconnectableConnection 的实例

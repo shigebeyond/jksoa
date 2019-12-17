@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.connection.pool
+package net.jkcode.jksoa.rpc.client.connection.pooled
 
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
@@ -45,12 +45,12 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
                 // 创建连接池
                 val pool = GenericObjectPool<IConnection>(PooledConnectionFactory(url))
                 pool.testOnBorrow = true // borrow时调用 validateObject() 来校验
-                val min: Int = config["minPooledConnections"]!!
+                val min: Int = config["minConnections"]!!
                 pool.minIdle = min // 池化连接的最小数
                 // 不能简单读 pool.minIdle, 因为他的实现会取 minIdle/maxIdle 的最小值
                 if(pool.maxIdle < min)
                     pool.maxIdle = min
-                pool.maxTotal = config["maxPooledConnections"]!! // 池化连接的最大数
+                pool.maxTotal = config["maxConnections"]!! // 最大连接数, 用在 PooledConnection
                 pool.timeBetweenEvictionRunsMillis = 1000 * 60 * 10 // 定时逐出时间间隔: 10min
                 pool.minEvictableIdleTimeMillis = 1000 * 60 * 60 // 连接在空闲队列中等待逐出的时间: 1hour
                 pool
@@ -64,7 +64,6 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
         if(!lazyConnect) { // 不延迟创建连接: 预先创建
             val pool = getPool(url.serverPart)
             pool.preparePool()
-            println("-----------初始化连接池: ${url.serverPart} -- 连接数 ${pool.minIdle}")
         }
     }
 
@@ -97,6 +96,7 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
     }
 
     public override fun close() {
+        // 由 GenericObjectPool 的自动逐出机制来释放资源
     }
 
 }

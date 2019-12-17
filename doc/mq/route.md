@@ -18,7 +18,7 @@
 
 ### 1.2 选择发送线程
 
-producer生产消息, 是直接调用远端服务`BrokerService.putMessage(msg)`, 而`BrokerService`的连接管理者为`BrokerConnectionHub`, 其属性`reuseConnection`改写为true, 则为复用单一连接, 对应是单线程发送, 不是多线程就不用选择线程.
+producer生产消息, 是直接调用远端服务`BrokerService.putMessage(msg)`, 而`BrokerService`的连接管理者为`BrokerConnectionHub`, 其属性`connectType`改写为`reused`, 则为复用单一连接, 对应是单线程发送, 不是多线程就不用选择线程.
 
 ## 2 消费消息的路由
 

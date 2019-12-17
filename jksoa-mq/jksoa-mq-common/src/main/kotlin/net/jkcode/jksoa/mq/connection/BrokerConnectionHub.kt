@@ -26,7 +26,7 @@ class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
      * 强制复用连接
      *    单一连接, 对应单线程发送, 不是多线程发送, producer发送消息时不用选择线程来发送, 从而保证消息的串行处理
      */
-    protected override val reuseConnection: Boolean = true
+    protected override val connectType: String = "reused"
 
     /**
      * 服务发现

@@ -51,10 +51,10 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
 
     /**
      * 引用数
-     *   被 ReusableConnection 引用时: 引用数++
+     *   被 ReusedConnection 引用时: 引用数++
      *   关闭时: 引用数--
      */
-    protected val refNum: AtomicInteger = AtomicInteger(0)
+    protected val refs: AtomicInteger = AtomicInteger(0)
 
     /**
      * 上一次发送的时间
@@ -74,7 +74,7 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
      * @return
      */
     public fun incrRef(): ReconnectableConnection {
-        refNum.incrementAndGet()
+        refs.incrementAndGet()
         return this
     }
 
@@ -132,14 +132,14 @@ class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : B
      */
     public override fun close() {
         // 引用数--, 减至0才关闭
-        if(refNum.decrementAndGet() > 0)
+        if(refs.decrementAndGet() > 0)
             return
 
         // 真正的关闭
         if(conn != null) {
             conn!!.close()
             conn = null
-            refNum.set(0)
+            refs.set(0)
         }
     }
 

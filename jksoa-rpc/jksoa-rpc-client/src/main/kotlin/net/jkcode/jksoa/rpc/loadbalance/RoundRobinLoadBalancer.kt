@@ -37,7 +37,7 @@ class RoundRobinLoadBalancer : ILoadBalancer {
         val counter = counters.getOrPut(req.serviceId){
             AtomicInteger(0)
         }
-        val i = counter.getAndIncrement() % col.size
+        val i = (counter.getAndIncrement() and Integer.MAX_VALUE) % col.size
         //println("select: $i from: 0 util ${col.size}")
         return col.get(i)
     }

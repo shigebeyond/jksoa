@@ -14,7 +14,9 @@ IConnection
 		ReconnectableConnection -- 自动重连的连接
 		RmiConnection -- rmi协议的连接
         PooledConnection -- 池化的连接的包装器
-	ReusableConnection -- 可复用的连接
+	ReusedConnection -- 可复用的连接
+	PooledConnection -- 池化的连接
+	FixedConnection -- 固定几个连接
 ```
 
 ## IConnection 接口
@@ -72,11 +74,13 @@ interface IConnection: Closeable {
 
 ## 连接的维持
 
-jksoa-rpc提供了两种方式来维持连接:
+jksoa-rpc提供了3种方式来维持连接:
 
-1. `ReusableConnection` -- 可复用的连接, 即单一长连接
+1. `ReusedConnection` -- 可复用的连接, 即单一长连接
 如果服务被大量client引用, 则建议每个client单一长连接
 
 2. `PooledConnection` -- 池化的连接的包装器, 即多个长连接做连接池
 
-可通过 `rpc-client.yaml` 配置文件的属性 `reuseConnection` 来切换: 1 true: 则使用连接 `ReconnectableConnection` 2 false: 则使用连接 `PooledConnection`
+3. `FixedConnection` -- 固定几个连接
+
+可通过 `rpc-client.yaml` 配置文件的属性 `connectType` 来切换: 1 reused 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接

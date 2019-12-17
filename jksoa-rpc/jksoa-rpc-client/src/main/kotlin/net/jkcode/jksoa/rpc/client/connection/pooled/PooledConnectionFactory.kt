@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.connection.pool
+package net.jkcode.jksoa.rpc.client.connection.pooled
 
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.rpc.client.IConnection

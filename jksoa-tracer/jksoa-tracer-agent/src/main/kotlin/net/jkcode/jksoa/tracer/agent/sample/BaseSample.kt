@@ -34,7 +34,7 @@ class BaseSample(
     public override fun isSample(): Boolean {
         // 一秒内
         if (System.currentTimeMillis() - lastTime < 1000) {
-            val n = count.incrementAndGet()
+            val n = count.incrementAndGet() and Long.MAX_VALUE
             if (n > base && n % fraction != 0L)
                     return false
 

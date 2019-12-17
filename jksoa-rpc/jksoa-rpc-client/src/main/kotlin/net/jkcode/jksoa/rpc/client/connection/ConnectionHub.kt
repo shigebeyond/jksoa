@@ -6,12 +6,14 @@ import net.jkcode.jkutil.common.CommonMilliTimer
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.rpc.client.IConnection
-import net.jkcode.jksoa.rpc.client.connection.reuse.ReusableConnection
-import net.jkcode.jksoa.rpc.client.connection.pool.PooledConnection
+import net.jkcode.jksoa.rpc.client.connection.reuse.ReusedConnection
+import net.jkcode.jksoa.rpc.client.connection.pooled.PooledConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
+import net.jkcode.jksoa.rpc.client.connection.fixed.FixedConnection
+import java.lang.IllegalArgumentException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
@@ -32,9 +34,9 @@ open class ConnectionHub: IConnectionHub() {
     public val config: IConfig = Config.instance("rpc-client", "yaml")
 
     /**
-     * 是否复用连接: 1 true: 则使用连接 ReconnectableConnection 2 false: 则使用连接 PooledConnection
+     * 连接类型: 1 reused 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
      */
-    protected open val reuseConnection: Boolean = config["reuseConnection"]!!
+    protected open val connectType: String = config["connectType"]!!
 
     /**
      * 连接池： <协议ip端口 to 连接>
@@ -56,10 +58,12 @@ open class ConnectionHub: IConnectionHub() {
         clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
         val weight: Int = url.getParameter("weight", 1)!!
         // 创建连接
-        val conn: IConnection = if(reuseConnection)
-                                    ReusableConnection(url, weight) 
-                                else
-                                    PooledConnection(url, weight) 
+        val conn: IConnection = when(connectType) {
+            "reused" -> ReusedConnection(url, weight)
+            "pooled" -> PooledConnection(url, weight)
+            "fixed" -> FixedConnection(url, weight)
+            else -> throw IllegalArgumentException("无效连接类型: $connectType")
+        }
         connections[url.serverName] = conn;
     }
 
