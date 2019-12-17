@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-14 12:48 PM
  */
-class ReconnectableConnection private constructor(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
+class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
 
     companion object{
         /**

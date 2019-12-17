@@ -45,7 +45,7 @@ class FixedConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
                 // 创建连接池
                 val min: Int = config["minConnections"]!!
                 val pool = (0 until min).mapToArray {
-                    ReconnectableConnection.instance(url.serverPart).incrRef() // 根据 serverPart 来复用 ReconnectableConnection 的实例
+                    ReconnectableConnection(url.serverPart) // 根据 serverPart 来复用 ReconnectableConnection 的实例
                 }
                 pool
             }
@@ -62,7 +62,9 @@ class FixedConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
         val lazyConnect: Boolean = config["lazyConnect"]!!
         if(!lazyConnect) { // 不延迟创建连接: 预先创建
             val pool = getPool(url.serverPart)
-            println("-----------初始化连接池cc: ${url.serverPart} -- 连接数 ${pool.size}")
+            for(conn in pool) // 增加引用
+                conn.incrRef()
+            println("-----------初始化连接池xx: ${url.serverPart} -- 连接数 ${pool.size}")
         }
     }
 
