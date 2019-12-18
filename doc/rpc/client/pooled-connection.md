@@ -28,8 +28,6 @@ public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResp
 
         // 发送请求
         return conn.send(req, requestTimeoutMillis)
-    } catch (e: Exception) {
-        throw e
     } finally {
         // 归还连接
         if (conn != null)

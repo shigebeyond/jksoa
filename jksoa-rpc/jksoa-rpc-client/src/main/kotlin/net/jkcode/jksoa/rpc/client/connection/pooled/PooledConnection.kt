@@ -86,8 +86,6 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
 
             // 发送请求
             return conn.send(req, requestTimeoutMillis)
-        } catch (e: Exception) {
-            throw e
         } finally {
             // 归还连接
             if (conn != null)

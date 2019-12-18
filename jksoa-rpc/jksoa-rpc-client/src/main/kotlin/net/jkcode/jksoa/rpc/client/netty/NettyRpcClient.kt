@@ -104,13 +104,10 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
         // 连接server
         val f: ChannelFuture = bootstrap.connect(url.host, url.port)
         // 添加监听
-        f.addListener(object: ChannelFutureListener{
-            override fun operationComplete(f: ChannelFuture) {
-                val msg = if (f.isSuccess) "成功" else "失败: " + f.cause().message
-                clientLogger.debug("ChannelFutureListener连接 server[{}] {}", url, msg)
-            }
-
-        })
+        f.addListener { f ->
+            val msg = if (f.isSuccess) "成功" else "失败: " + f.cause().message
+            clientLogger.debug("ChannelFutureListener连接 server[{}] {}", url, msg)
+        }
         // 等待
         f.syncUninterruptibly()
 
