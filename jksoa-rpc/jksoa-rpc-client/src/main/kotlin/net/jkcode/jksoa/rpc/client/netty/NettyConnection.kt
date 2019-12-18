@@ -53,26 +53,28 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
         // 2 发送请求
         val writeFuture = channel.writeAndFlush(req)
 
-        // 3 阻塞等待发送完成，有超时
-        val result = writeFuture.awaitUninterruptibly(req.requestTimeoutMillis, TimeUnit.MILLISECONDS)
+        // 3 发送完成的回调
+        writeFuture.addListener { f ->
+            // 3.1 发送成功
+            if (f.isSuccess)
+                return@addListener
 
-        // 3.1 发送成功
-        if (result && writeFuture.isSuccess())
-            return if(resFuture != null) resFuture else NettyRpcResponseFuture(req, channel, requestTimeoutMillis) // 返回异步响应
+            // 3.2 发送失败
+            clientLogger.error("发送请求失败: {}", req)
+            // 删除异步响应的记录
+            handler.removeResponseFuture(req.id)
 
-        // 3.2 发送失败
-        clientLogger.error("发送请求失败: {}", req)
-        // 删除异步响应的记录
-        handler.removeResponseFuture(req.id)
-
-        // 超时
-        if (writeFuture.cause() == null){
-            writeFuture.cancel(false)
-            throw RpcClientException("远程调用超时: $req")
+            // 设置异常结果
+            val ex = if (f.cause() == null){ // 超时异常
+                        f.cancel(false)
+                        RpcClientException("远程调用超时: $req")
+                    }else // io异常
+                        RpcClientException("远程调用发生io异常: $req", f.cause())
+            resFuture.completeExceptionally(ex)
         }
 
-        // io异常
-        throw RpcClientException("远程调用发生io异常: $req", writeFuture.cause())
+        // 返回异步响应
+        return resFuture
     }
 
     /**
