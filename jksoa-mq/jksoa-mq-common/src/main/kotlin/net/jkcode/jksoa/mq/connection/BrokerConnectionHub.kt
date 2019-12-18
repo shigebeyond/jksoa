@@ -23,10 +23,10 @@ import kotlin.reflect.jvm.javaMethod
 class BrokerConnectionHub: ConnectionHub(), IMqDiscoveryListener {
 
     /**
-     * 强制复用连接
+     * 强制单一连接
      *    单一连接, 对应单线程发送, 不是多线程发送, producer发送消息时不用选择线程来发送, 从而保证消息的串行处理
      */
-    protected override val connectType: String = "reused"
+    protected override val connectType: String = "single"
 
     /**
      * 服务发现

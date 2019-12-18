@@ -46,7 +46,7 @@ servicePackages: # service类所在的包路径
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
-connectType: fixed # 连接类型: 1 reused 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
+connectType: fixed # 连接类型: 1 single 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
 lazyConnect: false # 是否延迟创建连接
 minConnections: 2 # 最小连接数, 用在 PooledConnection/FixedConnection
 maxConnections: 10 # 最大连接数, 用在 PooledConnection

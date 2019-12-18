@@ -6,7 +6,7 @@ import net.jkcode.jkutil.common.CommonMilliTimer
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.rpc.client.IConnection
-import net.jkcode.jksoa.rpc.client.connection.reuse.ReusedConnection
+import net.jkcode.jksoa.rpc.client.connection.single.SingleConnection
 import net.jkcode.jksoa.rpc.client.connection.pooled.PooledConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
@@ -34,7 +34,7 @@ open class ConnectionHub: IConnectionHub() {
     public val config: IConfig = Config.instance("rpc-client", "yaml")
 
     /**
-     * 连接类型: 1 reused 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
+     * 连接类型: 1 single 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
      */
     protected open val connectType: String = config["connectType"]!!
 
@@ -59,7 +59,7 @@ open class ConnectionHub: IConnectionHub() {
         val weight: Int = url.getParameter("weight", 1)!!
         // 创建连接
         val conn: IConnection = when(connectType) {
-            "reused" -> ReusedConnection(url, weight)
+            "single" -> SingleConnection(url, weight)
             "pooled" -> PooledConnection(url, weight)
             "fixed" -> FixedConnection(url, weight)
             else -> throw IllegalArgumentException("无效连接类型: $connectType")

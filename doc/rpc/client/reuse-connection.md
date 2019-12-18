@@ -1,6 +1,6 @@
-# ReusedConnection -- 可复用的rpc连接
+# SingleConnection -- 单一的rpc连接
 
-可复用的rpc连接, 即复用单一的长连接
+复用单一的长连接
 
 ## 背景
 Provider : Referer = 1 : N
@@ -17,14 +17,14 @@ Provider : Referer = 1 : N
 
 ```
 /**
- * 可复用的rpc连接
+ * 复用单一的rpc连接
  *   根据 serverPart 来复用 ReconnectableConnection 的实例
  *   复用的是同一个server的连接
  *
  * @author shijianhang
  * @create 2017-12-15 下午9:25
  **/
-class ReusedConnection(
+class SingleConnection(
         public override val url: Url, // 服务端地址
         public override var weight: Int = 1, // 权重
         protected val conn: IConnection = ReconnectableConnection.instance(url.serverPart).incrRef() // 根据 serverPart 来复用 ReconnectableConnection 的实例

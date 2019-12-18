@@ -5,7 +5,7 @@ import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
-import net.jkcode.jksoa.rpc.client.connection.reuse.ReconnectableConnection
+import net.jkcode.jksoa.rpc.client.connection.single.ReconnectableConnection
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jkutil.common.mapToArray

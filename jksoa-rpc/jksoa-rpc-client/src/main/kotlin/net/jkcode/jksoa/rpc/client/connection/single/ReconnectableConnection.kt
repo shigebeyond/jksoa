@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.connection.reuse
+package net.jkcode.jksoa.rpc.client.connection.single
 
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
@@ -51,7 +51,7 @@ class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : 
 
     /**
      * 引用数
-     *   被 ReusedConnection 引用时: 引用数++
+     *   被 SingleConnection 引用时: 引用数++
      *   关闭时: 引用数--
      */
     protected val refs: AtomicInteger = AtomicInteger(0)
