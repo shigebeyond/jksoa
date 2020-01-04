@@ -36,7 +36,7 @@ class UserController: Controller()
             val coupons = couponService.getUnspentCouponByUid(uid) // 优惠券
             UserEntity(uid, unames[uid]!!, balance, coupons)
         }
-        res.renderView(view("user/index", mutableMapOf("users" to users)))
+        res.renderView(view("user/index", mapOf("users" to users)))
     }
 
 }

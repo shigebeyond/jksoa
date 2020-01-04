@@ -26,7 +26,7 @@ class ProductController: Controller()
     public fun indexAction()
     {
         val products = productService.getAllProducts()
-        res.renderView(view("product/index", mutableMapOf("products" to products)))
+        res.renderView(view("product/index", mapOf("products" to products)))
     }
 
     /**
@@ -42,7 +42,7 @@ class ProductController: Controller()
         val uid = 1
         val coupons = couponService.getUnspentCouponByUid(uid)
 
-        res.renderView(view("product/buy", mutableMapOf("product" to product, "coupons" to coupons)))
+        res.renderView(view("product/buy", mapOf("product" to product, "coupons" to coupons)))
     }
 
 }

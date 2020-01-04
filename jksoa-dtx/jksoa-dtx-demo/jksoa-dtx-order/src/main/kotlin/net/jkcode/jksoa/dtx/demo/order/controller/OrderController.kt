@@ -28,7 +28,7 @@ class OrderController: Controller()
     public fun indexAction()
     {
         val orders = orderService.getAllOrders()
-        res.renderView(view("order/index", mutableMapOf("orders" to orders)))
+        res.renderView(view("order/index", mapOf("orders" to orders)))
     }
 
     /**
@@ -56,7 +56,7 @@ class OrderController: Controller()
         // 获得余额
         val uid = 1
         val balance = payAccountService.getBalanceByUid(uid)
-        res.renderView(view("order/selectPay", mutableMapOf("order" to order, "balance" to balance)))
+        res.renderView(view("order/selectPay", mapOf("order" to order, "balance" to balance)))
     }
 
     /**
