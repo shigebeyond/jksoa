@@ -24,6 +24,10 @@ if(env == 'dev'){
     include 'jkguard'
     project(':jkguard').projectDir = new File('../jkguard')
 
+    // 任务调度
+    include 'jkjob'
+    project(':jkjob').projectDir = new File('../jkjob')
+
     include 'jkmvc-orm'
     project(':jkmvc-orm').projectDir = new File('../jkmvc/jkmvc-orm')
 
@@ -34,7 +38,7 @@ if(env == 'dev'){
     project(':jkmvc-server-jetty').projectDir = new File('../jkmvc/jkmvc-server-jetty')
 
     // 性能测试
-    include 'jkbenchmark-test'
+    /*include 'jkbenchmark-test'
     project(':jkbenchmark-test').projectDir = new File('../jkbenchmark/jkbenchmark-test')
 
     include 'benchmark-common'
@@ -42,4 +46,5 @@ if(env == 'dev'){
 
     include 'benchmark-rpc'
     project(':benchmark-rpc').projectDir = new File('../jksoa-benchmark/jkrpc')
+    */
 }
