@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.tracer.agent
 
 import net.jkcode.jkutil.common.JkApp
-import net.jkcode.jkutil.common.DoneFlagList
+import net.jkcode.jkutil.collection.DoneFlagList
 import net.jkcode.jkutil.ttl.SttlCurrentHolder
 import net.jkcode.jkutil.common.generateId
 import net.jkcode.jkutil.ttl.AllRequestScopedTransferableThreadLocal

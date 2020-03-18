@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jkutil.common.DirtyFlagMap
 import net.jkcode.jksoa.job.job.LambdaJob
 
 /**

@@ -1,7 +1,6 @@
 package net.jkcode.jksoa.job
 
-import net.jkcode.jkutil.common.DirtyFlagMap
-import java.util.*
+import net.jkcode.jkutil.collection.DirtyFlagMap
 
 /**
  * 作业执行的上下文

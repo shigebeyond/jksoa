@@ -86,7 +86,7 @@ open class Url(public override var protocol: String /* 协议 */,
         protected val RegexUrl: Regex = ("(\\w+)://([^:/]+)${RegexPort}/?([^?]*)${RegexParamStr}").toRegex()
 
         /**
-         * 函数参数的正则
+         * 参数的正则
          */
         protected val RegexParam: Regex = "([^=]+)=([^&]+)".toRegex()
 
