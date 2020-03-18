@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.common
 
 import com.alibaba.fastjson.annotation.JSONField
-import net.jkcode.jksoa.common.invocation.IInvocation
+import net.jkcode.jkutil.invocation.IInvocation
 import java.io.Serializable
 
 /**

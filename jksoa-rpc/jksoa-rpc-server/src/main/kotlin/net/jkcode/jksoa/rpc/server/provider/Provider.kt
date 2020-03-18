@@ -5,7 +5,7 @@ import net.jkcode.jkutil.singleton.BeanSingletons
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.serverLogger
-import net.jkcode.jksoa.leader.ZkLeaderElection
+import net.jkcode.jkutil.leader.ZkLeaderElection
 import net.jkcode.jksoa.rpc.client.referer.RefererLoader
 import net.jkcode.jksoa.rpc.registry.IRegistry
 import net.jkcode.jksoa.rpc.server.IProvider

@@ -3,7 +3,7 @@ package net.jkcode.jksoa.common
 import com.alibaba.fastjson.annotation.JSONField
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jksoa.common.annotation.remoteMethod
-import net.jkcode.jksoa.common.invocation.IInvocation
+import net.jkcode.jkutil.invocation.IInvocation
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KFunction

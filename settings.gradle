@@ -4,8 +4,6 @@ rootProject.name = 'jksoa'
 include 'jksoa-common'
 // rpc
 include 'jksoa-rpc:jksoa-rpc-registry', 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc:jksoa-rpc-server'
-// 作业调度
-include 'jksoa-job'
 // 消息队列
 include 'jksoa-mq:jksoa-mq-common', 'jksoa-mq:jksoa-mq-registry', 'jksoa-mq:jksoa-mq-client', 'jksoa-mq:jksoa-mq-broker'
 // 跟踪链

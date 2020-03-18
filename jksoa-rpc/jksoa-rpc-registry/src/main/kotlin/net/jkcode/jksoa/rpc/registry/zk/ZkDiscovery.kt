@@ -6,7 +6,7 @@ import net.jkcode.jksoa.rpc.registry.IDiscovery
 import net.jkcode.jksoa.rpc.registry.IDiscoveryListener
 import net.jkcode.jksoa.rpc.registry.RegistryException
 import net.jkcode.jksoa.rpc.registry.zk.listener.ZkChildListener
-import net.jkcode.jksoa.zk.ZkClientFactory
+import net.jkcode.jkutil.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
 import java.util.concurrent.ConcurrentHashMap
 

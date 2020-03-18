@@ -36,8 +36,8 @@ jksoa-job的核心组件有2个：
 
 ```
 import net.jkcode.jksoa.common.RpcRequest
-import net.jkcode.jksoa.job.job.remote.RpcJob
-import net.jkcode.jksoa.job.trigger.CronTrigger
+import net.jkcode.jkjob.job.remote.RpcJob
+import net.jkcode.jkjob.trigger.CronTrigger
 
 // 定义job
 val req = RpcRequest(ISimpleService::echo, arrayOf<Any?>("测试消息"))
@@ -52,16 +52,16 @@ trigger.start()
 
 ## 使用 `CronJobLauncher` 简化代码
 
-使用`net.jkcode.jksoa.job.cronjob.CronJobLauncher`, 配合cron与作业的复合表达式, 只需要两行代码便可定义定时作业
+使用`net.jkcode.jkjob.cronjob.CronJobLauncher`, 配合cron与作业的复合表达式, 只需要两行代码便可定义定时作业
 
 实际上`CronJobLauncher`是从cron与作业的复合表达式中, 分别解析出 `CronTrigger` 与 `RpcJob`, 效果与上一节是一样的
 
 ```
-import net.jkcode.jksoa.job.cronjob.CronJobLauncher
+import net.jkcode.jkjob.cronjob.CronJobLauncher
 
 // cron与作业的复合表达式, 由cron表达式 + 作业表达式组成, 其中作业表达式前面加`:`, 标识触发的内容是作业
 // 如 "0/10 * * * * ? -> lpc net.jkcode.jksoa.rpc.example.SimpleService ping() ()"
-//val cronJobExpr = "0/10 * * * * ? -> lpc net.jkcode.jksoa.job.LocalBean echo(String) (\\\"测试消息\\\")"
+//val cronJobExpr = "0/10 * * * * ? -> lpc net.jkcode.jkjob.LocalBean echo(String) (\\\"测试消息\\\")"
 val cronJobExpr = "0/10 * * * * ? -> rpc net.jkcode.jksoa.rpc.example.ISimpleService echo(String) (\"测试消息\")"
 val trigger = CronJobLauncher.lauch(cronJobExpr)
 ```

@@ -3,12 +3,10 @@ package net.jkcode.jksoa.dtx.tcc
 import net.jkcode.jkutil.common.*
 import net.jkcode.jkmvc.db.Db
 import net.jkcode.jkutil.ttl.AllRequestScopedTransferableThreadLocal
-import net.jkcode.jkutil.ttl.ScopedTransferableThreadLocal
 import net.jkcode.jkutil.ttl.SttlCurrentHolder
-import net.jkcode.jksoa.common.invocation.IInvocation
+import net.jkcode.jkutil.invocation.IInvocation
 import net.jkcode.jksoa.dtx.tcc.model.TccParticipant
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
-import java.io.File
 import java.io.InputStreamReader
 import java.util.concurrent.CompletableFuture
 

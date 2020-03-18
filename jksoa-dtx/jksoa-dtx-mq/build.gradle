@@ -11,7 +11,7 @@ dependencies{
     compile "com.rabbitmq:amqp-client:3.6.6"
 
     // 定时任务
-    compile project(':jksoa-job')
+    compile project(':jkjob')
 
     testRuntime "mysql:mysql-connector-java:5.1.6"
 }

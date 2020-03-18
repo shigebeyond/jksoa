@@ -25,8 +25,8 @@ Trigger 代表作业调度, 而Job 代表作业执行, 从而实现作业调度�
 demo如下
 
 ```
-import net.jkcode.jksoa.job.job.remote.RpcJob
-import net.jkcode.jksoa.job.trigger.CronTrigger
+import net.jkcode.jkjob.job.remote.RpcJob
+import net.jkcode.jkjob.trigger.CronTrigger
 
 // 定义job
 val job = RpcJob(ISimpleService::echo, arrayOf<Any?>("测试消息"))
@@ -48,7 +48,7 @@ trigger.start()
 调度采用线程池方式实现，避免单线程因阻塞而引起作业调度延迟。
 
 ## 调度者的HA
-在 `net.jkcode.jksoa.job.cronjob.ClusterCronJobLauncher` 中实现了集群的调度者.
+在 `net.jkcode.jkjob.cronjob.ClusterCronJobLauncher` 中实现了集群的调度者.
 
 集群中有多个候选者节点, 但是只有选为leader的候选者节点才能成为唯一的调度者, 其他候选者节点则成为热备.
 

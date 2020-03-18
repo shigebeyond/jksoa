@@ -1,7 +1,7 @@
 package net.jkcode.jksoa.mq.common
 
-import net.jkcode.jksoa.sequence.ISequence
-import net.jkcode.jksoa.sequence.ZkSequence
+import net.jkcode.jkutil.sequence.ISequence
+import net.jkcode.jkutil.sequence.ZkSequence
 
 /**
  * 主题id生成器

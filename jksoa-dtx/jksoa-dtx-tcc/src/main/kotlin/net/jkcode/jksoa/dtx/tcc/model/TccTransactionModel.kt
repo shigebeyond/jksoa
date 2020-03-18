@@ -3,7 +3,7 @@ package net.jkcode.jksoa.dtx.tcc.model
 import net.jkcode.jkutil.common.*
 import net.jkcode.jkmvc.orm.Orm
 import net.jkcode.jkmvc.orm.OrmMeta
-import net.jkcode.jksoa.common.invocation.IInvocation
+import net.jkcode.jkutil.invocation.IInvocation
 import net.jkcode.jksoa.dtx.tcc.dtxTccLogger
 import net.jkcode.jksoa.dtx.tcc.tccMethod
 import java.util.concurrent.CompletableFuture

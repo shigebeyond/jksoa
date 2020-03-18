@@ -1,13 +1,13 @@
 # Cluster
 
-在 `net.jkcode.jksoa.job.cronjob.ClusterCronJobLauncher` 中实现了调度者集群.
+在 `net.jkcode.jkjob.cronjob.ClusterCronJobLauncher` 中实现了调度者集群.
 
 集群中有多个候选者节点, 但是只有选为leader的候选者节点才能成为唯一的调度者, 其他候选者节点则成为热备.
 
 他的实现很简单, 就是使用`net.jkcode.jksoa.leader.ZkLeaderElection`来选举leader作为调度者.
 
 ```
-package net.jkcode.jksoa.job.cronjob
+package net.jkcode.jkjob.cronjob
 
 import net.jkcode.jksoa.leader.ZkLeaderElection
 

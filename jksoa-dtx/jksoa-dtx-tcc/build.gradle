@@ -9,7 +9,7 @@ dependencies{
     compile "org.aspectj:aspectjrt:${aspectjVersion}"
 
     // 定时任务
-    compile project(':jksoa-job')
+    compile project(':jkjob')
 
     // jdbc
     runtime "mysql:mysql-connector-java:5.1.6"

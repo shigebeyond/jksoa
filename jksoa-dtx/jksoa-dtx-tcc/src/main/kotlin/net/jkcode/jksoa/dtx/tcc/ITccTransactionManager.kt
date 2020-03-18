@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.tcc
 
-import net.jkcode.jksoa.common.invocation.IInvocation
+import net.jkcode.jkutil.invocation.IInvocation
 import net.jkcode.jksoa.dtx.tcc.model.TccTransactionModel
 
 /**

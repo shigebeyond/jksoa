@@ -1,4 +1,5 @@
 dependencies{
     // other project
     compile project(':jksoa-rpc:jksoa-rpc-registry')
+    testCompile project(':jkjob')
 }

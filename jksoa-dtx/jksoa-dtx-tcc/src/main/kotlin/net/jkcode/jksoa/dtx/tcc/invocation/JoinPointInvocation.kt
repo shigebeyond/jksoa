@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.dtx.tcc.invocation
 
-import net.jkcode.jksoa.common.invocation.IInvocation
+import net.jkcode.jkutil.invocation.IInvocation
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.reflect.MethodSignature
 import java.io.Serializable

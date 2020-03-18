@@ -16,7 +16,7 @@ jksoa-job自带了各种不同类型的Trigger，最常用的主要是`PeriodicT
 详细看类定义:
 
 ```
-package net.jkcode.jksoa.job.trigger
+package net.jkcode.jkjob.trigger
 
 /**
  * 周期性重复的触发器
@@ -52,7 +52,7 @@ data class PeriodicTrigger(public val intervalSeconds: Long /* 重复的时间�
 详细看类定义:
 
 ```
-package net.jkcode.jksoa.job.trigger
+package net.jkcode.jkjob.trigger
 
 import java.util.*
 

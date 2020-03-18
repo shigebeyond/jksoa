@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.common
 
-import net.jkcode.jksoa.common.invocation.IShardingInvocation
+import net.jkcode.jkutil.invocation.IShardingInvocation
 
 /**
  * 分片的rpc请求

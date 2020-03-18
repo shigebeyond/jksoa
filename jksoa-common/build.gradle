@@ -3,17 +3,15 @@ dependencies{
     if(env == 'dev'){
         compile project(':jkutil')
         compile project(':jkguard')
+        compile project(':jkjob')
     }else{
         compile "net.jkcode.jkutil:jkutil:$jkutil_version"
         compile "net.jkcode.jkguard:jkguard:$jkguard_version"
+        compile "net.jkcode.jkguard:jkjob:$jkjob_version"
     }
 
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     compile 'org.jetbrains.kotlin:kotlin-reflect'
-
-    // zookeeper
-    compile "org.apache.zookeeper:zookeeper:$zk_version"
-    compile "com.101tec:zkclient:$zkclient_version"
 
     // netty
     compile "io.netty:netty-all:$netty_version"

@@ -5,8 +5,8 @@ import net.jkcode.jkutil.common.getMethodBySignature
 import net.jkcode.jkutil.common.getSignature
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.remoteService
-import net.jkcode.jksoa.common.invocation.IInvocation
-import net.jkcode.jksoa.common.invocation.Invocation
+import net.jkcode.jkutil.invocation.IInvocation
+import net.jkcode.jkutil.invocation.Invocation
 import net.jkcode.jksoa.dtx.tcc.TccException
 import net.jkcode.jksoa.dtx.tcc.tccMethod
 import java.io.Serializable
@@ -82,7 +82,7 @@ class TccParticipant : Serializable{
         return if (isRpc)
                     RpcRequest(clazz.name, methodSignature, args)
                 else
-                    Invocation(clazz.name, methodSignature, args)
+            Invocation(clazz.name, methodSignature, args)
     }
 
     /**

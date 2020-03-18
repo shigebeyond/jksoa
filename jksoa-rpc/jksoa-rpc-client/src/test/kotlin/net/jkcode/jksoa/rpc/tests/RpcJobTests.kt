@@ -1,40 +1,15 @@
-package net.jkcode.jksoa.job
+package net.jkcode.jksoa.rpc.tests
 
-import net.jkcode.jkutil.common.getMethodBySignature
+import net.jkcode.jkjob.BaseJobTests
+import net.jkcode.jkjob.LocalBean
+import net.jkcode.jkjob.job.InvocationJob
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.ShardingRpcRequest
-import net.jkcode.jksoa.common.invocation.Invocation
-import net.jkcode.jksoa.common.invocation.ShardingInvocation
-import net.jkcode.jksoa.job.job.InvocationJob
 import net.jkcode.jksoa.rpc.example.ISimpleService
+import net.jkcode.jkutil.invocation.ShardingInvocation
 import org.junit.Test
 
-class JobTests: BaseTests(){
-
-    @Test
-    fun testLpc(){
-        try {
-            val c = Class.forName("fuck")
-
-//        val c = SimpleService::class.java
-//        val m = c.getMethod("echo", String::class.java)
-//        println(m.getSignature())
-
-            val m = c.getMethodBySignature("ping()")
-            val bean = c.newInstance()
-            val result = m!!.invoke(bean)
-            println(result)
-        }catch(e: Exception){
-            e.printStackTrace()
-        }
-    }
-
-    @Test
-    fun testLpcJob(){
-        val inv = Invocation(LocalBean::echo, arrayOf<Any?>("测试消息"))
-        val job = InvocationJob(inv)
-        buildPeriodicTrigger(job)
-    }
+class RpcJobTests: BaseJobTests(){
 
     @Test
     fun testShardingLpcJob(){

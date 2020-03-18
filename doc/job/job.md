@@ -5,7 +5,7 @@
 主要是一个 `execute()` 方法, 负责封装作业的执行逻辑
 
 ```
-package net.jkcode.jksoa.job
+package net.jkcode.jkjob
 
 /**
  * 作业
@@ -59,7 +59,7 @@ interface IJob {
 3. `attrs` -- 作业属性, 用于存储与传递job实例的状态信息, 在`IJob::execute()`实现中可通过读写该属性来维持状态, 譬如可用于构建session
 
 ```
-package net.jkcode.jksoa.job
+package net.jkcode.jkjob
 
 import net.jkcode.jkmvc.common.DirtyFlagMap
 import java.util.*

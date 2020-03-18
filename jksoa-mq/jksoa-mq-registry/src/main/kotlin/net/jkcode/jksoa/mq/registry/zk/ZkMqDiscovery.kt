@@ -5,7 +5,7 @@ import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.mq.common.exception.MqRegistryException
 import net.jkcode.jksoa.mq.registry.*
-import net.jkcode.jksoa.zk.ZkClientFactory
+import net.jkcode.jkutil.zk.ZkClientFactory
 import org.I0Itec.zkclient.ZkClient
 
 /**
