@@ -57,19 +57,6 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 26. [附加参数](doc/rpc/common/attachment.md)
 27. [优雅的关机](doc/rpc/common/graceful-shutdown.md)
 
-# jksoa-job
-
-分布式任务调度的组件
-
-## 入门
-1. [快速开始](doc/job/getting_started.md)
-2. [作业](doc/job/job.md)
-3. [触发器](doc/job/trigger.md)
-
-## 高级
-4. [架构](doc/job/architecture.md)
-5. [分片策略](doc/job/sharding_strategy.md)
-6. [调度者集群](doc/job/cluster.md)
 
 # jksoa-tracer
 
