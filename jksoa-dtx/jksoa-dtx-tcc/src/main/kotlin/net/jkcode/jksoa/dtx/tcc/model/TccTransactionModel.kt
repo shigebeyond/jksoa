@@ -94,7 +94,7 @@ class TccTransactionModel(id:Int? = null): Orm(id) {
 		// 2.2 其他层是参数字段名
 		for(i in 1 until fields.size){
 			// 通过反射读取字段值
-			val prop = value!!::class.getProperty(fields[i]) as KProperty1<Any, Any?>?
+			val prop = value!!::class.getInheritProperty(fields[i]) as KProperty1<Any, Any?>?
 			if(prop == null)
 				return
 
