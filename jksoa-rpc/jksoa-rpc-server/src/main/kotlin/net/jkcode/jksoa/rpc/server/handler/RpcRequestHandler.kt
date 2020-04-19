@@ -54,9 +54,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
         // 1 包装请求作用域的处理
         GlobalRpcRequestScope.sttlWrap {
             // 2 调用provider方法
-            val future = interceptorChain.intercept(req) {
-                callProvider(req, ctx)
-            }
+            val future = callProvider(req, ctx)
 
             // 3 返回响应
             future.whenComplete{ r, ex ->
@@ -71,23 +69,26 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @param ctx
      * @return
      */
-    private fun callProvider(req: IRpcRequest, ctx: ChannelHandlerContext): Any? {
-        // 1 获得provider
-        val provider = ProviderLoader.get(req.serviceId)
-        if (provider == null)
-            throw RpcServerException("服务[${req.serviceId}]没有提供者");
+    private fun callProvider(req: IRpcRequest, ctx: ChannelHandlerContext): CompletableFuture<Any?> {
+        // 0 加拦截
+        return interceptorChain.intercept(req) {
+            // 1 获得provider
+            val provider = ProviderLoader.get(req.serviceId)
+            if (provider == null)
+                throw RpcServerException("服务[${req.serviceId}]没有提供者");
 
-        // 2 获得方法
-        val method = provider.getMethod(req.methodSignature)
-        if (method == null)
-            throw RpcServerException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
+            // 2 获得方法
+            val method = provider.getMethod(req.methodSignature)
+            if (method == null)
+                throw RpcServerException("服务方法[${req.serviceId}#${req.methodSignature}]不存在");
 
-        // 3 初始化rpc上下文: 因为rpc的方法可能有异步执行, 因此在方法体的开头就要获得并持有当前的rpc上下文
-        RpcServerContext(req, ctx)
+            // 3 初始化rpc上下文: 因为rpc的方法可能有异步执行, 因此在方法体的开头就要获得并持有当前的rpc上下文
+            RpcServerContext(req, ctx)
 
-        // 4 调用方法
-        //return method.invoke(provider.service, *req.args)
-        return guardInvoke(method, provider.service, req.args)
+            // 4 调用方法
+            //return method.invoke(provider.service, *req.args)
+            guardInvoke(method, provider.service, req.args)
+        }
     }
 
     /**
