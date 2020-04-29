@@ -53,7 +53,7 @@ IScope -- 作用域
 
 但对于非rpc请求与http请求的场景, 我要求开发者自行确定请求的作用域, 并在处理前后调用  `beginScope()`/`endScope()`
 
-如我在 jksoa-job 任务调用框架中的实现, 在`BaseTrigger`处理job的前后调用`GlobalAllRequestScope.beginScope()`与`GlobalAllRequestScope.endScope()`
+如我在 jkjob 任务调用框架中的实现, 在`BaseTrigger`处理job的前后调用`GlobalAllRequestScope.beginScope()`与`GlobalAllRequestScope.endScope()`
 
 # 有作用域的 ThreadLocal
 
