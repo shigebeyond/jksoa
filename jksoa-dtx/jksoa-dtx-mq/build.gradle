@@ -1,17 +1,16 @@
 dependencies{
-    // 存储
-    if(env == 'dev')
+    if(env == 'dev'){
         compile project(':jkmvc-orm')
-    else
+        compile project(':jkjob')
+    }else{
         compile "net.jkcode.jkmvc:jkmvc-orm:$jkmvc_version"
+        compile "net.jkcode.jkjob:jkjob:$jkjob_version"
+    }
 
     // jksoa-mq
     compile project(':jksoa-mq:jksoa-mq-client')
     // rabbitmq
     compile "com.rabbitmq:amqp-client:3.6.6"
-
-    // 定时任务
-    compile project(':jkjob')
 
     testRuntime "mysql:mysql-connector-java:5.1.6"
 }

@@ -1,15 +1,16 @@
 dependencies{
-    // 存储
-    if(env == 'dev')
+    // other project
+    compile project(':jksoa-rpc:jksoa-rpc-server')
+    if(env == 'dev'){
         compile project(':jkmvc-orm')
-    else
+        compile project(':jkjob')
+    }else{
         compile "net.jkcode.jkmvc:jkmvc-orm:$jkmvc_version"
+        compile "net.jkcode.jkjob:jkjob:$jkjob_version"
+    }
 
     // 切面
     compile "org.aspectj:aspectjrt:${aspectjVersion}"
-
-    // 定时任务
-    compile project(':jkjob')
 
     // jdbc
     runtime "mysql:mysql-connector-java:5.1.6"

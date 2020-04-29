@@ -1,5 +1,10 @@
 dependencies{
     // other project
+    if(env == 'dev'){
+        testCompile project(':jkjob')
+    }else{
+        testCompile "net.jkcode.jkjob:jkjob:$jkjob_version"
+    }
+
     compile project(':jksoa-rpc:jksoa-rpc-registry')
-    testCompile project(':jkjob')
 }
