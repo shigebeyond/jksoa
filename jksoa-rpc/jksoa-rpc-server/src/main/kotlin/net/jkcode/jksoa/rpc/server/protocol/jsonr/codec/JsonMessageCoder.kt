@@ -1,10 +1,10 @@
 package net.jkcode.jksoa.rpc.server.protocol.jsonr.codec
 
 import com.alibaba.fastjson.JSON
+import com.alibaba.fastjson.parser.ParserConfig
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.ServerChannel
 import io.netty.handler.codec.MessageToMessageCodec
 import io.netty.handler.codec.http.*
 import io.netty.handler.codec.http.websocketx.*
@@ -24,6 +24,20 @@ import java.net.InetSocketAddress
  * @date 2017-12-30 12:48 PM
  */
 class JsonMessageCoder : MessageToMessageCodec<Any, Any>() {
+
+    companion object{
+
+        /**
+         * fastjson的序列化配置
+         *    bug: 并发下报错 com.alibaba.fastjson.JSONException: default constructor not found. class net.jkcode.jksoa.common.RpcRequest
+         *    原因: `config.getDeserializer(clazz)` 并非线程安全, 并发下会导致多次创建 JavaBeanDeserializer, 进而导致类元数据的获得方法 JavaBeanInfo.build() 重复调用, 而 JavaBeanInfo.build() 中调用了kotlin类的元数据api 也不是线程安全的, 从而导致获得元数据失败
+         *    fix: 预先调用 `config.getDeserializer(clazz)`, 从而预先创建并缓存该类的 JavaBeanDeserializer
+         */
+        val jsonConfig : ParserConfig = ParserConfig.global.also {
+            it.getDeserializer(RpcRequest::class.java)
+            it.getDeserializer(RpcResponse::class.java)
+        }
+    }
 
     /**
      * 处理websocket握手
@@ -176,9 +190,19 @@ class JsonMessageCoder : MessageToMessageCodec<Any, Any>() {
         // 解析json
         val json = String(bs)
         val clazz = if(isReq) RpcRequest::class.java else RpcResponse::class.java
-        val msg = JSON.parseObject(json, clazz);
-        if (msg == null)
-            throw IllegalArgumentException("Message is not a valid json: " + json)
+        var msg: Any? = null
+        try {
+            msg = JSON.parseObject(json, clazz, jsonConfig);
+        }catch (ex: Exception){
+            val e = IllegalArgumentException("${ex.message} ; for json: " + json, ex)
+            commonLogger.error("JsonMessageCoder解码接收到的消息失败", e)
+            throw e
+        }
+        if (msg == null) {
+            val e = IllegalArgumentException("Message is not a valid json: " + json)
+            commonLogger.error("JsonMessageCoder解码接收到的消息失败", e)
+            throw e
+        }
         return msg
     }
 
