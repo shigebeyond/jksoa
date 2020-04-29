@@ -12,7 +12,7 @@ import net.jkcode.jkmvc.orm.OrmMeta
  */
 class MqTransactionModel(id:Int? = null): Orm(id) {
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(MqTransactionModel::class, "消息事务", "mq_transaction", "id", config["dbName"]!!){
+ 	companion object m: OrmMeta(MqTransactionModel::class, "消息事务", "mq_transaction", "id", null, config["dbName"]!!){
 		/**
 		 * 配置
 		 */

@@ -18,7 +18,7 @@ import kotlin.reflect.KProperty1
 class TccTransactionModel(id:Int? = null): Orm(id) {
 
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(TccTransactionModel::class, "tcc事务", "tcc_transaction", "id", Config.instance("dtx-tcc", "yaml").getString("dbName")!!){
+ 	companion object m: OrmMeta(TccTransactionModel::class, "tcc事务", "tcc_transaction", "id", null, Config.instance("dtx-tcc", "yaml").getString("dbName")!!){
 
 		/**
 		 * 事务状态: 尝试中
