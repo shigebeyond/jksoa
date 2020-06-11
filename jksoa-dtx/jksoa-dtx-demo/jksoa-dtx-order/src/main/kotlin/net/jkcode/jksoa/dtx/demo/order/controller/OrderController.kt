@@ -69,7 +69,7 @@ class OrderController: Controller()
 
         // 异步响应
         return future.thenAccept{ result ->
-            res.renderString("余额支付结果: $result")
+            res.renderHtml("余额支付结果: $result")
         }
     }
 
