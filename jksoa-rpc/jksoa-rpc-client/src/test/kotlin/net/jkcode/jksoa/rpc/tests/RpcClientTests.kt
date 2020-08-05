@@ -14,6 +14,7 @@ import net.jkcode.jksoa.rpc.client.protocol.jkr.JkrRpcClient
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.example.IGuardService
 import net.jkcode.jksoa.rpc.example.ISimpleService
+import net.jkcode.jkutil.common.getRootResource
 import org.junit.Test
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy

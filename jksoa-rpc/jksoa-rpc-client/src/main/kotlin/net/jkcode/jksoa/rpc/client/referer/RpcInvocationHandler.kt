@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.client.referer
 
+import co.paralleluniverse.fibers.Fiber
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.getMethodHandle
 import net.jkcode.jkutil.common.getSignature
@@ -145,7 +146,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
             // 但是合并请求是多个请求, 肯定多线程, 也无法确定使用哪个 Threadlocal, 因此不予处理
             // 下面包装一下 CompletableFuture, 返回新 CompletableFuture, 以便传递 Threadlocal
             val future = dispatcher.dispatch(req)
-            if(JkApp.useSttl)
+            if(JkApp.useSttl) // 应用可传递ScopedTransferableThreadLocal
                 SttlInterceptor.intercept(future)
             else
                 future
