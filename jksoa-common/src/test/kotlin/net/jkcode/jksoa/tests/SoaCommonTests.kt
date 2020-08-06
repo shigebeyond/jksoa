@@ -3,9 +3,9 @@ package net.jkcode.jksoa.tests
 import net.jkcode.jkutil.common.format
 import net.jkcode.jkutil.common.generateId
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.leader.ZkLeaderElection
-import net.jkcode.jksoa.sequence.ISequence
-import net.jkcode.jksoa.sequence.ZkSequence
+import net.jkcode.jkutil.leader.ZkLeaderElection
+import net.jkcode.jkutil.sequence.ISequence
+import net.jkcode.jkutil.sequence.ZkSequence
 import org.junit.Test
 import java.util.*
 import java.util.concurrent.TimeUnit

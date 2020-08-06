@@ -9,7 +9,7 @@ import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.channel.unix.Errors
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
-import net.jkcode.jkutil.common.CommonThreadPool
+import net.jkcode.jkutil.common.CommonExecutor
 import net.jkcode.jkutil.common.Config
 import java.nio.channels.ClosedChannelException
 import java.util.concurrent.RejectedExecutionException
@@ -56,7 +56,7 @@ open class NettyRequestHandler(
         
         // 请求处理放到公共线程池中执行, 不阻塞IO线程
         try {
-            CommonThreadPool.execute {
+            CommonExecutor.execute {
                 try {
                     RpcRequestHandler.handle(req, ctx)
                 } catch (e: Exception) {

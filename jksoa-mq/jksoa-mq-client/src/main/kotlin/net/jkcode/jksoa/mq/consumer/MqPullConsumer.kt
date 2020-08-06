@@ -94,7 +94,7 @@ object MqPullConsumer : IMqPullConsumer, IMqSubscriber by MqSubscriber {
             return
 
         try{
-            CommonThreadPool.execute() {
+            CommonExecutor.execute() {
                 // 拉取消息
                 val msgsFuture: CompletableFuture<List<Message>>
                 if(suspendProgress == null) // 按上一次的读进度来拉取
