@@ -15,7 +15,7 @@ import net.jkcode.jksoa.dtx.demo.coupon.entity.CouponEntity
 class CouponModel(id:Int? = null): CouponEntity(), IOrm by GeneralModel(m), IEntitiableOrm<CouponEntity> {
 
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(CouponModel::class, "优惠券", "cpn_coupon", "id", "dtx_cpn"){
+ 	companion object m: OrmMeta(CouponModel::class, "优惠券", "cpn_coupon", "id", dbName = "dtx_cpn"){
 
 		/**
 		 * 优惠券状态: 未使用

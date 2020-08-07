@@ -15,7 +15,7 @@ import net.jkcode.jksoa.dtx.demo.pay.entity.PayOrderEntity
 class PayOrderModel: PayOrderEntity(), IOrm by GeneralModel(m), IEntitiableOrm<PayOrderEntity> {
 
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(PayOrderModel::class, "支付订单", "pay_order", "id", "dtx_pay"){
+ 	companion object m: OrmMeta(PayOrderModel::class, "支付订单", "pay_order", "id", dbName = "dtx_pay"){
 		/**
 		 * 支付订单状态: 尝试中
 		 */

@@ -15,7 +15,7 @@ import net.jkcode.jksoa.dtx.demo.pay.entity.PayAccountEntity
 class PayAccountModel(id:Int? = null): PayAccountEntity(), IOrm by GeneralModel(m), IEntitiableOrm<PayAccountEntity> {
 
 	// 伴随对象就是元数据
- 	companion object m: OrmMeta(PayAccountModel::class, "支付账号", "pay_account", "uid", "dtx_pay"){}
+ 	companion object m: OrmMeta(PayAccountModel::class, "支付账号", "pay_account", "uid", dbName = "dtx_pay"){}
 
 	init {
 		if(id != null)

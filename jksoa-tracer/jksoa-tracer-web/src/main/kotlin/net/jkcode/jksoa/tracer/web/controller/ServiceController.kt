@@ -25,7 +25,7 @@ class ServiceController: Controller()
      * 查询某应用下的服务列表
      */
     public fun listAction(){
-        val appId: Int = req.getRouteParameter("id")!!
+        val appId: Int = req["id"]!!
         val items = ServiceModel.queryBuilder().where("app_id", appId).findModels<ServiceModel>()
         res.renderJson(items)
     }
