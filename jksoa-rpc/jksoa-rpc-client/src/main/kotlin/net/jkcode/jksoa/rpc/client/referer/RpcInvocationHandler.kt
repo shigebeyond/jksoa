@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.rpc.client.referer
 
 import co.paralleluniverse.fibers.Fiber
+import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.getMethodHandle
 import net.jkcode.jkutil.common.getSignature
@@ -75,6 +76,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
      * @param args0 参数
      * @return
      */
+    @Suspendable
     public override fun invoke(proxy: Any, method: Method, args0: Array<Any?>?): Any? {
         val args: Array<Any?> = if(args0 == null) emptyArray() else args0
 

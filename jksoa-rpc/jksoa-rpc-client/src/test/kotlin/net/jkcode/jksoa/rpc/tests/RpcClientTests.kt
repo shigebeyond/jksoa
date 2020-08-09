@@ -1,6 +1,11 @@
 package net.jkcode.jksoa.rpc.tests
 
+import co.paralleluniverse.fibers.FiberExecutorScheduler
+import co.paralleluniverse.fibers.Suspendable
+import co.paralleluniverse.kotlin.fiber
+import co.paralleluniverse.strands.Strand
 import com.alibaba.fastjson.JSON
+import io.netty.channel.DefaultEventLoop
 import net.jkcode.jkutil.common.*
 import net.jkcode.jkutil.serialize.FstSerializer
 import net.jkcode.jksoa.common.RpcRequest
@@ -139,6 +144,46 @@ class RpcClientTests {
             val conn2 = client.connect(url2)
             println(conn2)
         }
+    }
+
+    @Test
+    fun testRpc(){
+        val service = Referer.getRefer<ISimpleService>()
+        val pong = service.ping()
+        println("调用服务[ISimpleService.ping()]结果： $pong")
+    }
+
+    @Test
+    fun testFiber(){
+        val pong = fiber  @Suspendable {
+            val service = Referer.getRefer<ISimpleService>()
+            service.ping()
+        }.get()
+        println("调用服务[ISimpleService.ping()]结果： $pong")
+    }
+
+    /**
+     * 测试同一个线程下的协程切换
+     *    fiber睡1s时, 线程是否轮换执行其他任务
+     */
+    @Test
+    fun testFiberSwitch(){
+        val singleThread = DefaultEventLoop()
+        val scheduler = FiberExecutorScheduler("test", singleThread)
+
+        val f = fiber(true, scheduler = scheduler) @Suspendable {
+            println("rpc之前")
+            val service = Referer.getRefer<ISimpleService>()
+            val r = service.ping()
+            println("rpc之后")
+            r
+        }
+
+        singleThread.execute {
+            println("另外的操作")
+        }
+
+        println("调用服务[ISimpleService.ping()]结果： " + f.get())
     }
 
     @Test

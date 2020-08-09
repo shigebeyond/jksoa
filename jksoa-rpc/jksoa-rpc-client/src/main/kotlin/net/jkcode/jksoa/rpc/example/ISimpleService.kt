@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.example
 
+import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jksoa.common.annotation.RemoteService
 import java.rmi.RemoteException
 
@@ -13,6 +14,7 @@ import java.rmi.RemoteException
 interface ISimpleService /*: Remote // rmi协议服务接口 */ {
 
     @Throws(RemoteException::class) // rmi异常
+    @Suspendable
     fun ping(): String
 
     @Throws(RemoteException::class) // rmi异常
