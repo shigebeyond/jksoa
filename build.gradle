@@ -59,6 +59,12 @@ subprojects{
         }
     }
 
+    dependencies {
+        // test
+        testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+        testCompile 'junit:junit:4.11'
+    }
+
     sourceSets {
         main {
             java {
