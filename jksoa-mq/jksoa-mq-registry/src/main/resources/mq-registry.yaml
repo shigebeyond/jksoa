@@ -1,2 +1,0 @@
-# 消息注册中心实现
-zk: net.jkcode.jksoa.mq.registry.zk.ZkMqRegistry
