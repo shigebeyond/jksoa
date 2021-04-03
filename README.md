@@ -4,8 +4,7 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 
 1. jksoa-rpc: 远程方法调用的组件, 包含 registry / rpc-client / rpc-server 的3个子组件
 2. jksoa-tracer: 分布式跟踪的组件, 包含 agent / collector / web 的3个子组件
-3. jksoa-mq: 消息队列的组件, 包含 mq-registry / mq-client / mq-broker 的3个子组件
-4. jksoa-dtx: 分布式事务的组件, 包含 dtx-mq / dtx-tcc(真正的异步非阻塞) 的2个子组件
+3. jksoa-dtx: 分布式事务的组件, 包含 dtx-mq / dtx-tcc(真正的异步非阻塞) 的2个子组件
 
 # 公共组件
 1. [插件机制](doc/common/plugin.md)
@@ -71,44 +70,6 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 ## 高级
 5. [架构](doc/tracer/architecture.md)
 
-# jksoa-mq
-
-消息队列的组件
-
-## 入门
-1. [快速开始](doc/mq/getting_started.md)
-
-### 消息主体
-2. [主题](doc/mq/message/topic.md)
-3. [消息](doc/mq/message/message.md)
-
-### 注册中心
-4. [注册中心](doc/mq/registry.md)
-
-### producer 生产者
-5. [生产者](doc/mq/producer.md)
-
-### consumer 消费者
-6. [消费者](doc/mq/consumer/consumer.md)
-7. [消息处理器](doc/mq/consumer/handler.md)
-8. [重复消费](doc/mq/consumer/duplication.md)
-9. [对broker的路由](doc/mq/consumer/route2broker.md)
-
-### broker 中转者
-10. [中转者](doc/mq/broker/broker.md)
-11. [存储](doc/mq/broker/storage.md)
-12. [延迟消息](doc/mq/broker/delay_message.md)
-13. [立即同步](doc/mq/broker/immediate_sync.md)
-
-### todo
-14. [单主题多队列](doc/mq/todo/topic-queues.md)
-
-## 高级
-15. [架构](doc/mq/architecture.md)
-16. [消息流转流程](doc/mq/mq-flow.md)
-17. [路由](doc/mq/route.md)
-18. [有序消息](doc/mq/ordered_message.md)
-
 # jksoa-dtx
 
 分布式事务的组件
@@ -122,8 +83,6 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 1. [快速开始](doc/dtx/tcc/getting_started.md)
 2. [示例](doc/dtx/tcc/demo.md)
 3. [架构](doc/dtx/tcc/architecture.md)
-
-### mq
 
 # 其他
 [变更历史](doc/changelog.md)

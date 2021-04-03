@@ -82,7 +82,7 @@ class TccParticipant : Serializable{
         return if (isRpc)
                     RpcRequest(clazz.name, methodSignature, args)
                 else
-            Invocation(clazz.name, methodSignature, args)
+                    Invocation(clazz.name, methodSignature, args)
     }
 
     /**
