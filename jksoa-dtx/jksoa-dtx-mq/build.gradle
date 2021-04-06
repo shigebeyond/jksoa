@@ -7,8 +7,6 @@ dependencies{
         compile "net.jkcode.jkjob:jkjob:$jkjob_version"
     }
 
-    // jksoa-mq
-    compile project(':jksoa-mq:jksoa-mq-client')
     // rabbitmq
     compile "com.rabbitmq:amqp-client:3.6.6"
 
