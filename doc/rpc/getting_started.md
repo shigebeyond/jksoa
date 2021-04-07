@@ -66,7 +66,6 @@ parameters: # 参数
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
-    - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 registering: true # 是否注册到注册中心
 # netty启动参数
 netty:
@@ -151,7 +150,6 @@ shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.common.service.remote # tracer组件的collector服务
-    - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture

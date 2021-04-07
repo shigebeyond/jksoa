@@ -24,7 +24,6 @@
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
-    - net.jkcode.jksoa.mq.broker.service # mq组件的broker服务
 ```
 
 # 向注册中心注册Provider的服务
