@@ -44,7 +44,7 @@ open class NettyRequestHandler(
         // 处理请求
         serverLogger.debug(" ------ receive request ------ ")
         serverLogger.debug("NettyRequestHandler收到请求: {}", req)
-        // 请求处理放到IO线程执行
+        // 请求处理放到IO线程执行, 可减少cpu上下文切换, 但可能会阻塞IO线程
         if(handleRequestInIOThread) {
             try {
                 RpcRequestHandler.handle(req, ctx)

@@ -22,9 +22,9 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-14 6:11 PM
  */
-class NettyRpcResponseFuture(req: IRpcRequest, /* 请求 */
-                             channel: Channel, /* netty channel, 用于超时删掉该channel对应的异步响应记录 */
-                             requestTimeoutMillis: Long /* 请求超时 */
+class NettyRpcResponseFuture(req: IRpcRequest, // 请求
+                             channel: Channel, // netty channel, 用于超时删掉该channel对应的异步响应记录
+                             requestTimeoutMillis: Long // 请求超时
 ) : RpcResponseFuture(req) {
 
     /**
