@@ -1,8 +1,8 @@
 package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
 
+import net.jkcode.jksoa.dtx.mq.mqmgr.kafka.serialization.FstValueDeserializer
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.commonLogger
-import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
 import java.util.concurrent.ConcurrentHashMap
@@ -18,14 +18,14 @@ object KafkaConsumerFactory {
     /**
      * 消费者的池
      */
-    private var comsumers: ConcurrentHashMap<String, ConcurrentConsumerContainer<String, Any>> = ConcurrentHashMap();
+    private var comsumers: ConcurrentHashMap<String, ConcurrentExecutableConsumerContainer<String, Any>> = ConcurrentHashMap();
 
     /**
      * 根据地址获得消费者容器
      * @param name
      * @return
      */
-    public fun getKafkaConsumerContainer(name: String = "default"): ConcurrentConsumerContainer<String, Any> {
+    public fun getKafkaConsumerContainer(name: String = "default"): ConcurrentExecutableConsumerContainer<String, Any> {
         return comsumers.getOrPut(name){
             // 配置
             val config = Config.instance("kafka-consumer.$name", "yaml")
@@ -33,7 +33,7 @@ object KafkaConsumerFactory {
             val concurrency:Int = config["concurrency"]!!
             commonLogger.debug("创建kafka消费者: 并行数为{}", concurrency)
             // 创建消费者容器
-            ConcurrentConsumerContainer(concurrency){
+            ConcurrentExecutableConsumerContainer(concurrency){
                 createKafkaConsumer(config)
             }
         }!!

@@ -1,31 +1,27 @@
 package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
 
-import net.jkcode.jkutil.common.AtomicStarter
 import net.jkcode.jkutil.common.getPropertyValue
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.common.TopicPartition
-import org.apache.kafka.common.errors.WakeupException
 import java.time.Duration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 
 /**
- * 并发的消费者容器
- *    同一组同一个jvm实例下的多个消费者, 提升并发消费能力
- *    由于KafkaConsumer不是线程安全的, 因此每个KafkaConsumer绑定固定一个线程
- *    同时为了减少线程, 支持同一个KafkaConsumer多次调用subscribe()来订阅多个主题, subscribe()需在绑定的线程中执行, 否则报错: KafkaConsumer is not safe for multi-threaded access
+ * 并发的可执行消费者的容器
+ *    包含同一组同一个jvm实例下的多个消费者, 提升并发消费能力
+ *    消费者类是ExecutableConsumer, 代表可执行的消费者, 解决KafkaConsumer非线程安全问题, 每个KafkaConsumer绑定固定一个线程
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2021-04-08 11:51 AM
  */
-class ConcurrentConsumerContainer<K, V>(
+class ConcurrentExecutableConsumerContainer<K, V>(
         public val consumers: List<ExecutableConsumer<K, V>> // 消费者列表
 ) : Consumer<K, V> by consumers.first(), List<ExecutableConsumer<K, V>> by consumers{
 

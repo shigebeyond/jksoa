@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
+package net.jkcode.jksoa.dtx.mq.mqmgr.kafka.serialization
 
 import net.jkcode.jkutil.serialize.FstSerializer
 import net.jkcode.jkutil.serialize.ISerializer

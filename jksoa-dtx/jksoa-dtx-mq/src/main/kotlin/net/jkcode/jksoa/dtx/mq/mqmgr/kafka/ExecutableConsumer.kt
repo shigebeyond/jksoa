@@ -26,7 +26,7 @@ class ExecutableConsumer<K, V>(
     /**
      * 消费者容器
      */
-    internal lateinit var container: ConcurrentConsumerContainer<K, V>
+    internal lateinit var container: ConcurrentExecutableConsumerContainer<K, V>
 
     /**
      * 绑定单线程

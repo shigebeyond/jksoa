@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
 
+import net.jkcode.jksoa.dtx.mq.mqmgr.kafka.serialization.FstValueSerializer
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.scope.ClosingOnShutdown
 import org.apache.kafka.clients.producer.KafkaProducer

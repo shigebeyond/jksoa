@@ -1,7 +1,6 @@
-package net.jkcode.jksoa.dtx.mq.mqmgr
+package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
 
-import net.jkcode.jksoa.dtx.mq.mqmgr.kafka.KafkaConsumerFactory
-import net.jkcode.jksoa.dtx.mq.mqmgr.kafka.KafkaProducerFactory
+import net.jkcode.jksoa.dtx.mq.mqmgr.IMqManager
 import org.apache.kafka.clients.producer.Callback
 import org.apache.kafka.clients.producer.ProducerRecord
 import java.util.concurrent.CompletableFuture

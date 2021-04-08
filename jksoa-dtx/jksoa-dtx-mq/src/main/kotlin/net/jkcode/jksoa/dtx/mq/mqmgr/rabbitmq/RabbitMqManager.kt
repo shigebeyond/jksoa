@@ -1,10 +1,10 @@
-package net.jkcode.jksoa.dtx.mq.mqmgr
+package net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq
 
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.DefaultConsumer
 import com.rabbitmq.client.Envelope
 import com.rabbitmq.client.MessageProperties
-import net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.RabbitConnectionFactory
+import net.jkcode.jksoa.dtx.mq.mqmgr.IMqManager
 import net.jkcode.jkutil.serialize.ISerializer
 import java.util.concurrent.CompletableFuture
 
