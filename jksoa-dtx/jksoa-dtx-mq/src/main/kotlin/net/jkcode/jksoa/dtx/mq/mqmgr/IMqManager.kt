@@ -24,14 +24,15 @@ interface IMqManager {
      * 发送消息
      * @param topic 消息主题
      * @param msg 消息内容
+     * @param key 路由key, 仅对kafka有效
      * @return
      */
-    fun sendMq(topic: String, msg: ByteArray): CompletableFuture<Void>
+    fun sendMq(topic: String, msg: Any, key: String? = null): CompletableFuture<Void>
 
     /**
      * 订阅消息并处理
      * @param topic 消息主题
      * @param handler 消息处理函数
      */
-    fun subscribeMq(topic: String, handler: (ByteArray)->Unit)
+    fun subscribeMq(topic: String, handler: (Any)->Unit)
 }

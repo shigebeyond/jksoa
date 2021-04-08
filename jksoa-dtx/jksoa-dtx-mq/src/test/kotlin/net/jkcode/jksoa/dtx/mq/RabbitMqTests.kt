@@ -5,7 +5,7 @@ import com.rabbitmq.client.DefaultConsumer
 import com.rabbitmq.client.Envelope
 import com.rabbitmq.client.QueueingConsumer
 import net.jkcode.jkmvc.db.Db
-import net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.client.RabbitConnectionFactory
+import net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.RabbitConnectionFactory
 import org.junit.Test
 import java.util.concurrent.TimeUnit
 
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
  * @author shijianhang<772910474@qq.com>
  * @date 2019-08-24 7:07 PM
  */
-class MqTransactionTest {
+class RabbitMqTests {
 
     val topic = "new_user"
 

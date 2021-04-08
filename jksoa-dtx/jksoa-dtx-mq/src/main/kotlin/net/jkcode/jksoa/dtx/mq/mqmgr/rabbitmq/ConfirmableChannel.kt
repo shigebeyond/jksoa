@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.client
+package net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq
 
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel

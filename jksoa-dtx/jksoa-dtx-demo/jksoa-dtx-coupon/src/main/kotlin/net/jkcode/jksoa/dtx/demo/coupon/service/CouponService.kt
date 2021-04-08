@@ -55,9 +55,8 @@ class CouponService : ICouponService {
     /****************************** 消费 mq ********************************/
     init {
         // 处理支付成功通知
-        val serializer: ISerializer = ISerializer.instance("fst")
         MqTransactionManager.mqMgr.subscribeMq("rechargePayOrderNotify"){ mq ->
-            val bizOrderId: Long = serializer.unserialize(mq)!! as Long
+            val bizOrderId: Long = mq as Long
             // 查询优惠券
             val coupon = CouponModel.queryBuilder().where("biz_order_id", "=", bizOrderId).findModel<CouponModel>()
             // 确认消费

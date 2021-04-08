@@ -51,9 +51,8 @@ class PayAccountService : IPayAccountService {
     /****************************** 消费 mq ********************************/
     init {
         // 处理支付成功通知
-        val serializer: ISerializer = ISerializer.instance("fst")
         MqTransactionManager.mqMgr.subscribeMq("rechargePayOrderNotify"){ mq ->
-            val bizOrderId: Long = serializer.unserialize(mq)!! as Long
+            val bizOrderId: Long = mq as Long
             // 查询订单
             val order = PayOrderModel.queryBuilder().where("biz_order_id", "=", bizOrderId).findModel<PayOrderModel>()
             // 确认消费

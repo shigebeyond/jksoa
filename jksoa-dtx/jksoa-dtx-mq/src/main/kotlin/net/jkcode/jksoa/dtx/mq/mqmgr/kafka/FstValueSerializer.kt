@@ -1,0 +1,17 @@
+package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
+
+import net.jkcode.jkutil.serialize.FstSerializer
+import net.jkcode.jkutil.serialize.ISerializer
+import org.apache.kafka.common.serialization.Serializer
+
+/**
+ * 使用fst将对象序列化为字节数组
+ */
+class FstValueSerializer : Serializer<Any> {
+
+    protected val fst: FstSerializer = ISerializer.instance("fst") as FstSerializer
+
+    override fun serialize(topic: String, data: Any): ByteArray? {
+        return fst.serialize(data)
+    }
+}

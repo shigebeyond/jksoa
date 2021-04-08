@@ -1,0 +1,6 @@
+default:
+    bootstrap.servers: 192.168.0.170:9092
+    acks: all
+    retries: 0
+    batch.size: 16384
+

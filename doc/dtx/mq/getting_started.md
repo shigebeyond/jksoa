@@ -21,7 +21,7 @@ jksoa-dtx-mq 是基于本地消息实现的分布式事务
 ```
 # 基于mq的事务的配置
 dbName: default
-mqType: rabbitmq # 消息队列类型: rabbitmq / jkmq
+mqType: rabbitmq # 消息队列类型: rabbitmq / kafka
 sendPageSize: 100 # 每次发送的消息数
 retrySeconds: 20 # 重发的时间间隔, 单位秒, 为0则不重发
 recoverTimerSeconds: !!java.lang.Long 20 # 定时恢复(重发消息)的时间间隔, 为0则不启动定时恢复, 你可以在其他应用中启动
@@ -30,7 +30,7 @@ recoverTimerSeconds: !!java.lang.Long 20 # 定时恢复(重发消息)的时间�
 说明:
 1. `dbName`: tcc事务存储的数据库名: 引用的是 `dataSources.yaml` 中配置的数据库名
 
-2. `mqType`: 消息队列类型: rabbitmq / jkmq
+2. `mqType`: 消息队列类型: rabbitmq / kafka
 
 3. `sendPageSize`: 每次发送的消息数
 
