@@ -30,16 +30,11 @@ object KafkaConsumerFactory {
             // 配置
             val config = Config.instance("kafka-consumer.$name", "yaml")
             val concurrency:Int = config["concurrency"]!! // 并行的消费者数
-            val pollThreads:Int = config["pollThreads"]!! // 拉取的线程数
-            // 保证 pollThreads >= concurrency
-            if(pollThreads < concurrency)
-                throw IllegalArgumentException("在kafka-consumer.yaml配置中, 必须保证 pollThreads >= concurrency")
-
-            commonLogger.debug("创建kafka消费者: 并行数为{}, 拉取线程为{}", concurrency, pollThreads)
+            commonLogger.debug("创建kafka消费者: 并行数为{}", concurrency)
             val consumers = (0 until concurrency).map{
                 createKafkaConsumer(config)
             } as MutableList<Consumer<String, Any>>
-            ConcurrentConsumerContainer(consumers, pollThreads)
+            ConcurrentConsumerContainer(consumers)
         }!!
     }
 

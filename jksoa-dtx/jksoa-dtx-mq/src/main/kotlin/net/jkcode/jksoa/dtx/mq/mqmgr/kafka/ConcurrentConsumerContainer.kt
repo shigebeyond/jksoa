@@ -26,29 +26,19 @@ import java.util.regex.Pattern
  * @date 2021-04-08 11:51 AM
  */
 class ConcurrentConsumerContainer<K, V>(
-        public val consumers: MutableList<Consumer<K, V>>, // 消费者列表
-        public val pollThreads: Int // 拉取的线程数
-) : Consumer<K, V> by consumers.first(), MutableList<Consumer<K, V>> by consumers{
-
-    init {
-        // 保证 pollThreads >= concurrency
-        if(pollThreads < consumers.size)
-            throw IllegalArgumentException("在kafka-consumer.yaml配置中, 必须保证 pollThreads >= concurrency")
-    }
-    /**
-     * 拉取的线程池
-     */
-    protected val pollExecutor = Executors.newFixedThreadPool(pollThreads)
+        public val consumers: MutableList<ExecutableConsumer<K, V>> // 消费者列表
+) : Consumer<K, V> by consumers.first(), MutableList<ExecutableConsumer<K, V>> by consumers{
 
     /**
-     * 启动者
-     */
-    protected val starter = AtomicStarter()
-
-    /**
-     * <主题, 监听器>
+     * 消费处理: <主题, 监听器>
      */
     protected val listeners: MutableMap<String, (V)->Unit> = ConcurrentHashMap()
+
+    constructor(concurrency: Int, factory:() -> Consumer<K, V>): this((0 until concurrency).map{
+        ExecutableConsumer(factory.invoke(), listeners)
+    } as MutableList<ExecutableConsumer<K, V>>)
+
+
 
     /**
      * 添加监听器
@@ -60,37 +50,10 @@ class ConcurrentConsumerContainer<K, V>(
     /**
      * 启动拉取消息的线程池
      */
-    fun startPoll(){
-        starter.startOnce { // 启动一次
-            for (c in consumers) {
-                pollExecutor.submit { // 每个消费者由一个线程来拉取
-                    doPoll(c)
-                }
-            }
+    fun startPoll() {
+        for (c in consumers) {
+            c.startPoll()
         }
-    }
-
-    /**
-     * 真正的消费者拉取
-     */
-    protected fun doPoll(consumer: Consumer<K, V>){
-        // 死循环拉消息
-        while (true) {
-            val records = consumer.poll(1000)
-            for (record in records){
-                //println("revice: key =" + record.key() + " value =" + record.value() + " topic =" + record.topic())
-                listeners[record.topic()]?.invoke(record.value())
-            }
-        }
-
-        // 取消订阅
-        try {
-            consumer.unsubscribe()
-        } catch (ex: WakeupException) {
-        }
-
-        // 关闭
-        consumer.close()
     }
 
     override fun unsubscribe() {

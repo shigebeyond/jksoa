@@ -7,4 +7,3 @@ default:
     max.poll.records: 1000
     auto.offset.reset: earliest
     concurrency: 10 # 并行的消费者数
-    pollThreads: 10 # 拉取的线程数, 要保证 pollThreads >= concurrency
