@@ -4,7 +4,6 @@ import net.jkcode.jksoa.dtx.mq.mqmgr.kafka.KafkaConsumerFactory
 import net.jkcode.jksoa.dtx.mq.mqmgr.kafka.KafkaProducerFactory
 import org.apache.kafka.clients.producer.Callback
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.errors.WakeupException
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -56,7 +55,7 @@ class KafkaMqManager : IMqManager {
         // 订阅
         consumer.subscribe(listOf(topic))
         // 添加监听器
-        consumer.addListener(topic, handler)
+        consumer.putListener(topic, handler)
         // 开始拉取消息
         consumer.startPoll()
     }

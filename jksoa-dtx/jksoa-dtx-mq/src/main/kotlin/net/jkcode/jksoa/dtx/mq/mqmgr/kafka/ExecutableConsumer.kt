@@ -20,9 +20,13 @@ import java.util.regex.Pattern
  * @date 2021-04-08 11:51 AM
  */
 class ExecutableConsumer<K, V>(
-        protected val delegate: Consumer<K, V>, // 代理的消费者
-        protected val listeners: MutableMap<String, (V)->Unit> // 消费处理: <主题, 监听器>
+        protected val delegate: Consumer<K, V> // 代理的消费者
 ) : Consumer<K, V> by delegate {
+
+    /**
+     * 消费者容器
+     */
+    internal lateinit var container: ConcurrentConsumerContainer<K, V>
 
     /**
      * 绑定单线程
@@ -74,7 +78,8 @@ class ExecutableConsumer<K, V>(
             for (record in records){
                 //println("revice: key =" + record.key() + " value =" + record.value() + " topic =" + record.topic())
                 // 调用监听器来处理消息
-                listeners[record.topic()]?.invoke(record.value())
+                val listener = container.getListener(record.topic())
+                listener?.invoke(record.value())
             }
         }
     }

@@ -26,25 +26,43 @@ import java.util.regex.Pattern
  * @date 2021-04-08 11:51 AM
  */
 class ConcurrentConsumerContainer<K, V>(
-        public val consumers: MutableList<ExecutableConsumer<K, V>> // 消费者列表
-) : Consumer<K, V> by consumers.first(), MutableList<ExecutableConsumer<K, V>> by consumers{
+        public val consumers: List<ExecutableConsumer<K, V>> // 消费者列表
+) : Consumer<K, V> by consumers.first(), List<ExecutableConsumer<K, V>> by consumers{
+
+    /**
+     * 构造函数
+     * @param concurrency 并行消费者数
+     * @param factory 消费者工厂
+     */
+    public constructor(concurrency: Int, factory:() -> Consumer<K, V>)
+            : this((0 until concurrency).map{ // 创建 concurrency 个消费者, 来提升并发消费能力
+                ExecutableConsumer(factory.invoke())
+            })
+
 
     /**
      * 消费处理: <主题, 监听器>
      */
     protected val listeners: MutableMap<String, (V)->Unit> = ConcurrentHashMap()
 
-    constructor(concurrency: Int, factory:() -> Consumer<K, V>): this((0 until concurrency).map{
-        ExecutableConsumer(factory.invoke(), listeners)
-    } as MutableList<ExecutableConsumer<K, V>>)
-
-
+    init {
+        // 绑定消费者中的容器
+        for(c in consumers)
+            c.container = this
+    }
 
     /**
      * 添加监听器
      */
-    fun addListener(topic: String, listener: (V) -> Unit){
+    fun putListener(topic: String, listener: (V) -> Unit){
         listeners[topic] = listener
+    }
+
+    /**
+     * 获得监听器
+     */
+    fun getListener(topic: String): ((V) -> Unit)? {
+        return listeners[topic]
     }
 
     /**
