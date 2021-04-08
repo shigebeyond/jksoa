@@ -6,6 +6,9 @@ import org.apache.kafka.common.serialization.Deserializer
 
 /**
  * 使用fst将字节数组反序列化为对象
+ *
+ * @author shijianhang<772910474@qq.com>
+ * @date 2021-04-08 11:51 AM
  */
 class FstValueDeserializer : Deserializer<Any> {
 

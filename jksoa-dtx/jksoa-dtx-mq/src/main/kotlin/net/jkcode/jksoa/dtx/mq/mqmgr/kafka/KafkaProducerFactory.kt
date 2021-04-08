@@ -8,6 +8,9 @@ import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 生产者工厂
+ *
+ * @author shijianhang<772910474@qq.com>
+ * @date 2021-04-08 11:51 AM
  */
 object KafkaProducerFactory: ClosingOnShutdown() {
 

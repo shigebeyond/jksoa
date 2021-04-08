@@ -6,6 +6,9 @@ import org.apache.kafka.common.serialization.Serializer
 
 /**
  * 使用fst将对象序列化为字节数组
+ *
+ * @author shijianhang<772910474@qq.com>
+ * @date 2021-04-08 11:51 AM
  */
 class FstValueSerializer : Serializer<Any> {
 

@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
 
 import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.commonLogger
 import org.apache.kafka.clients.consumer.Consumer
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -8,6 +9,9 @@ import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 消费者工厂
+ *
+ * @author shijianhang<772910474@qq.com>
+ * @date 2021-04-08 11:51 AM
  */
 object KafkaConsumerFactory {
 
@@ -31,6 +35,7 @@ object KafkaConsumerFactory {
             if(pollThreads < concurrency)
                 throw IllegalArgumentException("在kafka-consumer.yaml配置中, 必须保证 pollThreads >= concurrency")
 
+            commonLogger.debug("创建kafka消费者: 并行数为{}, 拉取线程为{}", concurrency, pollThreads)
             val consumers = (0 until concurrency).map{
                 createKafkaConsumer(config)
             } as MutableList<Consumer<String, Any>>

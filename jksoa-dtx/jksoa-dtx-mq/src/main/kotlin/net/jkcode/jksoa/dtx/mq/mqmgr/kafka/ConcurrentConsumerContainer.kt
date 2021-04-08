@@ -18,10 +18,16 @@ import java.util.regex.Pattern
 
 /**
  * 并发的消费者容器
+ *    同一组同一个jvm实例下的多个消费者, 提升并发消费能力
+ *    由于KafkaConsumer不是线程安全的, 因此每个KafkaConsumer绑定固定一个线程
+ *    同时为了减少线程, 支持同一个KafkaConsumer多次调用subscribe()来订阅多个主题, subscribe()需在绑定的线程中执行, 否则报错: KafkaConsumer is not safe for multi-threaded access
+ *
+ * @author shijianhang<772910474@qq.com>
+ * @date 2021-04-08 11:51 AM
  */
 class ConcurrentConsumerContainer<K, V>(
         public val consumers: MutableList<Consumer<K, V>>, // 消费者列表
-        pollThreads: Int // 拉取的线程数
+        public val pollThreads: Int // 拉取的线程数
 ) : Consumer<K, V> by consumers.first(), MutableList<Consumer<K, V>> by consumers{
 
     init {
@@ -80,7 +86,7 @@ class ConcurrentConsumerContainer<K, V>(
         // 取消订阅
         try {
             consumer.unsubscribe()
-        } catch (var8: WakeupException) {
+        } catch (ex: WakeupException) {
         }
 
         // 关闭
