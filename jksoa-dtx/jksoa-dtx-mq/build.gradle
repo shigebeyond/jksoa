@@ -10,5 +10,9 @@ dependencies{
     // rabbitmq
     compile "com.rabbitmq:amqp-client:3.6.6"
 
+    // kafka
+    compile "org.apache.kafka:kafka_2.12:2.2.0"
+    compile "org.apache.kafka:kafka-clients:2.2.0"
+
     testRuntime "mysql:mysql-connector-java:5.1.6"
 }
