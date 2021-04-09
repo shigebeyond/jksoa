@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.dtx.mq
 
+import io.netty.channel.DefaultEventLoop
 import net.jkcode.jksoa.dtx.mq.mqmgr.IMqManager
 import net.jkcode.jkutil.common.randomBoolean
 import net.jkcode.jkutil.common.randomString
@@ -20,20 +21,36 @@ import java.util.function.Consumer
 class KafkaTests2 {
 
     public val mqMgr = IMqManager.instance("kafka")
-    
+
+    /**
+     * KafkaProducer多线程下线程安全
+     */
     @Test
     fun testProducer() {
-        for(i in 0..10000) {
-            val topic = if(randomBoolean()) "topic1" else "topic2"
-            val msg = randomString(10)
-            val f = mqMgr.sendMq(topic, msg)
-            f.get()
-            println("发送消息: $topic - $msg")
+        val singleThread = DefaultEventLoop()
+        for(i in 0..1000) {
+            if(i % 2 == 1)
+                sendMq()
+            else
+                singleThread.execute{
+                    sendMq()
+                }
             Thread.sleep(100)
         }
     }
 
+    private fun sendMq() {
+        val topic = if (randomBoolean()) "topic1" else "topic2"
+        val msg = randomString(10)
+        val f = mqMgr.sendMq(topic, msg)
+        f.get()
+        val t = Thread.currentThread().name
+        println("$t send mq: $topic - $msg")
+    }
 
+    /**
+     * KafkaConsumer多线程下线程不安全
+     */
     @Test
     fun testConsumer() {
         mqMgr.subscribeMq("topic1"){
