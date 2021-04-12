@@ -29,7 +29,7 @@ class KafkaMqManager : IMqManager {
         val record = ProducerRecord<String, Any>(topic, key, msg)
 
         // 异步发送消息
-        val future = CompletableFuture<Void>()
+        val future = CompletableFuture<Void>() // Callback 转 CompletableFuture
         producer.send(record, Callback { metadata, exception ->
             if (exception == null)
                 future.complete(null)
