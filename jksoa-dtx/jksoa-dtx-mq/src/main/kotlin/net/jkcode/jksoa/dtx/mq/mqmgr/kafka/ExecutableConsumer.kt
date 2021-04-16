@@ -13,7 +13,7 @@ import java.util.regex.Pattern
 /**
  * 可执行的消费者: 带poll线程
  *    1 消费者:线程=1:1
- *    由于KafkaConsumer不是线程安全的, 因此每个KafkaConsumer绑定固定一个线程
+ *    由于KafkaConsumer不是线程安全的, 因此每个KafkaConsumer绑定固定一个线程, 使用netty的DefaultEventLoop
  *    2 支持多主题
  *    同时为了减少线程, 支持同一个KafkaConsumer多次调用subscribe()来订阅多个主题
  *    3 线程安全问题
