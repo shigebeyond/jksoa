@@ -7,6 +7,8 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * 基于kafka实现的消息管理器
+ *    原生消费者非线程安全, 不能单例, 因此使用ConcurrentExecutableConsumerContainer
+ *    原生生产者单例+线程安全, 因此直接使用原生, 他本来就是异步发送, 他是逐个批次(有批次的队列)来发送消息, 因此将待发送的消息放入到最后一个批次即可, 放入的过程会对批次队列加锁, spring kafka template也是这么实现
  * @author shijianhang<772910474@qq.com>
  * @date 2019-08-24 6:16 PM
  */
