@@ -81,7 +81,7 @@ class ExecutableConsumer<K, V>(
             return
 
         // 每个消费者由一个线程来拉取
-        singleThread.submit {
+        singleThread.execute {
             doPoll()
         }
     }
