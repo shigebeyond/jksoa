@@ -5,9 +5,9 @@ dependencies{
         compile project(':jkguard')
         compile project(':jkjob')
     }else{
-        compile "net.jkcode.jkutil:jkutil:$jkutil_version"
-        compile "net.jkcode.jkguard:jkguard:$jkguard_version"
-        compile "net.jkcode.jkjob:jkjob:$jkjob_version"
+        compile "net.jkcode.jkmvc:jkutil:$jkutil_version"
+        compile "net.jkcode.jkmvc:jkguard:$jkguard_version"
+        compile "net.jkcode.jkmvc:jkjob:$jkjob_version"
     }
 
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
