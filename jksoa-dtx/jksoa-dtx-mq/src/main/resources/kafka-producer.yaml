@@ -1,7 +1,0 @@
-default:
-    bootstrap.servers: 192.168.0.170:9092 # kafka broker server, 多个用逗号分割
-    acks: all # 回令类型
-    retries: 0 # 重试次数
-    batch.size: 16384 # 成批发送的消息大小, 单位byte
-    linger.ms: 100 # 定时发送的时间间隔, 单位ms
-

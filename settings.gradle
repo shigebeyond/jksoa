@@ -24,6 +24,10 @@ if(env == 'dev'){
     include 'jkjob'
     project(':jkjob').projectDir = new File('../jkjob')
 
+    // mq client
+    include 'jkmq'
+    project(':jkmq').projectDir = new File('../jkmq')
+
     include 'jkmvc-orm'
     project(':jkmvc-orm').projectDir = new File('../jkmvc/jkmvc-orm')
 

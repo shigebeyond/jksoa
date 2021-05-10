@@ -1,9 +1,0 @@
-default:
-    bootstrap.servers: 192.168.0.170:9092 # kafka broker server, 多个用逗号分割
-    group.id: group1 # 消费者分组
-    enable.auto.commit: true # 开启自动提交，默认5s提交一次
-    auto.commit.interval.ms: 1000 # 自动提交时间间隔
-    session.timeout.ms: 30000 # 消费者与服务器断开连接的最大时间
-    max.poll.records: 1000 # 单次拉取的记录数
-    auto.offset.reset: earliest # 读取位置: earliest/latest
-    concurrency: 10 # 并行的消费者数

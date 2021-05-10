@@ -1,8 +1,0 @@
-default:
-    host : 127.0.0.1 # 服务器地址
-    port: 5672 # 端口
-    vhost: / # virtualHost
-    username: root
-    password: root
-    maxConnections: 10 # 最大连接数, 用在 PooledConnection
-
