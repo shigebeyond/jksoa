@@ -1,11 +1,12 @@
-package net.jkcode.jksoa.dtx.mq
+package net.jkcode.jkmq
 
 import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.DefaultConsumer
 import com.rabbitmq.client.Envelope
 import com.rabbitmq.client.QueueingConsumer
-import net.jkcode.jkmvc.db.Db
-import net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq.RabbitConnectionFactory
+import net.jkcode.jkmq.mqmgr.IMqManager
+import net.jkcode.jkmq.mqmgr.rabbitmq.RabbitConnectionFactory
+import net.jkcode.jkutil.common.randomInt
 import org.junit.Test
 import java.util.concurrent.TimeUnit
 
@@ -18,20 +19,12 @@ class RabbitMqTests {
 
     val topic = "new_user"
 
+    val mqMgr = IMqManager.instance("rabbitmq")
+
     @Test
     fun testAddMq(){
-        val db = Db.instance()
-        // 本地事务
-        db.transaction {
-            // 执行业务sql
-            val uid = db.execute("insert into user(name, age) values(?, ?)" /*sql*/, listOf("shi", 1)/*参数*/, "id"/*自增主键字段名，作为返回值*/) // 返回自增主键值
-            println("插入user表：" + uid)
-
-            // 添加事务消息
-            MqTransactionManager.addMq(topic, "new user: $uid".toByteArray(), "new user", uid.toString())
-        }
-
-        Thread.sleep(100000)
+        val uid = randomInt(100)
+        mqMgr.sendMq(topic, "new user: $uid".toByteArray())
     }
 
     // 同步消费

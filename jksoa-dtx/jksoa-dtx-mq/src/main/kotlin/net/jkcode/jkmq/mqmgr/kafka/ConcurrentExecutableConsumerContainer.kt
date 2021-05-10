@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
+package net.jkcode.jkmq.mqmgr.kafka
 
 import net.jkcode.jkutil.common.getPropertyValue
 import org.apache.kafka.clients.consumer.Consumer
@@ -32,7 +32,7 @@ class ConcurrentExecutableConsumerContainer<K, V>(
      */
     public constructor(concurrency: Int, factory:() -> Consumer<K, V>)
             : this((0 until concurrency).map{ // 创建 concurrency 个消费者, 来提升并发消费能力
-                ExecutableConsumer(factory.invoke())
+        ExecutableConsumer(factory.invoke())
             })
 
 

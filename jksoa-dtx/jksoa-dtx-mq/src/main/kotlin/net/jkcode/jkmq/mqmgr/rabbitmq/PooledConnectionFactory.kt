@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.dtx.mq.mqmgr.rabbitmq
+package net.jkcode.jkmq.mqmgr.rabbitmq
 
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory

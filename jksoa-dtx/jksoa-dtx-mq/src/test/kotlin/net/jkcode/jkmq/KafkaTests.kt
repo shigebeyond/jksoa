@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.dtx.mq
+package net.jkcode.jkmq
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
@@ -7,8 +7,6 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
-import org.apache.log4j.Level
-import org.apache.log4j.Logger
 import org.junit.Test
 import java.util.*
 import java.time.Duration;

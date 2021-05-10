@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.dtx.mq.mqmgr
+package net.jkcode.jkmq.mqmgr
 
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig

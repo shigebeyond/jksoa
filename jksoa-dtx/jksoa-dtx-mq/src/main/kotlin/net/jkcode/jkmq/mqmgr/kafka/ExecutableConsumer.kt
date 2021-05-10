@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
+package net.jkcode.jkmq.mqmgr.kafka
 
 import io.netty.channel.DefaultEventLoop
 import net.jkcode.jkutil.scope.ClosingOnShutdown

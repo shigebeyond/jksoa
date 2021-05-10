@@ -1,6 +1,6 @@
-package net.jkcode.jksoa.dtx.mq.mqmgr.kafka
+package net.jkcode.jkmq.mqmgr.kafka
 
-import net.jkcode.jksoa.dtx.mq.mqmgr.kafka.serialization.FstValueDeserializer
+import net.jkcode.jkmq.mqmgr.kafka.serialization.FstValueDeserializer
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.commonLogger
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -33,7 +33,7 @@ object KafkaConsumerFactory {
             val concurrency:Int = config["concurrency"]!!
             commonLogger.debug("创建kafka消费者: 并行数为{}", concurrency)
             // 创建消费者容器
-            ConcurrentExecutableConsumerContainer(concurrency){
+            ConcurrentExecutableConsumerContainer(concurrency) {
                 createKafkaConsumer(config)
             }
         }!!

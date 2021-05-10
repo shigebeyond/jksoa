@@ -3,7 +3,7 @@ package net.jkcode.jksoa.dtx.mq
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkmvc.db.Db
 import net.jkcode.jksoa.dtx.mq.model.MqTransactionModel
-import net.jkcode.jksoa.dtx.mq.mqmgr.IMqManager
+import net.jkcode.jkmq.mqmgr.IMqManager
 import java.io.File
 import java.io.InputStreamReader
 

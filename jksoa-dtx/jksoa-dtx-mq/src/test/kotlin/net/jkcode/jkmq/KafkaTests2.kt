@@ -1,7 +1,7 @@
-package net.jkcode.jksoa.dtx.mq
+package net.jkcode.jkmq
 
 import io.netty.channel.DefaultEventLoop
-import net.jkcode.jksoa.dtx.mq.mqmgr.IMqManager
+import net.jkcode.jkmq.mqmgr.IMqManager
 import net.jkcode.jkutil.common.randomBoolean
 import net.jkcode.jkutil.common.randomString
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -53,13 +53,13 @@ class KafkaTests2 {
      */
     @Test
     fun testConsumer() {
-        mqMgr.subscribeMq("topic1"){
+        mqMgr.subscribeMq("topic1"){ msg ->
             val t = Thread.currentThread().name
-            println("$t recieve mq: topic1 - $it")
+            println("$t recieve mq: topic1 - $msg")
         }
-        mqMgr.subscribeMq("topic2"){
+        mqMgr.subscribeMq("topic2"){ msg ->
             val t = Thread.currentThread().name
-            println("$t recieve mq: topic2 - $it")
+            println("$t recieve mq: topic2 - $msg")
         }
         Thread.sleep(10000000000)
     }
