@@ -127,7 +127,8 @@ subprojects{
         classifier = 'javadoc'
     }
 
-    if(!project.name.endsWith('example') && !project.name.endsWith('demo') && !project.name.endsWith('benchmark')){
+    if(!project.name.endsWith('example') && !project.name.endsWith('demo') && !project.name.endsWith('benchmark')
+        && project.name != 'jksoa-tracer-web'){
         publishing {
             // 定义发布什么
             publications {
