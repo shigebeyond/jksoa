@@ -4,14 +4,14 @@ dependencies{
         compile project(':jkjob')
     }else{
         compile "net.jkcode.jkmvc:jkmvc-orm:$jkmvc_version"
-        compile "net.jkcode.jkmvc:jkjob:$jkjob_version"
+        compile "net.jkcode:jkjob:$jkjob_version"
     }
 
     // other project
     if(env == 'dev'){
         compile project(':jkmq')
     }else{
-        compile "net.jkcode.jkmvc:jkmq:$jkmq_version"
+        compile "net.jkcode:jkmq:$jkmq_version"
     }
 
     testRuntime "mysql:mysql-connector-java:5.1.6"
