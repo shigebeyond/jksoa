@@ -30,14 +30,32 @@ buildscript {
     }
 }
 
+/**
+ * 检查是否有效工程, 包含 build.gradle 才有效
+ *    主要是处理子工程的中间目录
+ *    如子工程 jksoa-rpc/jksoa-rpc-client 的父目录 jksoa-rpc/, 他没有 build.gradle, 不能算有效工程, 但 allprojects()/subprojects() 都包含他
+ * @param project
+ * @return
+ */
+def isValidProject(project){
+    def projectPath = project.projectDir.path
+    def gradleFile = new File(projectPath + File.separatorChar + "build.gradle")
+    return gradleFile.exists()
+}
+
 // 所有工程
 allprojects{
+    if(!isValidProject(it))
+        return
     group 'net.jkcode.jksoa'
     version '1.9.0'
 }
 
 // 子工程
 subprojects{
+    if(!isValidProject(it))
+        return
+
     apply plugin: 'java'
     apply plugin: 'kotlin'
     apply plugin: 'maven'
@@ -127,8 +145,10 @@ subprojects{
         classifier = 'javadoc'
     }
 
+    // project.name 如 jksoa-rpc-client
+    // path 如 :jksoa-rpc:jksoa-rpc-client
     if(!project.name.endsWith('example') && !project.name.endsWith('demo') && !project.name.endsWith('benchmark')
-        && project.name != 'jksoa-tracer-web'){
+        && project.name != 'jksoa-tracer-web' && !path.contains('jksoa-dtx-demo')){
         publishing {
             // 定义发布什么
             publications {
