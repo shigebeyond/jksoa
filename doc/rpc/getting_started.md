@@ -2,7 +2,6 @@
 jksoa-rpc 是一个分布式服务框架，提供高性能的RPC远程服务调用功能, 包含服务注册、服务发现、负载均衡等子组件
 
 ## 特性
-
 - 1、简单, 易用, 轻量, 易扩展: 通过注解来声明服务, 自动扫描服务来注册或发现, 调用跟本地方法一样;
 
 - 2、异步高性能: 支持同步调用与异步调用(CompletableFuture)；
@@ -28,7 +27,6 @@ jksoa-rpc 是一个分布式服务框架，提供高性能的RPC远程服务调�
 - 12、强扩展性: 主要模块都提供了多种不同的实现，例如支持多种rpc协议/多均衡负载策略等
 
 ## 背景
-
 RPC（Remote Procedure Call Protocol，远程过程调用），调用远程服务就像调用本地服务，保证调用的简单性；
 
 一般公司，尤其是大型互联网公司内部系统由上千上万个服务组成，不同的服务部署在不同机器，跑在不同的JVM上，此时需要解决两个问题：
@@ -45,16 +43,24 @@ RPC（Remote Procedure Call Protocol，远程过程调用），调用远程服�
 
 # 快速入门
 
-## 依赖
-
-依赖于我的另一框架 [jkmvc](https://github.com/shigebeyond/jkmvc), 由于重构中暂未上传到maven仓库, 因此要自行下载到本地, 与jksoa居于同一级目录
-
 ## server端
+### 添加依赖
+1. gradle
+```
+compile "net.jkcode.jksoa:jksoa-rpc-server:1.9.0"
+```
+
+2. maven
+```
+<dependency>
+    <groupId>net.jkcode.jksoa</groupId>
+    <artifactId>jksoa-rpc-server</artifactId>
+    <version>1.9.0</version>
+</dependency>
+```
 
 ### 配置 rpc-server.yaml
-
 注:　配置项`servicePackages`声明了服务类所在的包，server启动时会扫描这些包中的服务类来向zk注册服务提供者
-
 ```
 # 服务端配置
 duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
@@ -132,15 +138,26 @@ interface ISimpleService /*: Remote // rmi协议服务接口 */ {
 ```
 
 ## 启动server
-
 使用 `net.jkcode.jksoa.rpc.server.RpcServerLauncher` 作为主类, 其`main()`方法会启动server
 
 ## client端
+## 添加依赖
+1. gradle
+```
+compile "net.jkcode.jksoa:jksoa-rpc-client:1.9.0"
+```
+
+2. maven
+```
+<dependency>
+    <groupId>net.jkcode.jksoa</groupId>
+    <artifactId>jksoa-rpc-client</artifactId>
+    <version>1.9.0</version>
+</dependency>
+```
 
 ### 配置 rpc-client.yaml
-
 注:　配置项`servicePackages`声明了服务类所在的包，client初始化时会扫描这些包中的服务类来向zk订阅服务提供者
-
 ```
 # 客户端配置
 duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
@@ -161,7 +178,6 @@ ioThreads: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核�
 ```
 
 ### 获得服务引用者(stub)
-
 ```
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.example.ISimpleService

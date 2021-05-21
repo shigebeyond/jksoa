@@ -1,5 +1,4 @@
 # 概述
-
 jksoa一个针对微服务的一系列分布式组件的集合:
 
 1. jksoa-rpc: 远程方法调用的组件, 包含 registry / rpc-client / rpc-server 的3个子组件
@@ -13,7 +12,6 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 4. [模块日志](doc/common/log.md)
 
 # jksoa-rpc
-
 远程方法调用的组件
 
 ## 入门

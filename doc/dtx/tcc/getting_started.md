@@ -1,6 +1,5 @@
 
 # 概述
-
 TCC服务是由try/confirm/cancel3个模块组成, 属于两阶段提交, try阶段执行成功则执行confirm, 否则执行cancel
 
 ## 特性
@@ -11,7 +10,6 @@ TCC服务是由try/confirm/cancel3个模块组成, 属于两阶段提交, try阶
 5. 故障恢复, 目前仅限于confirm/cancel阶段, 失败重试.
 
 ## 背景
-
 随着网站的访问量与数据量的增加, 我们不可避免的引入数据库拆分和服务拆分, 从而引出了新的分布式事务的问题:
 `如何在跨数据库、跨服务的环境下, 保证数据操作的一致性?`
 
@@ -22,7 +20,6 @@ TCC服务是由try/confirm/cancel3个模块组成, 属于两阶段提交, try阶
 而tcc是在服务层实现的两阶段提交来, 再加上它的故障恢复机制, 从而实现跨服务的事务一致性.
 
 ## tcc3模块介绍
-
 1. try: 尝试执行业务
 
 完成所有业务检查（一致性）
@@ -57,7 +54,6 @@ cancel操作满足幂等性
 在confirm/cancel阶段, 会调用之前记录的参与者对应的confirm/cancel方法, 以便达到最终一致性
 
 ## 故障恢复机制
-
 一个TCC事务框架，需要保证全局事务完整的提交/回滚的。
 
 它需要能够协调多个参与者及其分支事务，保证它们按全局事务的完成方向各自完成自己的分支事务, 从而达到全局的最终一致性.
@@ -74,12 +70,25 @@ TCC服务与普通的服务一样，只需要暴露一个接口，也就是它�
 虽然接口只暴露了try方法, 但是server端却是真正有confirm/cancel方法, 但这些方法不需要暴露给client, client只需要调用try方法即可, 框架在server端根据事务状态自行调用server端的confirm/cancel方法, 不需要client端手动调用, 因此对client 端是透明的
 
 ## Confirm/Cancel方法的幂等性
-
 在TCC事务模型中，confirm/cancel业务可能会被重复调用, 此时需要业务端来实现confirm/cancel方法的幂等性
 
 # 快速入门
-
 可参考demo子工程 jksoa-dtx/jksoa-dtx-demo 与 [demo说明](demo.md)
+
+## 添加依赖
+1. gradle
+```
+compile "net.jkcode.jksoa:jksoa-dtx-tcc:1.9.0"
+```
+
+2. maven
+```
+<dependency>
+    <groupId>net.jkcode.jksoa</groupId>
+    <artifactId>jksoa-dtx-tcc</artifactId>
+    <version>1.9.0</version>
+</dependency>
+```
 
 ## 发布Tcc服务
 

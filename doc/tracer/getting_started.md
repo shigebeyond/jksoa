@@ -1,16 +1,13 @@
 # 概述
-
 jksoa-tracer 分布式跟踪系统, 能够将一次分布式请求还原成调用链路。显式的在后端查看一次分布式请求的调用情况，比如各个节点上的耗时、请求具体打到了哪台机器上、每个服务节点的请求状态(耗时/QPS)、在哪个环节出错等等。如此能快速定位性能瓶颈与错误出处.
 
 ## 特性
-
 - 1、简单, 易用, 轻量, 易扩展；
 - 2、基于拦截器实现3端的跟踪, rpc client/rpc server/http server, 已做成插件, 开箱即用
 - 3、复用rpc框架, 基于netty实现通讯
 - 4、数据可视化：做到不用看日志通过可视化进行筛选
 
 ## 背景
-
 面对日趋复杂的分布式系统，如服务框架、消息中间件、缓存、数据层等，导致开发人员在业务性能瓶颈定位、故障排除等方面效率低下，没有成熟的Trace工具，需要引入分布式跟踪系统(即Trace系统)。
 
 Trace系统需要能够透明的传递调用上下文，理解系统行为，理清后端调用关系，实现调用链跟踪，调用路径分析，帮助业务人员定位性能瓶颈，排查故障原因等；同时，需要对用户尽量透明，减少对业务代码的侵入性。
@@ -18,11 +15,28 @@ Trace系统需要能够透明的传递调用上下文，理解系统行为，理
 设计思想源于[Google Dapper论文](http://bigbully.github.io/Dapper-translation/)实现。
 
 # 快速入门
+主要有3个模块
+1. jksoa-tracer-agent, 用于埋点, 采集调用链路信息
+2. jksoa-tracer-collector, 用于存储调用链路信息
+3. jksoa-tracer-web, 用于存储调用链路信息
 
-## agent端
+## agent端 -- jksoa-tracer-agent模块
+### 添加依赖
+1. gradle
+```
+compile "net.jkcode.jksoa:jksoa-tracer-agent:1.9.0"
+```
+
+2. maven
+```
+<dependency>
+    <groupId>net.jkcode.jksoa</groupId>
+    <artifactId>jksoa-tracer-agent</artifactId>
+    <version>1.9.0</version>
+</dependency>
+```
 
 ### 配置 agent.yaml
-
 ```
 # agent配置
 
@@ -47,21 +61,32 @@ httpServerPlugins:
 ```
 
 ### @TraceableService注解
-
 `@TraceableService`注解声明在要跟踪的服务类, agent启动后扫描到被注解的服务类, 然后调用`ICollectorService.syncService()`来同步服务类, 主要是让跟踪系统能识别该服务类, 同时给这个服务类一个id来作为存储要素.
 
-## collector端
+## collector端 -- jksoa-tracer-collector模块
+### 添加依赖
+1. gradle
+```
+compile "net.jkcode.jksoa:jksoa-tracer-collector:1.9.0"
+```
 
+2. maven
+```
+<dependency>
+    <groupId>net.jkcode.jksoa</groupId>
+    <artifactId>jksoa-tracer-collector</artifactId>
+    <version>1.9.0</version>
+</dependency>
+```
+
+### 启动server
 需要启动rpc server, 提供 `ICollectorService` rpc服务, 以供agent调用
 
-## web端
-
+## web端 -- jksoa-tracer-web模块
 在`jksoa-tracer-web`模块上启动http server, 以显示跟踪相关报表. UI直接复用京东的Hydra框架
 
 1. 查询跟踪页面
-
 ![query](img/query.png)
 
 2. 跟踪详情页面
-
 ![result](img/result.png)
