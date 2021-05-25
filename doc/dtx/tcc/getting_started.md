@@ -208,14 +208,14 @@ recoverTimerSeconds: !!java.lang.Long 60 # 定时恢复(重试)的时间间隔, 
 
 ### rpc拦截器配置
 
-rpc-client.yaml
+vim src/main/resources/rpc-client.yaml
 
 ```
 interceptors: # 拦截器
     - net.jkcode.jksoa.dtx.tcc.interceptor.RpcClientTccInterceptor # 添加tcc事务参与者+传递tcc事务信息
 ```
 
-rpc-server.yaml
+vim src/main/resources/rpc-server.yaml
 ```
 interceptors: # 拦截器
     - net.jkcode.jksoa.dtx.tcc.interceptor.RpcServerTccInterceptor # 接收tcc事务信息
