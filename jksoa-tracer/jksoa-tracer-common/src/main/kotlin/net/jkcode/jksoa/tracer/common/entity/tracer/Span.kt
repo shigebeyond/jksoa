@@ -23,6 +23,14 @@ open class Span: OrmEntity() {
 
 	public var parentId:Long? by property() //
 
+	/**
+	 * 标注信息
+	 *   Cs: client send
+	 *   Cr: client receive
+	 *   Ss: server send
+	 *   Sr: server receive
+	 *   Ex: exception
+	 */
 	public open val annotations: List<Annotation> by listProperty() //
 
 	/**
@@ -166,7 +174,7 @@ open class Span: OrmEntity() {
 		get() = csAnnotation.timestamp
 
 	/**
-	 * 计算client端耗时
+	 * 计算client端耗时而且
 	 */
 	public fun calculateDurationClient(): Long {
 		return crAnnotation.timestamp - csAnnotation.timestamp

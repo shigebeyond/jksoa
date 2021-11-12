@@ -4,6 +4,11 @@ import net.jkcode.jkmvc.orm.OrmEntity
 
 /**
  * span的标注信息
+ *   Cs: client send
+ *   Cr: client receive
+ *   Ss: server send
+ *   Sr: server receive
+ *   Ex: exception
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-06-26 17:09:27
@@ -22,6 +27,14 @@ open class Annotation: OrmEntity() {
     // 代理属性读写
     public var id:Int by property() //
 
+    /**
+     * 标注的key
+     *   Cs: client send
+     *   Cr: client receive
+     *   Ss: server send
+     *   Sr: server receive
+     *   Ex: exception
+     */
     public var key:String by property() //
 
     public var value:String by property() //
