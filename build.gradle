@@ -61,9 +61,13 @@ subprojects{
     apply plugin: 'maven'
 
     repositories {
-        //mavenLocal()
+        mavenLocal()
+        // china area
         maven {
             url 'http://maven.aliyun.com/nexus/content/repositories/snapshots'
+        }
+        maven { // jphp
+            url "https://jitpack.io"
         }
         mavenCentral()
         maven {

@@ -47,4 +47,8 @@ if(env == 'dev'){
     include 'benchmark-rpc'
     project(':benchmark-rpc').projectDir = new File('../jksoa-benchmark/jkrpc')
     */
+
+    // jphp-java-ext
+    include 'jphp-java-ext'
+    project(':jphp-java-ext').projectDir = new File('../jphp-java-ext')
 }
