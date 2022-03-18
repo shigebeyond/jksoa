@@ -9,7 +9,10 @@ import kotlin.reflect.jvm.javaMethod
 
 /**
  * 分片的rpc请求
- *    远端方法调用的描述: 方法 + 参数
+ *    1 远端方法调用的描述: 方法 + 参数
+ *    2 继承了RpcRequest
+ *    3 继承了RpcRequest的invoke()主要是被job调用，实现是调用 RpcInvocationHandler.invoke(req) 来发送rpc请求
+ *      而在 RpcInvocationHandler.invoke(req) 中会根据请求是ShardingRpcRequest，来调用 dispatcher.dispatchSharding(req)
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:03 AM

@@ -53,7 +53,7 @@ interface IRpcRequestDispatcher {
     fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): CompletableFuture<Array<Any?>>
 
     /**
-     * 分发一个分片的请求
+     * 分发一个分片的请求(仅在job调度中使用)
      *    将请求分成多片, 然后逐片分发给对应的节点
      *    调用 IConnectionHub.selectAll(null) 来获得所有节点(连接)
      *

@@ -13,7 +13,8 @@ import kotlin.reflect.jvm.javaMethod
 
 /**
  * rpc请求
- *    远端方法调用的描述: 方法 + 参数
+ *    1 远端方法调用的描述: 方法 + 参数
+ *    2 invoke()主要是被job调用，实现是调用 RpcInvocationHandler.invoke(req) 来发送rpc请求
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

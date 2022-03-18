@@ -123,7 +123,7 @@ class RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
     }
 
     /**
-     * 分发一个分片的请求到全部节点
+     * 分发一个分片的请求到全部节点(仅在job调度中使用)
      *    将请求分成多片, 然后逐片分发给对应的节点
      *    调用 IConnectionHub.selectAll(null) 来获得所有节点(连接)
      *

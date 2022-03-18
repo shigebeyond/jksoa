@@ -7,12 +7,9 @@ import net.jkcode.jkutil.common.getMethodHandle
 import net.jkcode.jkutil.common.getSignature
 import net.jkcode.jkutil.interceptor.RequestInterceptorChain
 import net.jkcode.jkutil.ttl.SttlInterceptor
-import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.IRpcRequestInterceptor
-import net.jkcode.jksoa.common.IRpcRequestInvoker
-import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jkguard.MethodGuardInvoker
+import net.jkcode.jksoa.common.*
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jkutil.common.JkApp
 import java.lang.reflect.InvocationHandler
@@ -147,7 +144,10 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
             // RpcInvocationHandler 继承 MethodGuardInvoker, 在做合并请求/缓存等方法守护的处理时, 会切换线程, 从而导致 Threadlocal 丢失
             // 但是合并请求是多个请求, 肯定多线程, 也无法确定使用哪个 Threadlocal, 因此不予处理
             // 下面包装一下 CompletableFuture, 返回新 CompletableFuture, 以便传递 Threadlocal
-            val future = dispatcher.dispatch(req)
+            val future = if(req is IShardingRpcRequest) // 分片rpc
+                            dispatcher.dispatchSharding(req)
+                        else // 常规rpc
+                            dispatcher.dispatch(req)
             if(JkApp.useSttl) // 应用可传递ScopedTransferableThreadLocal
                 SttlInterceptor.intercept(future)
             else
