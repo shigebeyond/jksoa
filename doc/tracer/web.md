@@ -5,3 +5,6 @@
 
 2. 前端实现
 UI直接复用京东的Hydra框架
+
+3. 启动
+参考 jksoa-tracer-web 工程中的 start-jetty.sh 与 Dockerfile
