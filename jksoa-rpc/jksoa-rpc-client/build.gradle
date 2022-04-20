@@ -1,4 +1,9 @@
 dependencies{
     // other project
     compile project(':jksoa-rpc:jksoa-rpc-registry')
+
+    if(env == 'dev')
+        compile project(':jphp-java-ext')
+    else
+        compile "net.jkcode:jphp-java-ext:$jphp_java_ext_version"
 }
