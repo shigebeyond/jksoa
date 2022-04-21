@@ -21,12 +21,14 @@ import php.runtime.reflection.ClassEntity
 
 /**
  * 包装服务的引用对象
- * 1 调用服务的引用对象
+ * 1 调用服务的引用对象（代理）
  *    仿jphp自带的 JavaObject，但该类并不能动态调用方法
- *    动态调用方法的实现，使用魔术方法，涉及到参数类型+返回值类型转换
+ *    动态调用方法的实现，使用魔术方法
+ *    注意：不能直接使用`dispatcher.dispatch(req)`来发rpc请求，必须通过调用引用（代理）对象来发，以便`JavaMethod.invokeArgs()`根据代理的java方法将php参数转换为正确的java参数类型
  * 2 使用
- *    java中的实例化： val obj = PReferer.of(env, xxx)
- *    php中的实例化: $obj = new Referer($xxx);
+ *    java中的实例化： val ref = PReferer.of(env, "net.jkcode.jksoa.rpc.example.ISimpleService")
+ *    php中的实例化: $ref = new Referer("net.jkcode.jksoa.rpc.example.ISimpleService");
+ *    php中的方法调用（默认方法）: $ref->ping();
  */
 @Reflection.Name("php\\lang\\Referer")
 open class PReferer(env: Environment, clazz: ClassEntity) : BaseWrapper<JavaObject>(env, clazz) {
