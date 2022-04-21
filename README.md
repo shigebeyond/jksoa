@@ -5,6 +5,8 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 2. jksoa-tracer: 分布式跟踪的组件, 包含 agent / collector / web 的3个子组件
 3. jksoa-dtx: 分布式事务的组件, 包含 dtx-mq / dtx-tcc(真正的异步非阻塞) 的2个子组件
 
+[性能对比](https://github.com/shigebeyond/jksoa-benchmark)
+
 # 公共组件
 1. [插件机制](doc/common/plugin.md)
 2. [拦截器机制](doc/common/interceptor.md)
