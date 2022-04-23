@@ -30,7 +30,8 @@ import php.runtime.reflection.ClassEntity
  *    php中的实例化: $ref = new Referer("net.jkcode.jksoa.rpc.example.ISimpleService");
  *    php中的方法调用（默认方法）: $ref->ping();
  */
-@Reflection.Name("php\\lang\\Referer")
+@Reflection.Name("Referer")
+@Reflection.Namespace(JksoaRpcExtension.NS)
 open class PReferer(env: Environment, clazz: ClassEntity) : BaseWrapper<JavaObject>(env, clazz) {
 
     // 被包装的服务的引用对象

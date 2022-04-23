@@ -1,9 +1,9 @@
 <?php
-namespace php\lang;
+namespace php\jksoa\rpc;
 
 /**
- * Class WrapJavaObject
- * @packages std, core
+ * Class Referer
+ * @packages php\jksoa\rpc
  */
 class Referer
 {
