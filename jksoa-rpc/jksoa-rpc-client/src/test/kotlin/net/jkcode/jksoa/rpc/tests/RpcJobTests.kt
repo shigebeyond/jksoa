@@ -1,11 +1,11 @@
 package net.jkcode.jksoa.rpc.tests
 
-import net.jkcode.jkjob.BaseJobTests
-import net.jkcode.jkjob.LocalBean
 import net.jkcode.jkjob.job.InvocationJob
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.ShardingRpcRequest
 import net.jkcode.jksoa.rpc.example.ISimpleService
+import net.jkcode.jksoa.rpc.tests.job.BaseJobTests
+import net.jkcode.jksoa.rpc.tests.job.LocalBean
 import net.jkcode.jkutil.invocation.ShardingInvocation
 import org.junit.Test
 
