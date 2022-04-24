@@ -37,12 +37,13 @@ class FailoverRpcResponseFuture(protected val maxTryCount: Int /* 最大尝试�
     protected fun buildResponseFuture(): IRpcResponseFuture {
         // 1 构建异步响应
         val resFuture = responseFactory(tryCount++) // 更新 tryCount: 串行重试, tryCount++ 线程安全
-        clientLogger.debug("重试第 {} 次", tryCount)
+        val act = if(tryCount == 1) "尝试" else "重试"
+        clientLogger.debug("rpc{}第 {} 次", act, tryCount)
 
         // 2 代理回调
         resFuture.exceptionally {
             if(tryCount < maxTryCount) {
-                clientLogger.debug("失败重试: {}", it.message)
+                clientLogger.debug("rpc失败重试: {}", it.message)
                 targetResFuture = buildResponseFuture()
             }else{
                 this.completeExceptionally(it)
@@ -51,7 +52,7 @@ class FailoverRpcResponseFuture(protected val maxTryCount: Int /* 最大尝试�
         }
 
         resFuture.thenAccept {
-            clientLogger.debug("完成")
+            clientLogger.debug("rpc完成")
             this.complete(it)
         }
 
