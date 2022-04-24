@@ -87,7 +87,9 @@ open class PReferer(env: Environment, clazz: ClassEntity) : BaseWrapper<JavaObje
 
     companion object {
 
-        // 创建 PReferer 实例
+        /**
+         * 创建 PReferer 实例
+         */
         fun of(env: Environment, clazzName: String): PReferer {
             val javaObject = PReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\Referer"))
             javaObject.referer = getRef(clazzName)

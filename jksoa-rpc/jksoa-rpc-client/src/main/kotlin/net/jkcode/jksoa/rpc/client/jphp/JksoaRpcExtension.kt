@@ -26,7 +26,7 @@ class JksoaRpcExtension : Extension() {
 
     override fun onRegister(scope: CompileScope) {
         registerClass(scope, PReferer::class.java)
-        registerClass(scope, WrapFuture::class.java)
+        registerClass(scope, WrapCompletableFuture::class.java)
     }
 
 }
