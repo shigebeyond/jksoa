@@ -38,8 +38,8 @@ open class PReferer(env: Environment, clazz: ClassEntity) : BaseWrapper<JavaObje
     lateinit var referer: Referer
 
     @Reflection.Signature
-    fun __construct(referer: Referer): Memory {
-        this.referer = referer
+    fun __construct(clazzName: String): Memory {
+        this.referer = getRef(clazzName)
         return Memory.NULL
     }
 
@@ -89,12 +89,19 @@ open class PReferer(env: Environment, clazz: ClassEntity) : BaseWrapper<JavaObje
 
         // 创建 PReferer 实例
         fun of(env: Environment, clazzName: String): PReferer {
-            val javaObject = PReferer(env, env.fetchClass("php\\lang\\Referer"))
-            val referer = RefererLoader.get(clazzName) as Referer?
-            if(referer == null)
-                throw RpcClientException("未加载远程服务: " + clazzName)
-            javaObject.referer = Referer.getRefer(clazzName)
+            val javaObject = PReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\Referer"))
+            javaObject.referer = getRef(clazzName)
             return javaObject
+        }
+
+        /**
+         * 获得被包装的服务引用对象
+         */
+        private fun getRef(clazzName: String): Referer {
+            val referer = RefererLoader.get(clazzName) as Referer?
+            if (referer == null)
+                throw RpcClientException("未加载远程服务: " + clazzName)
+            return referer
         }
     }
 }
