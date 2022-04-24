@@ -7,16 +7,12 @@ import net.jkcode.jkutil.common.getMethodByName
 import php.runtime.Memory
 import php.runtime.annotation.Reflection
 import php.runtime.env.Environment
-import php.runtime.env.TraceInfo
-import php.runtime.ext.java.JavaClass
 import php.runtime.ext.java.JavaMethod
 import php.runtime.ext.java.JavaObject
 import php.runtime.ext.java.JavaReflection
-import php.runtime.lang.BaseWrapper
+import php.runtime.lang.BaseObject
 import php.runtime.memory.ObjectMemory
 import php.runtime.memory.StringMemory
-import php.runtime.memory.support.MemoryUtils
-import php.runtime.memory.support.MemoryUtils.Converter
 import php.runtime.reflection.ClassEntity
 
 /**
@@ -32,7 +28,7 @@ import php.runtime.reflection.ClassEntity
  */
 @Reflection.Name("Referer")
 @Reflection.Namespace(JksoaRpcExtension.NS)
-open class PReferer(env: Environment, clazz: ClassEntity) : BaseWrapper<JavaObject>(env, clazz) {
+open class PReferer(env: Environment, clazz: ClassEntity) : BaseObject(env) {
 
     // 被包装的服务的引用对象
     lateinit var referer: Referer

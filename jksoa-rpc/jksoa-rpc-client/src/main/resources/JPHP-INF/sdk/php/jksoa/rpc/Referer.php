@@ -22,21 +22,4 @@ class Referer
      */
     public function getClassName() { }
 
-    /**
-     * 实例池: <接口类名, 实例>
-     * @var array
-     */
-    protected static $_insts = [];
-
-    /**
-     * 根据接口类名获得实例
-     * @param string $class
-     * @return mixed
-     */
-    public static function instance($class)
-    {
-        if(!isset(static::$_insts[$class]))
-            static::$_insts[$class] = new Referer($class); // 创建实例
-        return static::$_insts[$class];
-    }
 }
