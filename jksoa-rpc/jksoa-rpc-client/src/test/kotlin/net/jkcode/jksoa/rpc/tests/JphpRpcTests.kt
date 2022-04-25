@@ -7,7 +7,7 @@ import org.junit.Test
 class JphpRpcTests {
 
     @Test
-    fun testJphpLauncher(){
+    fun testRpc(){
         val lan = JphpLauncher.instance()
         lan.run("src/test/resources/rpc.php")
     }

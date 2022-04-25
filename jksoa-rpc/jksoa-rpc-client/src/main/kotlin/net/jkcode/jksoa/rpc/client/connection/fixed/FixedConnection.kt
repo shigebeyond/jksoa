@@ -3,6 +3,7 @@ package net.jkcode.jksoa.rpc.client.connection.fixed
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.rpc.client.connection.single.ReconnectableConnection
@@ -64,7 +65,7 @@ class FixedConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
             val pool = getPool(url.serverPart)
             for(conn in pool) // 增加引用
                 conn.incrRef()
-            println("-----------初始化连接池xx: ${url.serverPart} -- 连接数 ${pool.size}")
+            clientLogger.debug("-----------初始化连接池xx: ${url.serverPart} -- 连接数 ${pool.size}")
         }
     }
 

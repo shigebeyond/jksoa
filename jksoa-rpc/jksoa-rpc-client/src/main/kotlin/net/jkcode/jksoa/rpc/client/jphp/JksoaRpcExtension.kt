@@ -21,7 +21,7 @@ class JksoaRpcExtension : Extension() {
     }
 
     override fun getPackageNames(): Array<String> {
-        return arrayOf("jkmvc\\http")
+        return arrayOf("jksoa\\rpc")
     }
 
     override fun onRegister(scope: CompileScope) {
