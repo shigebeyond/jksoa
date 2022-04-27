@@ -14,6 +14,7 @@ import java.util.concurrent.*
 @Reflection.Namespace(JksoaRpcExtension.NS)
 class WrapCompletableFuture(env: Environment, protected val future: CompletableFuture<*>) : BaseObject(env) {
 
+    // ---------------------- Future 方法扩展: 参考 WrapFuture ----------------------
     @Reflection.Signature
     private fun __construct(env: Environment, vararg args: Memory): Memory {
         return Memory.NULL
