@@ -1,8 +1,10 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
+import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.client.referer.RefererLoader
+import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
 import net.jkcode.jkutil.common.getMethodByName
 import net.jkcode.jkutil.common.substringBetween
 import php.runtime.Memory
@@ -18,6 +20,7 @@ import php.runtime.memory.StringMemory
 import php.runtime.memory.support.MemoryUtils
 import php.runtime.reflection.ClassEntity
 import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
 
 /**
  * 包装远程方法
@@ -112,6 +115,21 @@ open class PRpcMethod(env: Environment, clazz: ClassEntity) : BaseObject(env) {
             JavaReflection.exception(env, e.targetException)
         }
         return Memory.NULL
+    }
+
+    /**
+     * 真正的rpc调用
+     *
+     * @param method 方法
+     * @param obj 对象
+     * @param args 参数
+     * @return 结果
+     */
+    @Reflection.Signature
+    public fun rpcInvoke(args: Array<Any?>): Any? {
+        // 由于java限制不能手动创建method对象，因此直接找个nativeMethod
+        val method = this.__class__.findMethod("rpcInvoke").nativeMethod
+        return RpcInvocationHandler.invoke(this, method, args)
     }
 
     @Reflection.Signature
