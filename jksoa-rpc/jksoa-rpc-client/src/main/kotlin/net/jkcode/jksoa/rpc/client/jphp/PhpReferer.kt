@@ -31,7 +31,7 @@ import java.util.concurrent.Future
  * @author shijianhang<772910474@qq.com>
  * @date 2022-2-14 9:52 AM
  */
-class PhpReferer(protected val env: Environment, internal val phpClass: ClassEntity /* 接口类 */) : IReferer {
+class PhpReferer(internal val env: Environment, internal val phpClass: ClassEntity /* 接口类 */) : IReferer {
 
     /**
      * 服务标识
@@ -54,6 +54,10 @@ class PhpReferer(protected val env: Environment, internal val phpClass: ClassEnt
         throw UnsupportedOperationException("php引用不支持直接获得方法")
     }
 
+    /**
+     * 引用的方法
+     *    key是方法名，value是方法
+     */
     protected val refererMethods:ConcurrentHashMap<String, PhpRefererMethod> = ConcurrentHashMap()
 
     /**
@@ -61,7 +65,7 @@ class PhpReferer(protected val env: Environment, internal val phpClass: ClassEnt
      */
     public fun getRefererMethod(methodName: String): PhpRefererMethod {
         return refererMethods.getOrPutOnce(methodName){
-            PhpRefererMethod(env, this, methodName)
+            PhpRefererMethod(this, methodName)
         }
     }
 
@@ -106,8 +110,8 @@ class PhpReferer(protected val env: Environment, internal val phpClass: ClassEnt
 
     init {
         // 监听服务变化
-        clientLogger.debug("Referer监听服务[{}]变化", serviceId)
-        Referer.registry.subscribe(serviceId, IConnectionHub.instance(serviceId))
+        clientLogger.debug("PhpReferer监听服务[{}]变化", serviceId)
+        registry.subscribe(serviceId, IConnectionHub.instance(serviceId))
     }
 
     /**
