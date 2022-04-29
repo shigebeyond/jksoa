@@ -11,7 +11,7 @@ import kotlin.collections.set
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM
  */
-abstract class ServiceClassLoader<T: IServiceClass>(protected val isProvider: Boolean /* 是否是加载服务提供者 */) : ClassScanner() {
+abstract class ServiceClassLoader<T: BaseServiceClass>(protected val isProvider: Boolean /* 是否是加载服务提供者 */) : ClassScanner() {
 
     /**
      * 启动者

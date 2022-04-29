@@ -2,6 +2,7 @@ package net.jkcode.jksoa.rpc.client.referer
 
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
+import net.jkcode.jksoa.common.loader.BaseServiceClass
 import net.jkcode.jksoa.rpc.client.IReferer
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.registry.IRegistry
@@ -18,7 +19,7 @@ import net.jkcode.jksoa.rpc.registry.IRegistry
 open class Referer(public override val `interface`:Class<*>, // 接口类
                   public override val service: Any = RpcInvocationHandler.createProxy(`interface`), // 服务实例，默认是服务代理，但在服务端可指定本地服务实例
                   public val local: Boolean = false // 是否本地服务
-): IReferer() {
+): BaseServiceClass(), IReferer {
 
     companion object{
 
@@ -36,7 +37,7 @@ open class Referer(public override val `interface`:Class<*>, // 接口类
          * @return
          */
         internal fun <T> getRefer(clazzName: String, local: Boolean = false): T {
-            val referer = RefererLoader.get(clazzName) as Referer?
+            val referer = RefererLoader.get(clazzName)
             if(referer == null)
                 throw RpcClientException("未加载远程服务: " + clazzName)
             if(local && !referer.local) // 限制本地服务
@@ -72,7 +73,7 @@ open class Referer(public override val `interface`:Class<*>, // 接口类
         if(!local) {
             // 监听服务变化
             clientLogger.debug("Referer监听服务[{}]变化", serviceId)
-            registry.subscribe(serviceId, IConnectionHub.instance(`interface`))
+            registry.subscribe(serviceId, IConnectionHub.instance(serviceId))
         }
     }
 
@@ -82,7 +83,7 @@ open class Referer(public override val `interface`:Class<*>, // 接口类
     public override fun close() {
         if(!local) {
             clientLogger.debug("Referer.close(): 取消监听服务变化")
-            registry.unsubscribe(serviceId, IConnectionHub.instance(`interface`))
+            registry.unsubscribe(serviceId, IConnectionHub.instance(serviceId))
         }
     }
 }

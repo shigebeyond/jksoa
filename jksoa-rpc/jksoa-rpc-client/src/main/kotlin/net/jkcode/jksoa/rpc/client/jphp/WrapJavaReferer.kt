@@ -3,7 +3,6 @@ package net.jkcode.jksoa.rpc.client.jphp
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.referer.Referer
 import net.jkcode.jksoa.rpc.client.referer.RefererLoader
-import net.jkcode.jkutil.common.getMethodByName
 import php.runtime.Memory
 import php.runtime.annotation.Reflection
 import php.runtime.env.Environment
@@ -16,7 +15,7 @@ import php.runtime.memory.StringMemory
 import php.runtime.reflection.ClassEntity
 
 /**
- * 包装服务的引用对象
+ * 包装服务的java引用对象
  * 1 调用服务的引用对象（代理）
  *    仿jphp自带的 JavaObject，但该类并不能动态调用方法
  *    动态调用方法的实现，使用魔术方法
@@ -28,7 +27,7 @@ import php.runtime.reflection.ClassEntity
  */
 @Reflection.Name("Referer")
 @Reflection.Namespace(JksoaRpcExtension.NS)
-open class PReferer(env: Environment, clazz: ClassEntity) : BaseObject(env) {
+open class WrapJavaReferer(env: Environment, clazz: ClassEntity) : BaseObject(env, clazz) {
 
     // 被包装的服务的引用对象
     lateinit var referer: Referer
@@ -62,7 +61,7 @@ open class PReferer(env: Environment, clazz: ClassEntity) : BaseObject(env) {
             // 第一个参数是方法名
             val name = args[0].toString()
             // 获得方法
-            val method = referer.`interface`.getMethodByName(name)
+            val method = referer.getMethod(name)
             if(method == null)
                 throw NoSuchMethodException("类[${referer.`interface`}]无方法[$name]")
             // 用 JavaMethod 包装方法调用
@@ -86,8 +85,8 @@ open class PReferer(env: Environment, clazz: ClassEntity) : BaseObject(env) {
         /**
          * 创建 PReferer 实例
          */
-        fun of(env: Environment, clazzName: String): PReferer {
-            val javaObject = PReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\Referer"))
+        fun of(env: Environment, clazzName: String): WrapJavaReferer {
+            val javaObject = WrapJavaReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\Referer"))
             javaObject.referer = getRef(clazzName)
             return javaObject
         }
@@ -96,7 +95,7 @@ open class PReferer(env: Environment, clazz: ClassEntity) : BaseObject(env) {
          * 获得被包装的服务引用对象
          */
         private fun getRef(clazzName: String): Referer {
-            val referer = RefererLoader.get(clazzName) as Referer?
+            val referer = RefererLoader.get(clazzName)
             if (referer == null)
                 throw RpcClientException("未加载远程服务: " + clazzName)
             return referer

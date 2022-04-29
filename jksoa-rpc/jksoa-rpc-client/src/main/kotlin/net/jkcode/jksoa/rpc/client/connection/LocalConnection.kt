@@ -30,7 +30,7 @@ class LocalConnection(url: Url): BaseConnection(url){
     public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture{
         // 直接调用本地服务的方法
         // 1 获得本地服务
-        val referer = RefererLoader.get(req.serviceId) as Referer?
+        val referer = RefererLoader.get(req.serviceId)
         if(referer == null)
             throw RpcClientException("未加载远程服务: " + req.serviceId)
         if(!referer.local) // 限制本地服务

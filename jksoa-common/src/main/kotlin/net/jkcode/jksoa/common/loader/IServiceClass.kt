@@ -3,31 +3,28 @@ package net.jkcode.jksoa.common.loader
 import net.jkcode.jkutil.common.getMethodByName
 import net.jkcode.jkutil.scope.ClosingOnShutdown
 import net.jkcode.jkutil.common.getMethodBySignature
+import java.io.Closeable
 import java.lang.reflect.Method
 
 /**
  * 服务类元数据
+ *   从 BaseServiceClass 中抽取 IServiceClass，以便兼容 PhpReferer（不需要 BaseServiceClass.`interface`）
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 3:48 PM
  */
-abstract class IServiceClass: ClosingOnShutdown() {
-    /**
-     * 接口类
-     */
-    public abstract val `interface`: Class<*>
+interface IServiceClass: Closeable {
 
     /**
      * 服务标识
      */
     public val serviceId: String
-        get() = `interface`.name
 
     /**
      * 服务实例
      */
-    public abstract val service: Any
+    public val service: Any
 
     /**
      * 根据方法签名来获得方法
@@ -35,13 +32,6 @@ abstract class IServiceClass: ClosingOnShutdown() {
      * @param methodSignature
      * @return
      */
-    public fun getMethod(methodSignature: String): Method?{
-        // 1 根据方法签名来查
-        if(methodSignature.endsWith(')'))
-            return `interface`.getMethodBySignature(methodSignature)
-
-        // 2 根据方法名来查: 忽略参数类型, 一般只用在没有重载的方法中, 方便非java语言(如php)客户端的调用, 不用关心方法签名
-        return `interface`.getMethodByName(methodSignature)
-    }
+    public fun getMethod(methodSignature: String): Method?
 
 }

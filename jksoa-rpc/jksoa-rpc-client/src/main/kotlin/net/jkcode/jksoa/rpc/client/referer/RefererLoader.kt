@@ -12,7 +12,7 @@ import net.jkcode.jksoa.common.loader.ServiceClassLoader
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 10:27 AM
  */
-object RefererLoader : ServiceClassLoader<IReferer>(false) {
+object RefererLoader : ServiceClassLoader<Referer>(false) { // 泛型不能再用IReferer(兼容php)
 
     /**
      * 客户端配置
@@ -58,7 +58,7 @@ object RefererLoader : ServiceClassLoader<IReferer>(false) {
      * @param name
      * @return
      */
-    override fun get(name: String): IReferer? {
+    override fun get(name: String): Referer? {
         // 延迟扫描加载Referer服务
         load()
 

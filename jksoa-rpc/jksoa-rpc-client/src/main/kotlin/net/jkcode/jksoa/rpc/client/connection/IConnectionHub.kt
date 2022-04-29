@@ -8,6 +8,7 @@ import net.jkcode.jksoa.rpc.loadbalance.ILoadBalancer
 import net.jkcode.jksoa.rpc.registry.IDiscoveryListener
 import net.jkcode.jkutil.common.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KClass
 
 /**
  * 某个service的rpc连接集中器
@@ -29,56 +30,61 @@ abstract class IConnectionHub: IDiscoveryListener {
         /**
          * rpc连接集中器实例池: <服务类 to 实例>
          */
-        protected val instances: ConcurrentHashMap<Class<*>, IConnectionHub> = ConcurrentHashMap();
+        protected val instances: ConcurrentHashMap<String, IConnectionHub> = ConcurrentHashMap();
 
         /**
          * 根据服务类来获得单例
          *
-         * @param serviceClass 服务类
+         * @param serviceClassName 服务类，兼容php引用的情况，注意不支持自定义ConnectionHub类
          * @return
          */
-        public fun instance(serviceClass: Class<*>): IConnectionHub{
-            return instances.getOrPutOnce(serviceClass) {
-                val annotation = serviceClass.remoteService
-                if(annotation == null)
-                    throw IllegalArgumentException("Service Class must has annotation @remoteService")
+        public fun instance(serviceClassName: String): IConnectionHub{
+            return instances.getOrPutOnce(serviceClassName) {
+                // 1 获得ConnectionHub类
+                // 1.1 服务类
+                var serviceClass: Class<*>? = null
+                try {
+                    // java引用
+                    serviceClass = getClassByName(serviceClassName)
+                }catch (ex: ClassNotFoundException){
+                    // 如果是php引用，则不存在服务接口类，还是最大可能尝试调用
+                }
 
-                // 1 获得 IConnectionHub实现类
-                var clazz = annotation.connectionHubClass
-                if (clazz == Void::class || clazz == Unit::class)
-                    clazz = ConnectionHub::class
+                // 1.2 ConnectionHub类
+                var clazz: KClass<*> = ConnectionHub::class
+                // 1.3 服务注解
+                val annotation = serviceClass?.remoteService
+                if(serviceClass != null) { // java引用
+                    if (annotation == null)
+                        throw IllegalArgumentException("Service interface must has annotation @remoteService")
 
-                // 检查是否 IConnectionHub子类
-                if (!IConnectionHub::class.java.isSuperClass(clazz.java))
-                    throw RpcClientException("Class [${clazz}] is not a sub class from [IConnectionHub]")
+                    // 1 获得 IConnectionHub实现类
+                    clazz = annotation.connectionHubClass
+                    if (clazz == Void::class || clazz == Unit::class)
+                        clazz = ConnectionHub::class
 
-                // 检查默认构造函数
-                if (clazz.java.getConstructorOrNull() == null)
-                    throw RpcClientException("Class [${clazz}] has no no-arg constructor") // IConnectionHub子类${clazz}无默认构造函数
+                    // 检查是否 IConnectionHub子类
+                    if (!IConnectionHub::class.java.isSuperClass(clazz.java))
+                        throw RpcClientException("Class [${clazz}] is not a sub class from [IConnectionHub]")
+
+                    // 检查默认构造函数
+                    if (clazz.java.getConstructorOrNull() == null)
+                        throw RpcClientException("Class [${clazz}] has no no-arg constructor") // IConnectionHub子类${clazz}无默认构造函数
+                }
 
                 // 2 实例化
                 val inst = clazz.java.newInstance() as IConnectionHub
 
                 // 3 设置属性
                 // 设置服务标识
-                inst.serviceId = serviceClass.name
+                inst.serviceId = serviceClassName
                 // 设置均衡负载器
-                var loadBalancer = annotation.loadBalancer
-                if (loadBalancer != "")
+                var loadBalancer = annotation?.loadBalancer
+                if (!loadBalancer.isNullOrEmpty())
                     inst.loadBalancer = ILoadBalancer.instance(loadBalancer)
 
                 inst
             }
-        }
-
-        /**
-         * 根据服务类来获得单例
-         *
-         * @param serviceClass 服务类
-         * @return
-         */
-        public fun instance(serviceClass: String): IConnectionHub{
-            return instance(getClassByName(serviceClass))
         }
     }
 

@@ -10,6 +10,10 @@ import php.runtime.memory.support.MemoryUtils
 import php.runtime.reflection.ClassEntity
 import java.util.concurrent.*
 
+/**
+ * 包装 CompletableFuture 对象
+ *    回调中使用 Invoker.callAny() 来将回调的java参数变为php参数
+ */
 @Reflection.Name("CompletableFuture")
 @Reflection.Namespace(JksoaRpcExtension.NS)
 class WrapCompletableFuture(env: Environment, protected val future: CompletableFuture<*>) : BaseObject(env) {
