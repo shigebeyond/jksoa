@@ -75,7 +75,7 @@ class PhpRefererMethod(protected val phpRef: PhpReferer, protected val phpMethod
                 passed[i] = (arg.toValue(ObjectMemory::class.java).value as JavaObject).getObject()
             } else {
                 if (converter != null) {
-                    passed[i] = converter.run(args[i + 1]) // 转换实参
+                    passed[i] = converter.run(args[i]) // 转换实参
                 } else {
                     passed[i] = null
                 }
@@ -115,7 +115,6 @@ class PhpRefererMethod(protected val phpRef: PhpReferer, protected val phpMethod
         val req = RpcRequest(phpRef.serviceId, methodSignature, args)
 
         // 2 分发请求, 获得异步响应
-        val i = IRpcRequestDispatcher.instance() // todo:必须先执行
         val resFuture = RpcInvocationHandler.invoke(req)
 
         // 1 异步结果
