@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.rpc.server.handler
 
 import io.netty.channel.ChannelHandlerContext
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkguard.MethodGuardInvoker
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
@@ -125,8 +126,8 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @param method
      * @return
      */
-    public override fun getCombineInovkeObject(method: Method): Any{
-        return ProviderLoader.get(method.getServiceClass().name)!!
+    public override fun getCombineInovkeObject(method: IMethodMeta): Any{
+        return ProviderLoader.get(method.clazzName)!!
     }
 
     /**
@@ -138,7 +139,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @param args 参数
      * @return
      */
-    public override fun invokeAfterGuard(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
+    public override fun invokeAfterGuard(method: IMethodMeta, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
         return trySupplierFuture {
             // 真正的调用方法
             try {

@@ -1,22 +1,15 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
-import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.IReferer
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
-import net.jkcode.jksoa.rpc.client.referer.Referer
-import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
 import net.jkcode.jksoa.rpc.registry.IRegistry
 import net.jkcode.jkutil.common.getOrPutOnce
-import net.jkcode.jkutil.common.resultFromFuture
-import net.jkcode.jkutil.fiber.AsyncCompletionStage
 import php.runtime.env.Environment
 import php.runtime.reflection.ClassEntity
 import java.lang.reflect.Method
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Future
 
 /**
  * 服务的php引用（代理）

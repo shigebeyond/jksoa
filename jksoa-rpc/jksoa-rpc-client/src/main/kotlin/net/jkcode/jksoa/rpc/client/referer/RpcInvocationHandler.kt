@@ -1,13 +1,12 @@
 package net.jkcode.jksoa.rpc.client.referer
 
-import co.paralleluniverse.fibers.Fiber
 import co.paralleluniverse.fibers.Suspendable
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.getMethodHandle
 import net.jkcode.jkutil.common.getSignature
 import net.jkcode.jkutil.interceptor.RequestInterceptorChain
 import net.jkcode.jkutil.ttl.SttlInterceptor
-import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jkguard.MethodGuardInvoker
 import net.jkcode.jksoa.common.*
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
@@ -116,8 +115,8 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
      * @param method
      * @return
      */
-    public override fun getCombineInovkeObject(method: Method): Any{
-        return Referer.getRefer(method.getServiceClass())
+    public override fun getCombineInovkeObject(method: IMethodMeta): Any{
+        return Referer.getRefer(method.clazzName)
     }
 
     /**
@@ -129,9 +128,9 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
      * @param args 参数
      * @return
      */
-    public override fun invokeAfterGuard(method: Method, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
+    public override fun invokeAfterGuard(method: IMethodMeta, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
         // 1 封装请求
-        val req = RpcRequest(method, args)
+        val req = RpcRequest(method.clazzName, method.methodSignature, args)
 
         // 2 分发请求, 获得异步响应
         return invoke(req)

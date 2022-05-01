@@ -146,7 +146,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
         }
 
         // 从异步结果获得返回值
-        return inv.method.resultFromFuture(resFuture)
+        return inv.method.getResultFromFuture(resFuture)
     }
 
     /**
@@ -198,7 +198,7 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
         val future = tx.end(txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING)
 
         // 从异步结果获得返回值
-        return inv.method.resultFromFuture(future)
+        return inv.method.getResultFromFuture(future)
     }
 }
 
