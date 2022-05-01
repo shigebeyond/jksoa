@@ -45,8 +45,12 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
 
     /**
      * 请求分发者
+     * 问题: RpcInvocationHandler 与 RcpRequestDispatcher 的循环依赖
+     *      RpcInvocationHandler -> RcpRequestDispatcher -> Tracer插件 -> RpcInvocationHandler
+     * 解决: RpcInvocationHandler 不能直接引用 RcpRequestDispatcher
      */
-    private val dispatcher: IRpcRequestDispatcher = IRpcRequestDispatcher.instance()
+    private val dispatcher: IRpcRequestDispatcher
+        get() = IRpcRequestDispatcher.instance()
 
     /**
      * <哈希码, 接口类>
