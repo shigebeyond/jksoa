@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.rpc.example
 
-import net.jkcode.jksoa.rpc.client.combiner.annotation.*
+import net.jkcode.jkguard.annotation.*
 import net.jkcode.jksoa.common.annotation.RemoteService
 import net.jkcode.jkguard.circuit.CircuitBreakType
 import java.io.Serializable
