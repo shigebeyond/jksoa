@@ -2,10 +2,10 @@
 namespace php\jksoa\rpc;
 
 /**
- * Class Referer
+ * Class JavaReferer
  * @packages php\jksoa\rpc
  */
-class Referer
+class JavaReferer
 {
     /**
      * constructor.

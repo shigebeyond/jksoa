@@ -10,7 +10,11 @@ import net.jkcode.jkutil.ttl.SttlInterceptor
 import net.jkcode.jkguard.MethodGuardInvoker
 import net.jkcode.jksoa.common.*
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
+import net.jkcode.jksoa.rpc.client.jphp.PhpMethodMeta
+import net.jkcode.jksoa.rpc.client.jphp.PhpRefererMethod
 import net.jkcode.jkutil.common.JkApp
+import php.runtime.Memory
+import php.runtime.env.Environment
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
@@ -69,7 +73,28 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
     }
 
     /**
+     * 守护方法调用 -- 入口
+     *
+     * @param method 方法
+     * @param obj 对象
+     * @param args0 参数
+     * @return 结果
+     */
+    @Suspendable
+    fun guardInvoke(method: PhpRefererMethod, proxy: Any, args0: Array<out Memory>, env: Environment): Memory{
+        // 1 转换实参
+        val args = method.convertArguments(args0, env)
+
+        // 2 发送rpc请求
+        val ret = guardInvoke(PhpMethodMeta(method, this), proxy, args)
+
+        // 3 转换返回值
+        return method.convertReturnValue(ret, env)
+    }
+
+    /**
      * 方法调用的代理实现
+     *   调用 guardInvoke()
      *
      * @param proxy 代理对象
      * @param method 方法
@@ -121,7 +146,8 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
 
     /**
      * 守护之后真正的调用
-     *    将方法调用转为发送rpc请求
+     *    实现：server端实现是调用原生方法, client端实现是发rpc请求
+     *    => 将方法调用转为发送rpc请求
      *
      * @param method 方法
      * @param obj 对象

@@ -1,5 +1,8 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
+import co.paralleluniverse.fibers.Suspendable
+import net.jkcode.jkguard.MethodMeta
+import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
 import php.runtime.Memory
 import php.runtime.annotation.Reflection
 import php.runtime.env.Environment
@@ -52,7 +55,11 @@ open class WrapPhpReferer(env: Environment, clazz: ClassEntity) : BaseObject(env
         return Memory.NULL
     }*/
 
-    //__call()实现二： 使用 JavaMethod 包装方法调用
+    /**
+     * __call()实现二： 使用 JavaMethod 包装方法调用
+     *    调用 guardInvoke()
+     */
+    @Suspendable
     @Reflection.Signature(value = [Reflection.Arg("name"), Reflection.Arg("arguments")])
     fun __call(env: Environment, vararg args: Memory): Memory {
         try {
@@ -65,7 +72,8 @@ open class WrapPhpReferer(env: Environment, clazz: ClassEntity) : BaseObject(env
             // 其他参数是方法参数
             val params = args[1].toValue(ArrayMemory::class.java).values() // 第二个是参数数组
             // 调用方法 PhpRefererMethod
-            return method.invoke(env, *params)
+            //return method.invoke(env, *params)
+            return RpcInvocationHandler.guardInvoke(method, this, params, env)
         } catch (e: Exception) {
             JavaReflection.exception(env, e)
         }

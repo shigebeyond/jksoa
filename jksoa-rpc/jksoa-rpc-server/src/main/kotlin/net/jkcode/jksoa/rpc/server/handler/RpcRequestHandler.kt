@@ -132,7 +132,8 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
 
     /**
      * 守护之后真正的调用
-     *    调用provider的service实例的方法
+     *    实现：server端实现是调用原生方法, client端实现是发rpc请求
+     *    => 调用provider的service实例的方法
      *
      * @param method 方法
      * @param obj 对象

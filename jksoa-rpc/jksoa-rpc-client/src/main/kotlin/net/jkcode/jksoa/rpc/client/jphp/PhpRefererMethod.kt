@@ -1,18 +1,16 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Boolean
+import co.paralleluniverse.fibers.Suspendable
+import net.jkcode.jkguard.Json2AnnotationHandler
 import net.jkcode.jkutil.common.getClassByName
 import net.jkcode.jksoa.common.RpcRequest
-import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
-import net.jkcode.jkutil.common.hasUpperCase
 import net.jkcode.jkutil.common.substringBetween
 import net.jkcode.jkutil.fiber.AsyncCompletionStage
 import php.runtime.Memory
 import php.runtime.env.Environment
 import php.runtime.ext.java.JavaObject
 import php.runtime.ext.java.JavaReflection
-import php.runtime.memory.ArrayMemory
 import php.runtime.memory.ObjectMemory
 import php.runtime.memory.support.MemoryUtils
 import php.runtime.reflection.MethodEntity
@@ -24,24 +22,61 @@ import java.util.concurrent.Future
  * 包装远程方法
  *   负责参数类型+返回值类型转换(参考 JavaObject 实现)
  */
-class PhpRefererMethod(protected val phpRef: PhpReferer, protected val phpMethod: MethodEntity) {
+class PhpRefererMethod(public val phpRef: PhpReferer, public val phpMethod: MethodEntity) {
 
     constructor(phpRef: PhpReferer, phpMethod: String): this(phpRef, phpRef.phpClass.findMethod(phpMethod))
 
-    protected lateinit var methodSignature: String // java远程方法
-    protected var paramTypes: Array<Class<*>> = emptyArray() // 参数类型
-    protected var converters: Array<MemoryUtils.Converter<*>> = emptyArray() // 参数转换器
-    protected var returnType: Class<*> = Void.TYPE // 返回值类型
-    protected var resultConverter: MemoryUtils.Converter<*>? = null // 返回值转换器
+    // ---- java 注解 ----
+    public val annotations:MutableMap<Class<*>, Any> = HashMap()
+
+    // ---- java 方法 ----
+    public lateinit var methodSignature: String // java远程方法
+    public var paramTypes: Array<Class<*>> = emptyArray() // 参数类型
+    public var converters: Array<MemoryUtils.Converter<*>> = emptyArray() // 参数转换器
+    public var returnType: Class<*> = Void.TYPE // 返回值类型
+    public var resultConverter: MemoryUtils.Converter<*>? = null // 返回值转换器
 
     init {
-        // 直接调用映射的php方法，结果即为java方法签名(带返回值类)
-        val parts = phpMethod.invokeStatic(phpRef.env).toString().split(' ', limit = 2)
+        /* 直接调用映射的php方法，结果即为注解+java方法签名(带返回值类)
+        function getUserByNameAsync($name){
+            return '@net.jkcode.jkguard.annotation.GroupCombine={"batchMethod":"\"listUsersByNameAsync\"","reqArgField":"\"name\"","respField":"\"\"","one2one":"true","flushQuota":"100","flushTimeoutMillis":"100"}
+                    java.util.concurrent.CompletableFuture getUserByNameAsync(java.lang.String)';
+        } */
+        val code = phpMethod.invokeStatic(phpRef.env).toString()
+        for(line in code.split("\n")) {
+            val line = line.trim()
+            if(line.startsWith('@')) // 以@开头是java注解
+                parseJavaAnnotation(line)
+            else // 否则是java方法定义
+                parseJavaMethod(line)
+        }
+    }
+
+    /**
+     * 解析java注解
+     * @param line java注解声明，组成:`注解类名:注解属性json`
+     *     如 @net.jkcode.jkguard.annotation.GroupCombine={"batchMethod":"\"listUsersByNameAsync\"","reqArgField":"\"name\"","respField":"\"\"","one2one":"true","flushQuota":"100","flushTimeoutMillis":"100"}
+     *             由2部分
+     */
+    protected fun parseJavaAnnotation(line: String) {
+        val (clazzName, json) = line.split(':', limit = 2)
+        val clazz = Class.forName(clazzName) // 注解类
+        val ann = Json2AnnotationHandler.json2Annotation(clazz, json) // json转注解实例
+        annotations[clazz] = ann
+    }
+
+    /**
+     * 解析java方法
+     * @param line java方法声明，组成:`返回值+方法名+参数类`
+     *      如 java.util.concurrent.CompletableFuture getUserByNameAsync(java.lang.String)
+     */
+    protected fun parseJavaMethod(line: String) {
+        val parts = line.split(' ', limit = 2)
         methodSignature = parts[1]
         // 解析参数类型+返回值类型 TODO: 未处理泛型
         // 获得参数片段：括号包住
         val paramString = methodSignature.substringBetween('(', ')')
-        if(paramString.isNotBlank()) {
+        if (paramString.isNotBlank()) {
             // 解析参数类型
             paramTypes = paramString.split(",\\s*").map {
                 val clazzName = it.trim()
@@ -51,22 +86,55 @@ class PhpRefererMethod(protected val phpRef: PhpReferer, protected val phpMethod
         }
         // 获得返回值类型：空格之前
         val returnString = parts[0].trim()
-        if(returnString.isNotBlank()){
+        if (returnString.isNotBlank()) {
             returnType = getClassByName(returnString)
             resultConverter = MemoryUtils.getConverter(returnType)
         }
     }
 
     /**
-     * 调用引用方法
+     * php调用实现
+     *    先转实参，再发rpc请求， 后转返回值
      * @param env
      * @param args 方法实参，不包含this或方法名， 因为不需要
      */
-    public operator fun invoke(env: Environment, vararg args: Memory): Memory {
+    @Suspendable
+    public fun phpInvoke(env: Environment, vararg args: Memory): Memory {
+        // 1 转换实参
+        val passed = convertArguments(args, env)
+
+        // 2 发送rpc请求
+        val ret = javaInvoke(env, passed)
+
+        // 3 转换返回值
+        return convertReturnValue(ret, env)
+    }
+
+    /**
+     * java的调用实现
+     *    将方法调用转为发送rpc请求
+     * @param env
+     * @param args 参数
+     * @return
+     */
+    @Suspendable
+    public fun javaInvoke(env: Environment, args: Array<Any?>): Any? {
+        // 1 封装请求
+        val req = RpcRequest(phpRef.serviceId, methodSignature, args)
+
+        // 2 分发请求, 获得异步响应
+        val resFuture = RpcInvocationHandler.invoke(req)
+        return getResultFromFuture(resFuture)
+    }
+
+    /**
+     * 转换实参
+     */
+    public fun convertArguments(args: Array<out Memory>, env: Environment): Array<Any?> {
         val len = args.size
         if (len < paramTypes.size || len > paramTypes.size)
             JavaReflection.exception(env, IllegalArgumentException("Invalid argument count"))
-        // 转换实参
+        // 转换参数
         val passed = arrayOfNulls<Any>(len)
         var i = 0
         for (converter in converters) {
@@ -82,41 +150,35 @@ class PhpRefererMethod(protected val phpRef: PhpReferer, protected val phpMethod
             }
             i++
         }
-        try {
-            // rpc调用并转换返回值
-            val result: Any = doInvoke(passed) ?: return Memory.NULL
-            if (resultConverter != null)
-                return MemoryUtils.valueOf(result)
+        return passed
+    }
 
-            return when(returnType){
-                Void.TYPE -> Memory.NULL
-                CompletableFuture::class.java -> ObjectMemory(WrapCompletableFuture(env, result as CompletableFuture<*>))
-                else -> ObjectMemory(JavaObject.of(env, result))
-            }
-        } catch (e: IllegalAccessException) {
-            JavaReflection.exception(env, e)
-        } catch (e: InvocationTargetException) {
-            JavaReflection.exception(env, e.targetException)
+    /**
+     * 转换返回值
+     */
+    public fun convertReturnValue(result: Any?, env: Environment): Memory {
+        if(result == null)
+            return Memory.NULL
+
+        if (resultConverter != null)
+            return MemoryUtils.valueOf(result)
+
+        return when (returnType) {
+            Void.TYPE -> Memory.NULL
+            CompletableFuture::class.java -> ObjectMemory(WrapCompletableFuture(env, result as CompletableFuture<*>))
+            else -> ObjectMemory(JavaObject.of(env, result))
         }
         return Memory.NULL
     }
 
     /**
-     * 守护之后真正的调用
-     *    将方法调用转为发送rpc请求
+     * 从CompletableFuture获得方法结果值
      *
-     * @param method 方法
-     * @param obj 对象
-     * @param args 参数
+     * @param resFuture
      * @return
      */
-    public fun doInvoke(args: Array<Any?>): Any? {
-        // 1 封装请求
-        val req = RpcRequest(phpRef.serviceId, methodSignature, args)
-
-        // 2 分发请求, 获得异步响应
-        val resFuture = RpcInvocationHandler.invoke(req)
-
+    @Suspendable
+    fun getResultFromFuture(resFuture: CompletableFuture<*>): Any?{
         // 1 异步结果
         //if (Future::class.java.isAssignableFrom(method.returnType))
         if(returnType == Future::class.java
