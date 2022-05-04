@@ -3,6 +3,7 @@ package net.jkcode.jksoa.rpc.client.jphp
 import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jkguard.IMethodGuardInvoker
 import net.jkcode.jkguard.IMethodMeta
+import net.jkcode.jphp.ext.annotations
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -12,7 +13,7 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2022-4-27 7:25 PM
  */
-class PhpMethodMeta(
+class PhpRefererMethodMeta(
         protected val method: PhpRefererMethod, // php方法
         public override val handler: IMethodGuardInvoker // 带守护的方法调用者
 ): IMethodMeta {
@@ -30,13 +31,14 @@ class PhpMethodMeta(
         get() = method.phpMethod.name
 
     /**
-     * 方法签名
+     * 方法签名(rpc用到)
      */
     override val methodSignature: String
         get() = method.methodSignature
 
     /**
      * 方法参数类型
+     *    会在 degradeHandler/groupCombiner/keyCombiner 用来检查方法的参数与返回值类型
      */
     override val parameterTypes: Array<Class<*>>
         get() = method.paramTypes
@@ -48,12 +50,19 @@ class PhpMethodMeta(
         get() = method.returnType
 
     /**
+     * 是否纯php实现
+     *    用来决定是否在 degradeHandler/groupCombiner/keyCombiner 用来检查方法的参数与返回值类型
+     */
+    override val isPurePhp: Boolean
+        get() = false
+
+    /**
      * 获得方法注解
      * @param annotationClass 注解类
      * @return
      */
     override fun <A : Annotation> getAnnotation(annotationClass: Class<A>): A? {
-        return method.annotations[annotationClass] as A?
+        return method.phpMethod.annotations[annotationClass] as A?
     }
 
     /**
@@ -84,6 +93,6 @@ class PhpMethodMeta(
      */
     override fun getBrotherMethod(name: String): IMethodMeta{
         val brotherMethod = method.phpRef.getRefererMethod(name)
-        return PhpMethodMeta(brotherMethod, handler)
+        return PhpRefererMethodMeta(brotherMethod, handler)
     }
 }

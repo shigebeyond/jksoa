@@ -1,12 +1,13 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
 import co.paralleluniverse.fibers.Suspendable
-import net.jkcode.jkguard.Json2AnnotationHandler
+import net.jkcode.jkguard.Map2AnnotationHandler
 import net.jkcode.jkutil.common.getClassByName
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
 import net.jkcode.jkutil.common.substringBetween
 import net.jkcode.jkutil.fiber.AsyncCompletionStage
+import net.jkcode.jphp.ext.PhpMethod
 import php.runtime.Memory
 import php.runtime.env.Environment
 import php.runtime.ext.java.JavaObject
@@ -14,20 +15,17 @@ import php.runtime.ext.java.JavaReflection
 import php.runtime.memory.ObjectMemory
 import php.runtime.memory.support.MemoryUtils
 import php.runtime.reflection.MethodEntity
-import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
 /**
  * 包装远程方法
  *   负责参数类型+返回值类型转换(参考 JavaObject 实现)
+ *   被 PhpReferer 缓存+引用
  */
 class PhpRefererMethod(public val phpRef: PhpReferer, public val phpMethod: MethodEntity) {
 
-    constructor(phpRef: PhpReferer, phpMethod: String): this(phpRef, phpRef.phpClass.findMethod(phpMethod))
-
-    // ---- java 注解 ----
-    public val annotations:MutableMap<Class<*>, Any> = HashMap()
+    constructor(phpRef: PhpReferer, phpMethod: String): this(phpRef, phpRef.phpClass.findMethod(phpMethod.toLowerCase()))
 
     // ---- java 方法 ----
     public lateinit var methodSignature: String // java远程方法
@@ -39,30 +37,10 @@ class PhpRefererMethod(public val phpRef: PhpReferer, public val phpMethod: Meth
     init {
         /* 直接调用映射的php方法，结果即为注解+java方法签名(带返回值类)
         function getUserByNameAsync($name){
-            return '@net.jkcode.jkguard.annotation.GroupCombine={"batchMethod":"\"listUsersByNameAsync\"","reqArgField":"\"name\"","respField":"\"\"","one2one":"true","flushQuota":"100","flushTimeoutMillis":"100"}
-                    java.util.concurrent.CompletableFuture getUserByNameAsync(java.lang.String)';
+            return 'java.util.concurrent.CompletableFuture getUserByNameAsync(java.lang.String)';
         } */
         val code = phpMethod.invokeStatic(phpRef.env).toString()
-        for(line in code.split("\n")) {
-            val line = line.trim()
-            if(line.startsWith('@')) // 以@开头是java注解
-                parseJavaAnnotation(line)
-            else // 否则是java方法定义
-                parseJavaMethod(line)
-        }
-    }
-
-    /**
-     * 解析java注解
-     * @param line java注解声明，组成:`注解类名:注解属性json`
-     *     如 @net.jkcode.jkguard.annotation.GroupCombine={"batchMethod":"\"listUsersByNameAsync\"","reqArgField":"\"name\"","respField":"\"\"","one2one":"true","flushQuota":"100","flushTimeoutMillis":"100"}
-     *             由2部分
-     */
-    protected fun parseJavaAnnotation(line: String) {
-        val (clazzName, json) = line.split(':', limit = 2)
-        val clazz = Class.forName(clazzName) // 注解类
-        val ann = Json2AnnotationHandler.json2Annotation(clazz, json) // json转注解实例
-        annotations[clazz] = ann
+        parseJavaMethod(code)
     }
 
     /**

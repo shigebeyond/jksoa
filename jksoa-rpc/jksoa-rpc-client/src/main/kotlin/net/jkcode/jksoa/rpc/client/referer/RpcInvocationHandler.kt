@@ -10,7 +10,7 @@ import net.jkcode.jkutil.ttl.SttlInterceptor
 import net.jkcode.jkguard.MethodGuardInvoker
 import net.jkcode.jksoa.common.*
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
-import net.jkcode.jksoa.rpc.client.jphp.PhpMethodMeta
+import net.jkcode.jksoa.rpc.client.jphp.PhpRefererMethodMeta
 import net.jkcode.jksoa.rpc.client.jphp.PhpRefererMethod
 import net.jkcode.jkutil.common.JkApp
 import php.runtime.Memory
@@ -86,7 +86,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
         val args = method.convertArguments(args0, env)
 
         // 2 发送rpc请求
-        val ret = guardInvoke(PhpMethodMeta(method, this), proxy, args)
+        val ret = guardInvoke(PhpRefererMethodMeta(method, this), proxy, args)
 
         // 3 转换返回值
         return method.convertReturnValue(ret, env)

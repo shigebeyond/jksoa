@@ -5,6 +5,7 @@ import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.IReferer
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.registry.IRegistry
+import net.jkcode.jkutil.common.associate
 import net.jkcode.jkutil.common.getOrPutOnce
 import php.runtime.env.Environment
 import php.runtime.reflection.ClassEntity
@@ -19,12 +20,13 @@ import java.util.concurrent.ConcurrentHashMap
  *   注意：
  *   1. 因为没有java接口类，因此不支持 service/getMethod()
  *   2. 也不能使用 RefererLoader 来加载与获得服务引用
+ *   3. 私有构造函数, 只能通过 PhpReferer.getOrPutRefer(phpClazzName, env) 来获得实例
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2022-2-14 9:52 AM
  */
-class PhpReferer(internal val env: Environment, internal val phpClass: ClassEntity /* 接口类 */) : IReferer {
+class PhpReferer protected constructor(public val env: Environment, public val phpClass: ClassEntity /* 接口类 */) : IReferer {
 
     /**
      * 服务标识
@@ -51,15 +53,19 @@ class PhpReferer(internal val env: Environment, internal val phpClass: ClassEnti
      * 引用的方法
      *    key是方法名，value是方法
      */
-    protected val refererMethods:ConcurrentHashMap<String, PhpRefererMethod> = ConcurrentHashMap()
+    protected lateinit var refererMethods: Map<String, PhpRefererMethod>
+
+    init {
+        refererMethods = phpClass.methods.associate { methodName, method ->
+            methodName to PhpRefererMethod(this, method)
+        }
+    }
 
     /**
      * 获得引用的方法
      */
     public fun getRefererMethod(methodName: String): PhpRefererMethod {
-        return refererMethods.getOrPutOnce(methodName){
-            PhpRefererMethod(this, methodName)
-        }
+        return refererMethods[methodName.toLowerCase()] ?: throw UnsupportedOperationException("服务[$serviceId]无方法[${methodName}]")
     }
 
     companion object {
