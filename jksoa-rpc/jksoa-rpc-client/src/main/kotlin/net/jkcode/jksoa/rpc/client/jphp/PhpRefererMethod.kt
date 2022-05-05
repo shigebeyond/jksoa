@@ -1,13 +1,13 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
 import co.paralleluniverse.fibers.Suspendable
-import net.jkcode.jkguard.Map2AnnotationHandler
 import net.jkcode.jkutil.common.getClassByName
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
 import net.jkcode.jkutil.common.substringBetween
 import net.jkcode.jkutil.fiber.AsyncCompletionStage
 import net.jkcode.jphp.ext.PhpMethod
+import net.jkcode.jphp.ext.WrapCompletableFuture
 import php.runtime.Memory
 import php.runtime.env.Environment
 import php.runtime.ext.java.JavaObject
