@@ -1,12 +1,11 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
 import co.paralleluniverse.fibers.Suspendable
-import net.jkcode.jkutil.common.getClassByName
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
+import net.jkcode.jkutil.common.getClassByName
 import net.jkcode.jkutil.common.substringBetween
 import net.jkcode.jkutil.fiber.AsyncCompletionStage
-import net.jkcode.jphp.ext.PhpMethod
 import net.jkcode.jphp.ext.WrapCompletableFuture
 import php.runtime.Memory
 import php.runtime.env.Environment
@@ -20,8 +19,10 @@ import java.util.concurrent.Future
 
 /**
  * 包装远程方法
- *   负责参数类型+返回值类型转换(参考 JavaObject 实现)
- *   被 PhpReferer 缓存+引用
+ *   1. 负责将 PhpReferer 的php方法调用转为发java rpc请求
+ *   2. php方法实现直接返回java方法签名，用作php与java之间的调用映射
+ *   2. 调用时参数/返回值类型转换：负责根据java方法签名， 来转换参数/返回值类型(参考 JavaObject 实现)
+ *   3. 被 PhpReferer 缓存+引用
  */
 class PhpRefererMethod(public val phpRef: PhpReferer, public val phpMethod: MethodEntity) {
 
@@ -35,34 +36,34 @@ class PhpRefererMethod(public val phpRef: PhpReferer, public val phpMethod: Meth
     public var resultConverter: MemoryUtils.Converter<*>? = null // 返回值转换器
 
     init {
-        /* 直接调用映射的php方法，结果即为注解+java方法签名(带返回值类)
+        /* 直接调用映射的php方法，结果即为java方法签名(带返回值类)
         function getUserByNameAsync($name){
             return 'java.util.concurrent.CompletableFuture getUserByNameAsync(java.lang.String)';
         } */
-        val code = phpMethod.invokeStatic(phpRef.env).toString()
-        parseJavaMethod(code)
+        val methodSign = phpMethod.invokeStatic(phpRef.env).toString()
+        parseJavaMethod(methodSign)
     }
 
     /**
      * 解析java方法
-     * @param line java方法声明，组成:`返回值+方法名+参数类`
+     * @param methodSign java方法声明，组成:`返回值+方法名+参数类`
      *      如 java.util.concurrent.CompletableFuture getUserByNameAsync(java.lang.String)
      */
-    protected fun parseJavaMethod(line: String) {
-        val parts = line.split(' ', limit = 2)
+    protected fun parseJavaMethod(methodSign: String) {
+        val parts = methodSign.split(' ', limit = 2)
         methodSignature = parts[1]
-        // 解析参数类型+返回值类型 TODO: 未处理泛型
-        // 获得参数片段：括号包住
+        // 解析参数类型+返回值类型
+        // 1 获得参数片段：括号包住
         val paramString = methodSignature.substringBetween('(', ')')
         if (paramString.isNotBlank()) {
             // 解析参数类型
             paramTypes = paramString.split(",\\s*").map {
                 val clazzName = it.trim()
-                getClassByName(clazzName)
+                getClassByName(clazzName) // 去掉泛型了
             }.toTypedArray()
             converters = MemoryUtils.getConverters(paramTypes)
         }
-        // 获得返回值类型：空格之前
+        // 2 获得返回值类型：空格之前
         val returnString = parts[0].trim()
         if (returnString.isNotBlank()) {
             returnType = getClassByName(returnString)
@@ -143,7 +144,7 @@ class PhpRefererMethod(public val phpRef: PhpReferer, public val phpMethod: Meth
 
         return when (returnType) {
             Void.TYPE -> Memory.NULL
-            CompletableFuture::class.java -> ObjectMemory(WrapCompletableFuture(env, result as CompletableFuture<*>))
+            CompletableFuture::class.java -> ObjectMemory(WrapCompletableFuture(env, result as CompletableFuture<Memory>))
             else -> ObjectMemory(JavaObject.of(env, result))
         }
         return Memory.NULL

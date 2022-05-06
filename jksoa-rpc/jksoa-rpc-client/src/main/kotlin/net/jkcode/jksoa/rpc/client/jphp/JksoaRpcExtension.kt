@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
-import net.jkcode.jphp.ext.WrapCompletableFuture
 import php.runtime.env.CompileScope
 import php.runtime.ext.support.Extension
 import org.develnext.jphp.zend.ext.ZendExtension
@@ -28,7 +27,6 @@ class JksoaRpcExtension : Extension() {
     override fun onRegister(scope: CompileScope) {
         registerClass(scope, WrapJavaReferer::class.java)
         registerClass(scope, WrapPhpReferer::class.java)
-        registerClass(scope, WrapCompletableFuture::class.java)
     }
 
 }

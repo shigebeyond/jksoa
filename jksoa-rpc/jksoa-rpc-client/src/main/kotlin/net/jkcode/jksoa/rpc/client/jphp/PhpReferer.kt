@@ -53,13 +53,9 @@ class PhpReferer protected constructor(public val env: Environment, public val p
      * 引用的方法
      *    key是方法名，value是方法
      */
-    protected lateinit var refererMethods: Map<String, PhpRefererMethod>
-
-    init {
-        refererMethods = phpClass.methods.associate { methodName, method ->
+    protected val refererMethods: Map<String, PhpRefererMethod> = phpClass.methods.associate { methodName, method ->
             methodName to PhpRefererMethod(this, method)
         }
-    }
 
     /**
      * 获得引用的方法
