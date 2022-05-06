@@ -7,7 +7,9 @@ use php\jksoa\rpc\PhpReferer;
 // php引用对象
 include 'src/test/resources/ISimpleService.php';
 $ref = new PhpReferer('net\jkcode\jksoa\rpc\example\ISimpleService');
-
 // rpc
-$ret = $ref->ping();
-echo "----------- php rpc call [ISimpleService.ping()], result: $ret\n";
+// $ret = $ref->ping();
+// echo "----------- php rpc call [ISimpleService.ping()], result: $ret\n";
+$ret = $ref->echo('hello');
+echo "----------- php rpc call [ISimpleService.echo()], result: $ret\n";
+
