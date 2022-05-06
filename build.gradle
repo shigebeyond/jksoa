@@ -1,7 +1,7 @@
 //gradle脚本自身需要使用的资源
 buildscript {
     repositories {
-        //mavenLocal()
+        mavenLocal()
         maven {
             url 'http://maven.aliyun.com/nexus/content/repositories/snapshots'
         }

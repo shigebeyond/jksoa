@@ -3,7 +3,10 @@ package net.jkcode.jksoa.rpc.client.jphp
 import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jkguard.IMethodGuardInvoker
 import net.jkcode.jkguard.IMethodMeta
+import net.jkcode.jphp.ext.PhpMethodMeta
 import net.jkcode.jphp.ext.annotations
+import net.jkcode.jphp.ext.isDegradeFallbackMethod
+import php.runtime.reflection.ClassEntity
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -67,12 +70,13 @@ class PhpRefererMethodMeta(
 
     /**
      * 方法处理
-     *   在IMethodGuardInvoker#invokeAfterGuard()中调用
-     *   实现：server端实现是调用包装的原生方法, client端实现是发rpc请求
+     *   在server端的IMethodGuardInvoker#invokeAfterGuard()/两端的降级处理中调用
+     *   实现：server端实现是调用包装的本地方法, client端实现是发rpc请求
+     *   这里是不会被调用的
      */
     @Suspendable
     override fun invoke(obj: Any, vararg args: Any?): Any? {
-        return method.javaInvoke(method.phpRef.env, args as Array<Any?>)
+        throw UnsupportedOperationException("php引用方法不支持直接调用")
     }
 
     /**
@@ -87,11 +91,18 @@ class PhpRefererMethodMeta(
     }
 
     /**
-     * 获得兄弟方法
+     * 获得兄弟方法, 用在获得降级或合并的兄弟方法
+     *   1 降级是本地方法, 调用是本地调用
+     *   2 其他是rpc方法, 调用是发rpc请求
      * @param name 兄弟方法名
      * @return
      */
     override fun getBrotherMethod(name: String): IMethodMeta {
+        // 降级的本地方法
+        if(method.clazz.isDegradeFallbackMethod(name))
+            return PhpMethodMeta(method.clazz.findMethod(name), handler)
+
+        // 其他的rpc方法
         val brotherMethod = method.phpRef.getRefererMethod(name)
         return PhpRefererMethodMeta(brotherMethod, handler)
     }

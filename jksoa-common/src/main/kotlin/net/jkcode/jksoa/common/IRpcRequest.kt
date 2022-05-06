@@ -12,7 +12,7 @@ import java.io.Serializable
  * @author shijianhang<772910474@qq.com>
  * @date 2017-09-08 2:05 PM
  */
-interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
+interface IRpcRequest: Serializable, IInvocation {
 
     /**
      * 请求标识，全局唯一
@@ -30,6 +30,11 @@ interface IRpcRequest: Serializable, IInvocation, IRpcRequestMeta {
      * 附加数据
      */
     val attachments: Map<String, Any?>?
+
+    /**
+     * 版本
+     */
+    val version: Int
 
     /**
      * 获得附加参数

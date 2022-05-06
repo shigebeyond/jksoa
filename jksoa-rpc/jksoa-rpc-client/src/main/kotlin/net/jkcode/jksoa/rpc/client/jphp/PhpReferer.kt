@@ -7,6 +7,7 @@ import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.registry.IRegistry
 import net.jkcode.jkutil.common.associate
 import net.jkcode.jkutil.common.getOrPutOnce
+import net.jkcode.jphp.ext.isDegradeFallbackMethod
 import php.runtime.env.Environment
 import php.runtime.reflection.ClassEntity
 import java.lang.reflect.Method
@@ -53,9 +54,17 @@ class PhpReferer protected constructor(public val env: Environment, public val p
      * 引用的方法
      *    key是方法名，value是方法
      */
-    protected val refererMethods: Map<String, PhpRefererMethod> = phpClass.methods.associate { methodName, method ->
-            methodName to PhpRefererMethod(this, method)
+    protected val refererMethods: Map<String, PhpRefererMethod>
+
+    init {
+        // 引用远程方法: 不包含的降级的本地方法
+        val methods = phpClass.methods.values.filter { method ->
+            phpClass.isDegradeFallbackMethod(method.name)
         }
+        refererMethods = methods.associate { method ->
+            method.name to PhpRefererMethod(this, method)
+        }
+    }
 
     /**
      * 获得引用的方法

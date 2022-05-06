@@ -60,6 +60,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
      */
     private val hash2Class = ConcurrentHashMap<Int, Class<*>>()
 
+    /***************** InvocationHandler 实现 *****************/
     /**
      * 创建服务代理
      *
@@ -70,26 +71,6 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
         val proxy =  Proxy.newProxyInstance(this.javaClass.classLoader, arrayOf(intf), RpcInvocationHandler)
         hash2Class[System.identityHashCode(proxy)] = intf
         return proxy
-    }
-
-    /**
-     * 守护方法调用 -- 入口
-     *
-     * @param method 方法
-     * @param obj 对象
-     * @param args0 参数
-     * @return 结果
-     */
-    @Suspendable
-    fun guardInvoke(method: PhpRefererMethod, proxy: Any, args0: Array<out Memory>, env: Environment): Memory{
-        // 1 转换实参
-        val args = method.convertArguments(args0, env)
-
-        // 2 发送rpc请求
-        val ret = guardInvoke(PhpRefererMethodMeta(method, this), proxy, args)
-
-        // 3 转换返回值
-        return method.convertReturnValue(ret, env)
     }
 
     /**
@@ -136,6 +117,21 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
 
     /***************** MethodGuardInvoker 实现 *****************/
     /**
+     * 守护方法调用 -- 入口
+     *
+     * @param method 方法
+     * @param obj 对象
+     * @param args0 参数
+     * @return 结果
+     */
+    @Suspendable
+    fun guardInvoke(method: PhpRefererMethod, proxy: Any, args0: Array<out Memory>, env: Environment): Memory{
+        return method.wrapInvoke(env, args0){ args ->
+            guardInvoke(PhpRefererMethodMeta(method, this), proxy, args)
+        }
+    }
+
+    /**
      * 获得调用的对象
      * @param method
      * @return
@@ -159,16 +155,18 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
         val req = RpcRequest(method.clazzName, method.methodSignature, args)
 
         // 2 分发请求, 获得异步响应
-        return invoke(req)
+        return invoke(req, RequestTimeout.getTimeout(method))
     }
 
+    /***************** IRpcRequestInvoker 实现 *****************/
     /**
      * 分发请求, 获得异步响应
      *    调用拦截器链表
      * @param req
+     * @param requestTimeoutMillis 请求超时
      * @return
      */
-    public override fun invoke(req: IRpcRequest): CompletableFuture<Any?> {
+    public override fun invoke(req: IRpcRequest, requestTimeoutMillis: Long): CompletableFuture<Any?> {
         return interceptorChain.intercept(req){
             // RpcInvocationHandler 继承 MethodGuardInvoker, 在做合并请求/缓存等方法守护的处理时, 会切换线程, 从而导致 Threadlocal 丢失
             // 但是合并请求是多个请求, 肯定多线程, 也无法确定使用哪个 Threadlocal, 因此不予处理

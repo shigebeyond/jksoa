@@ -15,7 +15,8 @@ interface IRpcRequestInvoker {
     /**
      * 调用
      * @param req
+     * @param requestTimeoutMillis 请求超时
      * @return
      */
-    fun invoke(req: IRpcRequest): CompletableFuture<Any?>
+    fun invoke(req: IRpcRequest, requestTimeoutMillis: Long = 0): CompletableFuture<Any?>
 }

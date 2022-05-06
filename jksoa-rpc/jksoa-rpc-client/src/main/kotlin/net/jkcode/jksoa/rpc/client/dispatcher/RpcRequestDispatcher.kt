@@ -7,6 +7,7 @@ import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.client.referer.RefererLoader
+import net.jkcode.jksoa.rpc.client.referer.RequestTimeout
 import net.jkcode.jksoa.rpc.sharding.IShardingStrategy
 import java.util.concurrent.CompletableFuture
 
@@ -68,13 +69,17 @@ class RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
      * @return 异步结果
      */
     public override fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long, connSelector: (tryCount: Int) -> IConnection): CompletableFuture<Any?> {
+        var timeout = requestTimeoutMillis
+        if(timeout <= 0)
+            timeout = RequestTimeout.defaultTimeout // 默认超时
+
         return FailoverRpcResponseFuture(config["maxTryCount"]!!) { tryCount: Int ->
             clientLogger.debug(" ------ dispatch request ------ ")
             // 1 选择连接
             val conn = connSelector.invoke(tryCount)
 
             // 2 发送请求，并获得异步响应
-            conn.send(req, requestTimeoutMillis)
+            conn.send(req, timeout)
         }.thenApply(IRpcResponse::getOrThrow)
     }
 

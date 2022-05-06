@@ -30,7 +30,7 @@ interface IRpcRequestDispatcher {
      * @param connSelector 连接选择器, 参数是 tryCount, 据此来明确失败重试时的连接选择策略
      * @return 异步结果
      */
-    fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis, connSelector: (tryCount: Int) -> IConnection): CompletableFuture<Any?>
+    fun sendFailover(req: IRpcRequest, requestTimeoutMillis: Long, connSelector: (tryCount: Int) -> IConnection): CompletableFuture<Any?>
 
     /**
      * 分发一个请求到任一节点
@@ -40,7 +40,7 @@ interface IRpcRequestDispatcher {
      * @param requestTimeoutMillis 请求超时
      * @return 异步结果
      */
-    fun dispatch(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): CompletableFuture<Any?>
+    fun dispatch(req: IRpcRequest, requestTimeoutMillis: Long = 0): CompletableFuture<Any?>
 
     /**
      * 分发一个请求到所有节点
@@ -50,7 +50,7 @@ interface IRpcRequestDispatcher {
      * @param requestTimeoutMillis 请求超时
      * @return 异步结果
      */
-    fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): CompletableFuture<Array<Any?>>
+    fun dispatchAll(req: IRpcRequest, requestTimeoutMillis: Long = 0): CompletableFuture<Array<Any?>>
 
     /**
      * 分发一个分片的请求(仅在job调度中使用)
@@ -61,5 +61,5 @@ interface IRpcRequestDispatcher {
      * @param requestTimeoutMillis 请求超时
      * @return 多个异步结果
      */
-    fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long = shdReq.requestTimeoutMillis): CompletableFuture<Array<Any?>>
+    fun dispatchSharding(shdReq: IShardingRpcRequest, requestTimeoutMillis: Long = 0): CompletableFuture<Array<Any?>>
 }

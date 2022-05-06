@@ -13,6 +13,7 @@ import php.runtime.ext.java.JavaObject
 import php.runtime.ext.java.JavaReflection
 import php.runtime.memory.ObjectMemory
 import php.runtime.memory.support.MemoryUtils
+import php.runtime.reflection.ClassEntity
 import php.runtime.reflection.MethodEntity
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
@@ -21,12 +22,16 @@ import java.util.concurrent.Future
  * 包装远程方法
  *   1. 负责将 PhpReferer 的php方法调用转为发java rpc请求
  *   2. php方法实现直接返回java方法签名，用作php与java之间的调用映射
- *   2. 调用时参数/返回值类型转换：负责根据java方法签名， 来转换参数/返回值类型(参考 JavaObject 实现)
- *   3. 被 PhpReferer 缓存+引用
+ *   3. 调用时参数/返回值类型转换：负责根据java方法签名， 来转换参数/返回值类型(参考 JavaObject 实现)
+ *   4. 不包含的降级的本地方法
+ *   5. 被 PhpReferer 缓存+引用
  */
 class PhpRefererMethod(public val phpRef: PhpReferer, public val phpMethod: MethodEntity) {
 
     constructor(phpRef: PhpReferer, phpMethod: String): this(phpRef, phpRef.phpClass.findMethod(phpMethod.toLowerCase()))
+
+    public val clazz: ClassEntity
+        get() = phpMethod.clazz
 
     // ---- java 方法 ----
     public lateinit var methodSignature: String // java远程方法
@@ -72,38 +77,24 @@ class PhpRefererMethod(public val phpRef: PhpReferer, public val phpMethod: Meth
     }
 
     /**
-     * php调用实现
-     *    先转实参，再发rpc请求， 后转返回值
+     * 包含rpc调用
+     *    先转实参，再发rpc调用，后转返回值
+     *    由于无需调用invoke(), 因此不实现invoke(), 只实现wrapInvoke(), 防止写多了难理解
      * @param env
-     * @param args 方法实参，不包含this或方法名， 因为不需要
+     * @param args 方法实参，不包含this或方法名
+     * @param rpcInvoker rpc调用, 一般是 MethodGuardInvoker.guardInvoke
+     * @return
      */
     @Suspendable
-    public fun phpInvoke(env: Environment, vararg args: Memory): Memory {
+    public fun wrapInvoke(env: Environment, args: Array<out Memory>, rpcInvoker: (Array<Any?>)->Any?): Memory {
         // 1 转换实参
         val passed = convertArguments(args, env)
 
         // 2 发送rpc请求
-        val ret = javaInvoke(env, passed)
+        val ret = rpcInvoker(passed)
 
         // 3 转换返回值
         return convertReturnValue(ret, env)
-    }
-
-    /**
-     * java的调用实现
-     *    将方法调用转为发送rpc请求
-     * @param env
-     * @param args 参数
-     * @return
-     */
-    @Suspendable
-    public fun javaInvoke(env: Environment, args: Array<Any?>): Any? {
-        // 1 封装请求
-        val req = RpcRequest(phpRef.serviceId, methodSignature, args)
-
-        // 2 分发请求, 获得异步响应
-        val resFuture = RpcInvocationHandler.invoke(req)
-        return getResultFromFuture(resFuture)
     }
 
     /**
