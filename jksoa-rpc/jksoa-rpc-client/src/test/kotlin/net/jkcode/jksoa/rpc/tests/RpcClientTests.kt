@@ -64,7 +64,18 @@ class RpcClientTests {
     }
 
     @Test
-    fun testResponse(){
+    fun testRequestSerialize(){
+        val o = RpcRequest(ISimpleService::echo, arrayOf<Any?>("shi"))
+        val fstSerializer = FstSerializer()
+        val bs = fstSerializer.serialize(o)
+        println(bs?.size)
+
+        val o2 = fstSerializer.unserialize(bs!!)
+        println(o2)
+    }
+
+    @Test
+    fun testResponseSerialize(){
         val res = RpcResponse(79228843763695616L, 251)
         val bs = FstSerializer().serialize(res)
         println(bs?.size)

@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.dtx.tcc
 
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
@@ -21,9 +22,17 @@ annotation class TccMethod(
 }
 
 /**
- * 服务方法的元数据
+ * 获得tcc方法的注解
  */
 public val Method.tccMethod: TccMethod?
     get(){
         return getCachedAnnotation()
+    }
+
+/**
+ * 获得tcc方法的注解
+ */
+public val IMethodMeta.tccMethod: TccMethod?
+    get(){
+        return getAnnotation()
     }

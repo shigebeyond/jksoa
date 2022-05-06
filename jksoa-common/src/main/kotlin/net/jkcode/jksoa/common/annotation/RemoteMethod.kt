@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.common.annotation
 
+import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jkutil.common.getCachedAnnotation
 import java.lang.reflect.Method
 
@@ -17,9 +18,17 @@ annotation class RemoteMethod(
 }
 
 /**
- * 服务方法的元数据
+ * 获得服务方法的注解
  */
 public val Method.remoteMethod: RemoteMethod?
     get(){
         return getCachedAnnotation()
+    }
+
+/**
+ * 获得服务方法的注解
+ */
+public val IMethodMeta.remoteMethod: RemoteMethod?
+    get(){
+        return getAnnotation()
     }

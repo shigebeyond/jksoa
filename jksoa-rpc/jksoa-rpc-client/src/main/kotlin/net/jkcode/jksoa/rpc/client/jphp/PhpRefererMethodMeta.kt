@@ -15,8 +15,8 @@ import java.util.concurrent.CompletableFuture
  */
 class PhpRefererMethodMeta(
         protected val method: PhpRefererMethod, // php方法
-        public override val handler: IMethodGuardInvoker // 带守护的方法调用者
-): IMethodMeta {
+        handler: IMethodGuardInvoker // 带守护的方法调用者
+): IMethodMeta(handler) {
 
     /**
      * 类名
@@ -91,7 +91,7 @@ class PhpRefererMethodMeta(
      * @param name 兄弟方法名
      * @return
      */
-    override fun getBrotherMethod(name: String): IMethodMeta{
+    override fun getBrotherMethod(name: String): IMethodMeta {
         val brotherMethod = method.phpRef.getRefererMethod(name)
         return PhpRefererMethodMeta(brotherMethod, handler)
     }
