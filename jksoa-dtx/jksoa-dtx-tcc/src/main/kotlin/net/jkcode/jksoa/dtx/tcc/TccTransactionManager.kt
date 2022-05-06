@@ -191,7 +191,8 @@ class TccTransactionManager private constructor() : ITccTransactionManager {
         if (tx == null) {
             dtxTccLogger.error("分支事务[{}]{}失败: 事务不存在", txCtx, if (txCtx!!.status == TccTransactionModel.STATUS_CONFIRMING) "提交" else "回滚")
             // 返回默认的结果值, 其实返回啥都无所谓, 反正调用方不用结果值
-            return inv.method.defaultResult
+            //return inv.method.defaultResult
+            return null
         }
 
         // 2 结束事务: 提交/回滚

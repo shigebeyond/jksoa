@@ -30,7 +30,7 @@ interface IConnection: Closeable {
      * @param requestTimeoutMillis 请求超时
      * @return
      */
-    fun send(req: IRpcRequest, requestTimeoutMillis: Long = req.requestTimeoutMillis): IRpcResponseFuture
+    fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture
 
     /**
      * 是否有效连接
