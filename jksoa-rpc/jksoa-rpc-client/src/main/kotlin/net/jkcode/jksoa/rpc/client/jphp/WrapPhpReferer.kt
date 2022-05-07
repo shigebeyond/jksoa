@@ -65,6 +65,7 @@ open class WrapPhpReferer(env: Environment, clazz: ClassEntity) : BaseObject(env
             val method = referer.getRefererMethod(name)
             if(method == null)
                 throw NoSuchMethodException("类[${referer.serviceId}]无方法[$name]")
+            lastCall = name
             // 其他参数是方法参数
             val params = args[1].toValue(ArrayMemory::class.java).values() // 第二个是参数数组
             // 调用方法 PhpRefererMethod
@@ -76,8 +77,19 @@ open class WrapPhpReferer(env: Environment, clazz: ClassEntity) : BaseObject(env
         return Memory.NULL
     }
 
+    //上一次调用的方法
+    protected var lastCall: String? = null
+
     @Reflection.Signature
-    fun getClassName(env: Environment, vararg args: Memory): Memory {
+    fun getLastCall(): Memory {
+        if(lastCall == null)
+            return Memory.NULL
+
+        return StringMemory("${referer.serviceId}#$lastCall()")
+    }
+
+    @Reflection.Signature
+    fun getClassName(): Memory {
         return StringMemory(referer.serviceId)
     }
 
