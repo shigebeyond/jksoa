@@ -64,9 +64,9 @@ object RequestTimeout {
      */
     public fun getTimeout(method: IMethodMeta): Long {
         // 1 自定义超时
-        val sv = method2timeout[method.fullSignature]
-        if (sv != null)
-            return sv
+        val mv = method2timeout[method.fullSignature]
+        if (mv != null)
+            return mv
 
         // 2 通过方法的注解 @RemoteMethod 定义的超时
         if (method.remoteMethod != null) {

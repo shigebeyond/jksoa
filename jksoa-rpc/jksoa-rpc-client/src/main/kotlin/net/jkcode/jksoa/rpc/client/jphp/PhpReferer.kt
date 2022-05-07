@@ -5,7 +5,6 @@ import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.IReferer
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.registry.IRegistry
-import net.jkcode.jkutil.common.associate
 import net.jkcode.jkutil.common.getOrPutOnce
 import net.jkcode.jphp.ext.isDegradeFallbackMethod
 import php.runtime.env.Environment
@@ -58,10 +57,12 @@ class PhpReferer protected constructor(public val env: Environment, public val p
 
     init {
         // 引用远程方法: 不包含的降级的本地方法
-        val methods = phpClass.methods.values.filter { method ->
-            phpClass.isDegradeFallbackMethod(method.name)
+        // 1 先获得映射方法
+        val mappingMethods = phpClass.methods.values.filter { method ->
+            !phpClass.isDegradeFallbackMethod(method.name)
         }
-        refererMethods = methods.associate { method ->
+        // 2 根据映射方法来构建引用方法
+        refererMethods = mappingMethods.associate { method ->
             method.name to PhpRefererMethod(this, method)
         }
     }
@@ -70,7 +71,7 @@ class PhpReferer protected constructor(public val env: Environment, public val p
      * 获得引用的方法
      */
     public fun getRefererMethod(methodName: String): PhpRefererMethod {
-        return refererMethods[methodName.toLowerCase()] ?: throw UnsupportedOperationException("服务[$serviceId]无方法[${methodName}]")
+        return refererMethods[methodName.toLowerCase()] ?: throw NoSuchMethodException("服务[$serviceId]无方法[${methodName}]")
     }
 
     companion object {

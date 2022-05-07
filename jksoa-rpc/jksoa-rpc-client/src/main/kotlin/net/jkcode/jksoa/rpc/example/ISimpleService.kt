@@ -36,6 +36,6 @@ interface ISimpleService /*: Remote // rmi协议服务接口 */ {
      * 抛个异常
      */
     @Throws(RemoteException::class) // rim异常
-    fun ex()
+    fun testException()
 
 }

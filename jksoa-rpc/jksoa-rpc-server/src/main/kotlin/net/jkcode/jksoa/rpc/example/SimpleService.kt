@@ -47,8 +47,7 @@ class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服�
      * 抛个异常
      */
     @Throws(RemoteException::class) // rim异常
-    public override fun ex(){
-        val ex = IllegalArgumentException("hello exception")
-        throw ex
+    public override fun testException(){
+        throw IllegalArgumentException("hello exception")
     }
 }

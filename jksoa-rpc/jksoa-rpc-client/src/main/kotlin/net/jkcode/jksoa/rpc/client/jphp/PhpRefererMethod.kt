@@ -21,14 +21,15 @@ import java.util.concurrent.Future
 /**
  * 包装远程方法
  *   1. 负责将 PhpReferer 的php方法调用转为发java rpc请求
- *   2. php方法实现直接返回java方法签名，用作php与java之间的调用映射
+ *   2. php映射方法实现直接返回java方法签名，用作php与java之间的调用映射
  *   3. 调用时参数/返回值类型转换：负责根据java方法签名， 来转换参数/返回值类型(参考 JavaObject 实现)
  *   4. 不包含的降级的本地方法
  *   5. 被 PhpReferer 缓存+引用
  */
-class PhpRefererMethod(public val phpRef: PhpReferer, public val phpMethod: MethodEntity) {
-
-    constructor(phpRef: PhpReferer, phpMethod: String): this(phpRef, phpRef.phpClass.findMethod(phpMethod.toLowerCase()))
+class PhpRefererMethod(
+        public val phpRef: PhpReferer,
+        public val phpMethod: MethodEntity // 映射方法
+) {
 
     public val clazz: ClassEntity
         get() = phpMethod.clazz

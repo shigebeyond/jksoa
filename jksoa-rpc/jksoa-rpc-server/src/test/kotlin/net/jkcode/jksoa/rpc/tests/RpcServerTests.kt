@@ -21,13 +21,6 @@ import kotlin.reflect.jvm.javaMethod
 class RpcServerTests {
 
     @Test
-    fun testRpcRequestHandler(){
-        val m = RpcRequestHandler.getMethodGuard(ISimpleService::echo.javaMethod!!)
-        val m2 = RpcRequestHandler.getMethodGuard(ISimpleService::echo.javaMethod!!)
-        println(m === m2)
-    }
-
-    @Test
     fun testServer(){
         IRpcServer.instance("jkr").start()
     }
