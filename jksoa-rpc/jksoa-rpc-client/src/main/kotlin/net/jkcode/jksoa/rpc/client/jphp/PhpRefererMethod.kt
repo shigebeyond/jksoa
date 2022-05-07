@@ -1,8 +1,6 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
 import co.paralleluniverse.fibers.Suspendable
-import net.jkcode.jksoa.common.RpcRequest
-import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
 import net.jkcode.jkutil.common.getClassByName
 import net.jkcode.jkutil.common.substringBetween
 import net.jkcode.jkutil.fiber.AsyncCompletionStage
@@ -39,7 +37,7 @@ class PhpRefererMethod(
     public var paramTypes: Array<Class<*>> = emptyArray() // 参数类型
     public var converters: Array<MemoryUtils.Converter<*>> = emptyArray() // 参数转换器
     public var returnType: Class<*> = Void.TYPE // 返回值类型
-    public var resultConverter: MemoryUtils.Converter<*>? = null // 返回值转换器
+    public var resultUnconverter: MemoryUtils.Unconverter<*>? = null // 返回值转换器
 
     init {
         /* 直接调用映射的php方法，结果即为java方法签名(带返回值类)
@@ -73,7 +71,7 @@ class PhpRefererMethod(
         val returnString = parts[0].trim()
         if (returnString.isNotBlank()) {
             returnType = getClassByName(returnString)
-            resultConverter = MemoryUtils.getConverter(returnType)
+            resultUnconverter = MemoryUtils.getUnconverter(returnType)
         }
     }
 
@@ -131,15 +129,13 @@ class PhpRefererMethod(
         if(result == null)
             return Memory.NULL
 
-        if (resultConverter != null)
+        if (resultUnconverter != null)
             return MemoryUtils.valueOf(result)
 
         return when (returnType) {
             Void.TYPE -> Memory.NULL
-            CompletableFuture::class.java -> ObjectMemory(WrapCompletableFuture(env, result as CompletableFuture<Memory>))
             else -> ObjectMemory(JavaObject.of(env, result))
         }
-        return Memory.NULL
     }
 
     /**
