@@ -3,8 +3,10 @@ namespace net\jkcode\jksoa\rpc\example;
 
 class ISimpleService {
 
+	// ------------ 方法注解 ------------
 	public static $_methodAnnotations = [];
 
+	// ------------ php对java调用映射的方法 ------------
 	public static function ping(){
 		return 'java.lang.String ping()';
 	}
@@ -21,8 +23,9 @@ class ISimpleService {
 		return 'void checkVersion()';
 	}
 
-	public static function ex(){
-		return 'void ex()';
+	public static function testException(){
+		return 'void testException()';
 	}
 
+	// ------------ 降级方法 ------------
 }

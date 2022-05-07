@@ -1,7 +1,7 @@
 <?php
 namespace net\jkcode\jksoa\rpc\example;
 
-class IGuardService {
+class IPhpGuardService {
 
 	// ------------ 方法注解 ------------
 	public static $_methodAnnotations = [
@@ -27,11 +27,11 @@ class IGuardService {
 	}
 
 	public static function getUserWhenException($id){
-		return 'net.jkcode.jksoa.rpc.example.User getUserWhenException(int)';
+		return 'java.util.Map getUserWhenException(int)';
 	}
 
 	public static function getUserWhenRandomException($id){
-		return 'net.jkcode.jksoa.rpc.example.User getUserWhenRandomException(int)';
+		return 'java.util.Map getUserWhenRandomException(int)';
 	}
 
 	// ------------ 降级方法 ------------
