@@ -127,7 +127,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @return
      */
     public override fun getCombineInovkeObject(method: IMethodMeta): Any{
-        return ProviderLoader.get(method.clazzName)!!
+        return ProviderLoader.get(method.clazzName)!!.service
     }
 
     /**
