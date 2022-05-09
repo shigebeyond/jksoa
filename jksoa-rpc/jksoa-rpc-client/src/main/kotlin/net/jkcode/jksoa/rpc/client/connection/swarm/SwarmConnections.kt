@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.connection.fixed
+package net.jkcode.jksoa.rpc.client.connection.swarm
 
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
@@ -14,15 +14,19 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * 池化的连接的包装器
+ * docker swarm模式下连接的包装器
+ *    url只有 protocol://host(即swarm服务名)，但没有path(rpc服务接口名)，因为docker swarm发布服务不是一个个类来发布，而是整个jvm进程(容器)集群来发布
  *    1 根据 serverPart 来引用连接池
  *      哪怕是不同服务的连接，引用的是同一个server的池化连接
- *    2 固定几个连接
+ *    2 固定n个连接, n=服务副本数
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-23 11:21 AM
  */
-class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
+class SwarmConnections(
+        url: Url,
+        protected var replicas: Int // 服务副本数, 即server数
+) : BaseConnection(url, 1) {
 
     companion object{
 
@@ -34,21 +38,16 @@ class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
         /**
          * 连接池的池
          */
-        protected var pools: ConcurrentHashMap<IUrl, Array<ReconnectableConnection>> = ConcurrentHashMap();
+        protected var pools: ConcurrentHashMap<IUrl, SwarmConnectionPool> = ConcurrentHashMap();
 
         /**
          * 根据地址获得连接池
          * @param url
          * @return
          */
-        public fun getPool(url: Url): Array<ReconnectableConnection> {
+        public fun getPool(url: Url): SwarmConnectionPool {
             return pools.getOrPut(url){
-                // 创建连接池
-                val min: Int = config["minConnections"]!!
-                val pool = (0 until min).mapToArray {
-                    ReconnectableConnection(url.serverPart) // 根据 serverPart 来复用 ReconnectableConnection 的实例
-                }
-                pool
+                SwarmConnectionPool(url)
             }
         }
     }
@@ -59,14 +58,12 @@ class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
     protected val counter: AtomicInteger = AtomicInteger(0)
 
     init {
-        // 预先创建连接 -- 因为要增加引用，直接预先创建
-        //val lazyConnect: Boolean = config["lazyConnect"]!!
-        //if(!lazyConnect) { // 不延迟创建连接: 预先创建
+        // 预先创建连接
+        val lazyConnect: Boolean = config["lazyConnect"]!!
+        if(!lazyConnect) { // 不延迟创建连接: 预先创建
             val pool = getPool(url.serverPart)
-            for(conn in pool) // 增加引用
-                conn.incrRef()
             clientLogger.debug("-----------初始化连接池xx: ${url.serverPart} -- 连接数 ${pool.size}")
-        //}
+        }
     }
 
     /**

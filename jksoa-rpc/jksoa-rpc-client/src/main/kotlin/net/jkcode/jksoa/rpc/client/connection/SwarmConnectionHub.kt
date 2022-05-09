@@ -13,41 +13,33 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
 import net.jkcode.jksoa.rpc.client.connection.fixed.FixedConnections
+import net.jkcode.jksoa.rpc.client.connection.swarm.SwarmConnections
 import java.lang.IllegalArgumentException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
- * 某个service的rpc连接集中器
- *    1 维系client对所有server的所有连接
- *    2 在client调用中对server集群进行均衡负载
+ * docker swarm模式下，某个service的rpc连接集中器
+ *    url只有 protocol://host(即swarm服务名)，但没有path(rpc服务接口名)，因为docker swarm发布服务不是一个个类来发布，而是整个jvm进程(容器)集群来发布
+ *    1 维系client对所有server的所有连接: 只有一个server
+ *    2 在client调用中对server集群进行均衡负载: 只有一个server
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
- * @date 2017-12-13 3:18 PM
+ * @date 2022-5-9 3:18 PM
  */
-open class ConnectionHub: IConnectionHub() {
+class SwarmConnectionHub: IConnectionHub() {
 
     /**
-     * 客户端配置
+     * 连接
      */
-    public val config: IConfig = Config.instance("rpc-client", "yaml")
-
-    /**
-     * 连接类型: 1 single 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
-     */
-    protected open val connectType: String = config["connectType"]!!
-
-    /**
-     * 连接池： <协议ip端口 to 多个server的连接>
-     */
-    protected val connections: ConcurrentHashMap<String, IConnection> = ConcurrentHashMap()
+    protected lateinit var connections: SwarmConnections
 
     /**
      * 关闭连接的延时
      *   10秒
      */
-    protected val closeDelaySenconds = 10L
+    protected val closeDelayMillis = 10000L
 
     /**
      * 处理服务地址新增
@@ -55,16 +47,8 @@ open class ConnectionHub: IConnectionHub() {
      * @param allUrls
      */
     public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
-        clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
-        val weight: Int = url.getParameter("weight", 1)!!
-        // 创建连接
-        val conn: IConnection = when(connectType) {
-            "single" -> SingleConnection(url, weight)
-            "pooled" -> PooledConnections(url, weight)
-            "fixed" -> FixedConnections(url, weight)
-            else -> throw IllegalArgumentException("无效连接类型: $connectType")
-        }
-        connections[url.serverName] = conn;
+        clientLogger.debug("SwarmConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
+        connections = SwarmConnections(url)
     }
 
     /**
@@ -73,30 +57,28 @@ open class ConnectionHub: IConnectionHub() {
      * @param allUrls
      */
     public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
-        val conn = connections.remove(url.serverName)!!
-        clientLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
+        clientLogger.debug("SwarmConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
+        connections.close()
 
         // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
         //conn.close() // 关闭连接
         CommonMilliTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
-                clientLogger.debug("延迟关闭连接: {}", conn)
-                conn.close() // 关闭连接
+                clientLogger.debug("延迟关闭连接: {}", connections)
+                connections.close() // 关闭连接
             }
-        }, closeDelaySenconds, TimeUnit.SECONDS)
-
+        }, closeDelayMillis, TimeUnit.MILLISECONDS)
     }
 
     /**
      * 处理服务配置参数（服务地址的参数）变化
-     *
+     *   主要是参数 replica 变化
      * @param url
      */
     public override fun handleParametersChange(url: Url): Unit{
         val serviceId = url.path
-        clientLogger.debug("ConnectionHub处理服务[{}]参数变化: {}", serviceId, url.getQueryString())
-        //重整负载参数
-        connections[url.serverName]!!.weight = url.getParameter("weight", 1)!!
+        clientLogger.debug("SwarmConnectionHub处理服务[{}]参数变化: {}", serviceId, url.getQueryString())
+        connections.reset(url.getParameter("replica")!!)
     }
 
     /**
@@ -114,7 +96,7 @@ open class ConnectionHub: IConnectionHub() {
         if(conn == null)
             throw RpcNoConnectionException("远程服务[${req.serviceId}]无提供者节点")
 
-        clientLogger.debug("ConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
+        clientLogger.debug("SwarmConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
         return conn
     }
 
@@ -125,10 +107,7 @@ open class ConnectionHub: IConnectionHub() {
      * @return 全部连接
      */
     public override fun selectAll(req: IRpcRequest?): Collection<IConnection> {
-        if(connections.isEmpty())
-            throw RpcNoConnectionException("远程服务[${serviceId}]无提供者节点")
-
-        return connections.values
+        return connections
     }
 
 }

@@ -2,6 +2,7 @@ package net.jkcode.jksoa.rpc.client.connection
 
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.annotation.RemoteService
 import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.loadbalance.ILoadBalancer
@@ -12,8 +13,8 @@ import kotlin.reflect.KClass
 
 /**
  * 某个service的rpc连接集中器
- *    1 维系客户端对服务端的所有连接
- *    2 在客户端调用中对服务集群进行均衡负载
+ *    1 维系client对所有server的所有连接
+ *    2 在client调用中对server集群进行均衡负载
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -50,27 +51,13 @@ abstract class IConnectionHub: IDiscoveryListener {
                     // 如果是php引用，则不存在服务接口类，还是最大可能尝试调用
                 }
 
-                // 1.2 ConnectionHub类
-                var clazz: KClass<*> = ConnectionHub::class
-                // 1.3 服务注解
+                // 1.2 服务注解
                 val annotation = serviceClass?.remoteService
-                if(serviceClass != null) { // java引用
-                    if (annotation == null)
-                        throw IllegalArgumentException("Service interface must has annotation @remoteService")
+                if(serviceClass != null && annotation == null) // java引用
+                    throw IllegalArgumentException("Service interface must has annotation @RemoteService")
 
-                    // 1 获得 IConnectionHub实现类
-                    clazz = annotation.connectionHubClass
-                    if (clazz == Void::class || clazz == Unit::class)
-                        clazz = ConnectionHub::class
-
-                    // 检查是否 IConnectionHub子类
-                    if (!IConnectionHub::class.java.isSuperClass(clazz.java))
-                        throw RpcClientException("Class [${clazz}] is not a sub class from [IConnectionHub]")
-
-                    // 检查默认构造函数
-                    if (clazz.java.getConstructorOrNull() == null)
-                        throw RpcClientException("Class [${clazz}] has no no-arg constructor") // IConnectionHub子类${clazz}无默认构造函数
-                }
+                // 1.3 ConnectionHub类
+                var clazz: KClass<*> = getConnectionHubClass(annotation) ?: ConnectionHub::class
 
                 // 2 实例化
                 val inst = clazz.java.newInstance() as IConnectionHub
@@ -85,6 +72,34 @@ abstract class IConnectionHub: IDiscoveryListener {
 
                 inst
             }
+        }
+
+        /**
+         * 获得ConnectionHub类
+         * @param annotation 服务注解，如果为null则是php引用，否则为java引用
+         */
+        private fun getConnectionHubClass(annotation: RemoteService?): KClass<*> {
+            // 1 docker swarm模式下的引用
+
+            // 2 php引用
+            if (annotation == null)
+                return ConnectionHub::class
+
+            // 3 java引用
+            // 获得 IConnectionHub实现类
+            val clazz = annotation.connectionHubClass
+            if (clazz == Void::class || clazz == Unit::class)
+                return ConnectionHub::class
+
+            // 检查是否 IConnectionHub子类
+            if (!IConnectionHub::class.java.isSuperClass(clazz.java))
+                throw RpcClientException("Class [${clazz}] is not a sub class from [IConnectionHub]")
+
+            // 检查默认构造函数
+            if (clazz.java.getConstructorOrNull() == null)
+                throw RpcClientException("Class [${clazz}] has no no-arg constructor") // IConnectionHub子类${clazz}无默认构造函数
+
+            return clazz
         }
     }
 
