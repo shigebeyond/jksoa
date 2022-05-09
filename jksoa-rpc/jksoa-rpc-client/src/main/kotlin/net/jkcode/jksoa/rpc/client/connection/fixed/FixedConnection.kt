@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger
 /**
  * 池化的连接的包装器
  *    1 根据 serverPart 来引用连接池
- *      引用的是同一个server的池化连接
+ *      哪怕是不同服务的连接，引用的是同一个server的池化连接
  *    2 固定几个连接
  *
  * @author shijianhang<772910474@qq.com>

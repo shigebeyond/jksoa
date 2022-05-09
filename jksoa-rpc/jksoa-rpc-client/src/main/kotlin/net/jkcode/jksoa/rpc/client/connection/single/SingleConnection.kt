@@ -6,7 +6,7 @@ import net.jkcode.jksoa.common.*
 /**
  * 复用单一的rpc连接
  *   根据 serverPart 来复用 ReconnectableConnection 的实例
- *   复用的是同一个server的连接
+ *   哪怕是不同服务的连接，复用的是同一个server的连接
  *
  * @author shijianhang
  * @create 2017-12-15 下午9:25
