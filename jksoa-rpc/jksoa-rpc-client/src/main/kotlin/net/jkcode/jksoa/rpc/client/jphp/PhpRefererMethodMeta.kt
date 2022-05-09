@@ -6,7 +6,6 @@ import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jphp.ext.PhpMethodMeta
 import net.jkcode.jphp.ext.annotations
 import net.jkcode.jphp.ext.isDegradeFallbackMethod
-import php.runtime.reflection.ClassEntity
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -98,11 +97,13 @@ class PhpRefererMethodMeta(
      * @return
      */
     override fun getBrotherMethod(name: String): IMethodMeta {
-        // 降级的本地方法
-        if(method.clazz.isDegradeFallbackMethod(name))
-            return PhpMethodMeta(method.clazz.findMethod(name), handler)
+        // 1 降级的本地方法
+        if(method.clazz.isDegradeFallbackMethod(name)) {
+            val brotherMethod = method.clazz.findMethod(name.toLowerCase())
+            return PhpMethodMeta(brotherMethod, handler)
+        }
 
-        // 其他的rpc方法
+        // 2 其他的rpc方法
         val brotherMethod = method.phpRef.getRefererMethod(name)
         return PhpRefererMethodMeta(brotherMethod, handler)
     }

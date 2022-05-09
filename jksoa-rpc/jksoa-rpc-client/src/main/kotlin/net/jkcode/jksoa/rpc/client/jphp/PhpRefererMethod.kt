@@ -22,7 +22,7 @@ import java.util.concurrent.Future
  *   2. php映射方法实现直接返回java方法签名，用作php与java之间的调用映射
  *   3. 调用时参数/返回值类型转换：负责根据java方法签名， 来转换参数/返回值类型(参考 JavaObject 实现)
  *   4. 不包含的降级的本地方法
- *   5. 被 PhpReferer 缓存+引用
+ *   5. 被 PhpReferer 缓存+引用; 而 PhpReferer 实例要缓存到 ClassEntity 中, 1是提高性能 2 是应对php类卸载
  */
 class PhpRefererMethod(
         public val phpRef: PhpReferer,

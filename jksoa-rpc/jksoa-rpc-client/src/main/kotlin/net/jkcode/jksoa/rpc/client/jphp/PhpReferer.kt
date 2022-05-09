@@ -5,12 +5,11 @@ import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.IReferer
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.registry.IRegistry
-import net.jkcode.jkutil.common.getOrPutOnce
 import net.jkcode.jphp.ext.isDegradeFallbackMethod
+import net.jkcode.jphp.ext.isUnregistered
 import php.runtime.env.Environment
 import php.runtime.reflection.ClassEntity
 import java.lang.reflect.Method
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 服务的php引用（代理）
@@ -19,8 +18,9 @@ import java.util.concurrent.ConcurrentHashMap
  *
  *   注意：
  *   1. 因为没有java接口类，因此不支持 service/getMethod()
- *   2. 也不能使用 RefererLoader 来加载与获得服务引用
+ *   2. 也不能使用 RefererLoader 来加载与获得服务引用, 因为 RefererLoader 要扫描java服务接口类
  *   3. 私有构造函数, 只能通过 PhpReferer.getOrPutRefer(phpClazzName, env) 来获得实例
+ *   4. PhpReferer 实例要缓存到 ClassEntity 中, 1是提高性能 2 是应对php类卸载
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -83,33 +83,20 @@ class PhpReferer protected constructor(public val env: Environment, public val p
         public val registry: IRegistry = IRegistry.instance("zk")
 
         /**
-         * 服务引用缓存
-         *   key为服务标识，即接口类全名
-         *   value为服务引用
-         */
-        protected val refers:ConcurrentHashMap<String, PhpReferer> = ConcurrentHashMap()
-
-        /**
          * 根据服务接口，来获得服务引用
-         *
+         *   要缓存到 ClassEntity 中, 1是提高性能 2 是应对php类卸载
          * @param phpClassName
          * @return
          */
-        internal fun getOrPutRefer(phpClassName: String, env: Environment): PhpReferer {
-            return refers.getOrPutOnce(phpClassName){
-                val phpClass = env.fetchClass(phpClassName) ?: throw RpcClientException("类不存在: " + phpClassName)
+        internal fun getOrCreateRefer(phpClassName: String, env: Environment): PhpReferer {
+            // 获得php类
+            val phpClass = env.fetchClass(phpClassName) ?: throw RpcClientException("php类不存在: " + phpClassName)
+            if(phpClass.isUnregistered)
+                throw RpcClientException("php类[$phpClassName]已注销")
+            // 读php类中的缓存
+            return phpClass.getAdditionalData("phpReferer", PhpReferer::class.java){
                 PhpReferer(env, phpClass)
             }
-        }
-
-        /**
-         * 根据服务接口，来获得服务引用
-         *
-         * @param phpClass
-         * @return
-         */
-        fun getRefer(phpClass: ClassEntity): PhpReferer? {
-            return refers[phpClass.name]
         }
     }
 

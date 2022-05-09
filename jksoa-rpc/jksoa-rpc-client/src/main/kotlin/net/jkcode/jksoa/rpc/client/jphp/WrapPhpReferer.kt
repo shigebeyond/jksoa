@@ -31,7 +31,7 @@ open class WrapPhpReferer(env: Environment, clazz: ClassEntity) : BaseObject(env
 
     @Reflection.Signature
     fun __construct(env: Environment, phpClazzName: String): Memory {
-        this.referer = getRef(phpClazzName, env)
+        this.referer = PhpReferer.getOrCreateRefer(phpClazzName, env)
         return Memory.NULL
     }
 
@@ -99,16 +99,10 @@ open class WrapPhpReferer(env: Environment, clazz: ClassEntity) : BaseObject(env
          * 创建 PReferer 实例
          */
         fun of(env: Environment, clazzName: String): WrapPhpReferer {
-            val javaObject = WrapPhpReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\JavaReferer"))
-            javaObject.referer = getRef(clazzName, env)
+            val javaObject = WrapPhpReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\PhpReferer"))
+            javaObject.referer = PhpReferer.getOrCreateRefer(clazzName, env)
             return javaObject
         }
 
-        /**
-         * 获得被包装的php引用对象
-         */
-        private fun getRef(phpClazzName: String, env: Environment): PhpReferer {
-            return PhpReferer.getOrPutRefer(phpClazzName, env)
-        }
     }
 }
