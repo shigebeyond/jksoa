@@ -13,10 +13,10 @@ IConnection
 		LocalConnection -- 本地连接
 		ReconnectableConnection -- 自动重连的连接
 		RmiConnection -- rmi协议的连接
-        PooledConnection -- 池化的连接的包装器
+        PooledConnections -- 池化的连接的包装器
 	SingleConnection -- 可复用的连接
-	PooledConnection -- 池化的连接
-	FixedConnection -- 固定几个连接
+	PooledConnections -- 池化的连接
+	FixedConnections -- 固定几个连接
 ```
 
 ## IConnection 接口
@@ -79,8 +79,8 @@ jksoa-rpc提供了3种方式来维持连接:
 1. `SingleConnection` -- 可复用的连接, 即单一长连接
 如果服务被大量client引用, 则建议每个client单一长连接
 
-2. `PooledConnection` -- 池化的连接的包装器, 即多个长连接做连接池
+2. `PooledConnections` -- 池化的连接的包装器, 即多个长连接做连接池
 
-3. `FixedConnection` -- 固定几个连接
+3. `FixedConnections` -- 固定几个连接
 
 可通过 `rpc-client.yaml` 配置文件的属性 `connectType` 来切换: 1 single 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接

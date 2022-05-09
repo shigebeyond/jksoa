@@ -1,4 +1,4 @@
-# PooledConnection -- 池化的连接的包装器
+# PooledConnections -- 池化的连接的包装器
 
 1. 根据 `serverPart` 来引用连接池, 引用的是同一个server的池化连接
 2. `GenericObjectPool` 有定时逐出超过指定空闲时间的空闲连接, 不用自己逐出, 参考配置 `timeBetweenEvictionRunsMillis` 与 `minEvictableIdleTimeMillis`
@@ -38,4 +38,4 @@ public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResp
 
 ## 配置最大连接数
 
-在 `rpc-client.yaml` 配置文件中的属性 `maxConnections` 即为最大连接数, 用在 PooledConnection
+在 `rpc-client.yaml` 配置文件中的属性 `maxConnections` 即为最大连接数, 用在 PooledConnections

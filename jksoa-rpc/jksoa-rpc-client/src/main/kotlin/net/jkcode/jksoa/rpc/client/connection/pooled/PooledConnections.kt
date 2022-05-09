@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-23 11:21 AM
  */
-class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
+class PooledConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
 
     companion object{
 
@@ -50,7 +50,7 @@ class PooledConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
                 // 不能简单读 pool.minIdle, 因为他的实现会取 minIdle/maxIdle 的最小值
                 if(pool.maxIdle < min)
                     pool.maxIdle = min
-                pool.maxTotal = config["maxConnections"]!! // 最大连接数, 用在 PooledConnection
+                pool.maxTotal = config["maxConnections"]!! // 最大连接数, 用在 PooledConnections
                 pool.timeBetweenEvictionRunsMillis = 1000 * 60 * 10 // 定时逐出时间间隔: 10min
                 pool.minEvictableIdleTimeMillis = 1000 * 60 * 60 // 连接在空闲队列中等待逐出的时间: 1hour
                 pool

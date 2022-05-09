@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-23 11:21 AM
  */
-class FixedConnection(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
+class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
 
     companion object{
 

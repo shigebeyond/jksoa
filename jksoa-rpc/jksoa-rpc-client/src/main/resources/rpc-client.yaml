@@ -11,6 +11,6 @@ requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
 connectType: fixed # 连接类型: 1 single 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
 lazyConnect: false # 是否延迟创建连接
-minConnections: 10 # 最小连接数, 用在 PooledConnection/FixedConnection
-maxConnections: 10 # 最大连接数, 用在 PooledConnection
+minConnections: 10 # 最小连接数, 用在 PooledConnections/FixedConnections
+maxConnections: 10 # 最大连接数, 用在 PooledConnections
 ioThreads: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数

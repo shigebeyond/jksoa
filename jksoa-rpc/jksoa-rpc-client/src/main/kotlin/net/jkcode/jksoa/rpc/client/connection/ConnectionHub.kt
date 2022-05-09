@@ -7,12 +7,12 @@ import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.connection.single.SingleConnection
-import net.jkcode.jksoa.rpc.client.connection.pooled.PooledConnection
+import net.jkcode.jksoa.rpc.client.connection.pooled.PooledConnections
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
-import net.jkcode.jksoa.rpc.client.connection.fixed.FixedConnection
+import net.jkcode.jksoa.rpc.client.connection.fixed.FixedConnections
 import java.lang.IllegalArgumentException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -60,8 +60,8 @@ open class ConnectionHub: IConnectionHub() {
         // 创建连接
         val conn: IConnection = when(connectType) {
             "single" -> SingleConnection(url, weight)
-            "pooled" -> PooledConnection(url, weight)
-            "fixed" -> FixedConnection(url, weight)
+            "pooled" -> PooledConnections(url, weight)
+            "fixed" -> FixedConnections(url, weight)
             else -> throw IllegalArgumentException("无效连接类型: $connectType")
         }
         connections[url.serverName] = conn;
