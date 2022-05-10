@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit
 
 /**
  * 某个service的rpc连接集中器
- *    1 维系client对所有server的所有连接
- *    2 在client调用中对server集群进行均衡负载
+ *    1 单个service下, 维系client对所有server的所有连接
+ *    2 单个service下, 在client调用中对server集群进行均衡负载
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -39,7 +39,7 @@ open class ConnectionHub: IConnectionHub() {
     protected open val connectType: String = config["connectType"]!!
 
     /**
-     * 连接池： <协议ip端口 to 多个server的连接>
+     * 连接池： <协议ip端口(server) to server的连接包装器>
      */
     protected val connections: ConcurrentHashMap<String, IConnection> = ConcurrentHashMap()
 
@@ -80,7 +80,7 @@ open class ConnectionHub: IConnectionHub() {
      *
      * @param url
      */
-    public override fun handleParametersChange(url: Url): Unit{
+    public override fun handleParametersChange(url: Url){
         val serviceId = url.path
         clientLogger.debug("ConnectionHub处理服务[{}]参数变化: {}", serviceId, url.getQueryString())
         //重整负载参数

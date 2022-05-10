@@ -7,6 +7,7 @@ servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.dtx.demo # dtx组件的demo的服务
 interceptors: # 拦截器
     - net.jkcode.jksoa.dtx.tcc.interceptor.RpcClientTccInterceptor
+registryOrSwarm: true # 是否使用注册中心, 否则使用docker swarm集群来做服务发现
 connectTimeoutMillis: 500000 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture

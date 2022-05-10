@@ -82,7 +82,7 @@ class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
         starter.startOnce {
             for (conn in pool) // 增加引用
                 conn.incrRef()
-            clientLogger.debug("-----------初始化连接池xx: ${url.serverPart} -- 连接数 ${pool.size}")
+            clientLogger.debug("-----------初始化连接池: ${url.serverPart} -- 连接数 ${pool.size}")
         }
         return pool
     }

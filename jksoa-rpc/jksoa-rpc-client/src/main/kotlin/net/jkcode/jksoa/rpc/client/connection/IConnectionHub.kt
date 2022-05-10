@@ -7,14 +7,15 @@ import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.loadbalance.ILoadBalancer
 import net.jkcode.jksoa.rpc.registry.IDiscoveryListener
+import net.jkcode.jksoa.rpc.client.swarm.SwarmConnectionHub
 import net.jkcode.jkutil.common.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
 /**
  * 某个service的rpc连接集中器
- *    1 维系client对所有server的所有连接
- *    2 在client调用中对server集群进行均衡负载
+ *    1 单个service下, 维系client对所有server的所有连接
+ *    2 单个service下, 在client调用中对server集群进行均衡负载
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
@@ -41,51 +42,58 @@ abstract class IConnectionHub: IDiscoveryListener {
          */
         public fun instance(serviceClassName: String): IConnectionHub{
             return instances.getOrPutOnce(serviceClassName) {
-                // 1 获得ConnectionHub类
-                // 1.1 服务类
-                var serviceClass: Class<*>? = null
-                try {
-                    // java引用
-                    serviceClass = getClassByName(serviceClassName)
-                }catch (ex: ClassNotFoundException){
-                    // 如果是php引用，则不存在服务接口类，还是最大可能尝试调用
-                }
-
-                // 1.2 服务注解
-                val annotation = serviceClass?.remoteService
-                if(serviceClass != null && annotation == null) // java引用
-                    throw IllegalArgumentException("Service interface must has annotation @RemoteService")
-
-                // 1.3 ConnectionHub类
-                var clazz: KClass<*> = getConnectionHubClass(annotation) ?: ConnectionHub::class
-
-                // 2 实例化
-                val inst = clazz.java.newInstance() as IConnectionHub
-
-                // 3 设置属性
-                // 设置服务标识
-                inst.serviceId = serviceClassName
-                // 设置均衡负载器
-                var loadBalancer = annotation?.loadBalancer
-                if (!loadBalancer.isNullOrEmpty())
-                    inst.loadBalancer = ILoadBalancer.instance(loadBalancer)
-
-                inst
+                if(config["registryOrSwarm"]!!) // 注册中心模式: 每个rpc服务独有一个实例
+                    createRegistryConnectionHub(serviceClassName)
+                else // docker swarm模式: 所有rpc服务共用一个实例
+                    SwarmConnectionHub
             }
         }
 
         /**
-         * 获得ConnectionHub类
+         * 注册中心模式下，获得单个rpc服务的连接集中器
+         */
+        private fun createRegistryConnectionHub(serviceClassName: String): IConnectionHub {
+            // 1 服务类
+            var serviceClass: Class<*>? = null
+            try {
+                // java引用
+                serviceClass = getClassByName(serviceClassName)
+            } catch (ex: ClassNotFoundException) {
+                // 如果是php引用，则不存在服务接口类，还是最大可能尝试调用
+            }
+
+            // 2 服务注解
+            val annotation = serviceClass?.remoteService
+            if (serviceClass != null && annotation == null) // java引用
+                throw IllegalArgumentException("Service interface must has annotation @RemoteService")
+
+            // 3 ConnectionHub类
+            var clazz: KClass<*> = getConnectionHubClass(annotation)
+
+            // 4 实例化
+            val inst = clazz.java.newInstance() as IConnectionHub
+
+            // 5 设置属性
+            // 设置服务标识
+            inst.serviceId = serviceClassName
+            // 设置均衡负载器
+            var loadBalancer = annotation?.loadBalancer
+            if (!loadBalancer.isNullOrEmpty())
+                inst.loadBalancer = ILoadBalancer.instance(loadBalancer)
+
+            return inst
+        }
+
+        /**
+         * 获得ConnectionHub类, 仅用于注册中心模式, 非docker swarm模式
          * @param annotation 服务注解，如果为null则是php引用，否则为java引用
          */
         private fun getConnectionHubClass(annotation: RemoteService?): KClass<*> {
-            // 1 docker swarm模式下的引用
-
-            // 2 php引用
+            // 1 php引用
             if (annotation == null)
                 return ConnectionHub::class
 
-            // 3 java引用
+            // 2 java引用
             // 获得 IConnectionHub实现类
             val clazz = annotation.connectionHubClass
             if (clazz == Void::class || clazz == Unit::class)

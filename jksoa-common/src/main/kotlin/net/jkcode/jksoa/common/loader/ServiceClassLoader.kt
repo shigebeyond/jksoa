@@ -14,7 +14,7 @@ import kotlin.collections.set
 abstract class ServiceClassLoader<T: BaseServiceClass>(protected val isProvider: Boolean /* 是否是加载服务提供者 */) : ClassScanner() {
 
     /**
-     * 启动者
+     * 单次启动者
      */
     protected val starter = AtomicStarter()
 

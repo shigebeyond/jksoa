@@ -50,7 +50,7 @@ parameters: # 参数
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
-registering: true # 是否注册到注册中心
+registryOrSwarm: true # 是否使用注册中心, 否则使用docker swarm集群来做服务发现
 # netty启动参数
 netty:
     keepAlive: true # 保持心跳

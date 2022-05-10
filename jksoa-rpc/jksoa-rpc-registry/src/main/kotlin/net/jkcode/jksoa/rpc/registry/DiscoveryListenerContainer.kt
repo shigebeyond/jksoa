@@ -85,7 +85,7 @@ open class DiscoveryListenerContainer(
 
             // 获得更新的地址
             for(key in newUrls.keys.intersect(oldUrls.keys)){
-                if(newUrls[key] != oldUrls[key]!!)
+                if(newUrls[key] != oldUrls[key])
                     updateUrls.add(newUrls[key]!!)
             }
         }

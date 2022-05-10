@@ -2,8 +2,11 @@ dependencies{
     // other project
     compile project(':jksoa-rpc:jksoa-rpc-registry')
 
-    if(env == 'dev')
+    if(env == 'dev') {
+        compile project(':jkmq') // docker swarm模式下要发消息
         compile project(':jphp-java-ext')
-    else
+    }else {
+        compile "net.jkcode:jkmq:$jkmq_version"  // docker swarm模式下要发消息
         compile "net.jkcode:jphp-java-ext:$jphp_java_ext_version"
+    }
 }
