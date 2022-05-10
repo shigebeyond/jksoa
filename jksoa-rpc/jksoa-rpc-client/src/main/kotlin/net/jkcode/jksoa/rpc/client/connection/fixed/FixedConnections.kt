@@ -7,6 +7,7 @@ import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.rpc.client.connection.single.ReconnectableConnection
+import net.jkcode.jkutil.common.AtomicStarter
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jkutil.common.mapToArray
@@ -54,19 +55,36 @@ class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
     }
 
     /**
+     * 单次启动者
+     */
+    protected val starter = AtomicStarter()
+
+    /**
      * 计数器
      */
     protected val counter: AtomicInteger = AtomicInteger(0)
 
     init {
         // 预先创建连接 -- 因为要增加引用，直接预先创建
-        //val lazyConnect: Boolean = config["lazyConnect"]!!
-        //if(!lazyConnect) { // 不延迟创建连接: 预先创建
-            val pool = getPool(url.serverPart)
-            for(conn in pool) // 增加引用
+        val lazyConnect: Boolean = config["lazyConnect"]!!
+        if(!lazyConnect) { // 不延迟创建连接: 预先创建
+            innerGetPool(url)
+        }
+    }
+
+    /**
+     * 获得连接池，如果是第一次，则增加引用
+     */
+    protected fun innerGetPool(url: Url): Array<ReconnectableConnection> {
+        // 获得连接池
+        val pool = getPool(url.serverPart)
+        // 如果是第一次，则增加引用
+        starter.startOnce {
+            for (conn in pool) // 增加引用
                 conn.incrRef()
             clientLogger.debug("-----------初始化连接池xx: ${url.serverPart} -- 连接数 ${pool.size}")
-        //}
+        }
+        return pool
     }
 
     /**
@@ -79,7 +97,7 @@ class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
      */
     public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
         // 根据 serverPart 来引用连接池
-        val pool = getPool(url.serverPart)
+        val pool = innerGetPool(url.serverPart)
 
         // 获得连接
         val i = (counter.getAndIncrement() and Integer.MAX_VALUE) % pool.size
@@ -90,8 +108,11 @@ class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
     }
 
     public override fun close() {
-        // val pool = getPool(url.serverPart) // 可能会创建
-        val pool = pools[url.serverPart]
+        if(!starter.isStarted) // 跳过未开始(引用)的
+            return
+
+        // val pool = getPool(url.serverPart) // 可能会触发创建
+        val pool = pools[url.serverPart] // 兼容未创建
         pool?.forEach { conn ->
             conn.close()
         }
