@@ -55,7 +55,7 @@ class SwarmConnectionPool(
         conns.removeAll { conn ->
             val invalid = !conn.isValid()
             if(invalid) // 2 延迟30s中关闭连接
-                delayCloseConnection(conn)
+                conn.delayClose()
             invalid
         }
     }
@@ -81,20 +81,9 @@ class SwarmConnectionPool(
         conns.removeAll { conn ->
             val f = c++ < n
             if(f) // 2 延迟30s中关闭连接
-                delayCloseConnection(conn)
+                conn.delayClose()
             f
         }
-    }
-
-    /**
-     * 延迟30s中关闭连接
-     */
-    protected fun delayCloseConnection(conn: ReconnectableConnection) {
-        CommonMilliTimer.newTimeout(object : TimerTask {
-            override fun run(timeout: Timeout) {
-                conn.close() // 关闭连接
-            }
-        }, 30, TimeUnit.SECONDS)
     }
 
 }

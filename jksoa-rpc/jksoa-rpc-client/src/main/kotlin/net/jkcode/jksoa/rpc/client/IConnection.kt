@@ -1,9 +1,14 @@
 package net.jkcode.jksoa.rpc.client
 
+import io.netty.util.Timeout
+import io.netty.util.TimerTask
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
+import net.jkcode.jkutil.common.CommonMilliTimer
 import java.io.Closeable
+import java.util.concurrent.TimeUnit
 
 /**
  * rpc连接
@@ -47,5 +52,28 @@ interface IConnection: Closeable {
      * 改写 toString()
      */
     override fun toString(): String
+
+    /**
+     * 延迟关闭连接
+     */
+    fun delayClose(){
+        // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
+        val conn = this
+        CommonMilliTimer.newTimeout(object : TimerTask {
+            override fun run(timeout: Timeout) {
+                clientLogger.debug("延迟关闭连接: {}", conn)
+                conn.close() // 关闭连接
+            }
+        }, closeDelaySenconds, TimeUnit.SECONDS)
+    }
+
+    companion object{
+
+        /**
+         * 关闭连接的延时
+         *   30秒
+         */
+        protected val closeDelaySenconds = 30L
+    }
 
 }

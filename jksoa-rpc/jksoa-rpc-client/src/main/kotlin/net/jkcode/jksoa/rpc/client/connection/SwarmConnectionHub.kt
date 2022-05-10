@@ -36,12 +36,6 @@ class SwarmConnectionHub: IConnectionHub() {
     protected lateinit var connections: SwarmConnections
 
     /**
-     * 关闭连接的延时
-     *   10秒
-     */
-    protected val closeDelayMillis = 10000L
-
-    /**
      * 处理服务地址新增
      * @param url
      * @param allUrls
@@ -62,12 +56,7 @@ class SwarmConnectionHub: IConnectionHub() {
 
         // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
         //conn.close() // 关闭连接
-        CommonMilliTimer.newTimeout(object : TimerTask {
-            override fun run(timeout: Timeout) {
-                clientLogger.debug("延迟关闭连接: {}", connections)
-                connections.close() // 关闭连接
-            }
-        }, closeDelayMillis, TimeUnit.MILLISECONDS)
+
     }
 
     /**

@@ -44,12 +44,6 @@ open class ConnectionHub: IConnectionHub() {
     protected val connections: ConcurrentHashMap<String, IConnection> = ConcurrentHashMap()
 
     /**
-     * 关闭连接的延时
-     *   10秒
-     */
-    protected val closeDelaySenconds = 10L
-
-    /**
      * 处理服务地址新增
      * @param url
      * @param allUrls
@@ -78,13 +72,7 @@ open class ConnectionHub: IConnectionHub() {
 
         // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
         //conn.close() // 关闭连接
-        CommonMilliTimer.newTimeout(object : TimerTask {
-            override fun run(timeout: Timeout) {
-                clientLogger.debug("延迟关闭连接: {}", conn)
-                conn.close() // 关闭连接
-            }
-        }, closeDelaySenconds, TimeUnit.SECONDS)
-
+        conn.delayClose()
     }
 
     /**
