@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * docker swarm模式下的服务发现
+ *   负责在 docker manager node中定时运行 docker service ls 命令来查询swarm服务的节点数，并广播服务节点数消息
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2017-12-12 11:22 AM
@@ -51,7 +52,7 @@ object SwarmDiscovery {
         CommonSecondTimer.newPeriodic({
             // 查询swarm服务的节点数
             val data = querySwarmServiceReplicas()
-            // 发布
+            // 广播消息
             SwarmUtil.mqMgr.sendMq(SwarmUtil.topic, data)
         }, timerSeconds, TimeUnit.SECONDS)
     }
