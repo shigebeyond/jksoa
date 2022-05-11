@@ -18,22 +18,29 @@ abstract class SwarmDiscoveryListener: IConnectionHub() {
     protected var swarmServiceReplicas: MutableMap<String, Int> = HashMap()
 
     init {
-        // 配置
-        val name = "default"
-        val config = Config.instance("kafka-consumer.$name", "yaml")
-        // 检查消费者分组
-        val group: String? = config["group.id"]
-        if(!group.isNullOrEmpty())
-            throw RpcClientException("SwarmDiscoveryListener监听必须是随机分组，这样才能接收广播")
-        // 检查并行的消费者数
-        val concurrency:Int = config["concurrency"]!!
-        if(concurrency > 1)
-            throw RpcClientException("SwarmDiscoveryListener并行的消费者数要为1")
+        // 检查消费者配置
+        checkMqConsumer()
 
         // 全局的订阅
         SwarmUtil.mqMgr.subscribeMq(SwarmUtil.topic){
             handleSwarmServiceReplicasChange(it as MutableMap<String, Int>)
         }
+    }
+
+    /**
+     * 检查消费者配置
+     */
+    private fun checkMqConsumer() {
+        val configName = SwarmUtil.mqMgr.name // mq配置名
+        val config = Config.instance("kafka-consumer.$configName", "yaml")
+        // 1 检查消费者分组
+        val group: String? = config["group.id"]
+        if (!group.isNullOrEmpty())
+            throw RpcClientException("SwarmDiscoveryListener监听必须是随机分组，这样才能接收广播")
+        // 2 检查并行的消费者数
+        val concurrency: Int = config["concurrency"]!!
+        if (concurrency > 1)
+            throw RpcClientException("SwarmDiscoveryListener并行的消费者数要为1")
     }
 
     /**

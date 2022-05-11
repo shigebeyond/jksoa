@@ -3,6 +3,7 @@ package net.jkcode.jksoa.rpc.client.swarm
 import net.jkcode.jkmq.mqmgr.IMqManager
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.indexAtTimes
 
 /**
@@ -13,8 +14,19 @@ import net.jkcode.jkutil.common.indexAtTimes
  */
 object SwarmUtil {
 
-    public val mqMgr = IMqManager.instance("kafka")
+    /**
+     * 配置
+     */
+    public val config: Config = Config.instance("rpc-client", "yaml")
 
+    /**
+     * mq管理者，一般是kafka实现
+     */
+    public val mqMgr = IMqManager.instance(config["swarmMqType"]!!, config["swarmMqName"]!!)
+
+    /**
+     * 服务发现的消息主题
+     */
     public val topic = "SwarmServiceReplicas"
 
     /**

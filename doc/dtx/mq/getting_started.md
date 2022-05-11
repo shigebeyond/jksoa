@@ -33,7 +33,8 @@ compile "net.jkcode.jksoa:jksoa-dtx-mq:1.9.0"
 ```
 # 基于mq的事务的配置
 dbName: default
-mqType: rabbitmq # 消息队列类型: rabbitmq / kafka
+mqType: rabbitmq # 消息队列类型: rabbitmq / kafka / redis
+mqName: default # 消息队配置名
 sendPageSize: 100 # 每次发送的消息数
 retrySeconds: 20 # 重发的时间间隔, 单位秒, 为0则不重发
 recoverTimerSeconds: !!java.lang.Long 20 # 定时恢复(重发消息)的时间间隔, 为0则不启动定时恢复, 你可以在其他应用中启动
@@ -41,7 +42,7 @@ recoverTimerSeconds: !!java.lang.Long 20 # 定时恢复(重发消息)的时间�
 
 说明:
 1. `dbName`: tcc事务存储的数据库名: 引用的是 `dataSources.yaml` 中配置的数据库名
-2. `mqType`: 消息队列类型: rabbitmq / kafka
+2. `mqType`: 消息队列类型: rabbitmq / kafka / redis
 3. `sendPageSize`: 每次发送的消息数
 4. `retrySeconds`: 恢复机制是对发送失败的消息进行重发, 此项指定消息重发的时间间隔
 5. `recoverTimerSeconds`: 定时恢复(重发消息)的时间间隔, 为0则不启动定时恢复, 你可以在其他应用中启动, 启动`net.jkcode.jksoa.dtx.mq.MqTransactionRecovery` 主类即可

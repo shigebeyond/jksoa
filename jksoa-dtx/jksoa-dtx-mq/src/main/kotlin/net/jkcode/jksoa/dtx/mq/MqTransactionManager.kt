@@ -23,7 +23,7 @@ object MqTransactionManager : IMqTransactionManager {
     /**
      * 消息管理者
      */
-    public val mqMgr = IMqManager.instance(config["mqType"]!!)
+    public val mqMgr = IMqManager.instance(config["mqType"]!!, config["mqName"]!!)
 
     init {
         // 初始化时建表: mq_transaction
