@@ -17,7 +17,7 @@ object RefererLoader : ServiceClassLoader<Referer>(false) { // 泛型不能再�
     /**
      * 客户端配置
      */
-    override val config: IConfig = Config.instance("rpc-client", "yaml")
+    public override val config: IConfig = Config.instance("rpc-client", "yaml")
 
     /**
      * 添加本地服务

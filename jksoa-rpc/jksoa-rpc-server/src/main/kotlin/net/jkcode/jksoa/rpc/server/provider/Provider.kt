@@ -32,7 +32,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
         /**
          * 注册中心
          *   TODO: 支持多个配置中心, 可用组合模式
-         *   如果配置了 registryOrSwarm, 根本不需要注册中心, 因此延迟创建
+         *   如果registryOrSwarm为false, 根本不需要注册中心, 因此延迟创建
          */
         public val registry: IRegistry by lazy{
             IRegistry.instance("zk")
@@ -40,7 +40,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
     }
 
     /**
-     * 是否注册: 配置 + 是否启动了server
+     * 是否注册: 配置注册中心 + 是否启动了server
      *    只有启动了server, 暴露了server端口才能注册
      *    如果是纯粹的client(如mq consumer提供IMqPushConsumerService服务), 但不能向注册中心注册, 也因为他没有暴露server端口, 无法让client来连接并调用
      */
