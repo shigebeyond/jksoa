@@ -1,0 +1,19 @@
+version: "3.3"
+services:
+  jksoa-rpc-server:
+    # 这是 deliver-image.sh 打包的镜像，并上传到私有仓库192.168.0.182
+    image: 192.168.0.182:5000/jksoa-rpc-server:{tag}
+    container_name: jksoa-rpc-server
+    environment:
+      - TZ=Asia/Shanghai
+    #network_mode: host
+    #只暴露端口
+    ports:
+      - "9080:9080"
+
+    # 由于镜像已经构建过代码，不用重复构建，因此去掉重复代码
+    # build: .
+    # volumes: # 映射目录， 方便读写
+    #   - ./:/opt/rpcserver
+    # #command: "/bin/sh", "-c", "while true; do sleep 100; done" # 让进程一直跑, 否则容器会exit
+    # entrypoint: /opt/rpcserver/start-rpcserver.sh
