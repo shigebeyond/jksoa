@@ -5,6 +5,7 @@ if [ $# != 1 ] ; then
   exit 1;
 fi
 tag=$1 # 作为docker-compose.yml中的参数
+echo "版本参数: "$tag
 
 # 获得项目名
 cd `dirname $0`
