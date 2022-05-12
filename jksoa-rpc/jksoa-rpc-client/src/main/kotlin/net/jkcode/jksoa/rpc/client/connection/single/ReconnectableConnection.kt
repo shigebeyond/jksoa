@@ -57,9 +57,9 @@ class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : 
     protected val refs: AtomicInteger = AtomicInteger(0)
 
     /**
-     * 上一次发送的时间
+     * 上一次连接时间
      */
-    public var lastSendTime: Long = 0
+    public var lastConnectTime: Long = 0
         protected set
 
     init {
@@ -116,6 +116,7 @@ class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : 
                 val client = IRpcClient.instance(url.protocol)
                 // 连接server
                 conn = client.connect(url) as BaseConnection
+                lastConnectTime = currMillis()
             }
         }
         clientLogger.debug("创建新连接: {}", conn)
@@ -130,8 +131,6 @@ class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : 
      * @return
      */
     public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
-        lastSendTime = currMillis()
-
         // 发送请求
         return getOrReConnect().send(req, requestTimeoutMillis)
     }
