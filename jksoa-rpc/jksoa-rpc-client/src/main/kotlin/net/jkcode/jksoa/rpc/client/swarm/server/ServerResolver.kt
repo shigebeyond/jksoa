@@ -31,19 +31,36 @@ object ServerResolver {
                                         }.sortedByDescending { it.accuracy } // 按精准度排序
 
     /**
+     * 缓存解析结果
+     *   key是rpc服务名
+     *   value是server
+     */
+    private val resolveCache: MutableMap<String, String> = HashMap()
+
+    /**
      * 解析swarm服务名(server)
      * @param req
      * @return
      */
     fun resovleServer(req: IRpcRequest): String {
+        // 加缓存, 提高性能
+        return resolveCache.getOrPut(req.serviceId){
+            doResovleServer(req.serviceId)
+        }
+    }
+
+    /**
+     * 真正的解析
+     */
+    private fun doResovleServer(serviceClass: String): String {
         // 逐个模式解析
-        for (pattern in mappingPatterns){
-            val server = pattern.resolveServer(req.serviceId)
-            if(server != null)
+        for (pattern in mappingPatterns) {
+            val server = pattern.resolveServer(serviceClass)
+            if (server != null)
                 return server
         }
 
-        throw RpcClientException("无法根据服务类[${req.serviceId}]定位swarm server")
+        throw RpcClientException("无法根据服务类[$serviceClass]定位swarm server")
     }
 
 }
