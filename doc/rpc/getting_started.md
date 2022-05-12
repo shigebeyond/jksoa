@@ -170,6 +170,9 @@ servicePackages: # service类所在的包路径
 registryOrSwarm: true # 是否使用注册中心, 否则使用docker swarm集群来做服务发现
 swarmMqType: kafka # docker swarm模式下服务发现通知的消息队列类型: 暂时只支持 kafka
 swarmMqName: swarmDiscovery # 消息连接配置名, 对应如 kafka-consumer.yaml / kafka-producer.yaml 中的配置名
+package2swarmServer: # 包路径转为swarm服务名(server), key是包正则, value是server
+    'net.jkcode.jksoa.rpc.example': rpcserver
+    *: $2-$3
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
