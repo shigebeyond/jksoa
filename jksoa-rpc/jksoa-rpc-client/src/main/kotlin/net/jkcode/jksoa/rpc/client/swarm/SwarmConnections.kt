@@ -80,7 +80,8 @@ class SwarmConnections private constructor(
 
     init {
         // 检查 server url
-        if(url != url.serverPart)
+        //if(url != url.serverPart)
+        if(url.path.isNotBlank())
             throw IllegalArgumentException("docker swarm模式下url应只有 serverPart 部分")
 
         // 预先创建连接

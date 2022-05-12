@@ -31,6 +31,20 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
     private val connections: ConcurrentHashMap<String, SwarmConnections> = ConcurrentHashMap()
 
     /**
+     * 获得某swarm节点的连接，如果没有则尝试建立连接
+     * @param server
+     * @return
+     */
+    private fun getOrCreateConn(server: String): SwarmConnections? {
+        return connections.getOrPut(server){
+            val url = SwarmUtil.swarmServer2Url(server, SwarmConnections.config["minConnections"]!!)
+            val conn = SwarmConnections.instance(url)
+            conn.replicas = url.getParameter("replicas") ?: 1
+            conn
+        }
+    }
+
+    /**
      * 处理swarm服务节点数新增
      * @param url
      * @param allUrls
@@ -38,10 +52,10 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
     public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
         val server = url.serverName
         clientLogger.debug("SwarmConnectionHub处理swarm服务[{}]新加地址: {}", server, url)
-        if(!connections.contains(server)) {
+        connections.getOrPut(server){
             val conn = SwarmConnections.instance(url)
             conn.replicas = url.getParameter("replicas") ?: 1
-            connections[server] = conn
+            conn
         }
     }
 
@@ -81,7 +95,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
     public override fun select(req: IRpcRequest): IConnection {
         // 1 获得可用连接
         val swarmServer = req.swarmServer // rpc服务名映射为swarm服务名(server)
-        val conns = connections[swarmServer]
+        val conns = getOrCreateConn(swarmServer)
         if(conns == null)
             throw RpcNoConnectionException("远程服务[${req.serviceId}]无提供者节点")
 
