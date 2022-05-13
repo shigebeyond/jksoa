@@ -1,5 +1,4 @@
 # 先执行 gradle build -x test -Pall, 后执行: sudo docker build -t rpcserver .; sudo docker run -d --network host --name rpcserver rpcserver
-# 访问 http://localhost:8080/
 
 # 基础镜像
 FROM java
