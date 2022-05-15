@@ -10,6 +10,7 @@ import net.jkcode.jksoa.rpc.client.connection.single.ReconnectableConnection
 import net.jkcode.jkutil.common.AtomicStarter
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.common.JkApp
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -34,6 +35,13 @@ class SwarmConnections private constructor(
          * 客户端配置
          */
         public val config: IConfig = Config.instance("rpc-client", "yaml")
+
+        /**
+         * list池
+         */
+        private val lists:ThreadLocal<ArrayList<ReconnectableConnection>> = ThreadLocal.withInitial {
+            ArrayList<ReconnectableConnection>()
+        }
 
         /**
          * 实例池
@@ -177,17 +185,26 @@ class SwarmConnections private constructor(
      * @param n 销毁数
      */
     protected fun destoryConns(n: Int) {
-        if(conns.isEmpty())
+        if(conns.isEmpty() && n <= 0)
             return
 
-        // 1 删除前n个连接
-        var c = 0
-        conns.removeAll { conn ->
-            val f = c++ < n
-            if(f) // 2 延迟30s中关闭连接
-                conn.delayClose()
-            f
+        // 1  获得要删除的连接
+        // 复用list用于连接排序, 可减少ArrayList创建
+        val list = lists.get()
+        list.addAll(conns)
+        // 按连接时间降序
+        list.sortByDescending {
+            it.lastConnectTime
         }
+        // 要删除最新的连接, 因为连接要减少, 证明节点少了, 节点挂了之后对应的连接会重连(多余), 因此最新的连接是多余的
+        val rmConns = list.subList(0, n)
+
+        // 2 删除连接
+        conns.removeAll(rmConns)
+
+        // 3 延迟30s中关闭连接
+        for(conn in rmConns)
+            conn.delayClose()
     }
 
 

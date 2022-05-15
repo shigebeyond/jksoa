@@ -1,6 +1,6 @@
 # 持续交付：发版=打包docker镜像
 #!/bin/sh
-source `dirname $0`/init.sh # 共用pro/tag变量
+source `dirname $0`/init.sh # 共用pro/tag/stack变量
 
 ## 编译、打包jar
 gradle build -x test -Pall

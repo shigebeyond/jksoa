@@ -12,3 +12,4 @@ cd `dirname $0`
 DIR=`pwd`
 #pro=`basename $DIR`
 pro=swarm-discovery
+stack=jksoa
