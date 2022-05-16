@@ -1,8 +1,12 @@
 # 持续部署：只是简单压缩并上传到测试server
 #!/bin/sh
-source `dirname $0`/init.sh # 共用pro/tag/stack变量
+# 需要父脚本提供pro/tag/stack变量
 
 # 编译、打包jar
+if [ ! -f "build.gradle" ]; then
+  echo "缺少文件build.gradle"
+  exit 1;
+fi
 gradle build -x test -Pall
 
 echo "打包 $pro"

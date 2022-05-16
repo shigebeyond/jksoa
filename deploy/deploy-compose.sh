@@ -2,10 +2,12 @@
 # 需要在当前目录有 docker-compose.yml
 
 #!/bin/sh
-source `dirname $0`/init.sh # 共用pro/tag/stack变量
+# 需要父脚本提供pro/tag/stack变量
 
-# 将shell变量升为环境变量，这样 docker-compose.yml 中可以引用该变量
-export tag=$tag
+if [ ! -f "docker-compose.yml" ]; then
+  echo "缺少文件docker-compose.yml"
+  exit 1;
+fi
 
 # 停止与删除旧容器
 echo "停掉旧容器 $pro"
