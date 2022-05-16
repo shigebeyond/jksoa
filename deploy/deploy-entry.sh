@@ -21,7 +21,7 @@ if [ $# -lt 2 ] ; then
   echo "Miss version"
   exit 1;
 fi
-# 导出环境变量，这样 docker-compose.yml 中可以引用该变量
+# 导出环境变量tag，这样 docker-compose.yml 中可以引用该变量
 export tag=$2
 
 # 解析子命令

@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.rpc.client.swarm
 
 import net.jkcode.jkmq.mqmgr.kafka.KafkaMqManager
+import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jkutil.common.Config
@@ -25,6 +26,7 @@ abstract class SwarmDiscoveryListener: IConnectionHub() {
         checkMqConsumer()
 
         // 全局的订阅
+        clientLogger.debug("SwarmDiscoveryListener订阅服务节点信息的mq")
         SwarmUtil.mqMgr.subscribeMq(SwarmUtil.topic){
             handleSwarmServiceReplicasChange(it as MutableMap<String, Int>)
         }

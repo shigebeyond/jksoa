@@ -170,6 +170,7 @@ class RpcClientTests {
         val service = Referer.getRefer<ISimpleService>()
         val pong = service.ping()
         println("调用服务[ISimpleService.ping()]结果： $pong")
+        Thread.sleep(10000000000000)
     }
 
     @Test

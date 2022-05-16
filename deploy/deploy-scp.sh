@@ -9,10 +9,10 @@ if [ ! -f "build.gradle" ]; then
 fi
 gradle build -x test -Pall
 
-echo "打包 $pro"
+echo "打包 $pro-$tag"
 cd build
 rm *.zip
 zip -r $pro-$tag.zip app/
 
-echo "上传 $pro"
+echo "上传 $pro-$tag"
 scp *.zip root@192.168.0.17:/root/java/

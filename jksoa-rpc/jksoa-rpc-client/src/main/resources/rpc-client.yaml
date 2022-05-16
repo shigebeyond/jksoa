@@ -12,13 +12,13 @@ swarmMqName: swarmDiscovery # 消息连接配置名, 对应如 kafka-consumer.ya
 package2swarmServer: # 包名转为swarm服务名(server)
     # key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
     # value是server名: 可以带变量, 格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
-    'net.jkcode.jksoa.rpc.example': jksoa-rpcserver
-    '**': $2-$3
+    'net.jkcode.jksoa.rpc.example': jksoa_rpcserver
+    '**': $2_$3
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
 connectType: fixed # 连接类型: 1 single 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
 lazyConnect: false # 是否延迟创建连接
-minConnections: 10 # 最小连接数, 用在 PooledConnections/FixedConnections
-maxConnections: 10 # 最大连接数, 用在 PooledConnections
+minConnections: 1 # 最小连接数, 用在 PooledConnections/FixedConnections
+maxConnections: 1 # 最大连接数, 用在 PooledConnections
 ioThreads: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数

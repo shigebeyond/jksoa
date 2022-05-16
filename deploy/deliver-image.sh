@@ -26,4 +26,4 @@ echo "测试镜像 $image"
 
 # 推送镜像到仓库 -- 交付版本
 echo "推送镜像 $image"
-#docker push $image
+docker push $image

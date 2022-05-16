@@ -9,5 +9,5 @@ if [ ! -f "docker-compose.yml" ]; then
   exit 1;
 fi
 
-echo "部署swarm服务 $pro"
+echo "部署swarm服务 $stack-$pro"
 docker stack deploy -c docker-compose.yml $stack
