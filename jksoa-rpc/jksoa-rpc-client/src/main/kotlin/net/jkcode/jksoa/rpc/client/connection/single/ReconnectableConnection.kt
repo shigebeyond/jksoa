@@ -109,7 +109,7 @@ class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : 
             }
         }
 
-        // 2 无连接: 创建新连接
+        // 2 无连接: 重建连接
         synchronized(this){
             if(conn == null) {
                 // 根据rpc协议获得对应的client
@@ -117,9 +117,9 @@ class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : 
                 // 连接server
                 conn = client.connect(url) as BaseConnection
                 lastConnectTime = currMillis()
+                clientLogger.debug("重建连接: {}", conn)
             }
         }
-        clientLogger.debug("创建新连接: {}", conn)
         return conn!!
     }
 

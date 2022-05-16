@@ -69,11 +69,11 @@ object SwarmDiscovery {
 
         // 2 有服务：广播消息
         var sending = true
-        if (lastQueryResult == data) {
+        if (lastQueryResult == data) { // 不变
             sending = randomInt(10) < 7 // 70%几率随机发
             val sendMsg = if(sending) "随机发" else "不发"
             clientLogger.info("查询swarm服务的节点数无变化+{}: {}", sendMsg, data)
-        }else{
+        }else{ // 有变
             clientLogger.info("查询swarm服务的节点数有变化: {}", data)
             lastQueryResult = data
         }
@@ -91,6 +91,7 @@ object SwarmDiscovery {
         CommonSecondTimer.newPeriodic({
             // 查询swarm服务的节点数
             val data = querySwarmServiceReplicas()
+            // 广播消息
             sendMq(data)
         }, timerSeconds, TimeUnit.SECONDS)
     }

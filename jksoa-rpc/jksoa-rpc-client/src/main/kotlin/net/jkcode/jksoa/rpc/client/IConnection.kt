@@ -59,9 +59,9 @@ interface IConnection: Closeable {
     fun delayClose(){
         // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
         val conn = this
+        clientLogger.debug("延迟关闭连接: {}", conn)
         CommonMilliTimer.newTimeout(object : TimerTask {
             override fun run(timeout: Timeout) {
-                clientLogger.debug("延迟关闭连接: {}", conn)
                 conn.close() // 关闭连接
             }
         }, closeDelaySenconds, TimeUnit.SECONDS)
