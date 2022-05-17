@@ -170,7 +170,6 @@ class RpcClientTests {
         val service = Referer.getRefer<ISimpleService>()
         val ret = service.hostname()
         println("调用服务[ISimpleService.hostname()]结果： $ret")
-        Thread.sleep(10000000000000)
     }
 
     @Test
@@ -219,8 +218,8 @@ class RpcClientTests {
         // 对单个server, 循环rpc, 可测试client是否复用连接
         for(i in 0..2) {
             val service = Referer.getRefer<ISimpleService>()
-            val ret = service.hostname()
-            println("第${i}次调用服务[ISimpleService.hostname()]结果： $ret")
+            val ret = service.sayHi()
+            println("第${i}次调用服务[ISimpleService.sayHi()]结果： $ret")
         }
     }
 

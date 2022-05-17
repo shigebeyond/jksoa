@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap
  *    2 全局下(无关单个rpc服务)，维系client对所有server的所有连接
  *    3 全局下(无关单个rpc服务)，在client调用中对server集群进行均衡负载
  *    4 因为调用是单个rpc服务，因此需要将rpc服务名映射为swarm服务名(server)
+ *    5 一般而言， 先调用 handleServiceUrlAdd() 来初始化连接，然后再调用 getOrCreateConn() 来获得连接，但有时候rpc(getOrCreateConn)在前，监听服务发现(handleServiceUrlAdd)在后，那么在 getOrCreateConn() 中就需要创建一个默认的连接
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
@@ -35,6 +36,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      */
     private fun getOrCreateConn(serverAddr: String): SwarmConnections? {
         return connections.getOrPut(serverAddr){
+            // 一般而言， 先调用 handleServiceUrlAdd() 来初始化连接，然后再调用 getOrCreateConn() 来获得连接，但有时候rpc(getOrCreateConn)在前，监听服务发现(handleServiceUrlAdd)在后，那么就需要创建一个默认的连接
             val url = Url(serverAddr)
             val conn = SwarmConnections(url)
             conn.replicas = 1 // 默认一副本
@@ -98,8 +100,8 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
             throw RpcNoConnectionException("远程服务[${req.serviceId}]无提供者节点")
 
         // 2 按均衡负载策略，来选择连接
-        val conn = loadBalancer.select(conns, req)!!
-        swarmLogger.debug("SwarmConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
+        val conn = loadBalancer.select(conns, req)!! as SwarmConnection
+        swarmLogger.debug("SwarmConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn.toDesc())
         return conn
     }
 

@@ -16,14 +16,14 @@ import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * 自动重连的连接
- *  1 自动重连
+ *  1 延迟连接 + 自动重连，见getOrReConnect()
  *  2 支持引用数，close()必须在引用数为0时，才真正关闭连接
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-14 12:48 PM
  */
-class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
+open class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : BaseConnection(url, weight) {
 
     companion object{
         /**
@@ -123,10 +123,18 @@ class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : 
                 lastConnectTime = currMillis()
                 val act = if(first) "新建" else "重建"
                 connLogger.debug("{}连接: {}", act, conn)
+
+                // 触发重连的事件
+                onReConnect(conn!!)
             }
         }
         return conn!!
     }
+
+    /**
+     * 重连的事件
+     */
+    protected open fun onReConnect(conn: BaseConnection) {}
 
     /**
      * 客户端发送请求

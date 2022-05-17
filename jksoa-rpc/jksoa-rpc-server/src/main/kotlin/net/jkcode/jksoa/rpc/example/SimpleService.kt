@@ -15,7 +15,7 @@ class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服�
 
     @Throws(RemoteException::class) // rim异常
     public override fun hostname(): String {
-        return InetAddress.getLocalHost().hostName // 容器名
+        return InetAddress.getLocalHost().hostName // 容器id
     }
 
     @Throws(RemoteException::class) // rim异常

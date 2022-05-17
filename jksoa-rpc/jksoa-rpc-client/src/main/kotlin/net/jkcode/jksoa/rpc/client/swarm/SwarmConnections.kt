@@ -1,17 +1,13 @@
 package net.jkcode.jksoa.rpc.client.swarm
 
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.swarmLogger
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
-import net.jkcode.jksoa.rpc.client.connection.single.ReconnectableConnection
 import net.jkcode.jkutil.common.AtomicStarter
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
-import net.jkcode.jkutil.common.JkApp
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -26,8 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger
 */
 class SwarmConnections(
         url: Url, // server url
-        protected val conns: MutableList<ReconnectableConnection> = ArrayList() // 代理list
-): BaseConnection(url, 1), List<ReconnectableConnection> by conns {
+        protected val conns: MutableList<SwarmConnection> = ArrayList() // 代理list
+): BaseConnection(url, 1), List<SwarmConnection> by conns {
 
     companion object{
 
@@ -39,8 +35,8 @@ class SwarmConnections(
         /**
          * list池
          */
-        private val lists:ThreadLocal<ArrayList<ReconnectableConnection>> = ThreadLocal.withInitial {
-            ArrayList<ReconnectableConnection>()
+        private val lists:ThreadLocal<ArrayList<SwarmConnection>> = ThreadLocal.withInitial {
+            ArrayList<SwarmConnection>()
         }
 
     }
@@ -49,18 +45,17 @@ class SwarmConnections(
      * 服务副本数, 即server数
      */
     public var replicas: Int = 0
+        @Synchronized
         set(value) {
             field = value
 
             // 如果连接已经创建过，则调整连接数
-            if(starter.isStarted) {
-                prepareConns(false)
+            if(initStarter.isStarted) {
+                rescaleConns()
             }else if(value > 0){ // 否则，尝试预先创建连接
                 val lazyConnect: Boolean = config["lazyConnect"]!!
                 if(!lazyConnect) { // 不延迟创建连接: 预先创建
-                    starter.startOnce {
-                        prepareConns(true)
-                    }
+                    initConnsOnce()
                 }
             }
         }
@@ -75,11 +70,6 @@ class SwarmConnections(
      */
     protected val expectSize: Int
         get() = replicas * connPerReplica
-
-    /**
-     * 单次启动者
-     */
-    protected val starter = AtomicStarter()
 
     /**
      * 计数器
@@ -102,9 +92,7 @@ class SwarmConnections(
      * @return
      */
     public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
-        starter.startOnce {
-            prepareConns(true)
-        }
+        initConnsOnce()
 
         // 获得连接
         val i = (counter.getAndIncrement() and Integer.MAX_VALUE) % conns.size
@@ -124,24 +112,35 @@ class SwarmConnections(
 
     /***************** 连接增减管理 *****************/
     /**
-     * 准备好连接
-     * @param first 是否首次
+     * 单次启动者
+     */
+    protected val initStarter = AtomicStarter()
+
+    /**
+     * 首次准备连接，仅调用一次
+     */
+    fun initConnsOnce(){
+        initStarter.startOnce {
+            rescaleConns()
+            swarmLogger.debug("SwarmConnections初始化连接池, server为{}, 副本数为{}, 连接数为{}", url, replicas, conns.size)
+        }
+    }
+
+    /**
+     * 根据副本数来 重新调整连接数
      */
     @Synchronized
-    fun prepareConns(first: Boolean){
+    protected fun rescaleConns(){
         // 1 销毁无效连接
         destroyInvalidConns()
 
         // 2 检查连接差距
-        val span = expectSize - size
+        val span = expectSize - conns.size
 
         if(span > 0) // 3 创建缺失的连接
             createConns(span)
         else if(span < 0) // 4 销毁多余的连接
             destoryConns(-span)
-
-        if(first)
-            swarmLogger.debug("SwarmConnections初始化连接池, server为{}, 副本数为{}, 连接数为{}", url, replicas, conns.size)
     }
 
     /**
@@ -170,9 +169,9 @@ class SwarmConnections(
      */
     protected fun createConns(n: Int) {
         if(n > 0)
-            swarmLogger.debug("SwarmConnections创建缺失的连接, server为{}, 增加副本数为{}, 新建连接数为{}", url, n / connPerReplica, n)
+            swarmLogger.debug("SwarmConnections创建缺失的连接, server为{}, 增加副本数为{}, 新建连接数为{}, 总连接数为{}", url, n / connPerReplica, n, size + n)
         for (i in 0 until n) {
-            val conn = ReconnectableConnection(url) // 根据 url=serverPart 来复用 ReconnectableConnection 的实例
+            val conn = SwarmConnection(url) // 根据 url=serverPart 来复用 SwarmConnection 的实例
             conns.add(conn)
         }
     }
@@ -185,7 +184,7 @@ class SwarmConnections(
         if(conns.isEmpty() && n <= 0)
             return
 
-        swarmLogger.debug("SwarmConnections销毁多余的连接, server为{}, 减少副本数为{}, 销毁连接数为{}", url, n / connPerReplica, n)
+        swarmLogger.debug("SwarmConnections销毁多余的连接, server为{}, 减少副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connPerReplica, n, size - n)
         // 1  获得要删除的连接
         // 复用list用于连接排序, 可减少ArrayList创建
         val list = lists.get()
