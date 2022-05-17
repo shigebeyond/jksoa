@@ -71,6 +71,12 @@ class SwarmConnections(
     protected val connPerReplica: Int = config["minConnections"]!!
 
     /**
+     * 期望连接数
+     */
+    protected val expectSize: Int
+        get() = replicas * connPerReplica
+
+    /**
      * 单次启动者
      */
     protected val starter = AtomicStarter()
@@ -127,16 +133,15 @@ class SwarmConnections(
         destroyInvalidConns()
 
         // 2 检查连接差距
-        val expectSize = replicas * connPerReplica // 期望连接数
         val span = expectSize - size
 
-        if(span > 0) // 3 创建缺少的连接
+        if(span > 0) // 3 创建缺失的连接
             createConns(span)
         else if(span < 0) // 4 销毁多余的连接
             destoryConns(-span)
 
         if(first)
-            swarmLogger.debug("SwarmConnections初始化连接池, server为{}, 连接数为{}", url, conns.size)
+            swarmLogger.debug("SwarmConnections初始化连接池, server为{}, 副本数为{}, 连接数为{}", url, replicas, conns.size)
     }
 
     /**
@@ -147,19 +152,25 @@ class SwarmConnections(
             return
 
         // 1 删除无效的连接
+        var n = conns.size
         conns.removeAll { conn ->
             val invalid = !conn.isValid()
             if(invalid) // 2 延迟30s中关闭连接
                 conn.delayClose()
             invalid
         }
+        n = n - conns.size
+        if(n > 0)
+            swarmLogger.debug("SwarmConnections销毁无效连接, server为{}, 销毁连接数为{}", url, n)
     }
 
     /**
-     * 创建缺少的连接
+     * 创建缺失的连接
      * @param n 创建数
      */
     protected fun createConns(n: Int) {
+        if(n > 0)
+            swarmLogger.debug("SwarmConnections创建缺失的连接, server为{}, 增加副本数为{}, 新建连接数为{}", url, n / connPerReplica, n)
         for (i in 0 until n) {
             val conn = ReconnectableConnection(url) // 根据 url=serverPart 来复用 ReconnectableConnection 的实例
             conns.add(conn)
@@ -174,6 +185,7 @@ class SwarmConnections(
         if(conns.isEmpty() && n <= 0)
             return
 
+        swarmLogger.debug("SwarmConnections销毁多余的连接, server为{}, 减少副本数为{}, 销毁连接数为{}", url, n / connPerReplica, n)
         // 1  获得要删除的连接
         // 复用list用于连接排序, 可减少ArrayList创建
         val list = lists.get()
@@ -187,6 +199,7 @@ class SwarmConnections(
 
         // 2 删除连接
         conns.removeAll(rmConns)
+        list.clear() // 清理复用的list
 
         // 3 延迟30s中关闭连接
         for(conn in rmConns)

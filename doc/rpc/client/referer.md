@@ -21,7 +21,7 @@ servicePackages: # service类所在的包路径
 // 获得远端服务`ISimpleService` 的引用
 val service = Referer.getRefer<ISimpleService>()
 // 通过引用调用远端服务的方法
-val pong = service.ping()
+val ret = service.hostname()
 ```
 
 # Referer -- 服务引用

@@ -7,12 +7,12 @@ class ISimpleService {
 	public static $_methodAnnotations = [];
 
 	// ------------ php对java调用映射的方法 ------------
-	public static function ping(){
-		return 'java.lang.String ping()';
+	public static function hostname(){
+		return 'java.lang.String hostname()';
 	}
 
-	public static function echo($msg){
-		return 'java.lang.String echo(java.lang.String)';
+	public static function sayHi($msg){
+		return 'java.lang.String sayHi(java.lang.String)';
 	}
 
 	public static function sleep(){

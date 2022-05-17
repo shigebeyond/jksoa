@@ -1,9 +1,8 @@
 package net.jkcode.jksoa.rpc.example
 
-import net.jkcode.jkutil.common.randomLong
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.rpc.server.RpcServerContext
-import java.lang.IllegalArgumentException
+import java.net.InetAddress
 import java.rmi.RemoteException
 
 /**
@@ -15,23 +14,13 @@ import java.rmi.RemoteException
 class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服务实现*/{
 
     @Throws(RemoteException::class) // rim异常
-    public override fun ping(): String {
-        serverLogger.debug("收到ping请求, 响应pong")
-        return "pong"
+    public override fun hostname(): String {
+        return InetAddress.getLocalHost().hostName // 容器名
     }
 
     @Throws(RemoteException::class) // rim异常
-    public override fun echo(msg: String): String{
-        serverLogger.debug("收到echo请求: $msg")
-        return msg
-    }
-
-    @Throws(RemoteException::class) // rim异常
-    public override fun sleep(): Long {
-        val millis: Long = randomLong(500) * 2
-        serverLogger.debug("睡 $millis ms")
-        Thread.sleep(millis)
-        return millis
+    public override fun sayHi(name: String): String{
+        return "Greeting, $name"
     }
 
     /**

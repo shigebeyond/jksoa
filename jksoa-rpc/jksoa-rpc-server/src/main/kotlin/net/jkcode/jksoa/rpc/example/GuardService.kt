@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.example
 
+import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jkutil.common.randomBoolean
 import net.jkcode.jkutil.common.randomString
 import java.util.concurrent.CompletableFuture
@@ -20,7 +21,7 @@ class GuardService : IGuardService /*, UnicastRemoteObject() // rmi协议服务�
      *   单个参数的处理方法
      */
     public override fun getUserByIdAsync(id: Int): CompletableFuture<User> {
-        println("测试调用 CombineService.getUserById($id) 实现, 只执行一次")
+        serverLogger.debug("测试调用 CombineService.getUserById($id) 实现, 只执行一次")
         val u = User(id, randomString(7))
         return CompletableFuture.completedFuture(u)
     }
@@ -38,7 +39,7 @@ class GuardService : IGuardService /*, UnicastRemoteObject() // rmi协议服务�
      *    一组参数的批量处理方法
      */
     public override fun listUsersByNameAsync(names: List<String>): CompletableFuture<List<User>>{
-        println("测试调用 CombineService.listUsersByName(" + names.joinToString() + ") 实现, 只执行一次")
+        serverLogger.debug("测试调用 CombineService.listUsersByName(" + names.joinToString() + ") 实现, 只执行一次")
         var i = 0
         val us = names.map {name ->
             getUserByName(name)

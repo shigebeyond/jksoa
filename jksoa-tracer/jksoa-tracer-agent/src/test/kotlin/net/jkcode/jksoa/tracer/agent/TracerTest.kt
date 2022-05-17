@@ -12,8 +12,8 @@ class TracerTest {
         val span = Tracer.current().startInitiatorSpanner(::testTrace)
 
         val service = Referer.getRefer<ISimpleService>()
-        val pong = service.ping()
-        println("调用服务[ISimpleService.ping()]结果： $pong")
+        val ret = service.hostname()
+        println("调用服务[ISimpleService.hostname()]结果： $ret")
 
         span.end().get()
     }

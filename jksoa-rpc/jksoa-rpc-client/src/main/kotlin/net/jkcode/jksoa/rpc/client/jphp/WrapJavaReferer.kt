@@ -23,7 +23,7 @@ import php.runtime.reflection.ClassEntity
  * 2 使用
  *    java中的实例化： val ref = WrapJavaReferer.of(env, "net.jkcode.jksoa.rpc.example.ISimpleService")
  *    php中的实例化: $ref = new JavaReferer("net.jkcode.jksoa.rpc.example.ISimpleService");
- *    php中的方法调用（默认方法）: $ref->ping();
+ *    php中的方法调用（默认方法）: $ref->hostname();
  */
 @Reflection.Name("JavaReferer")
 @Reflection.Namespace(JksoaRpcExtension.NS)

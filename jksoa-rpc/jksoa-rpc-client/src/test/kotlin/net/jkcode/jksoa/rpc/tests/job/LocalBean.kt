@@ -9,9 +9,8 @@ import net.jkcode.jkjob.jobLogger
  */
 class LocalBean {
 
-    public fun echo(msg: String): String{
-        jobLogger.debug("调用本地bean的方法: echo(\"{}\")", msg)
-        return msg
+    public fun sayHi(name: String): String{
+        return "Greeting, $name"
     }
 
 }

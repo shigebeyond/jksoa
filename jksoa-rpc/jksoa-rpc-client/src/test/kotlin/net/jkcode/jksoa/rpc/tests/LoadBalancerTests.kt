@@ -18,7 +18,7 @@ class LoadBalancerTests {
         TestConnection(randomInt(5))
     }
 
-    val req = RpcRequest(ISimpleService::echo)
+    val req = RpcRequest(ISimpleService::sayHi)
 
     init {
         println("有连接: " + conns)

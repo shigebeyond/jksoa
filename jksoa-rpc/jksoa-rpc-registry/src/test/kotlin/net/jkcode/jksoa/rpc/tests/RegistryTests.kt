@@ -14,7 +14,7 @@ class RegistryTests {
 
     val registry = ZkRegistry()
 
-    val serviceId = "net.jkcode.jksoa.rpc.example.IEchoService"
+    val serviceId = "net.jkcode.jksoa.rpc.example.ISimpleService"
 
     val url = Url("rmi://localhost:8081/$serviceId?weight=1")
 

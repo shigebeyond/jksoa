@@ -16,7 +16,7 @@ class SpannerTest {
 
         val span1 = Tracer.current().startInitiatorSpanner(::testInitiatorTrace)
 
-        val req = RpcRequest(ISimpleService::echo)
+        val req = RpcRequest(ISimpleService::sayHi)
         val span2 = Tracer.current().startClientSpanner(req)
         val f2 = span2.end()
 
@@ -27,10 +27,10 @@ class SpannerTest {
 
     @Test
     fun testServerTrace(){
-        val req1 = RpcRequest(ISimpleService::echo)
+        val req1 = RpcRequest(ISimpleService::sayHi)
         val span1 = Tracer.current().startServerSpanner(req1)
 
-        val req2 = RpcRequest(ISimpleService::echo)
+        val req2 = RpcRequest(ISimpleService::sayHi)
         val span2 = Tracer.current().startClientSpanner(req2)
         val f2 = span2.end()
 

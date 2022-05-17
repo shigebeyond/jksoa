@@ -37,7 +37,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
         return connections.getOrPut(serverAddr){
             val url = Url(serverAddr)
             val conn = SwarmConnections(url)
-            conn.replicas = 1
+            conn.replicas = 1 // 默认一副本
             conn
         }
     }
@@ -51,11 +51,10 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
         val server = url.serverAddr
         swarmLogger.debug("SwarmConnectionHub处理swarm服务[{}]新加地址: {}", server, url)
         // 新建连接
-        connections.getOrPut(server){
-            val conn = SwarmConnections(url)
-            conn.replicas = url.getParameter("replicas") ?: 1
-            conn
+        val conn = connections.getOrPut(server){
+            SwarmConnections(url)
         }
+        conn.replicas = url.getParameter("replicas") ?: 1
     }
 
     /**

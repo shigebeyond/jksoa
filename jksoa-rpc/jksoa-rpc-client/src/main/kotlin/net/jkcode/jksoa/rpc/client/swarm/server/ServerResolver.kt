@@ -61,7 +61,7 @@ object ServerResolver {
                 if(server.contains("://"))
                     return server
 
-                // 2 只有ip
+                // 2 只有ip，转为`协议://ip:端口`
                 return SwarmUtil.swarmServer2Url(server).serverAddr
             }
         }

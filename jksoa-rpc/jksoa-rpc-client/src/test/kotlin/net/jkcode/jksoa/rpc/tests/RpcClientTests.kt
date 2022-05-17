@@ -36,7 +36,7 @@ class RpcClientTests {
 
     @Test
     fun testServer() {
-        var req = RpcRequest(ISimpleService::echo, arrayOf<Any?>("shi"))
+        var req = RpcRequest(ISimpleService::sayHi, arrayOf<Any?>("shi"))
         val server = ServerResolver.resovleServer(req)
         println("server = " + server)
     }
@@ -53,9 +53,9 @@ class RpcClientTests {
 
     @Test
     fun testRequestJson(){
-        val o = RpcRequest(ISimpleService::echo, arrayOf<Any?>("shi"))
+        val o = RpcRequest(ISimpleService::sayHi, arrayOf<Any?>("shi"))
         var json = JSON.toJSONString(o)
-        println(json) // 输出 {"args":["shi"],"attachments":{},"clazz":"net.jkcode.jksoa.rpc.example.ISimpleService","id":105333247373737984,"methodSignature":"echo(String)","version":1}
+        println(json) // 输出 {"args":["shi"],"attachments":{},"clazz":"net.jkcode.jksoa.rpc.example.ISimpleService","id":105333247373737984,"methodSignature":"sayHi(String)","version":1}
 
         val o2 = JSON.parseObject(json, RpcRequest::class.java);
         println(o2)
@@ -73,7 +73,7 @@ class RpcClientTests {
 
     @Test
     fun testRequestSerialize(){
-        val o = RpcRequest(ISimpleService::echo, arrayOf<Any?>("shi"))
+        val o = RpcRequest(ISimpleService::sayHi, arrayOf<Any?>("shi"))
         val fstSerializer = FstSerializer()
         val bs = fstSerializer.serialize(o)
         println(bs?.size)
@@ -95,7 +95,7 @@ class RpcClientTests {
             println("调用方法: ${method.name}" + args?.joinToString(",", "(", ")"))
             println("是否默认方法: " + method.isDefault)
         } as ISimpleService
-        p.echo()
+        p.sayHi()
         //p.defaultMethod()
     }
 
@@ -168,18 +168,18 @@ class RpcClientTests {
     @Test
     fun testRpc(){
         val service = Referer.getRefer<ISimpleService>()
-        val pong = service.ping()
-        println("调用服务[ISimpleService.ping()]结果： $pong")
+        val ret = service.hostname()
+        println("调用服务[ISimpleService.hostname()]结果： $ret")
         Thread.sleep(10000000000000)
     }
 
     @Test
     fun testFiber(){
-        val pong = fiber  @Suspendable {
+        val ret = fiber  @Suspendable {
             val service = Referer.getRefer<ISimpleService>()
-            service.ping()
+            service.hostname()
         }.get()
-        println("调用服务[ISimpleService.ping()]结果： $pong")
+        println("调用服务[ISimpleService.hostname()]结果： $ret")
     }
 
     /**
@@ -194,7 +194,7 @@ class RpcClientTests {
         val f = fiber(true, scheduler = scheduler) @Suspendable {
             println("rpc之前")
             val service = Referer.getRefer<ISimpleService>()
-            val r = service.ping()
+            val r = service.hostname()
             println("rpc之后")
             r
         }
@@ -203,7 +203,7 @@ class RpcClientTests {
             println("另外的操作")
         }
 
-        println("调用服务[ISimpleService.ping()]结果： " + f.get())
+        println("调用服务[ISimpleService.hostname()]结果： " + f.get())
     }
 
     @Test
@@ -219,8 +219,8 @@ class RpcClientTests {
         // 对单个server, 循环rpc, 可测试client是否复用连接
         for(i in 0..2) {
             val service = Referer.getRefer<ISimpleService>()
-            val pong = service.ping()
-            println("第${i}次调用服务[ISimpleService.ping()]结果： $pong")
+            val ret = service.hostname()
+            println("第${i}次调用服务[ISimpleService.hostname()]结果： $ret")
         }
     }
 
@@ -243,18 +243,11 @@ class RpcClientTests {
     }
 
     @Test
-    fun testFailove() {
-        val service = Referer.getRefer<ISimpleService>()
-        val millis = service.sleep()
-        println("睡 $millis ms")
-    }
-
-    @Test
     fun testConcurrent(){
         makeThreads(3){
             val tname = Thread.currentThread().name
             val service = Referer.getRefer<ISimpleService>()
-            val content = service.echo("Man $tname")
+            val content = service.sayHi("Man $tname")
             println("结果$tname： $content")
         }
     }
@@ -262,9 +255,9 @@ class RpcClientTests {
     @Test
     fun testShardingRequest(){
         val args:Array<Any?> = Array(3) { i ->
-            "第${i}个分片的参数" // ISimpleService::echo 的实参
+            "第${i}个分片的参数" // ISimpleService::sayHi 的实参
         }
-        val req = ShardingRpcRequest(ISimpleService::echo, args, 1)
+        val req = ShardingRpcRequest(ISimpleService::sayHi, args, 1)
         val dispatcher = IRpcRequestDispatcher.instance()
         val futures = dispatcher.dispatchSharding(req)
         futures.print()

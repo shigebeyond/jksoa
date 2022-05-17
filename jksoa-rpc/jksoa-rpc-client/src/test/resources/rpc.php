@@ -15,9 +15,9 @@ function print_rpc($ref, $ret){
 include 'src/test/resources/ISimpleService.php';
 $ref = new PhpReferer('net\jkcode\jksoa\rpc\example\ISimpleService');
 // rpc
-$ret = $ref->ping();
+$ret = $ref->hostname();
 print_rpc($ref, $ret);
-$ret = $ref->echo('hello');
+$ret = $ref->sayHi('hello');
 print_rpc($ref, $ret);
 */
 

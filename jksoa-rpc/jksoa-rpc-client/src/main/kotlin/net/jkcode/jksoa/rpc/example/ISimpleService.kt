@@ -15,13 +15,10 @@ interface ISimpleService /*: Remote // rmi协议服务接口 */ {
 
     @Throws(RemoteException::class) // rmi异常
     @Suspendable
-    fun ping(): String
+    fun hostname(): String
 
     @Throws(RemoteException::class) // rmi异常
-    fun echo(msg: String = "test"): String
-
-    @Throws(RemoteException::class) // rim异常
-    fun sleep(): Long
+    fun sayHi(name: String = "shi"): String
 
     @Throws(RemoteException::class) // rim异常
     fun checkVersion()

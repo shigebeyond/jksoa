@@ -29,6 +29,7 @@ object SwarmUtil {
 
     /**
      * swarm服务名(server)转url
+     *    默认协议jkrp跟端口9080
      * @param server
      * @param replicas 服务副本数, 即server数
      * @return

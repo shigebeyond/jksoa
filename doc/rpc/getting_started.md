@@ -117,10 +117,10 @@ import java.rmi.RemoteException
 interface ISimpleService /*: Remote // rmi协议服务接口 */ {
 
     @Throws(RemoteException::class) // rmi异常
-    fun ping(): String
+    fun hostname(): String
 
     @Throws(RemoteException::class) // rmi异常
-    fun echo(msg: String = "test"): String
+    fun sayHi(msg: String = "test"): String
 
     @Throws(RemoteException::class) // rim异常
     fun sleep(): Long
@@ -195,6 +195,6 @@ import net.jkcode.jksoa.rpc.example.ISimpleService
 // 获得服务引用者(stub)
 val service = Referer.getRefer<ISimpleService>()
 // 调用服务引用者, 实际调用的是远程方法, 但跟调用本地方法一样简单
-val pong = service.ping()
-println("调用服务[ISimpleService.ping()]结果： $pong")
+val ret = service.hostname()
+println("调用服务[ISimpleService.hostname()]结果： $ret")
 ```
