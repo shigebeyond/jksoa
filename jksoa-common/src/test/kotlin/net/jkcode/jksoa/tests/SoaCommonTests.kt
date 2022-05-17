@@ -26,10 +26,10 @@ class SoaCommonTests {
     }
 
     @Test
-    fun testServerName(){
+    fun testServerPath(){
         val url = Url("http", "localhost", 8080)
         println(url) // http://localhost:8080
-        println(url.serverName) // http:localhost:8080
+        println(url.serverAddr) // http://localhost:8080
     }
 
     @Test

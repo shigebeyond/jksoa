@@ -36,11 +36,14 @@ class PooledConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight)
         protected var pools: ConcurrentHashMap<IUrl, GenericObjectPool<IConnection>> = ConcurrentHashMap();
 
         /**
-         * 根据地址获得连接池
+         * 根据server地址获得连接池
          * @param url
          * @return
          */
         public fun getPool(url: Url): GenericObjectPool<IConnection> {
+            if(url.path.isNotBlank())
+                throw IllegalArgumentException("PooledConnections.getPool(url) 调用中 url 应只有 serverPart 部分")
+
             return pools.getOrPut(url){
                 // 创建连接池
                 val pool = GenericObjectPool<IConnection>(PooledConnectionFactory(url))

@@ -55,9 +55,9 @@ interface IUrl {
 
     /**
      * 服务节点名称
-     *    格式为 协议:ip:端口
+     *    格式为 协议://ip:端口
      */
-    val serverName: String
+    val serverAddr: String
 
     /**
      * 服务节点路径

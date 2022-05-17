@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * 池化的连接的包装器
  *    1 根据 serverPart 来引用连接池
  *      哪怕是不同服务的连接，引用的是同一个server的池化连接
+ *      innerGetPool() 如果是第一次，则对ReconnectableConnection增加引用，这样才能正确关闭ReconnectableConnection
  *    2 固定几个连接
  *
  * @author shijianhang<772910474@qq.com>
@@ -43,6 +44,9 @@ class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
          * @return
          */
         public fun getPool(url: Url): Array<ReconnectableConnection> {
+            if(url.path.isNotBlank())
+                throw IllegalArgumentException("PooledConnections.getPool(url) 调用中 url 应只有 serverPart 部分")
+
             return pools.getOrPut(url){
                 // 创建连接池
                 val min: Int = config["minConnections"]!!

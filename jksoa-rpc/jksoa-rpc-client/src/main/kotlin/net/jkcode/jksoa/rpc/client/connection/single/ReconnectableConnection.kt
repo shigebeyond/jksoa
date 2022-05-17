@@ -16,6 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * 自动重连的连接
+ *  1 自动重连
+ *  2 支持引用数，close()必须在引用数为0时，才真正关闭连接
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

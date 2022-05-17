@@ -66,7 +66,7 @@ open class DiscoveryListenerContainer(
         // 1 构建新的服务地址
         val newUrls = HashMap<String, Url>()
         for (url in urls) {
-            newUrls[url.serverName] = url
+            newUrls[url.serverAddr] = url
         }
 
         // 2 获得旧的服务地址
@@ -105,7 +105,7 @@ open class DiscoveryListenerContainer(
 
         // 7 更新的地址
         for(url in updateUrls) {
-            this.urls[url.serverName] = url
+            this.urls[url.serverAddr] = url
             handleParametersChange(url)
         }
     }

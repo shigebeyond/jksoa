@@ -125,19 +125,11 @@ open class Url(public override var protocol: String, // 协议
     }
 
     /**
-     * 服务节点名称
-     *    格式为 协议:ip:端口
-     */
-    public override val serverName: String by lazy{
-        "$protocol:$host:$port"
-    }
-
-    /**
      * 服务节点路径
      *    格式为 /jksoa/服务/协议:ip:端口
      */
     public override val serverRegistryPath: String by lazy{
-        "$serviceRegistryPath/$serverName"
+        "$serviceRegistryPath/$protocol:$host:$port"
     }
 
     /**
@@ -145,6 +137,14 @@ open class Url(public override var protocol: String, // 协议
      */
     public override val serverPart: Url by lazy{
         Url(protocol, host, port)
+    }
+
+    /**
+     * 服务节点名称
+     *    格式为 协议://ip:端口
+     */
+    public override val serverAddr: String by lazy{
+        "$protocol://$host:$port"
     }
 
     /**

@@ -1,8 +1,5 @@
 package net.jkcode.jksoa.rpc.client.connection
 
-import io.netty.util.Timeout
-import io.netty.util.TimerTask
-import net.jkcode.jkutil.common.CommonMilliTimer
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.rpc.client.IConnection
@@ -15,7 +12,6 @@ import net.jkcode.jksoa.common.exception.RpcNoConnectionException
 import net.jkcode.jksoa.rpc.client.connection.fixed.FixedConnections
 import java.lang.IllegalArgumentException
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 
 /**
  * 某个service的rpc连接集中器
@@ -58,7 +54,7 @@ open class ConnectionHub: IConnectionHub() {
             "fixed" -> FixedConnections(url, weight)
             else -> throw IllegalArgumentException("无效连接类型: $connectType")
         }
-        connections[url.serverName] = conn;
+        connections[url.serverAddr] = conn;
     }
 
     /**
@@ -67,7 +63,7 @@ open class ConnectionHub: IConnectionHub() {
      * @param allUrls
      */
     public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
-        val conn = connections.remove(url.serverName)!!
+        val conn = connections.remove(url.serverAddr)!!
         connLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
 
         // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
@@ -84,7 +80,7 @@ open class ConnectionHub: IConnectionHub() {
         val serviceId = url.path
         connLogger.debug("ConnectionHub处理服务[{}]参数变化: {}", serviceId, url.getQueryString())
         //重整负载参数
-        connections[url.serverName]!!.weight = url.getParameter("weight", 1)!!
+        connections[url.serverAddr]!!.weight = url.getParameter("weight", 1)!!
     }
 
     /**

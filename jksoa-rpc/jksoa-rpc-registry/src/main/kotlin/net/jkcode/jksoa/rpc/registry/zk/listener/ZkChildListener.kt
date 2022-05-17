@@ -89,7 +89,7 @@ class ZkChildListener(
         super.handleServiceUrlRemove(url, allUrls)
 
         // 取消监听子节点的数据变化
-        removeDataListener(url.serverName)
+        removeDataListener(url.serverAddr)
     }
 
     /**
@@ -99,7 +99,7 @@ class ZkChildListener(
     protected fun addDataListener(url: Url) {
         val dataListener = ZkDataListener(url, this)
         zkClient.subscribeDataChanges(url.serverRegistryPath, dataListener);
-        dataListeners[url.serverName] = dataListener
+        dataListeners[url.serverAddr] = dataListener
     }
 
     /**
