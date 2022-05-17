@@ -3,7 +3,7 @@ package net.jkcode.jksoa.rpc.client.swarm
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.swarmLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
@@ -38,7 +38,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      */
     private fun getOrCreateConn(server: String): SwarmConnections? {
         return connections.getOrPut(server){
-            val url = SwarmUtil.swarmServer2Url(server, SwarmConnections.config["minConnections"]!!)
+            val url = SwarmUtil.swarmServer2Url(server, 1)
             val conn = SwarmConnections.instance(url)
             conn.replicas = url.getParameter("replicas") ?: 1
             conn
@@ -52,7 +52,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      */
     public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
         val server = url.serverName
-        clientLogger.debug("SwarmConnectionHub处理swarm服务[{}]新加地址: {}", server, url)
+        swarmLogger.debug("SwarmConnectionHub处理swarm服务[{}]新加地址: {}", server, url)
         connections.getOrPut(server){
             val conn = SwarmConnections.instance(url)
             conn.replicas = url.getParameter("replicas") ?: 1
@@ -68,7 +68,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
     public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
         val server = url.serverName
         val conn = connections.remove(server)!!
-        clientLogger.debug("SwarmConnectionHub处理swarm服务[{}]删除地址: {}", server, url)
+        swarmLogger.debug("SwarmConnectionHub处理swarm服务[{}]删除地址: {}", server, url)
 
         // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
         //conn.close() // 关闭连接
@@ -82,7 +82,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      */
     public override fun handleParametersChange(url: Url){
         val server = url.serverName
-        clientLogger.debug("SwarmConnectionHub处理server[{}]参数变化: {}", server, url.getQueryString())
+        swarmLogger.debug("SwarmConnectionHub处理server[{}]参数变化: {}", server, url.getQueryString())
         // 重置连接数
         connections[server]!!.replicas = url.getParameter("replicas") ?: 1
     }
@@ -102,7 +102,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
 
         // 2 按均衡负载策略，来选择连接
         val conn = loadBalancer.select(conns, req)!!
-        clientLogger.debug("SwarmConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
+        swarmLogger.debug("SwarmConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
         return conn
     }
 

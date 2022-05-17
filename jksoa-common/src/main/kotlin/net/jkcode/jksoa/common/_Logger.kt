@@ -7,5 +7,7 @@ internal val switcher = ModuleLogSwitcher("rpc")
 val registerLogger = switcher.getLogger("net.jkcode.jksoa.rpc.registry")
 // 客户端的日志
 val clientLogger = switcher.getLogger("net.jkcode.jksoa.rpc.client")
+val connLogger = switcher.getLogger("net.jkcode.jksoa.rpc.client.connection")
+val swarmLogger = switcher.getLogger("net.jkcode.jksoa.rpc.client.swarm")
 // 服务端的日志
 val serverLogger = switcher.getLogger("net.jkcode.jksoa.rpc.server")

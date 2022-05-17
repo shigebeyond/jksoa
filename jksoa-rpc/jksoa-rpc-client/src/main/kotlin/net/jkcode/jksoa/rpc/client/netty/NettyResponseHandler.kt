@@ -7,6 +7,7 @@ import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jksoa.common.RpcResponse
 import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.connLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import java.util.concurrent.ConcurrentHashMap
 
@@ -58,8 +59,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         if(res !is RpcResponse)
             return
 
-        clientLogger.debug(" ------ receive response ------ ")
-        clientLogger.debug("NettyResponseHandler获得响应: {}", res)
+        //clientLogger.debug("NettyResponseHandler获得响应: {}", res)
 
         // 1 删除异步响应的记录
         val future = removeResponseFuture(res.requestId)
@@ -76,7 +76,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      * 处理channel可用事件
      */
     public override fun channelActive(ctx: ChannelHandlerContext) {
-        clientLogger.debug("NettyResponseHandler检查channel可用: {}", ctx.channel())
+        //connLogger.debug("NettyResponseHandler检查channel可用: {}", ctx.channel())
         super.channelActive(ctx)
     }
 
@@ -87,7 +87,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      */
     public override fun channelInactive(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
-        clientLogger.debug("NettyResponseHandler检测到channel关闭: {}", channel)
+        connLogger.debug("NettyResponseHandler检测到channel关闭: {}", channel)
 
         if(futures.isEmpty())
             return
@@ -104,7 +104,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      * 处理channel发生异常事件
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        clientLogger.error("NettyResponseHandlerr捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
+        connLogger.error("NettyResponseHandlerr捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
         // 当连接关闭时报错异常: io.netty.channel.unix.Errors$NativeIoException: epoll_ctl(..) failed: No such file or directory
         if(cause is Errors.NativeIoException && cause.message == "epoll_ctl(..) failed: No such file or directory")
             return

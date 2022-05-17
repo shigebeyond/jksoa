@@ -1,6 +1,6 @@
 package net.jkcode.jksoa.rpc.swarm
 
-import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.swarmLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.swarm.SwarmUtil
 import net.jkcode.jkutil.common.*
@@ -63,7 +63,7 @@ object SwarmDiscovery {
     private fun sendMq(data: HashMap<String, Int>?) {
         // 1 无服务: 可能不是管理节点
         if (data.isNullOrEmpty()) {
-            clientLogger.error("查询swarm服务的节点数为空, 请检查当前主机是否docker管理节点, 并执行命令查看是否有服务: {}", queryCmd)
+            swarmLogger.error("查询swarm服务的节点数为空, 请检查当前主机是否docker管理节点, 并执行命令查看是否有服务: {}", queryCmd)
             return
         }
 
@@ -72,9 +72,9 @@ object SwarmDiscovery {
         if (lastQueryResult == data) { // 不变
             sending = randomInt(10) < 7 // 70%几率随机发
             val sendMsg = if(sending) "随机发" else "不发"
-            clientLogger.info("查询swarm服务的节点数无变化+{}: {}", sendMsg, data)
+            swarmLogger.info("查询swarm服务的节点数无变化+{}: {}", sendMsg, data)
         }else{ // 有变
-            clientLogger.info("查询swarm服务的节点数有变化: {}", data)
+            swarmLogger.info("查询swarm服务的节点数有变化: {}", data)
             lastQueryResult = data
         }
 

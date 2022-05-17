@@ -9,7 +9,7 @@ import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
 import net.jkcode.jkutil.scope.ClosingOnShutdown
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.connLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.rpc.client.IRpcClient
@@ -56,7 +56,7 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
         return bootstrap
                 .handler(object : ChannelInitializer<SocketChannel>() {
                     public override fun initChannel(channel: SocketChannel) {
-                        clientLogger.debug("NettyRpcClient连接server: {}", channel)
+                        connLogger.debug("NettyRpcClient连接成功后初始化channel {} 处理器", channel)
                         // 添加io处理器: 每个channel独有的处理器, 只能是新对象, 不能是单例, 也不能复用旧对象
                         val pipeline = channel.pipeline()
 
@@ -69,7 +69,7 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
                             pipeline.addLast(NettyResponseHandler())
                         }catch (e: Exception){
                             // 还是输出异常, 防止各种handler初始化失败, 导致channel断掉了, 而又没有报错
-                            clientLogger.errorAndPrint("NettyRpcClient初始化channel处理器错误", e)
+                            connLogger.errorAndPrint("NettyRpcClient初始化channel处理器错误", e)
                             throw e
                         }
 
@@ -81,7 +81,7 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
                                 val handler = clazz.newInstance() as ChannelHandler
                                 pipeline.addLast(handler)
                             }catch (e: ClassNotFoundException){
-                                clientLogger.debug("双工模式下找不到类[NettyRequestHandler], 变为单工模式")
+                                //connLogger.debug("双工模式下找不到类[NettyRequestHandler], 变为单工模式")
                             }
                         }
                     }
@@ -100,20 +100,20 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
      * @return
      */
     public override fun connect(url: Url): IConnection {
-        clientLogger.debug("NettyRpcClient连接server: {}", url)
+        connLogger.debug("NettyRpcClient连接server: {}", url)
         // 连接server
         val f: ChannelFuture = bootstrap.connect(url.host, url.port)
         // 添加监听
-        f.addListener { f ->
+        /*f.addListener { f ->
             val msg = if (f.isSuccess) "成功" else "失败: " + f.cause().message
-            clientLogger.debug("ChannelFutureListener连接 server[{}] {}", url, msg)
-        }
+            connLogger.debug("ChannelFutureListener监听连接 server[{}] {}", url, msg)
+        }*/
         // 等待
         f.syncUninterruptibly()
 
         // 连接失败
         if(!f.isSuccess){
-            clientLogger.error("NettyRpcClient连接server[$url]失败: {}", f.cause())
+            connLogger.error("NettyRpcClient连接server[$url]失败: {}", f.cause())
             throw RpcClientException(f.cause())
         }
 
@@ -126,7 +126,7 @@ abstract class NettyRpcClient: IRpcClient, ClosingOnShutdown() {
     }
 
     public override fun close() {
-        clientLogger.info("NettyRpcClient关闭netty工作线程池")
+        connLogger.info("NettyRpcClient关闭netty工作线程池")
         val f = ioGroup.shutdownGracefully()
         f.syncUninterruptibly()
     }

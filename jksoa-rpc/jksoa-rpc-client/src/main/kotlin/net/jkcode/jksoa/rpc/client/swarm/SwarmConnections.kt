@@ -3,7 +3,7 @@ package net.jkcode.jksoa.rpc.client.swarm
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.swarmLogger
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.rpc.client.connection.single.ReconnectableConnection
@@ -68,7 +68,7 @@ class SwarmConnections private constructor(
             field = value
             // 如果连接已经创建过，则调整连接数
             if(starter.isStarted)
-                prepareConns()
+                prepareConns(false)
         }
 
     /**
@@ -96,8 +96,7 @@ class SwarmConnections private constructor(
         val lazyConnect: Boolean = config["lazyConnect"]!!
         if(!lazyConnect) { // 不延迟创建连接: 预先创建
             starter.startOnce {
-                prepareConns()
-                clientLogger.debug("-----------初始化连接池: $url -- 连接数 ${conns.size}")
+                prepareConns(true)
             }
         }
     }
@@ -112,8 +111,7 @@ class SwarmConnections private constructor(
      */
     public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
         starter.startOnce {
-            prepareConns()
-            clientLogger.debug("-----------初始化连接池: $url -- 连接数 ${conns.size}")
+            prepareConns(true)
         }
 
         // 获得连接
@@ -137,9 +135,10 @@ class SwarmConnections private constructor(
     /***************** 连接增减管理 *****************/
     /**
      * 准备好连接
+     * @param first 是否首次
      */
     @Synchronized
-    fun prepareConns(){
+    fun prepareConns(first: Boolean){
         // 1 销毁无效连接
         destroyInvalidConns()
 
@@ -151,6 +150,9 @@ class SwarmConnections private constructor(
             createConns(span)
         else if(span < 0) // 4 销毁多余的连接
             destoryConns(-span)
+
+        if(first)
+            swarmLogger.debug("SwarmConnections初始化连接池, server为{}, 连接数为{}", url, conns.size)
     }
 
     /**

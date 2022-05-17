@@ -9,7 +9,7 @@ import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.connLogger
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -94,13 +94,15 @@ class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : 
      */
     protected fun getOrReConnect(): BaseConnection {
         // 1 有连接: 检查是否有效
+        var first = true
         if(conn != null){
+           first = false
             // 1.1 有效连接
             if(conn!!.isValid())
                 return conn!!
 
             // 1.2 无效连接: 关闭连接
-            clientLogger.debug("关闭无效连接: {}", conn)
+            connLogger.debug("关闭无效连接: {}", conn)
             synchronized(this) {
                 if(conn != null) {
                     conn!!.close()
@@ -117,7 +119,8 @@ class ReconnectableConnection internal constructor(url: Url, weight: Int = 1) : 
                 // 连接server
                 conn = client.connect(url) as BaseConnection
                 lastConnectTime = currMillis()
-                clientLogger.debug("重建连接: {}", conn)
+                val act = if(first) "新建" else "重建"
+                connLogger.debug("{}连接: {}", act, conn)
             }
         }
         return conn!!

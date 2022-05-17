@@ -10,7 +10,7 @@ import net.jkcode.jksoa.rpc.client.connection.single.SingleConnection
 import net.jkcode.jksoa.rpc.client.connection.pooled.PooledConnections
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.connLogger
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
 import net.jkcode.jksoa.rpc.client.connection.fixed.FixedConnections
 import java.lang.IllegalArgumentException
@@ -49,7 +49,7 @@ open class ConnectionHub: IConnectionHub() {
      * @param allUrls
      */
     public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
-        clientLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
+        connLogger.debug("ConnectionHub处理服务[{}]新加地址: {}", serviceId, url)
         val weight: Int = url.getParameter("weight", 1)!!
         // 创建连接
         val conn: IConnection = when(connectType) {
@@ -68,7 +68,7 @@ open class ConnectionHub: IConnectionHub() {
      */
     public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
         val conn = connections.remove(url.serverName)!!
-        clientLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
+        connLogger.debug("ConnectionHub处理服务[{}]删除地址: {}", serviceId, url)
 
         // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
         //conn.close() // 关闭连接
@@ -82,7 +82,7 @@ open class ConnectionHub: IConnectionHub() {
      */
     public override fun handleParametersChange(url: Url){
         val serviceId = url.path
-        clientLogger.debug("ConnectionHub处理服务[{}]参数变化: {}", serviceId, url.getQueryString())
+        connLogger.debug("ConnectionHub处理服务[{}]参数变化: {}", serviceId, url.getQueryString())
         //重整负载参数
         connections[url.serverName]!!.weight = url.getParameter("weight", 1)!!
     }
@@ -102,7 +102,7 @@ open class ConnectionHub: IConnectionHub() {
         if(conn == null)
             throw RpcNoConnectionException("远程服务[${req.serviceId}]无提供者节点")
 
-        clientLogger.debug("ConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
+        connLogger.debug("ConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
         return conn
     }
 

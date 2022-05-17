@@ -74,7 +74,8 @@ class RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
             timeout = RequestTimeout.defaultTimeout // 默认超时
 
         return FailoverRpcResponseFuture(config["maxTryCount"]!!) { tryCount: Int ->
-            clientLogger.debug(" ------ dispatch request ------ ")
+            val act = if(tryCount == 0) "初发" else "重发"
+            clientLogger.debug("RpcRequestDispatcher{}第{}次请求: {}", act, tryCount + 1, req)
             // 1 选择连接
             val conn = connSelector.invoke(tryCount)
 

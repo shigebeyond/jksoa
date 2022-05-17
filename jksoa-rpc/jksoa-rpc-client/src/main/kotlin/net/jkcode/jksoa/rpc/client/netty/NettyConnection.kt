@@ -6,6 +6,7 @@ import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.connLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import java.util.concurrent.TimeUnit
@@ -94,7 +95,7 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
     public override fun close() {
         // 1 在shutdown时, 需手动关闭channel
         if(channel.isOpen && channel.isActive){
-            clientLogger.debug("Close active channel {}, when shutdown", channel)
+            connLogger.debug("Close active channel {}, when shutdown", channel)
             channel.close()
         }
 

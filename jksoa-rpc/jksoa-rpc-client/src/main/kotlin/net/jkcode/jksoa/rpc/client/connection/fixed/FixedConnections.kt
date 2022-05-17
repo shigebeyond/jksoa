@@ -3,7 +3,7 @@ package net.jkcode.jksoa.rpc.client.connection.fixed
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IUrl
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.common.connLogger
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.rpc.client.connection.single.ReconnectableConnection
@@ -82,7 +82,7 @@ class FixedConnections(url: Url, weight: Int = 1) : BaseConnection(url, weight) 
         starter.startOnce {
             for (conn in pool) // 增加引用
                 conn.incrRef()
-            clientLogger.debug("-----------初始化连接池: ${url.serverPart} -- 连接数 ${pool.size}")
+            connLogger.debug("FixedConnections初始化连接池, server为{}, 连接数为{}", url.serverPart, pool.size)
         }
         return pool
     }
