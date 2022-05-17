@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * docker swarm模式下单个server的连接的包装器
+ * docker swarm模式下单个server的连接的包装器，自身就是单个server的连接池，不用再搞getPool(url.serverPart)之类的实现
  *    1 根据 url=serverPart 来引用连接池， 但注意 swarm服务 vs rpc服务 下的url
  *      url只有 protocol://host(即swarm服务名)，但没有path(rpc服务接口名)，因为docker swarm发布服务不是一个个类来发布，而是整个jvm进程(容器)集群来发布
  *      因此 url == url.serverPart，不用根据 serverPart 来单独弄个连接池，用来在多个rpc服务中复用连接
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
 */
-class SwarmConnections private constructor(
+class SwarmConnections(
         url: Url, // server url
         protected val conns: MutableList<ReconnectableConnection> = ArrayList() // 代理list
 ): BaseConnection(url, 1), List<ReconnectableConnection> by conns {
@@ -43,21 +43,6 @@ class SwarmConnections private constructor(
             ArrayList<ReconnectableConnection>()
         }
 
-        /**
-         * 实例池
-         */
-        protected var insts: ConcurrentHashMap<IUrl, SwarmConnections> = ConcurrentHashMap();
-
-        /**
-         * 根据地址获得实例
-         * @param url
-         * @return
-         */
-        public fun instance(url: Url): SwarmConnections {
-            return insts.getOrPut(url){
-                SwarmConnections(url)
-            }
-        }
     }
 
     /**
@@ -66,9 +51,18 @@ class SwarmConnections private constructor(
     public var replicas: Int = 0
         set(value) {
             field = value
+
             // 如果连接已经创建过，则调整连接数
-            if(starter.isStarted)
+            if(starter.isStarted) {
                 prepareConns(false)
+            }else if(value > 0){ // 否则，尝试预先创建连接
+                val lazyConnect: Boolean = config["lazyConnect"]!!
+                if(!lazyConnect) { // 不延迟创建连接: 预先创建
+                    starter.startOnce {
+                        prepareConns(true)
+                    }
+                }
+            }
         }
 
     /**
@@ -91,14 +85,6 @@ class SwarmConnections private constructor(
         //if(url != url.serverPart)
         if(url.path.isNotBlank())
             throw IllegalArgumentException("docker swarm模式下url应只有 serverPart 部分")
-
-        // 预先创建连接
-        val lazyConnect: Boolean = config["lazyConnect"]!!
-        if(!lazyConnect) { // 不延迟创建连接: 预先创建
-            starter.startOnce {
-                prepareConns(true)
-            }
-        }
     }
 
     /**
@@ -126,10 +112,8 @@ class SwarmConnections private constructor(
      * 关闭连接
      */
     public override fun close() {
-        val pool = insts[url]
-        pool?.forEach { conn ->
+        for(conn in conns)
             conn.close()
-        }
     }
 
     /***************** 连接增减管理 *****************/
