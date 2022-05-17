@@ -106,7 +106,7 @@ class Tracer protected constructor() : ITracer() {
                 val serviceMap = collectorService.syncServices(JkApp.name, newServiceNames)
                 this.serviceMap.putAll(serviceMap)
             }
-            tracerLogger.debug("同步servcie: {}", serviceNames)
+            tracerLogger.debug("同步service: {}", serviceNames)
         }
 
     }

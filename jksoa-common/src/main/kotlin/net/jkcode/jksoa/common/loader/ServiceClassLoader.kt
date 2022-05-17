@@ -40,7 +40,12 @@ abstract class ServiceClassLoader<T: BaseServiceClass>(protected val isProvider:
         starter.startOnce {
             commonLogger.debug("{} load service", this.javaClass.simpleName)
             // 用户定义的service包
-            addPackages(config["servicePackages"]!!)
+            val pcks: MutableList<String> = config["servicePackages"]!!
+            // 添加示例包
+            val examplePck = "net.jkcode.jksoa.rpc.example"
+            if(!pcks.contains(examplePck))
+                pcks.add(examplePck)
+            addPackages(pcks)
         }
     }
 
@@ -67,7 +72,7 @@ abstract class ServiceClassLoader<T: BaseServiceClass>(protected val isProvider:
      *
      * @param relativePath 类文件相对路径
      */
-    public override fun collectClass(relativePath: String): Unit {
+    public override fun collectClassFile(relativePath: String): Unit {
         // 过滤service的类文件
         if(!relativePath.endsWith("Service.class"))
             return
