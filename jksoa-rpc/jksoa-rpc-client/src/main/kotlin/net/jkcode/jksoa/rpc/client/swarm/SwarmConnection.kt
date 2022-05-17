@@ -22,22 +22,27 @@ class SwarmConnection(url: Url): ReconnectableConnection(url) {
     /**
      * 服务器id=容器id
      */
-    protected var serverId: String = ""
+    public val serverId: String
+        get(){
+            if(_serverId == null){
+                // rpc获得server hostname(容器id)
+                val req = RpcRequest(ISimpleService::hostname)
+                val res = getOrReConnect().send(req, 500)
+                _serverId = res.get().getOrThrow() as String
+            }
+            return _serverId!!
+        }
+
     /**
-     * 刷新服务器id
+     * 服务器id=容器id
      */
-    protected fun refreshServerId(conn: BaseConnection) {
-        // 尝试获得server hostname(容器id)
-        val req = RpcRequest(ISimpleService::hostname)
-        val res = conn.send(req, 500)
-        serverId = res.get().getOrThrow() as String
-    }
+    protected var _serverId: String? = null
 
     /**
      * 处理重连事件： 触发刷新服务器id
      */
     override fun onReConnect(conn: BaseConnection) {
-        refreshServerId(conn)
+        _serverId = null
     }
 
     /**

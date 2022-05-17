@@ -8,6 +8,7 @@ import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jkutil.common.AtomicStarter
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.common.groupCount
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -31,6 +32,11 @@ class SwarmConnections(
          * 客户端配置
          */
         public val config: IConfig = Config.instance("rpc-client", "yaml")
+
+        /**
+         * 每个副本(server)的连接数
+         */
+        public val connPerReplica: Int = config["minConnections"]!!
 
         /**
          * list池
@@ -59,11 +65,6 @@ class SwarmConnections(
                 }
             }
         }
-
-    /**
-     * 每个副本(server)的连接数
-     */
-    protected val connPerReplica: Int = config["minConnections"]!!
 
     /**
      * 期望连接数
@@ -205,5 +206,29 @@ class SwarmConnections(
             conn.delayClose()
     }
 
+    /**
+     * 均衡连接
+     */
+    fun rebalanceConns(){
+        // 销毁无效连接
+        destroyInvalidConns()
 
+        // TODO: 每个server尽量是connPerReplica个连接
+        // server连接数
+        val server2num = conns.groupCount { it.serverId }
+
+        // 1 连接的server不够副本数: 可能在服务发现的定时消息发送的间隙中, swarm集群挂了一台有重启了一台server, 导致副本数没变化, 但server变化了
+        if(server2num.size < replicas){
+
+            return
+        }
+
+        // 2 连接的server等于副本数, 也可能分配不均
+        if(server2num.size == replicas){
+
+        }
+
+        // 3 连接的server超过副本数: 有一些无效连接, 但之前的 destroyInvalidConns() 已经清理掉了, 不会进入该分支
+        //if(server2num.size > replicas)
+    }
 }
