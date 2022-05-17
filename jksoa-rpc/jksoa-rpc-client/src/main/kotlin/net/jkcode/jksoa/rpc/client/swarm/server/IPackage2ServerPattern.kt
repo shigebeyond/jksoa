@@ -9,7 +9,7 @@ import net.jkcode.jkutil.common.replaces
  */
 abstract class IPackage2ServerPattern(
         public val pattern: String, // 包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
-        public val server: String // server名: 可以带变量, 格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
+        public val server: String // server名: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
 ){
 
     /**

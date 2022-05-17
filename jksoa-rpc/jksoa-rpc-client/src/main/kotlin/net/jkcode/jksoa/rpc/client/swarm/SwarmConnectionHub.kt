@@ -6,11 +6,8 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.swarmLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
-import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.client.swarm.server.ServerResolver
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.HashMap
 
 /**
  * docker swarm模式下，所有swarm服务server的rpc连接集中器, 不再绑定单个rpc服务, 因为只能监听到swarm服务的节点数据，跟rpc服务没有关系了
@@ -33,14 +30,14 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
 
     /**
      * 获得某swarm节点的连接，如果没有则尝试建立连接
-     * @param server
+     * @param serverAddr 协议ip端口
      * @return
      */
-    private fun getOrCreateConn(server: String): SwarmConnections? {
-        return connections.getOrPut(server){
-            val url = SwarmUtil.swarmServer2Url(server, 1)
-            val conn = SwarmConnections.instance(url)
-            conn.replicas = url.getParameter("replicas") ?: 1
+    private fun getOrCreateConn(serverAddr: String): SwarmConnections? {
+        return connections.getOrPut(serverAddr){
+            val url = Url(serverAddr)
+            val conn = SwarmConnections(url)
+            conn.replicas = 1
             conn
         }
     }
@@ -51,10 +48,11 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      * @param allUrls
      */
     public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
-        val server = url.serverName
+        val server = url.serverAddr
         swarmLogger.debug("SwarmConnectionHub处理swarm服务[{}]新加地址: {}", server, url)
+        // 新建连接
         connections.getOrPut(server){
-            val conn = SwarmConnections.instance(url)
+            val conn = SwarmConnections(url)
             conn.replicas = url.getParameter("replicas") ?: 1
             conn
         }
@@ -66,7 +64,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      * @param allUrls
      */
     public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
-        val server = url.serverName
+        val server = url.serverAddr
         val conn = connections.remove(server)!!
         swarmLogger.debug("SwarmConnectionHub处理swarm服务[{}]删除地址: {}", server, url)
 
@@ -81,7 +79,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      * @param url
      */
     public override fun handleParametersChange(url: Url){
-        val server = url.serverName
+        val server = url.serverAddr
         swarmLogger.debug("SwarmConnectionHub处理server[{}]参数变化: {}", server, url.getQueryString())
         // 重置连接数
         connections[server]!!.replicas = url.getParameter("replicas") ?: 1
@@ -95,8 +93,8 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      */
     public override fun select(req: IRpcRequest): IConnection {
         // 1 获得可用连接
-        val swarmServer = ServerResolver.resovleServer(req) // 解析server
-        val conns = getOrCreateConn(swarmServer)
+        val swarmServerAddr = ServerResolver.resovleServer(req) // 解析server
+        val conns = getOrCreateConn(swarmServerAddr)
         if(conns == null)
             throw RpcNoConnectionException("远程服务[${req.serviceId}]无提供者节点")
 

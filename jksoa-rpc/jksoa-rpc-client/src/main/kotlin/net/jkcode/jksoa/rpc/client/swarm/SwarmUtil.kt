@@ -1,10 +1,8 @@
 package net.jkcode.jksoa.rpc.client.swarm
 
 import net.jkcode.jkmq.mqmgr.IMqManager
-import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jkutil.common.Config
-import net.jkcode.jkutil.common.indexAtTimes
 
 /**
  * docker swarm模式工具类
@@ -35,7 +33,11 @@ object SwarmUtil {
      * @param replicas 服务副本数, 即server数
      * @return
      */
-    fun swarmServer2Url(server: String, replicas: Int): Url {
-        return Url("jkr", server,9080, "", mapOf("replicas" to replicas))
+    fun swarmServer2Url(server: String, replicas: Int? = null): Url {
+        val params = if(replicas == null)
+                        emptyMap()
+                    else
+                        mapOf("replicas" to replicas)
+        return Url("jkr", server,9080, "", params)
     }
 }
