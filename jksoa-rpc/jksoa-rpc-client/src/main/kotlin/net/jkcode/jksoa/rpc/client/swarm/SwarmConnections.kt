@@ -45,6 +45,13 @@ class SwarmConnections(
             ArrayList<SwarmConnection>()
         }
 
+        /**
+         * map池
+         */
+        private val reuseMaps:ThreadLocal<HashMap<String, Int>> = ThreadLocal.withInitial {
+            HashMap<String, Int>()
+        }
+
     }
 
     /**
@@ -132,36 +139,13 @@ class SwarmConnections(
      */
     @Synchronized
     protected fun rescaleConns(){
-        // 1 销毁无效连接
-        destroyInvalidConns()
-
-        // 2 检查连接差距
+        // 1 检查连接差距
         val span = expectSize - conns.size
 
-        if(span > 0) // 3 创建缺失的连接
+        if(span > 0) // 2 创建缺失的连接
             createConns(span)
-        else if(span < 0) // 4 销毁多余的连接
+        else if(span < 0) // 3 销毁多余的连接
             destoryConns(-span)
-    }
-
-    /**
-     * 销毁无效连接 -- 没啥意思，因为无效连接他会自动重连，删掉重建也没啥用
-     */
-    protected fun destroyInvalidConns(){
-        if(conns.isEmpty())
-            return
-
-        // 1 删除无效的连接
-        var n = conns.size
-        conns.removeAll { conn ->
-            val invalid = !conn.isValid()
-            if(invalid) // 2 延迟30s中关闭连接
-                conn.delayClose()
-            invalid
-        }
-        n = n - conns.size
-        if(n > 0)
-            swarmLogger.debug("SwarmConnections销毁无效连接, server为{}, 销毁连接数为{}", url, n)
     }
 
     /**
@@ -169,8 +153,10 @@ class SwarmConnections(
      * @param n 创建数
      */
     protected fun createConns(n: Int) {
-        if(n > 0)
-            swarmLogger.debug("SwarmConnections创建缺失的连接, server为{}, 增加副本数为{}, 新建连接数为{}, 总连接数为{}", url, n / connPerReplica, n, size + n)
+        if(n < 0)
+            throw IllegalArgumentException("SwarmConnections.createConns(n)错误：参数n为负数")
+
+        swarmLogger.debug("SwarmConnections创建缺失的连接, server为{}, 增加副本数为{}, 新建连接数为{}, 总连接数为{}", url, n / connPerReplica, n, size + n)
         for (i in 0 until n) {
             val conn = SwarmConnection(url) // 根据 url=serverPart 来复用 SwarmConnection 的实例
             conns.add(conn)
@@ -178,15 +164,51 @@ class SwarmConnections(
     }
 
     /**
-     * 销毁多余的连接
-     * @param n 销毁数
+     * 销毁无效连接
+     * @param n 要删除的连接数
+     * @return 实际删除的连接数(可能没那么多无效连接)
      */
-    protected fun destoryConns(n: Int) {
-        if(conns.isEmpty() && n <= 0)
-            return
+    protected fun destroyInvalidConns(n: Int): Int {
+        if(n < 0 || n > conns.size) {
+            val msg = if(n < 0) "为负数" else "超过连接总数"
+            throw IllegalArgumentException("SwarmConnections.destroyInvalidConns(n)错误：参数n$msg")
+        }
 
+        // 1 删除无效的连接
+        var delNum = n // 未删数
+        conns.removeAll { conn ->
+            var invalid = (!conn.isValid()) // 无效连接
+                    && (delNum-- > 0) // 未删完，迭代中未删数-1
+            if(invalid) { // 2 延迟30s中关闭连接
+                conn.delayClose()
+            }
+            invalid
+        }
+        delNum = n - delNum // 已删数
+        if(delNum > 0)
+            swarmLogger.debug("SwarmConnections销毁无效连接, server为{}, 销毁连接数为{}", url, delNum)
+        return delNum
+    }
+
+    /**
+     * 销毁多余的连接
+     * @param n 要删除的连接数
+     * @return 实际删除的连接数(可能没那么多无效连接)
+     */
+    protected fun destoryConns(n: Int): Int {
+        if(n < 0 || n > conns.size) {
+            val msg = if(n < 0) "为负数" else "超过连接总数"
+            throw IllegalArgumentException("SwarmConnections.destoryConns(n)错误：参数n$msg")
+        }
         swarmLogger.debug("SwarmConnections销毁多余的连接, server为{}, 减少副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connPerReplica, n, size - n)
-        // 1  获得要删除的连接
+
+        // 1 优先删除无效连接, delNum为剩余要删数
+        val delNum = n - destroyInvalidConns(n)
+        if(delNum <= 0)
+            return n
+
+        // 2 删除其他连接
+        // 2.1 获得要删除的连接
         // 复用list用于连接排序, 可减少ArrayList创建
         val list = reuseLists.get()
         list.addAll(conns)
@@ -195,35 +217,31 @@ class SwarmConnections(
             it.lastConnectTime
         }
         // 要删除最新的连接, 因为连接要减少, 证明节点少了, 节点挂了之后对应的连接会重连(多余), 因此最新的连接是多余的
-        val rmConns = list.subList(0, n)
+        val rmConns = list.subList(0, delNum)
 
-        // 2 删除连接
+        // 2.2 删除连接
         conns.removeAll(rmConns)
 
-        // 3 延迟30s中关闭连接
+        // 2.3 延迟30s中关闭连接
         for(conn in rmConns)
             conn.delayClose()
 
         list.clear() // 清理复用的list
+        return delNum
     }
 
     /**
-     * 均衡连接
+     * 均衡连接： 每个server尽量是 connPerReplica 个连接，只能保证相对均衡
+     *   1 不均衡情况： 在连接数上，有的server可能多，有的server可能少，也有可能新的server直接没有连接
+     *   可能swarm集群挂了一台server，client又有请求重连到其他server，之后swarm集群又自动重启了一台server, 导致副本数没变化, 但server变化了，同时旧server负载多，新server无负载
+     *   2 server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
+     *   3 server连接少(负载少)： 不用处理， 后续调用 rescaleConns() 会补上缺失的连接，会连上负载少的server(不一定是本client连接少的server)
+     *   4 server连接不多不少(负载均衡)： 不用处理
      */
     fun rebalanceConns(){
-        // 1 销毁无效连接
-        destroyInvalidConns()
-
-        /**
-         * 每个server尽量是 connPerReplica 个连接，只能保证相对均衡
-         *   1 不均衡情况： 在连接数上，有的server可能多，有的server可能少，也有可能新的server直接没有连接
-         *   可能swarm集群挂了一台server，client又有请求重连到其他server，之后swarm集群又自动重启了一台server, 导致副本数没变化, 但server变化了，同时旧server负载多，新server无负载
-         *   2 server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
-         *   3 server连接少(负载少)： 不用处理， 后续调用 rescaleConns() 会补上缺失的连接，会连上负载少的server(不一定是本client连接少的server)
-         */
-        // 2 裁掉负载多的server连接
+        // 1 仅处理： server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
         // 现有每个server的连接数
-        val currNums = conns.groupCount { it.serverId } as MutableMap
+        val currNums = conns.groupCount() { it.serverId } as MutableMap
         // 要删除的每个server的连接数
         val delNums = HashMap<String, Int>()
         val delThreshold = (connPerReplica * 1.1).toInt() // 删除的阀值
