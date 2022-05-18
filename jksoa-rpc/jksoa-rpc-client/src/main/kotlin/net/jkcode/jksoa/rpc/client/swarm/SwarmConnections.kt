@@ -41,7 +41,7 @@ class SwarmConnections(
         /**
          * list池
          */
-        private val lists:ThreadLocal<ArrayList<SwarmConnection>> = ThreadLocal.withInitial {
+        private val reuseLists:ThreadLocal<ArrayList<SwarmConnection>> = ThreadLocal.withInitial {
             ArrayList<SwarmConnection>()
         }
 
@@ -145,7 +145,7 @@ class SwarmConnections(
     }
 
     /**
-     * 销毁无效连接
+     * 销毁无效连接 -- 没啥意思，因为无效连接他会自动重连，删掉重建也没啥用
      */
     protected fun destroyInvalidConns(){
         if(conns.isEmpty())
@@ -188,7 +188,7 @@ class SwarmConnections(
         swarmLogger.debug("SwarmConnections销毁多余的连接, server为{}, 减少副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connPerReplica, n, size - n)
         // 1  获得要删除的连接
         // 复用list用于连接排序, 可减少ArrayList创建
-        val list = lists.get()
+        val list = reuseLists.get()
         list.addAll(conns)
         // 按连接时间降序
         list.sortByDescending {
@@ -199,36 +199,47 @@ class SwarmConnections(
 
         // 2 删除连接
         conns.removeAll(rmConns)
-        list.clear() // 清理复用的list
 
         // 3 延迟30s中关闭连接
         for(conn in rmConns)
             conn.delayClose()
+
+        list.clear() // 清理复用的list
     }
 
     /**
      * 均衡连接
      */
     fun rebalanceConns(){
-        // 销毁无效连接
+        // 1 销毁无效连接
         destroyInvalidConns()
 
-        // TODO: 每个server尽量是connPerReplica个连接
-        // server连接数
-        val server2num = conns.groupCount { it.serverId }
-
-        // 1 连接的server不够副本数: 可能在服务发现的定时消息发送的间隙中, swarm集群挂了一台有重启了一台server, 导致副本数没变化, 但server变化了
-        if(server2num.size < replicas){
-
-            return
+        /**
+         * 每个server尽量是 connPerReplica 个连接，只能保证相对均衡
+         *   1 不均衡情况： 在连接数上，有的server可能多，有的server可能少，也有可能新的server直接没有连接
+         *   可能swarm集群挂了一台server，client又有请求重连到其他server，之后swarm集群又自动重启了一台server, 导致副本数没变化, 但server变化了，同时旧server负载多，新server无负载
+         *   2 server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
+         *   3 server连接少(负载少)： 不用处理， 后续调用 rescaleConns() 会补上缺失的连接，会连上负载少的server(不一定是本client连接少的server)
+         */
+        // 2 裁掉负载多的server连接
+        // 现有每个server的连接数
+        val currNums = conns.groupCount { it.serverId } as MutableMap
+        // 要删除的每个server的连接数
+        val delNums = HashMap<String, Int>()
+        val delThreshold = (connPerReplica * 1.1).toInt() // 删除的阀值
+        for((server, num) in currNums){
+            if(num > delThreshold)
+                delNums[server] = num - delThreshold
+        }
+        // 删除连接
+        conns.removeAll { conn ->
+            var del = conn.serverId != null && conn.serverId in delNums && delNums[conn.serverId]!! > 0
+            if(del)
+                delNums[conn.serverId] = delNums[conn.serverId]!! - 1
+            del
         }
 
-        // 2 连接的server等于副本数, 也可能分配不均
-        if(server2num.size == replicas){
-
-        }
-
-        // 3 连接的server超过副本数: 有一些无效连接, 但之前的 destroyInvalidConns() 已经清理掉了, 不会进入该分支
-        //if(server2num.size > replicas)
+        // 3 重新调整连接数
+        rescaleConns()
     }
 }
