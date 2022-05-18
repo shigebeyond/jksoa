@@ -7,7 +7,10 @@ import net.jkcode.jksoa.common.swarmLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
 import net.jkcode.jksoa.rpc.client.swarm.server.ServerResolver
+import net.jkcode.jkutil.common.CommonSecondTimer
+import net.jkcode.jkutil.common.newPeriodic
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 
 /**
  * docker swarm模式下，所有swarm服务server的rpc连接集中器, 不再绑定单个rpc服务, 因为只能监听到swarm服务的节点数据，跟rpc服务没有关系了
@@ -28,6 +31,23 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      *     server就是swarm服务名
      */
     private val connections: ConcurrentHashMap<String, SwarmConnections> = ConcurrentHashMap()
+
+    init {
+        // 启动定时均衡连接
+        startConnectionBanlacer()
+    }
+
+    /**
+     * 启动定时均衡连接
+     * @param timerSeconds
+     */
+    public fun startConnectionBanlacer(timerSeconds: Long = 300){
+        CommonSecondTimer.newPeriodic({
+            for(conn in connections.values){
+                conn.rebalanceConns()
+            }
+        }, timerSeconds, TimeUnit.SECONDS)
+    }
 
     /**
      * 获得某swarm节点的连接，如果没有则尝试建立连接

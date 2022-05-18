@@ -141,11 +141,12 @@ class SwarmConnections(
     protected fun rescaleConns(){
         // 1 检查连接差距
         val span = expectSize - conns.size
-
         if(span > 0) // 2 创建缺失的连接
             createConns(span)
         else if(span < 0) // 3 销毁多余的连接
             destoryConns(-span)
+        else
+            swarmLogger.debug("SwarmConnections无需调整连接数, server为{}, 总副本数为{}, 总连接数为{}", url, replicas, size)
     }
 
     /**
@@ -156,7 +157,7 @@ class SwarmConnections(
         if(n < 0)
             throw IllegalArgumentException("SwarmConnections.createConns(n)错误：参数n为负数")
 
-        swarmLogger.debug("SwarmConnections创建缺失的连接, server为{}, 增加副本数为{}, 新建连接数为{}, 总连接数为{}", url, n / connPerReplica, n, size + n)
+        swarmLogger.debug("SwarmConnections创建缺失的连接, server为{}, 增加副本数为{}, 总副本数为{}, 新建连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size + n)
         for (i in 0 until n) {
             val conn = SwarmConnection(url) // 根据 url=serverPart 来复用 SwarmConnection 的实例
             conns.add(conn)
@@ -200,7 +201,7 @@ class SwarmConnections(
             val msg = if(n < 0) "为负数" else "超过连接总数"
             throw IllegalArgumentException("SwarmConnections.destoryConns(n)错误：参数n$msg")
         }
-        swarmLogger.debug("SwarmConnections销毁多余的连接, server为{}, 减少副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connPerReplica, n, size - n)
+        swarmLogger.debug("SwarmConnections销毁多余的连接, server为{}, 减少副本数为{}, 总副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size - n)
 
         // 1 优先删除无效连接, delNum为剩余要删数
         val delNum = n - destroyInvalidConns(n)
@@ -240,24 +241,37 @@ class SwarmConnections(
      */
     fun rebalanceConns(){
         // 1 仅处理： server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
-        // 现有每个server的连接数
-        val currNums = conns.groupCount() { it.serverId } as MutableMap
-        // 要删除的每个server的连接数
-        val delNums = HashMap<String, Int>()
+        // 1.1 serverNums 为现有每个server的连接数
+        val serverNums = conns.groupCount(reuseMaps.get()) {
+            it.serverId ?: ""
+        } as MutableMap
+        serverNums.remove("") // 无 serverId 不处理
+
+        // 1.2 serverNums 变为要删除的每个server的连接数
         val delThreshold = (connPerReplica * 1.1).toInt() // 删除的阀值
-        for((server, num) in currNums){
-            if(num > delThreshold)
-                delNums[server] = num - delThreshold
+        val it = serverNums.entries.iterator() // map迭代更新或删除元素
+        while (it.hasNext()){
+            val entry = it.next()
+            val num = entry.value
+            if(num > delThreshold) // 超过阀值: 记录要裁掉的连接数
+                entry.setValue(num - delThreshold)
+            else // 未超过阀值: 不要了
+                it.remove()
         }
-        // 删除连接
+
+        // 1.3 删除连接
         conns.removeAll { conn ->
-            var del = conn.serverId != null && conn.serverId in delNums && delNums[conn.serverId]!! > 0
+            val serverId = conn.serverId ?: ""
+            // 在删除的队伍中
+            val del = serverId in serverNums && serverNums[serverId]!! > 0
             if(del)
-                delNums[conn.serverId] = delNums[conn.serverId]!! - 1
+                serverNums[serverId] = serverNums[serverId]!! - 1 // 删除数-1
             del
         }
 
-        // 3 重新调整连接数
+        serverNums.clear() // 清理复用的map
+
+        // 2 重新调整连接数: 会补上缺失的连接，会连上负载少的server
         rescaleConns()
     }
 }
