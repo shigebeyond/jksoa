@@ -49,6 +49,7 @@ open class ReconnectableConnection internal constructor(url: Url, weight: Int = 
     /**
      * 被代理的连接
      */
+    @Volatile
     protected var conn: BaseConnection? = null
 
     /**

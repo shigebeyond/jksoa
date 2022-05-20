@@ -1,15 +1,13 @@
 package net.jkcode.jksoa.rpc.client.netty
 
 import io.netty.channel.Channel
-import io.netty.util.AttributeKey
-import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.connLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
-import java.util.concurrent.TimeUnit
+import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 
 /**
  * netty连接
@@ -20,18 +18,9 @@ import java.util.concurrent.TimeUnit
  */
 class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : BaseConnection(url, weight) {
 
-    companion object{
-
-        /**
-         * 在Channel中引用NettyConnection的属性名
-         */
-        public val connKey = AttributeKey.valueOf<NettyConnection>("connection")
-
-    }
-
     init {
         // 将连接塞到channel的属性中, 以便相互引用
-        channel.attr<NettyConnection>(connKey).set(this)
+        channel.setConnection(this)
     }
 
     /**
@@ -100,7 +89,7 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
         }
 
         // 2 删除引用
-        channel.attr<NettyConnection>(connKey).set(null)
+        channel.setConnection(null)
     }
 
 }

@@ -130,7 +130,7 @@ class SwarmConnections(
     fun initConnsOnce(){
         initStarter.startOnce {
             rescaleConns()
-            swarmLogger.debug("SwarmConnections初始化连接池, server为{}, 副本数为{}, 连接数为{}", url, replicas, conns.size)
+            swarmLogger.debug("SwarmConnections初始化连接池, serverUrl为{}, 副本数为{}, 连接数为{}", url, replicas, conns.size)
         }
     }
 
@@ -146,7 +146,7 @@ class SwarmConnections(
         else if(span < 0) // 3 销毁多余的连接
             destoryConns(-span)
         else
-            swarmLogger.debug("SwarmConnections无需调整连接数, server为{}, 总副本数为{}, 总连接数为{}", url, replicas, size)
+            swarmLogger.debug("SwarmConnections无需调整连接数, serverUrl为{}, 总副本数为{}, 总连接数为{}", url, replicas, size)
     }
 
     /**
@@ -157,7 +157,7 @@ class SwarmConnections(
         if(n < 0)
             throw IllegalArgumentException("SwarmConnections.createConns(n)错误：参数n为负数")
 
-        swarmLogger.debug("SwarmConnections创建缺失的连接, server为{}, 增加副本数为{}, 总副本数为{}, 新建连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size + n)
+        swarmLogger.debug("SwarmConnections创建缺失的连接, serverUrl为{}, 增加副本数为{}, 总副本数为{}, 新建连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size + n)
         for (i in 0 until n) {
             val conn = SwarmConnection(url) // 根据 url=serverPart 来复用 SwarmConnection 的实例
             conns.add(conn)
@@ -187,7 +187,7 @@ class SwarmConnections(
         }
         delNum = n - delNum // 已删数
         if(delNum > 0)
-            swarmLogger.debug("SwarmConnections销毁无效连接, server为{}, 销毁连接数为{}", url, delNum)
+            swarmLogger.debug("SwarmConnections销毁无效连接, serverUrl为{}, 销毁连接数为{}", url, delNum)
         return delNum
     }
 
@@ -201,7 +201,7 @@ class SwarmConnections(
             val msg = if(n < 0) "为负数" else "超过连接总数"
             throw IllegalArgumentException("SwarmConnections.destoryConns(n)错误：参数n$msg")
         }
-        swarmLogger.debug("SwarmConnections销毁多余的连接, server为{}, 减少副本数为{}, 总副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size - n)
+        swarmLogger.debug("SwarmConnections销毁多余的连接, serverUrl为{}, 减少副本数为{}, 总副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size - n)
 
         // 1 优先删除无效连接, delNum为剩余要删数
         val delNum = n - destroyInvalidConns(n)
@@ -240,12 +240,17 @@ class SwarmConnections(
      *   4 server连接不多不少(负载均衡)： 不用处理
      */
     fun rebalanceConns(){
+        if(conns.isEmpty()) // 没创建连接呢
+            return
+
         // 1 仅处理： server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
         // 1.1 serverNums 为现有每个server的连接数
         val serverNums = conns.groupCount(reuseMaps.get()) {
-            it.serverId ?: ""
+            it.getServerId() ?: ""
         } as MutableMap
         serverNums.remove("") // 无 serverId 不处理
+        if(serverNums.isEmpty())
+            return
 
         // 1.2 serverNums 变为要删除的每个server的连接数
         val delThreshold = (connPerReplica * 1.1).toInt() // 删除的阀值
@@ -253,25 +258,34 @@ class SwarmConnections(
         while (it.hasNext()){
             val entry = it.next()
             val num = entry.value
-            if(num > delThreshold) // 超过阀值: 记录要裁掉的连接数
+            if(num > delThreshold) { // 超过阀值: 记录要裁掉的连接数
                 entry.setValue(num - delThreshold)
-            else // 未超过阀值: 不要了
+            }else // 未超过阀值: 不要了
                 it.remove()
         }
+        if(serverNums.isEmpty())
+            return
 
         // 1.3 删除连接
+        swarmLogger.debug("SwarmConnections均衡连接, serverUrl为{}, 副本数为{}, 每个serverId要删掉超额的连接{}", url, replicas, serverNums)
+        var delNum = 0
         conns.removeAll { conn ->
-            val serverId = conn.serverId ?: ""
+            val serverId = conn.getServerId() ?: ""
             // 在删除的队伍中
             val del = serverId in serverNums && serverNums[serverId]!! > 0
-            if(del)
+            if(del) {
                 serverNums[serverId] = serverNums[serverId]!! - 1 // 删除数-1
+                delNum++
+            }
             del
         }
-
         serverNums.clear() // 清理复用的map
 
-        // 2 重新调整连接数: 会补上缺失的连接，会连上负载少的server
-        rescaleConns()
+        // 2 补上缺失的连接，理论上会连上负载少的server
+        if(delNum > 0){
+            // 先尝试建一个
+            createConns(1)
+
+        }
     }
 }

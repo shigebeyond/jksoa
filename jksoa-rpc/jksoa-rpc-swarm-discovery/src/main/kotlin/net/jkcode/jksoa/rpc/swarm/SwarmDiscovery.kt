@@ -32,13 +32,8 @@ object SwarmDiscovery {
     private fun querySwarmServiceReplicas(): HashMap<String, Int>? {
         // 1 exec comd
         // https://docs.docker.com/engine/reference/commandline/service_ls/
-        val pro: Process = Runtime.getRuntime().exec(queryCmd)
-        val status = pro.waitFor()
-        if (status != 0)
-            throw RpcClientException("Failed to call command: $queryCmd")
-
         // output eg. tcp_tcpserver:1/2
-        val text = pro.output()
+        val text = execCommand(queryCmd)
         if(text.isNullOrBlank())
             return null
 

@@ -14,7 +14,7 @@ services:
       replicas: 2
       update_config: # 更新配置
         parallelism: 2 # 并发数
-        delay: 10s # 延迟秒数
+        delay: 15s # 延迟秒数，应大于定时发现的时间间隔
       restart_policy:
         condition: on-failure
 

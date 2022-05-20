@@ -34,19 +34,19 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
 
     init {
         // 启动定时均衡连接
-        startConnectionBanlacer()
+        val timerSeconds = 300L
+        CommonSecondTimer.newPeriodic({
+            rebalanceConns()
+        }, timerSeconds, TimeUnit.SECONDS)
     }
 
     /**
-     * 启动定时均衡连接
-     * @param timerSeconds
+     * 均衡连接
      */
-    public fun startConnectionBanlacer(timerSeconds: Long = 300){
-        CommonSecondTimer.newPeriodic({
-            for(conn in connections.values){
-                conn.rebalanceConns()
-            }
-        }, timerSeconds, TimeUnit.SECONDS)
+    public fun rebalanceConns() {
+        for (conn in connections.values) {
+            conn.rebalanceConns()
+        }
     }
 
     /**
@@ -54,7 +54,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      * @param serverAddr 协议ip端口
      * @return
      */
-    private fun getOrCreateConn(serverAddr: String): SwarmConnections? {
+    internal fun getOrCreateConn(serverAddr: String): SwarmConnections? {
         return connections.getOrPut(serverAddr){
             // 一般而言， 先调用 handleServiceUrlAdd() 来初始化连接，然后再调用 getOrCreateConn() 来获得连接，但有时候rpc(getOrCreateConn)在前，监听服务发现(handleServiceUrlAdd)在后，那么就需要创建一个默认的连接
             val url = Url(serverAddr)

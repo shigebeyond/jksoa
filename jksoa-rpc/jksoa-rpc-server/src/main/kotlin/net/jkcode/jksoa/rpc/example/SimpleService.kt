@@ -2,6 +2,7 @@ package net.jkcode.jksoa.rpc.example
 
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.rpc.server.RpcServerContext
+import net.jkcode.jkutil.common.SysInfo
 import java.net.InetAddress
 import java.rmi.RemoteException
 
@@ -15,7 +16,7 @@ class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服�
 
     @Throws(RemoteException::class) // rim异常
     public override fun hostname(): String {
-        return InetAddress.getLocalHost().hostName // 容器id
+        return SysInfo.hostname // 容器id
     }
 
     @Throws(RemoteException::class) // rim异常
