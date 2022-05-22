@@ -43,6 +43,30 @@ class SwarmConnectionTests {
     }
 
     @Test
+    fun testDiscoveryListener2(){
+        val data = mutableMapOf(serverAddr to 1)
+
+        // 新增
+        println("------------ add ------------")
+        SwarmConnectionHub.handleSwarmServiceReplicasChange(data)
+
+        // 修改
+        println("------------ change1 ------------")
+        data[serverAddr] = 2
+        SwarmConnectionHub.handleSwarmServiceReplicasChange(data)
+
+        // 修改
+        println("------------ change2 ------------")
+        data[serverAddr] = 1
+        SwarmConnectionHub.handleSwarmServiceReplicasChange(data)
+
+        // 删除
+        println("------------ remove ------------")
+        data.remove(serverAddr)
+        SwarmConnectionHub.handleSwarmServiceReplicasChange(data)
+    }
+
+    @Test
     fun testRebalanceConns(){
         // 建立连接 -- client连到2台server
         println("---------- 建立2台server的连接 ---------")

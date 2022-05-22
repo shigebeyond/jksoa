@@ -156,7 +156,9 @@ class SwarmConnections(
     protected fun createConns(n: Int) {
         if(n < 0)
             throw IllegalArgumentException("SwarmConnections.createConns(n)错误：参数n为负数")
-
+        if(n == 0)
+            return
+        
         swarmLogger.debug("SwarmConnections创建缺失的连接, serverUrl为{}, 增加副本数为{}, 总副本数为{}, 新建连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size + n)
         for (i in 0 until n) {
             val conn = SwarmConnection(url) // 根据 url=serverPart 来复用 SwarmConnection 的实例
@@ -236,7 +238,7 @@ class SwarmConnections(
      *   1 不均衡情况： 在连接数上，有的server可能多，有的server可能少，也有可能新的server直接没有连接
      *   可能swarm集群挂了一台server，client又有请求重连到其他server，之后swarm集群又自动重启了一台server, 导致副本数没变化, 但server变化了，同时旧server负载多，新server无负载
      *   2 server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
-     *   3 server连接少(负载少)： 不用处理， 后续调用 rescaleConns() 会补上缺失的连接，会连上负载少的server(不一定是本client连接少的server)
+     *   3 server连接少(负载少)： 不用处理， 后续调用 createConns() 会补上缺失的连接，会连上负载少的server(不一定是本client连接少的server)
      *   4 server连接不多不少(负载均衡)： 不用处理
      */
     fun rebalanceConns(){
@@ -266,7 +268,7 @@ class SwarmConnections(
         if(serverNums.isEmpty())
             return
 
-        // 1.3 删除连接
+        // 1.3 删除(负载多的server的)连接
         swarmLogger.debug("SwarmConnections均衡连接, serverUrl为{}, 副本数为{}, 每个serverId要删掉超额的连接{}", url, replicas, serverNums)
         var delNum = 0
         conns.removeAll { conn ->
@@ -279,13 +281,19 @@ class SwarmConnections(
             }
             del
         }
-        serverNums.clear() // 清理复用的map
 
         // 2 补上缺失的连接，理论上会连上负载少的server
         if(delNum > 0){
-            // 先尝试建一个
+            // 先尝试建一个, 看看是否还会连上负载多的server
             createConns(1)
-
+            // 检查新连接是否连上负载多的server
+            val newConn = conns.last() // 获得新建的连接
+            val newServerId = newConn.getServerId(true)
+            // 如果没有连上负载多的server, 则继续创建连接
+            if(newServerId !in serverNums){
+                createConns(delNum - 1)
+            }
         }
+        serverNums.clear() // 清理复用的map
     }
 }
