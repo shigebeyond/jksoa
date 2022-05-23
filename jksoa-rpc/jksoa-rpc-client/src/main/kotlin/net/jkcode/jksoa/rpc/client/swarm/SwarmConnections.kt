@@ -116,6 +116,7 @@ class SwarmConnections(
     public override fun close() {
         for(conn in conns)
             conn.close()
+        conns.clear()
     }
 
     /***************** 连接增减管理 *****************/
@@ -127,7 +128,7 @@ class SwarmConnections(
     /**
      * 首次准备连接，仅调用一次
      */
-    fun initConnsOnce(){
+    protected fun initConnsOnce(){
         initStarter.startOnce {
             rescaleConns()
             swarmLogger.debug("SwarmConnections初始化连接池, serverUrl为{}, 副本数为{}, 连接数为{}", url, replicas, conns.size)
@@ -152,14 +153,16 @@ class SwarmConnections(
     /**
      * 创建缺失的连接
      * @param n 创建数
+     * @param fromRebalance 是否来源于均衡连接
      */
-    protected fun createConns(n: Int) {
+    protected fun createConns(n: Int, fromRebalance: Boolean = false) {
         if(n < 0)
             throw IllegalArgumentException("SwarmConnections.createConns(n)错误：参数n为负数")
         if(n == 0)
             return
-        
-        swarmLogger.debug("SwarmConnections创建缺失的连接, serverUrl为{}, 增加副本数为{}, 总副本数为{}, 新建连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size + n)
+
+        val msg = if(fromRebalance) "均衡后新建连接" else "增加副本数为" + n / connPerReplica
+        swarmLogger.debug("SwarmConnections创建缺失的连接, serverUrl为{}, {}, 总副本数为{}, 新建连接数为{}, 总连接数为{}", url, msg, replicas, n, size + n)
         for (i in 0 until n) {
             val conn = SwarmConnection(url) // 根据 url=serverPart 来复用 SwarmConnection 的实例
             conns.add(conn)
@@ -212,15 +215,14 @@ class SwarmConnections(
 
         // 2 删除其他连接
         // 2.1 获得要删除的连接
-        // 复用list用于连接排序, 可减少ArrayList创建
-        val list = reuseLists.get()
-        list.addAll(conns)
+        val sortConns = reuseLists.get() // 复用list用于连接排序, 可减少ArrayList创建
+        sortConns.addAll(conns)
         // 按连接时间降序
-        list.sortByDescending {
+        sortConns.sortByDescending {
             it.lastConnectTime
         }
         // 要删除最新的连接, 因为连接要减少, 证明节点少了, 节点挂了之后对应的连接会重连(多余), 因此最新的连接是多余的
-        val rmConns = list.subList(0, delNum)
+        val rmConns = sortConns.subList(0, delNum)
 
         // 2.2 删除连接
         conns.removeAll(rmConns)
@@ -229,7 +231,7 @@ class SwarmConnections(
         for(conn in rmConns)
             conn.delayClose()
 
-        list.clear() // 清理复用的list
+        sortConns.clear() // 清理复用的list
         return delNum
     }
 
@@ -241,7 +243,8 @@ class SwarmConnections(
      *   3 server连接少(负载少)： 不用处理， 后续调用 createConns() 会补上缺失的连接，会连上负载少的server(不一定是本client连接少的server)
      *   4 server连接不多不少(负载均衡)： 不用处理
      */
-    fun rebalanceConns(){
+    @Synchronized
+    public fun rebalanceConns(){
         if(conns.isEmpty()) // 没创建连接呢
             return
 
@@ -256,44 +259,50 @@ class SwarmConnections(
 
         // 1.2 serverNums 变为要删除的每个server的连接数
         val delThreshold = (connPerReplica * 1.1).toInt() // 删除的阀值
-        val it = serverNums.entries.iterator() // map迭代更新或删除元素
-        while (it.hasNext()){
-            val entry = it.next()
+        val nit = serverNums.entries.iterator() // map迭代更新或删除元素
+        while (nit.hasNext()){
+            val entry = nit.next()
             val num = entry.value
             if(num > delThreshold) { // 超过阀值: 记录要裁掉的连接数
                 entry.setValue(num - delThreshold)
             }else // 未超过阀值: 不要了
-                it.remove()
+                nit.remove()
         }
         if(serverNums.isEmpty())
             return
 
-        // 1.3 删除(负载多的server的)连接
-        swarmLogger.debug("SwarmConnections均衡连接, serverUrl为{}, 副本数为{}, 每个serverId要删掉超额的连接{}", url, replicas, serverNums)
+        // 2 删除(负载多的server)连接 + 新建(负载少的server)连接
+        // 先建后删，先建是看看新连接是否还连上负载多的server，如果连上就停止均衡
+        swarmLogger.debug("SwarmConnections均衡连接start, serverUrl为{}, 副本数为{}, 负载多的server应删掉超额的连接为{}, 应删除连接总数为{}", url, replicas, serverNums, serverNums.values.sum())
         var delNum = 0
-        conns.removeAll { conn ->
+        val newConns = reuseLists.get() // 复用list用于接受新建连接, 可减少ArrayList创建
+        val cit = conns.iterator() // list迭代删除元素
+        while (cit.hasNext()){
+            val conn = cit.next()
             val serverId = conn.getServerId() ?: ""
             // 在删除的队伍中
             val del = serverId in serverNums && serverNums[serverId]!! > 0
             if(del) {
                 serverNums[serverId] = serverNums[serverId]!! - 1 // 删除数-1
+                // 2.1 先建(负载少的server)连接
+                val newConn = SwarmConnection(url) // 根据 url=serverPart 来复用 SwarmConnection 的实例
+                newConns.add(newConn)
+                val newServerId = newConn.getServerId(true)
+                // 如果依旧连上负载多的server, 则停止均衡
+                if(newServerId in serverNums) {
+                    swarmLogger.debug("SwarmConnections均衡连接stop, 新建连接时依旧连上负载多的server, serverUrl为{}, serverId为{}", url, newServerId)
+                    break
+                }
+
+                // 2.2 后删(负载多的server)连接
+                cit.remove()
                 delNum++
             }
-            del
         }
+        conns.addAll(newConns)
+        swarmLogger.debug("SwarmConnections均衡连接end, serverUrl为{}, 副本数为{}, 删除连接数为{}, 新建连接数为{}, 总连接数为{}", url, replicas, delNum, newConns.size, conns.size)
 
-        // 2 补上缺失的连接，理论上会连上负载少的server
-        if(delNum > 0){
-            // 先尝试建一个, 看看是否还会连上负载多的server
-            createConns(1)
-            // 检查新连接是否连上负载多的server
-            val newConn = conns.last() // 获得新建的连接
-            val newServerId = newConn.getServerId(true)
-            // 如果没有连上负载多的server, 则继续创建连接
-            if(newServerId !in serverNums){
-                createConns(delNum - 1)
-            }
-        }
         serverNums.clear() // 清理复用的map
+        newConns.clear() // 清理复用的list
     }
 }

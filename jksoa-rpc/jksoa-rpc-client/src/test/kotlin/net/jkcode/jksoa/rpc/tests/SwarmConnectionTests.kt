@@ -1,9 +1,7 @@
 package net.jkcode.jksoa.rpc.tests
 
-import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.rpc.client.swarm.SwarmConnectionHub
-import net.jkcode.jksoa.rpc.example.ISimpleService
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.execCommand
 import org.junit.Test
@@ -44,26 +42,23 @@ class SwarmConnectionTests {
 
     @Test
     fun testDiscoveryListener2(){
-        val data = mutableMapOf(serverAddr to 1)
+        val server = "jksoa_rpcserver"
 
         // 新增
         println("------------ add ------------")
-        SwarmConnectionHub.handleSwarmServiceReplicasChange(data)
+        SwarmConnectionHub.handleSwarmServiceReplicasChange(mutableMapOf(server to 1))
 
         // 修改
         println("------------ change1 ------------")
-        data[serverAddr] = 2
-        SwarmConnectionHub.handleSwarmServiceReplicasChange(data)
+        SwarmConnectionHub.handleSwarmServiceReplicasChange(mutableMapOf(server to 2))
 
         // 修改
         println("------------ change2 ------------")
-        data[serverAddr] = 1
-        SwarmConnectionHub.handleSwarmServiceReplicasChange(data)
+        SwarmConnectionHub.handleSwarmServiceReplicasChange(mutableMapOf(server to 1))
 
         // 删除
         println("------------ remove ------------")
-        data.remove(serverAddr)
-        SwarmConnectionHub.handleSwarmServiceReplicasChange(data)
+        SwarmConnectionHub.handleSwarmServiceReplicasChange(mutableMapOf())
     }
 
     @Test
@@ -81,7 +76,7 @@ class SwarmConnectionTests {
         // println(ret)
 
         // 场景二：1台物理机，2个容器：停掉一个容器
-        val containIds = execCommand("docker ps --format {{.ID}}").trim().split("\n")
+        var containIds = execCommand("docker ps --format {{.ID}}").trim().split("\n")
         println("有容器id: " + containIds + ", 关掉容器: " + containIds.first())
         val ret = execCommand("docker stop " + containIds.first())
         println(ret)
@@ -98,6 +93,8 @@ class SwarmConnectionTests {
         Thread.sleep(10000)
 
         println("---------- 等新server起来后的均衡连接：连上2台server ---------")
+        containIds = execCommand("docker ps --format {{.ID}}").trim().split("\n")
+        println("有容器id: " + containIds)
         // 均衡连接
         SwarmConnectionHub.rebalanceConns()
 

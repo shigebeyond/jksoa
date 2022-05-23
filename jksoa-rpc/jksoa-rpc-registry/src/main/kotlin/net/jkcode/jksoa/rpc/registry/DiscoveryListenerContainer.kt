@@ -61,7 +61,7 @@ open class DiscoveryListenerContainer(
     public fun handleServiceUrlsChange(urls: List<Url>){
         var addKeys:Set<String> = emptySet() // 新加的url
         var removeKeys:Set<String> = emptySet() // 新加的url
-        var updateUrls: LinkedList<Url> = LinkedList() // 更新的url
+        var updateKeys:List<String> = emptyList() // 更新的url
 
         // 1 构建新的服务地址
         val newUrls = HashMap<String, Url>()
@@ -84,9 +84,8 @@ open class DiscoveryListenerContainer(
             removeKeys = oldUrls.keys.subtract(newUrls.keys)
 
             // 获得更新的地址
-            for(key in newUrls.keys.intersect(oldUrls.keys)){
-                if(newUrls[key] != oldUrls[key])
-                    updateUrls.add(newUrls[key]!!)
+            updateKeys = newUrls.keys.intersect(oldUrls.keys).filter{ key ->
+                newUrls[key] != oldUrls[key]
             }
         }
 
@@ -104,8 +103,9 @@ open class DiscoveryListenerContainer(
         }
 
         // 7 更新的地址
-        for(url in updateUrls) {
-            this.urls[url.serverAddr] = url
+        for(key in updateKeys) {
+            val url = newUrls[key]!!
+            this.urls[key] = url
             handleParametersChange(url)
         }
     }

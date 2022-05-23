@@ -74,7 +74,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
         swarmLogger.debug("SwarmConnectionHub处理swarm服务[{}]新加地址: {}", server, url)
         // 新建连接
         val conn = connections.getOrPut(server){
-            SwarmConnections(url)
+            SwarmConnections(url.serverPart)
         }
         conn.replicas = url.getParameter("replicas") ?: 1
     }

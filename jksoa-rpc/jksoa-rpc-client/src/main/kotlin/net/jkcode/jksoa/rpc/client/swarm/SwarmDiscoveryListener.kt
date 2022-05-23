@@ -28,6 +28,7 @@ abstract class SwarmDiscoveryListener: IConnectionHub() {
         // 全局的订阅
         swarmLogger.debug("SwarmDiscoveryListener订阅服务节点信息的mq")
         SwarmUtil.mqMgr.subscribeMq(SwarmUtil.topic){
+            swarmLogger.debug("SwarmDiscoveryListener收到服务节点信息的mq")
             handleSwarmServiceReplicasChange(it as MutableMap<String, Int>)
         }
     }
@@ -79,7 +80,7 @@ abstract class SwarmDiscoveryListener: IConnectionHub() {
             removeServers = oldData.keys.subtract(newData.keys)
 
             // 获得更新的地址
-            newData.keys.intersect(oldData.keys).filter { server ->
+            updateServers = newData.keys.intersect(oldData.keys).filter { server ->
                 newData[server] != oldData[server] // 节点数变化
             }
         }

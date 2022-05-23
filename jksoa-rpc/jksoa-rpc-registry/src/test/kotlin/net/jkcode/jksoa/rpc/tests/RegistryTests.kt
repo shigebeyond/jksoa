@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.rpc.tests
 
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.rpc.registry.DiscoveryListenerContainer
 import net.jkcode.jksoa.rpc.registry.IDiscoveryListener
 import net.jkcode.jksoa.rpc.registry.zk.ZkRegistry
 import org.junit.Test
@@ -65,6 +66,37 @@ class RegistryTests {
     fun testUnsubscribe(){
         println("退订服务：$serviceId")
         registry.unsubscribe(serviceId, discoveryListener)
+    }
+
+    @Test
+    fun testDiscoveryListener(){
+        val l = DiscoveryListenerContainer(serviceId)
+        // 新增
+        println("------------ add ------------")
+        var urls = listOf(
+                Url("jkr://192.168.62.209:9080")
+        )
+        l.handleServiceUrlsChange(urls)
+
+        // 修改
+        println("------------ change1 ------------")
+        urls = listOf(
+                Url("jkr://192.168.62.209:9080"),
+                Url("jkr://192.168.62.210:9080")
+        )
+        l.handleServiceUrlsChange(urls)
+
+        // 修改
+        println("------------ change2 ------------")
+        urls = listOf(
+                Url("jkr://192.168.62.209:9080?weight=10")
+        )
+        l.handleServiceUrlsChange(urls)
+
+        // 删除
+        println("------------ remove ------------")
+        urls = emptyList()
+        l.handleServiceUrlsChange(urls)
     }
 
 
