@@ -14,6 +14,8 @@ import java.lang.reflect.Method
 
 /**
  * tcc事务参与者
+ *   TODO: 优化节省存储： confirmInvocation、cancelInvocation不要直接存储，而是存储 isRpc + confirmMethod + cancelMethod + args，这样可以减少 args 一份冗余 + 减少 IInvocation 实现类名存储
+ *
  * @author shijianhang<772910474@qq.com>
  * @date 2019-09-07 6:44 PM
  */

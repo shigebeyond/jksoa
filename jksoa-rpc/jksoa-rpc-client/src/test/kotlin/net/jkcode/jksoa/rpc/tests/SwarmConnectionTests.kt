@@ -72,7 +72,7 @@ class SwarmConnectionTests {
         println("---------- 操作下线1台server ---------")
         // 要营造测试场景: 某台worker server下线 -- 1台server，副本数应该减少，但没有通知client
         // 场景一：2台物理机：下线一台
-        //val ret = execCommand("docker node update --availability drain shi-WK")
+        //val ret = execCommand("docker node update --availability drain shi-WK") // docker node update --availability active shi-WK
         // println(ret)
 
         // 场景二：1台物理机，2个容器：停掉一个容器
