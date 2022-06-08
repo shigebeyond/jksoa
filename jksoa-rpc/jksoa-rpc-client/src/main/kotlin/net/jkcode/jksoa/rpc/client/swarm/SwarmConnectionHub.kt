@@ -6,7 +6,8 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.swarmLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
-import net.jkcode.jksoa.rpc.client.swarm.server.ServerResolver
+import net.jkcode.jksoa.rpc.client.swarm.server.IServerResolver
+import net.jkcode.jksoa.rpc.client.swarm.server.ServerResolverContainer
 import net.jkcode.jkutil.common.CommonSecondTimer
 import net.jkcode.jkutil.common.newPeriodic
 import java.util.concurrent.ConcurrentHashMap
@@ -114,7 +115,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      */
     public override fun select(req: IRpcRequest): IConnection {
         // 1 获得可用连接
-        val swarmServerAddr = ServerResolver.resovleServer(req) // 解析server
+        val swarmServerAddr = ServerResolverContainer.resovleServer(req) // 解析server
         val conns = getOrCreateConn(swarmServerAddr)
         if(conns == null)
             throw RpcNoConnectionException("远程服务[${req.serviceId}]无提供者节点")
@@ -135,7 +136,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
         val server = if(req == null)
                         null
                     else
-                        ServerResolver.resovleServer(req) // 解析server
+                        ServerResolverContainer.resovleServer(req) // 解析server
         throw RpcClientException("docker swarm模式下无法获得swarm服务[$server]的所有server的连接")
     }
 

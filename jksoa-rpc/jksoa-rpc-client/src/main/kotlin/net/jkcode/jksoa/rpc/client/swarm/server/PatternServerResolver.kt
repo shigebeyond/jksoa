@@ -5,13 +5,13 @@ import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.swarm.SwarmUtil
 
 /**
- * swarm server解析器
+ * 根据模式来解析的swarm server解析器，有缓存
  *   从rpc请求(rpc服务类)中,解析出swarm服务名(server:协议ip端口)
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
  */
-object ServerResolver {
+object PatternServerResolver : IServerResolver {
 
     /**
      * 包名转为swarm服务名(server)的映射配置
@@ -37,13 +37,13 @@ object ServerResolver {
 
     /**
      * 解析swarm服务名(server)
-     * @param req
+     * @param serviceId
      * @return 协议ip端口(server)
      */
-    fun resovleServer(req: IRpcRequest): String {
+    override fun resovleServer(serviceId: String): String? {
         // 加缓存, 提高性能
-        return resolveCache.getOrPut(req.serviceId){
-            doResovleServer(req.serviceId)
+        return resolveCache.getOrPut(serviceId){
+            doResovleServer(serviceId)
         }
     }
 
@@ -56,14 +56,8 @@ object ServerResolver {
         // 逐个模式解析
         for (pattern in mappingPatterns) {
             val server = pattern.resolveServer(serviceClass)
-            if (server != null) {
-                // 1 自身是`协议://ip:端口`
-                if(server.contains("://"))
-                    return server
-
-                // 2 只有ip，转为`协议://ip:端口`
-                return SwarmUtil.swarmServer2Url(server).serverAddr
-            }
+            if (server != null)
+                return server
         }
 
         throw RpcClientException("无法根据服务类[$serviceClass]定位swarm server")
