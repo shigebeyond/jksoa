@@ -109,18 +109,17 @@ class Tracer protected constructor() : ITracer() {
             tracerLogger.debug("同步service: {}", serviceNames)
         }
 
-    }
+        /**
+         * 根据服务名获得id
+         * @param name
+         * @return id
+         */
+        fun getServiceIdByName(name: String): Int{
+            if(!serviceMap.containsKey(name))
+                throw IllegalArgumentException("不能识别服务: $name")
 
-    /**
-     * 根据服务名获得id
-     * @param name
-     * @return id
-     */
-    fun getServiceIdByName(name: String): Int{
-        if(!serviceMap.containsKey(name))
-            throw IllegalArgumentException("不能识别服务: $name")
-
-        return serviceMap[name]!!
+            return serviceMap[name]!!
+        }
     }
 
     /**
