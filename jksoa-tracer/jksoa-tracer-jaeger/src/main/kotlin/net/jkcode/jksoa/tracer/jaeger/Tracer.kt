@@ -1,5 +1,7 @@
 package net.jkcode.jksoa.tracer.jaeger
 
+import io.jaegertracing.Configuration
+import io.jaegertracing.Configuration.*
 import io.jaegertracing.internal.JaegerTracer
 import io.jaegertracing.internal.samplers.ConstSampler
 import io.jaegertracing.internal.samplers.ProbabilisticSampler
@@ -20,10 +22,10 @@ import net.jkcode.jkutil.common.JkApp
 import net.jkcode.jkutil.ttl.AllRequestScopedTransferableThreadLocal
 import net.jkcode.jkutil.ttl.SttlCurrentHolder
 
+
 /**
  * 系统跟踪类
  * 都需要创建trace才能操作其他api
- * 用#号前缀来标识发起人的service
  *
  * 在client
  * 1. 第一次创建trace, 即可创建 rootspan, 其parentid为null, 记录为后面span的parentspan -- http处理/定时任务处理
@@ -57,6 +59,16 @@ class Tracer protected constructor() : ITracer() {
                     .withSampler(sampler)
                     .build()
             GlobalTracer.registerIfAbsent(tracer)
+
+            /* todo: 上传到jaeger后端
+            val config = Configuration(JkApp.name)
+            val sender = SenderConfiguration()
+            // 将 <endpoint> 替换为控制台概览页面上相应客户端和地域的接入点。
+            sender.withEndpoint("<endpoint>")
+            config.withSampler(SamplerConfiguration().withType("const").withParam(1))
+            config.withReporter(ReporterConfiguration().withSender(sender).withMaxQueueSize(10000))
+            GlobalTracer.register(config.tracer)
+             */
         }
     }
 
