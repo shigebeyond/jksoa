@@ -106,16 +106,8 @@ class Tracer protected constructor() : ITracer() {
         // 构建span
         val span = buildRpcSpan(req, parentSpanContext)
 
-        // 向下游传递的参数
-        GlobalTracer.get().inject(span.context(), Format.Builtin.TEXT_MAP, object : TextMap {
-            override fun put(key: String, value: String) {
-                req.putAttachment(key, value)
-            }
-
-            override fun iterator(): MutableIterator<Map.Entry<String, String>> {
-                throw UnsupportedOperationException("TextMapInjectAdapter should only be used with Tracer.inject()")
-            }
-        })
+        // 向下游传递的跟踪信息
+        attachTraceInfo(req, span)
 
         Tags.SPAN_KIND[span] = Tags.SPAN_KIND_CLIENT
         return span
@@ -129,8 +121,7 @@ class Tracer protected constructor() : ITracer() {
      */
     public override fun startServerSpanner(req: IRpcRequest): Span {
         // 根据请求的附加参数来确定父span上下文
-        val parentSpanMap = TextMapAdapter(req.attachments as MutableMap<String, String>) // todo: 可能为null
-        val parentSpanContext = GlobalTracer.get().extract(Format.Builtin.TEXT_MAP, parentSpanMap)
+        val parentSpanContext = extractTraceInfo(req)
         if (parentSpanContext == null)
             return NoopSpan.INSTANCE
 
@@ -142,6 +133,31 @@ class Tracer protected constructor() : ITracer() {
 
         Tags.SPAN_KIND[span] = Tags.SPAN_KIND_SERVER
         return span
+    }
+
+    /**
+     * 向下游(server)传递跟踪信息
+     *   塞到rpc请求的附加参数中
+     */
+    protected fun attachTraceInfo(req: IRpcRequest, span: Span) {
+        GlobalTracer.get().inject(span.context(), Format.Builtin.TEXT_MAP, object : TextMap {
+            override fun put(key: String, value: String) {
+                req.putAttachment(key, value)
+            }
+
+            override fun iterator(): MutableIterator<Map.Entry<String, String>> {
+                throw UnsupportedOperationException("TextMapInjectAdapter should only be used with Tracer.inject()")
+            }
+        })
+    }
+
+    /**
+     * 从rpc请求的附加参数中解析跟踪信息
+     */
+    private fun extractTraceInfo(req: IRpcRequest): SpanContext? {
+        val parentSpanMap = TextMapAdapter(req.attachments as MutableMap<String, String>) // todo: 可能为null
+        val parentSpanContext = GlobalTracer.get().extract(Format.Builtin.TEXT_MAP, parentSpanMap)
+        return parentSpanContext
     }
 
     /**

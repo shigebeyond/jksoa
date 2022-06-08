@@ -187,10 +187,8 @@ class Tracer protected constructor() : ITracer() {
         if(parentSpan != null)
             span.parentId = parentSpan!!.id
 
-        // 向下游传递的参数
-        req.putAttachment("spanId", span.id)
-        req.putAttachment("parentId", span.parentId)
-        req.putAttachment("traceId", span.traceId)
+        // 向下游传递跟踪信息
+        attachTraceInfo(req, span)
 
         return ClientSpanner(this, span).apply { start() }
     }
@@ -206,26 +204,47 @@ class Tracer protected constructor() : ITracer() {
         if(req.serviceId == ICollectorService::class.qualifiedName)
             return EmptySpanner
 
-        // 初始化取样 + id : 根据请求的附加参数来确定
-        val traceId: Long? = req.getAttachment("traceId")
-        if(traceId == null) { // 不采样
+        // 创建span
+        val span = Span()
+        // 从rpc请求的附加参数中解析跟踪信息
+        val succ = extractTraceInfo(span, req)
+        if(!succ){ // 不采样
             isSample = false
             return EmptySpanner
         }
-        this.id = traceId
 
-        // 创建span
-        val span = Span()
-        span.id = req.getAttachment("spanId")!! // 复用client的span, 不保存span, 只补充sr/ss的annotation
-        span.parentId = req.getAttachment("parentId")!! // 沿用client的span的父span
         span.serviceId = getServiceIdByName(req.serviceId)
         span.name = req.methodSignature
-        span.traceId = id
+        this.id = span.traceId
 
         // server端receive, 作为当前线程的后续span的父span
         parentSpan = span
 
         return ServerSpanner(this, span).apply { start() }
+    }
+
+    /**
+     * 向下游(server)传递跟踪信息
+     *   塞到rpc请求的附加参数中
+     */
+    protected fun attachTraceInfo(req: IRpcRequest, span: Span) {
+        req.putAttachment("spanId", span.id)
+        req.putAttachment("parentId", span.parentId)
+        req.putAttachment("traceId", span.traceId)
+    }
+
+    /**
+     * 从rpc请求的附加参数中解析跟踪信息
+     */
+    protected fun extractTraceInfo(span: Span, req: IRpcRequest): Boolean {
+        val traceId: Long? = req.getAttachment("traceId")
+        if(traceId == null)  // 不采样
+            return false
+
+        span.traceId = traceId
+        span.id = req.getAttachment("spanId")!! // 复用client的span, 不保存span, 只补充sr/ss的annotation
+        span.parentId = req.getAttachment("parentId")!! // 沿用client的span的父span
+        return true
     }
 
 }
