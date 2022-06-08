@@ -1,0 +1,9 @@
+# rpc客户端的插件
+rpcClientPlugins:
+    - net.jkcode.jksoa.tracer.jaeger.plugin.RpcClientTracerPlugin
+# rpc服务端的插件
+rpcServerPlugins:
+    - net.jkcode.jksoa.tracer.jaeger.plugin.RpcServerTracerPlugin
+# http服务端的插件
+httpServerPlugins:
+    - net.jkcode.jksoa.tracer.jaeger.plugin.HttpServerTracerPlugin

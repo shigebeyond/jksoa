@@ -1,0 +1,11 @@
+dependencies{
+    compile 'io.jaegertracing:jaeger-client:1.1.0'
+
+    // other project
+    compile project(':jksoa-rpc:jksoa-rpc-server')
+    compile project(':jksoa-tracer:jksoa-tracer-common')
+    if(env == 'dev')
+        compile project(':jkmvc-http')
+    else
+        compile "net.jkcode.jkmvc:jkmvc-http:$jkmvc_version"
+}
