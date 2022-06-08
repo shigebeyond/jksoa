@@ -2,6 +2,10 @@ package net.jkcode.jksoa.tracer.jaeger
 
 import io.opentracing.Span
 import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jkutil.common.getSignature
+import java.lang.reflect.Method
+import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.javaMethod
 
 /**
  * 系统跟踪类
@@ -16,7 +20,7 @@ import net.jkcode.jksoa.common.IRpcRequest
  * 1 收到请求时, 第一次创建trace, 需要从请求中获得parentSpan
  *
  * @author shijianhang<772910474@qq.com>
- * @date 2019-06-29 6:19 PM
+ * @date 2022-06-08 6:19 PM
  */
 abstract class ITracer {
 
@@ -28,12 +32,34 @@ abstract class ITracer {
     /**
      * 新建发起人的span
      *
+     * @param func
+     * @param params
+     * @return
+     */
+    public fun startInitiatorSpanner(func: KFunction<*>, params: Map<String, *> = emptyMap<String, Any?>()): Span {
+        return startInitiatorSpanner(func.javaMethod!!, params)
+    }
+
+    /**
+     * 新建发起人的span
+     *
+     * @param method
+     * @param params
+     * @return
+     */
+    public fun startInitiatorSpanner(method: Method, params: Map<String, *> = emptyMap<String, Any?>()): Span {
+        return startInitiatorSpanner(method.declaringClass.name, method.getSignature(), params)
+    }
+
+    /**
+     * 新建发起人的span
+     *
      * @param serviceName
      * @param name
      * @param params
      * @return
      */
-    public abstract fun startInitiatorSpanner(serviceName: String, name: String, params: Map<String, *>): Span
+    public abstract fun startInitiatorSpanner(serviceName: String, name: String, params: Map<String, *> = emptyMap<String, Any?>()): Span
 
     /**
      * 新建客户端的span

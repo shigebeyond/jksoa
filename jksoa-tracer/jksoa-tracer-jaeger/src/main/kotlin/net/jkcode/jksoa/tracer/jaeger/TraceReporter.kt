@@ -4,12 +4,12 @@ import com.alibaba.fastjson.JSONObject
 import io.jaegertracing.internal.JaegerSpan
 import io.jaegertracing.spi.Reporter
 import lombok.extern.slf4j.Slf4j
-import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.tracer.common.tracerLogger
 
 @Slf4j
 class TraceReporter : Reporter {
     override fun report(span: JaegerSpan) {
-        clientLogger.info(span.toString())
+        tracerLogger.info(span.toString())
 
         val jsonObject = JSONObject()
         jsonObject["traceID"] =  span.context().traceId
@@ -24,7 +24,7 @@ class TraceReporter : Reporter {
         for ((key, value) in tags) {
             jsonObject["tags." + key] = value.toString()
         }
-        clientLogger.info(jsonObject.toString())
+        tracerLogger.info(jsonObject.toString())
     }
 
     override fun close() {}

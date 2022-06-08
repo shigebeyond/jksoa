@@ -1,12 +1,6 @@
 package net.jkcode.jksoa.tracer.jaeger
 
 import io.jaegertracing.Configuration
-import io.jaegertracing.Configuration.*
-import io.jaegertracing.internal.JaegerTracer
-import io.jaegertracing.internal.samplers.ConstSampler
-import io.jaegertracing.internal.samplers.ProbabilisticSampler
-import io.jaegertracing.spi.Reporter
-import io.jaegertracing.spi.Sampler
 import io.opentracing.Span
 import io.opentracing.SpanContext
 import io.opentracing.noop.NoopSpan
@@ -17,11 +11,11 @@ import io.opentracing.tag.Tags
 import io.opentracing.util.GlobalTracer
 import net.jkcode.jkmvc.orm.serialize.toJson
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.clientLogger
+import net.jkcode.jksoa.tracer.common.tracerLogger
+import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.JkApp
 import net.jkcode.jkutil.ttl.AllRequestScopedTransferableThreadLocal
 import net.jkcode.jkutil.ttl.SttlCurrentHolder
-
 
 /**
  * 系统跟踪类
@@ -36,39 +30,33 @@ import net.jkcode.jkutil.ttl.SttlCurrentHolder
  *
  *
  * @author shijianhang<772910474@qq.com>
- * @date 2019-06-29 6:19 PM
+ * @date 2022-06-08 6:19 PM
  */
 class Tracer protected constructor() : ITracer() {
 
     companion object : SttlCurrentHolder<Tracer>(AllRequestScopedTransferableThreadLocal { Tracer() }) { // 所有请求域的可传递的 ThreadLocal
 
         /**
-         * 注册全局tracer
+         * jaeger配置
+         */
+        public val config = Config.instance("jaeger", "properties")
+
+        /**
+         * 构建与注册全局tracer
          */
         init {
-            clientLogger.info("initialized the global tracer")
-            val reporter: Reporter = TraceReporter()
-            val samplingRate: Double = 0.1
-            var sampler: Sampler = if (samplingRate >= 0.0 && samplingRate <= 1.0)
-                ProbabilisticSampler(samplingRate)
-            else
-                ConstSampler(true)
+            tracerLogger.info("initialized the global tracer")
+            // 将jaeger.properties 塞到系统变量中，以便 Configuration.fromEnv() 使用
+            val props = System.getProperties()
+            props.putAll(config.props)
+            System.setProperties(props)
 
-            val tracer = JaegerTracer.Builder(JkApp.name)
-                    .withReporter(reporter)
-                    .withSampler(sampler)
-                    .build()
-            GlobalTracer.registerIfAbsent(tracer)
+            // 构建tracer
+            val name = config.getString(Configuration.JAEGER_SERVICE_NAME) ?: JkApp.name
+            val config = Configuration.fromEnv(name)
 
-            /* todo: 上传到jaeger后端
-            val config = Configuration(JkApp.name)
-            val sender = SenderConfiguration()
-            // 将 <endpoint> 替换为控制台概览页面上相应客户端和地域的接入点。
-            sender.withEndpoint("<endpoint>")
-            config.withSampler(SamplerConfiguration().withType("const").withParam(1))
-            config.withReporter(ReporterConfiguration().withSender(sender).withMaxQueueSize(10000))
-            GlobalTracer.register(config.tracer)
-             */
+            // 注册全局tracer
+            GlobalTracer.registerIfAbsent(config.tracer)
         }
     }
 

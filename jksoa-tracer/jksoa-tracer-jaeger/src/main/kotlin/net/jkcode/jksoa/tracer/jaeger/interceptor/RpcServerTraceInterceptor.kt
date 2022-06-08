@@ -4,6 +4,7 @@ import net.jkcode.jkutil.common.trySupplierFuture
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.IRpcRequestInterceptor
 import net.jkcode.jksoa.tracer.jaeger.Tracer
+import net.jkcode.jksoa.tracer.jaeger.end
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -11,7 +12,7 @@ import java.util.concurrent.CompletableFuture
  *    添加span
  *
  * @author shijianhang<772910474@qq.com>
- * @date 2019-06-30 2:53 PM
+ * @date 2022-06-08 2:53 PM
  */
 class RpcServerTraceInterceptor: IRpcRequestInterceptor {
 
