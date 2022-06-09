@@ -16,7 +16,7 @@ if(env == 'dev'){
     include 'jkutil'
     project(':jkutil').projectDir = new File('../jkutil')
 
-    // 应用守护
+    // 流量守护
     include 'jkguard'
     project(':jkguard').projectDir = new File('../jkguard')
 
