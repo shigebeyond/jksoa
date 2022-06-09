@@ -2,15 +2,17 @@
 
 引入了插件机制, 方便扩展系统功能
 
-jksoa将系统抽象为3个端: rpc-client端, rpc-server端, http-server端
+jksoa将系统抽象为3个端: rpc-client端, rpc-server端, http-server端, 而插件可以扩展3端的功能(如增加拦截器), 随意你扩展哪个端.
 
-分别对应有3类插件:
+3端分别对应有3处初始化插件的调用, 即调用`PluginLoader.loadPlugins()`:
 
-1. rpcClientPlugins: rpc客户端的插件, 在rpc server启动 `net.jkcode.jksoa.rpc.server.IRpcServer.start()` 时调用
+1. rpc客户端初始化插件: 在rpc server启动 `net.jkcode.jksoa.rpc.server.IRpcServer.start()` 时调用
 
-2. rpcServerPlugins: rpc服务端的插件, 在rpc client的请求分发者初始化 `net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher.init()` 时调用
+2. rpc服务端初始化插件: 在rpc client的请求分发者初始化 `net.jkcode.jksoa.rpc.client.dispatcher.RpcRequestDispatcher.init()` 时调用
 
-3. httpServerPlugins: http服务端的插件, 在http filter初始化 `net.jkcode.jkmvc.http.JkFilter.init()` 时调用
+3. http服务端初始化插件: 在http filter初始化 `net.jkcode.jkmvc.http.JkFilter.init()` 时调用
+
+系统保证插件只初始化一次，哪怕你3端都调用了。
 
 插件接口是 `net.jkcode.jkutil.common.IPlugin`, 主要有 `start()` 方法, 在3端启动时调用, 从而增加自定义的逻辑处理.
 
@@ -55,10 +57,10 @@ interface IPlugin: Closeable {
 
 2. 实现 `IPlugin` 接口
 
-参考tracer组件中的 `net.jkcode.jksoa.tracer.agent.plugin.RpcClientTracerPlugin`
+参考tracer组件中的 `net.jkcode.jksoa.tracer.agent.JkTracerPlugin`
 
 ```
-package net.jkcode.jksoa.tracer.agent.plugin
+package net.jkcode.jksoa.tracer.agent
 
 import net.jkcode.jkmvc.common.IPlugin
 import net.jkcode.jksoa.rpc.client.referer.RpcInvocationHandler
@@ -70,7 +72,7 @@ import net.jkcode.jksoa.tracer.agent.interceptor.RpcClientTraceInterceptor
  * @author shijianhang<772910474@qq.com>
  * @date 2019-07-03 5:02 PM
  */
-class RpcClientTracerPlugin: `IPlugin` {
+class JkTracerPlugin: `IPlugin` {
 
     /**
      * 初始化
@@ -78,6 +80,7 @@ class RpcClientTracerPlugin: `IPlugin` {
     override fun doStart() {
         // 添加拦截器
         (RpcInvocationHandler.interceptors as MutableList).add(RpcClientTraceInterceptor())
+        ...
     }
 
     /**
@@ -90,18 +93,11 @@ class RpcClientTracerPlugin: `IPlugin` {
 
 ## 应用自定义插件
 
-应用哪些插件是配置在 plugin.yaml 中
+应用哪些插件是配置在 plugin.list 中
 
-参考tracer组件中的插件配置: jksoa/jksoa-tracer/jksoa-tracer-agent/src/test/resources/plugin.yaml
+参考tracer组件中的插件配置: jksoa/jksoa-tracer/jksoa-tracer-agent/src/test/resources/plugin.list
 
 ```
-# rpc客户端的插件
-rpcClientPlugins:
-    - net.jkcode.jksoa.tracer.agent.plugin.RpcClientTracerPlugin
-# rpc服务端的插件
-rpcServerPlugins:
-    - net.jkcode.jksoa.tracer.agent.plugin.RpcServerTracerPlugin
-# http服务端的插件
-httpServerPlugins:
-    - net.jkcode.jksoa.tracer.agent.plugin.HttpServerTracerPlugin
+# rpc client/rpc server/http server等3端的插件
+net.jkcode.jksoa.tracer.agent.JkTracerPlugin
 ```

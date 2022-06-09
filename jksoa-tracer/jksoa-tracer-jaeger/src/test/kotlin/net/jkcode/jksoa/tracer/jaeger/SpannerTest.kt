@@ -10,7 +10,7 @@ class SpannerTest {
     @Test
     fun testInitiatorTrace(){
         // 手动加载一下插件
-        RpcClientTracerPlugin().start()
+        //JkTracerPlugin().start()
 
         val span1 = Tracer.current().startInitiatorSpanner(::testInitiatorTrace)
 

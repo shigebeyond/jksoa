@@ -1,15 +1,12 @@
 package net.jkcode.jksoa.rpc.server
 
 import net.jkcode.jkutil.scope.ClosingOnShutdown
-import net.jkcode.jkutil.common.Config
-import net.jkcode.jkutil.common.IConfig
-import net.jkcode.jkutil.common.IPlugin
-import net.jkcode.jkutil.common.getIntranetHost
 import net.jkcode.jkutil.singleton.NamedConfiguredSingletons
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.exception.RpcServerException
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.rpc.server.provider.ProviderLoader
+import net.jkcode.jkutil.common.*
 import java.io.Closeable
 
 /**
@@ -34,11 +31,6 @@ abstract class IRpcServer: Closeable {
         public val config = Config.instance("rpc-server", "yaml")
 
         /**
-         * 插件配置
-         */
-        public val pluginConfig: Config = Config.instance("plugin", "yaml")
-
-        /**
          * 当前启动的服务器
          */
         protected var server: IRpcServer? = null
@@ -52,11 +44,6 @@ abstract class IRpcServer: Closeable {
             return server
         }
     }
-
-    /**
-     * 插件列表
-     */
-    public val plugins: List<IPlugin> = pluginConfig.classes2Instances("rpcServerPlugins")
 
     /**
      * 服务器url
@@ -90,8 +77,7 @@ abstract class IRpcServer: Closeable {
                 ProviderLoader.load()
 
                 // 初始化插件
-                for(p in plugins)
-                    p.start()
+                PluginLoader.loadPlugins()
 
                 // 调用回调
                 callback?.invoke()
@@ -116,10 +102,6 @@ abstract class IRpcServer: Closeable {
      * 关闭server
      */
     public override fun close(){
-        // 关闭插件
-        for(p in plugins)
-            p.close()
-
         server = null
     }
 }

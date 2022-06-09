@@ -2,7 +2,7 @@ package net.jkcode.jksoa.tracer.agent
 
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.rpc.example.ISimpleService
-import net.jkcode.jksoa.tracer.agent.plugin.RpcClientTracerPlugin
+import net.jkcode.jksoa.tracer.agent.JkTracerPlugin
 import org.junit.Test
 import java.util.concurrent.CompletableFuture
 
@@ -12,7 +12,7 @@ class SpannerTest {
     @Test
     fun testInitiatorTrace(){
         // 手动加载一下插件
-        RpcClientTracerPlugin().start()
+        JkTracerPlugin().start()
 
         val span1 = Tracer.current().startInitiatorSpanner(::testInitiatorTrace)
 

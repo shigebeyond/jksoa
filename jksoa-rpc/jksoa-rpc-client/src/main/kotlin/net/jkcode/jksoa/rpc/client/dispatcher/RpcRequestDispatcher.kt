@@ -1,6 +1,5 @@
 package net.jkcode.jksoa.rpc.client.dispatcher
 
-import net.jkcode.jkutil.scope.ClosingOnShutdown
 import net.jkcode.jkutil.common.*
 import net.jkcode.jksoa.common.*
 import net.jkcode.jksoa.common.future.FailoverRpcResponseFuture
@@ -21,22 +20,12 @@ import java.util.concurrent.CompletableFuture
  * @author shijianhang<772910474@qq.com>
  * @date 2019-01-07 11:10 AM
  */
-class RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
+class RpcRequestDispatcher : IRpcRequestDispatcher {
 
     /**
      * 客户端配置
      */
     public val config = Config.instance("rpc-client", "yaml")
-
-    /**
-     * 插件配置
-     */
-    public val pluginConfig: Config = Config.instance("plugin", "yaml")
-
-    /**
-     * 插件列表
-     */
-    public val plugins: List<IPlugin> = pluginConfig.classes2Instances("rpcClientPlugins")
 
     /**
      * 分片策略
@@ -48,17 +37,7 @@ class RpcRequestDispatcher : IRpcRequestDispatcher, ClosingOnShutdown() {
         RefererLoader.load()
 
         // 初始化插件
-        for(p in plugins)
-            p.start()
-    }
-
-    /**
-     * 关闭
-     */
-    public override fun close() {
-        // 关闭插件
-        for(p in plugins)
-            p.close()
+        PluginLoader.loadPlugins()
     }
 
     /**

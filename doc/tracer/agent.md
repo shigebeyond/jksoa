@@ -219,22 +219,8 @@ ISpanner
 
 # agent在3端的插件
 
-jksoa-tracer在 rpc client/rpc server/http server等3端都做了插件, 其实现是使用对应的拦截器来埋点跟踪.
+jksoa-tracer做了插件`JkTracerPlugin`, 可以在rpc client/rpc server/http server等3端中, 使用对应的拦截器来埋点跟踪.
 
-1. rpc client
-
-插件: `RpcClientTracerPlugin`
-
-拦截器: `RpcClientTraceInterceptor`
-
-2. rpc server
-
-插件: `RpcServerTracerPlugin`
-
-拦截器: `RpcServerTraceInterceptor`
-
-3. http server
-
-插件 `HttpServerTracerPlugin`
-
-拦截器 `HttpServerTraceInterceptor`
+1. rpc client端拦截器: `RpcClientTraceInterceptor`
+2. rpc server端拦截器: `RpcServerTraceInterceptor`
+3. http server端拦截器 `HttpServerTraceInterceptor`

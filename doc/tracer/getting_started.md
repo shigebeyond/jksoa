@@ -46,18 +46,11 @@ traceableServicePackages: #
 ```
 
 ### 添加agent插件
-vim plugin.yaml
+vim plugin.list
 
 ```
-# rpc客户端的插件
-rpcClientPlugins:
-    - net.jkcode.jksoa.tracer.agent.plugin.RpcClientTracerPlugin
-# rpc服务端的插件
-rpcServerPlugins:
-    - net.jkcode.jksoa.tracer.agent.plugin.RpcServerTracerPlugin
-# http服务端的插件
-httpServerPlugins:
-    - net.jkcode.jksoa.tracer.agent.plugin.HttpServerTracerPlugin
+# rpc client/rpc server/http server等3端的插件
+net.jkcode.jksoa.tracer.agent.JkTracerPlugin
 ```
 
 ### @TraceableService注解
