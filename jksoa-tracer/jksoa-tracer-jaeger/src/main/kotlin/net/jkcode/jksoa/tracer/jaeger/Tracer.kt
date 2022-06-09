@@ -52,7 +52,9 @@ class Tracer protected constructor() : ITracer() {
             System.setProperties(props)
 
             // 构建tracer
-            val name = config.getString(Configuration.JAEGER_SERVICE_NAME) ?: JkApp.name
+            var name = config.getString(Configuration.JAEGER_SERVICE_NAME)
+            if(name.isNullOrBlank())
+                name = JkApp.name
             val config = Configuration.fromEnv(name)
 
             // 注册全局tracer
@@ -68,11 +70,11 @@ class Tracer protected constructor() : ITracer() {
      * @param params
      * @return
      */
-    public override fun startInitiatorSpanner(serviceName: String, name: String, params: Map<String, *>): Span {
+    public override fun startInitiatorSpanner(serviceName: String, name: String, params: Any?): Span {
         // 创建span
         val apiName = serviceName + ":" + name
         val span = GlobalTracer.get().buildSpan(apiName).start()
-        span.setTag("arguments", params.toJson()) // rpc的参数
+        span.setTag("arguments", params?.toJson()) // rpc的参数
 
         // 发起人, 作为当前线程的后续span的父span
         parentSpan = span
@@ -111,7 +113,7 @@ class Tracer protected constructor() : ITracer() {
         // 根据请求的附加参数来确定父span上下文
         val parentSpanContext = extractTraceInfo(req)
         if (parentSpanContext == null)
-            return NoopSpan.INSTANCE
+            return startInitiatorSpanner(req.serviceId, req.methodSignature, req.args)
 
         // 构建span
         val span = buildRpcSpan(req, parentSpanContext)
@@ -143,7 +145,10 @@ class Tracer protected constructor() : ITracer() {
      * 从rpc请求的附加参数中解析跟踪信息
      */
     private fun extractTraceInfo(req: IRpcRequest): SpanContext? {
-        val parentSpanMap = TextMapAdapter(req.attachments as MutableMap<String, String>) // todo: 可能为null
+        if(req.attachments == null)
+            return null
+
+        val parentSpanMap = TextMapAdapter(req.attachments as MutableMap<String, String>)
         val parentSpanContext = GlobalTracer.get().extract(Format.Builtin.TEXT_MAP, parentSpanMap)
         return parentSpanContext
     }

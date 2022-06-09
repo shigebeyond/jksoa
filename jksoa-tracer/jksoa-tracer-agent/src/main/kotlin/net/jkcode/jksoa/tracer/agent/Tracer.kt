@@ -133,9 +133,6 @@ class Tracer protected constructor() : ITracer() {
         // JkTracerPlugin插件中延迟调用 ICollectorService.syncServices()
         syncServices()
 
-        // 用#号前缀来标识发起人的service
-        val serviceName2 = "#$serviceName"
-
         // 初始化取样 + id
         if(isSample == null) {
             isSample = sampler.isSample()
@@ -151,7 +148,7 @@ class Tracer protected constructor() : ITracer() {
         val span = Span()
         span.id = generateId("span")
         span.parentId = null // 父span为null
-        span.serviceId = getServiceIdByName(serviceName2)
+        span.serviceId = getServiceIdByName(serviceName)
         span.name = name
         span.traceId = id
 

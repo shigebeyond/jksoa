@@ -10,11 +10,11 @@ class SpannerTest {
     @Test
     fun testInitiatorTrace(){
         // 手动加载一下插件
-        //JkTracerPlugin().start()
+        JaegerTracerPlugin().start()
 
         val span1 = Tracer.current().startInitiatorSpanner(::testInitiatorTrace)
 
-        val req = RpcRequest(ISimpleService::sayHi)
+        val req = RpcRequest(ISimpleService::sayHi, arrayOf<Any?>("shi"))
         val span2 = Tracer.current().startClientSpanner(req)
         span2.end()
         span1.end()
@@ -22,10 +22,10 @@ class SpannerTest {
 
     @Test
     fun testServerTrace(){
-        val req1 = RpcRequest(ISimpleService::sayHi)
+        val req1 = RpcRequest(ISimpleService::sayHi, arrayOf<Any?>("父"))
         val span1 = Tracer.current().startServerSpanner(req1)
 
-        val req2 = RpcRequest(ISimpleService::sayHi)
+        val req2 = RpcRequest(ISimpleService::sayHi, arrayOf<Any?>("子"))
         val span2 = Tracer.current().startClientSpanner(req2)
         span2.end()
         span1.end()

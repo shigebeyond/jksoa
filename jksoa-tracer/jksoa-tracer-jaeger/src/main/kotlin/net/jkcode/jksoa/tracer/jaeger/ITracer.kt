@@ -36,7 +36,7 @@ abstract class ITracer {
      * @param params
      * @return
      */
-    public fun startInitiatorSpanner(func: KFunction<*>, params: Map<String, *> = emptyMap<String, Any?>()): Span {
+    public fun startInitiatorSpanner(func: KFunction<*>, params: Any? = null): Span {
         return startInitiatorSpanner(func.javaMethod!!, params)
     }
 
@@ -47,7 +47,7 @@ abstract class ITracer {
      * @param params
      * @return
      */
-    public fun startInitiatorSpanner(method: Method, params: Map<String, *> = emptyMap<String, Any?>()): Span {
+    public fun startInitiatorSpanner(method: Method, params: Any? = null): Span {
         return startInitiatorSpanner(method.declaringClass.name, method.getSignature(), params)
     }
 
@@ -59,7 +59,7 @@ abstract class ITracer {
      * @param params
      * @return
      */
-    public abstract fun startInitiatorSpanner(serviceName: String, name: String, params: Map<String, *> = emptyMap<String, Any?>()): Span
+    public abstract fun startInitiatorSpanner(serviceName: String, name: String, params: Any? = null): Span
 
     /**
      * 新建客户端的span
