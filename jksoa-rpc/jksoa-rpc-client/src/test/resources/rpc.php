@@ -2,6 +2,7 @@
 use php\jksoa\rpc\JavaReferer;
 use php\jksoa\rpc\PhpReferer;
 
+// 打印rpc的调用+结果
 function print_rpc($ref, $ret){
    if(is_array($ret))
       $ret = print_r($ret, true);

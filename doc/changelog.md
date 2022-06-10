@@ -149,15 +149,15 @@
 
 1.1 引入jphp-java-ext
 
-1.2 实现 WrapJavaReferer, 包装服务的java的rpc引用对象, 以便在php中进行rpc调用
+1.2 实现 WrapJavaReferer, 包装服务的java引用对象, 以便在php中进行rpc调用
 
-1.3 实现 WrapPhpReferer, 包装服务的php的rpc引用对象(PhpReferer), 以便在php中进行rpc调用, 借助php的动态性, 我们可以动态的升级rpc接口
+1.3 实现 WrapPhpReferer, 包装服务的php引用对象(PhpReferer), 以便在php中进行rpc调用, 借助php的动态性, 我们可以动态的升级rpc接口
 
 1.4 抽象 IMethodMeta 体系, 以便兼容java方法与php方法, 进而整合进 jkguard(熔断降级限流) 的守护体系中, 从而能守护java与php方法
 
 2. 整合集群框架(docker swarm)
 
-2.1 完善部署脚本, 支持持续发布/持续部署
+2.1 完善部署脚本, 支持持续发布/持续部署, 支持云原生部署
 
 2.2 在docker swarm集群内使用swarm自身的服务发现机制, 而不用第三方注册中心实现服务发现
 

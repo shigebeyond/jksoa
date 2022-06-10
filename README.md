@@ -59,7 +59,11 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 27. [优雅的关机](doc/rpc/common/graceful-shutdown.md)
 
 
-# jksoa-tracer
+# jksoa-tracer-jaeger实现
+
+1. [快速开始](doc/tracer-jaeger/getting_started.md)
+
+# jksoa-tracer-自实现
 
 分布式跟踪的组件
 
