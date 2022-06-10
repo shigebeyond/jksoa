@@ -1,6 +1,7 @@
 package net.jkcode.jksoa.tracer.jaeger
 
 import io.opentracing.Span
+import io.opentracing.tag.Tags
 
 /**
  * 结束跟踪
@@ -14,8 +15,7 @@ public fun Span.end(ex: Throwable? = null){
     }
 
     //Tags.ERROR.set(this, true);
-    this.setTag("error", "1")
-    this.setTag("error.code", "-1")
+    this.setTag("error", true)
     this.setTag("error.message", ex.message)
     this.finish()
 }
