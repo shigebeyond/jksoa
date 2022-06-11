@@ -51,15 +51,17 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 21. [池化的连接的包装器](doc/rpc/client/pooled-connection.md)
 22. [客户端初始化流程](doc/rpc/client/init-flow.md)
 23. [请求超时](doc/rpc/client/request_timeout.md)
+24. [整合jphp-支持php来调用rpc](doc/rpc/client/jphp.md)
 
 ## 高级
-24. [架构](doc/rpc/architecture.md)
-25. [rpc流程](doc/rpc/rpc-flow.md)
-26. [附加参数](doc/rpc/common/attachment.md)
-27. [优雅的关机](doc/rpc/common/graceful-shutdown.md)
-
+25. [架构](doc/rpc/architecture.md)
+26. [rpc流程](doc/rpc/rpc-flow.md)
+27. [附加参数](doc/rpc/common/attachment.md)
+28. [优雅的关机](doc/rpc/common/graceful-shutdown.md)
 
 # jksoa-tracer-jaeger实现
+
+使用jaeger来做分布式跟踪
 
 1. [快速开始](doc/tracer-jaeger/getting_started.md)
 
@@ -89,6 +91,9 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 1. [快速开始](doc/dtx/tcc/getting_started.md)
 2. [示例](doc/dtx/tcc/demo.md)
 3. [架构](doc/dtx/tcc/architecture.md)
+
+# 部署
+1. [部署](doc/deploy.md)
 
 # 其他
 [变更历史](doc/changelog.md)

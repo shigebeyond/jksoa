@@ -40,10 +40,10 @@ val ret = service.hostname()
 
 我们安装并使用idea插件[jk-yapix](https://plugins.jetbrains.com/plugin/19338-jk-yapix) 来生成php映射类
 
-![](img/gen-php-mapping.png)
+![](../img/gen-php-mapping.png)
 
 - 2 java服务类 vs 生成的php映射类
-![](img/compare-java-php.png)
+![](../img/compare-java-php.png)
 
 - 3 php调用
 ```
