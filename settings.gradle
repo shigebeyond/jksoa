@@ -13,42 +13,26 @@ include 'jksoa-dtx:jksoa-dtx-demo:jksoa-dtx-common', 'jksoa-dtx:jksoa-dtx-demo:j
 
 // 添加jkmvc子项目
 if(env == 'dev'){
-    include 'jkutil'
-    project(':jkutil').projectDir = new File('../jkutil')
+	include "jkutil", "jkguard", "jkjob", "jkmq", "jphp-java-ext"
 
-    // 流量守护
-    include 'jkguard'
-    project(':jkguard').projectDir = new File('../jkguard')
+	include "jkmvc-orm"
+	project(':jkmvc-orm').projectDir = new File('jkmvc/jkmvc-orm')
 
-    // 任务调度
-    include 'jkjob'
-    project(':jkjob').projectDir = new File('../jkjob')
+	include "jkmvc-http"
+	project(':jkmvc-http').projectDir = new File('jkmvc/jkmvc-http')
 
-    // mq client
-    include 'jkmq'
-    project(':jkmq').projectDir = new File('../jkmq')
+	include "jkmvc-server-jetty"
+	project(':jkmvc-server-jetty').projectDir = new File('jkmvc/jkmvc-server-jetty')
 
-    include 'jkmvc-orm'
-    project(':jkmvc-orm').projectDir = new File('../jkmvc/jkmvc-orm')
+	/*
+	include "jkbenchmark-test"
+	project(':jkbenchmark-test').projectDir = new File('jkbenchmark/jkbenchmark-test')
 
-    include 'jkmvc-http'
-    project(':jkmvc-http').projectDir = new File('../jkmvc/jkmvc-http')
+	include "benchmark-common"
+	project(':benchmark-common').projectDir = new File('jksoa-benchmark/common')
 
-    include 'jkmvc-server-jetty'
-    project(':jkmvc-server-jetty').projectDir = new File('../jkmvc/jkmvc-server-jetty')
+	include "benchmark-rpc"
+	project(':benchmark-rpc').projectDir = new File('jksoa-benchmark/jkrpc')
+	*/
 
-    // 性能测试
-    /*include 'jkbenchmark-test'
-    project(':jkbenchmark-test').projectDir = new File('../jkbenchmark/jkbenchmark-test')
-
-    include 'benchmark-common'
-    project(':benchmark-common').projectDir = new File('../jksoa-benchmark/common')
-
-    include 'benchmark-rpc'
-    project(':benchmark-rpc').projectDir = new File('../jksoa-benchmark/jkrpc')
-    */
-
-    // jphp-java-ext
-    include 'jphp-java-ext'
-    project(':jphp-java-ext').projectDir = new File('../jphp-java-ext')
 }

@@ -8,3 +8,11 @@ jetty/
 logs/
 tmp/
 zookeeper.out
+jksoa-benchmark
+jphp-java-ext
+jkguard
+jkmvc
+jkutil
+jkmq
+jkbenchmark
+jkjob
