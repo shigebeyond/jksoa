@@ -16,7 +16,8 @@ class SpannerTest {
 
         val req = RpcRequest(ISimpleService::sayHi, arrayOf<Any?>("shi"))
         val span2 = Tracer.current().startClientSpanner(req)
-        span2.end(Exception("fuck"))
+//        span2.end(Exception("test"))
+        span2.end()
         span1.end()
     }
 

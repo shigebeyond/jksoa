@@ -91,4 +91,5 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 3. [架构](doc/dtx/tcc/architecture.md)
 
 # 其他
+[部署(CI/CD)](doc/deploy.md)
 [变更历史](doc/changelog.md)
