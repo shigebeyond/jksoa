@@ -16,3 +16,6 @@ zip -r $pro-$tag.zip app/
 
 echo "上传 $pro-$tag"
 scp *.zip root@192.168.0.17:/root/java/
+
+echo "启动 $pro-$tag"
+ssh root@192.168.0.17 "unzip $pro-$tag.zip; cd $pro-$tag.zip; ./start-rpcserver.sh"
