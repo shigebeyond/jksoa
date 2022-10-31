@@ -4,9 +4,7 @@
  */
 class Test
 {
-
     public static function sayHi($name) {
         return "Hello, $name";
     }
-
 }

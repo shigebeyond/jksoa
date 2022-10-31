@@ -12,15 +12,12 @@ import php.runtime.memory.StringMemory
 import php.runtime.reflection.ClassEntity
 
 /**
- * 包装服务的php引用对象
- * 1 调用服务的php引用对象（代理）
- *    仿jphp自带的 JavaObject，但该类并不能动态调用方法
- *    动态调用方法的实现，使用魔术方法
- *    注意：不能直接使用`dispatcher.dispatch(req)`来发rpc请求，必须通过P2pReferer/P2pRefererMethod来发，以便`P2pRefererMethod.invokeArgs()`根据代理的java方法将php参数转换为正确的java参数类型
- * 2 使用
- *    java中的实例化： val ref = WrapP2pReferer.of(env, "net\\jkcode\\jksoa\\rpc\\example\\ISimpleService")
- *    php中的实例化: $ref = new P2pReferer("net\\jkcode\\jksoa\\rpc\\example\\ISimpleService");
- *    php中的方法调用（默认方法）: $ref->hostname();
+ * 包装php服务的php引用对象
+ * 1 调用php服务的php引用对象（代理）
+ *    仿 WrapPhpReferer 来实现
+ * 2 php中使用
+ *    $ref = new P2pReferer('net.jkcode.jksoa.rpc.example.IP2pTestService'); // 其中 net.jkcode.jksoa.rpc.example.IP2pTestService 是代理调用远端php代码的java服务接口
+ *    $ret = $ref->callPhpFunc('Test::sayHi', ['shi']); // 调用远端php方法
  */
 @Reflection.Name("P2pReferer")
 @Reflection.Namespace(JksoaRpcExtension.NS)

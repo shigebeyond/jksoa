@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap
  *   java rpc服务必须实现接口 IP2pService
  *
  *   使用:
- *   $ref = new P2pReferer('net.jkcode.jksoa.rpc.example.IP2pTestService');
- *   $ret = $ref->callPhpFunc('Test::sayHi', ['shi']);
+ *    $ref = new P2pReferer('net.jkcode.jksoa.rpc.example.IP2pTestService'); // 其中 net.jkcode.jksoa.rpc.example.IP2pTestService 是代理调用远端php代码的java服务接口
+ *    $ret = $ref->callPhpFunc('Test::sayHi', ['shi']); // 调用远端php方法
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

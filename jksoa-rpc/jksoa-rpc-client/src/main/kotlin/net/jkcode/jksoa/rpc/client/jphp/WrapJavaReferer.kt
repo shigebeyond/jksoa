@@ -15,8 +15,8 @@ import php.runtime.memory.StringMemory
 import php.runtime.reflection.ClassEntity
 
 /**
- * 包装服务的java引用对象
- * 1 调用服务的java引用对象（代理）
+ * 包装java服务的java引用对象
+ * 1 调用java服务的java引用对象（代理）
  *    仿jphp自带的 JavaObject，但该类并不能动态调用方法
  *    动态调用方法的实现，使用魔术方法
  *    注意：不能直接使用`dispatcher.dispatch(req)`来发rpc请求，必须通过调用引用（代理）对象来发，以便`JavaMethod.invokeArgs()`根据代理的java方法将php参数转换为正确的java参数类型
