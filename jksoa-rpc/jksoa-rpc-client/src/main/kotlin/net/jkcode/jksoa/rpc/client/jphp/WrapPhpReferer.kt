@@ -24,7 +24,7 @@ import php.runtime.reflection.ClassEntity
  */
 @Reflection.Name("PhpReferer")
 @Reflection.Namespace(JksoaRpcExtension.NS)
-open class WrapPhpReferer(env: Environment, clazz: ClassEntity) : BaseObject(env, clazz) {
+open class WrapPhpReferer(env: Environment, phpClazz: ClassEntity) : BaseObject(env, phpClazz) {
 
     // 被包装的服务的引用对象
     lateinit var referer: PhpReferer
@@ -98,10 +98,10 @@ open class WrapPhpReferer(env: Environment, clazz: ClassEntity) : BaseObject(env
         /**
          * 创建 PReferer 实例
          */
-        fun of(env: Environment, clazzName: String): WrapPhpReferer {
-            val javaObject = WrapPhpReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\PhpReferer"))
-            javaObject.referer = PhpReferer.getOrCreateRefer(clazzName, env)
-            return javaObject
+        fun of(env: Environment, phpClazzName: String): WrapPhpReferer {
+            val wr = WrapPhpReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\PhpReferer"))
+            wr.referer = PhpReferer.getOrCreateRefer(phpClazzName, env)
+            return wr
         }
 
     }

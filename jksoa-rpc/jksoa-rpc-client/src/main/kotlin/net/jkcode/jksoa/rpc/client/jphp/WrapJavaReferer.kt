@@ -86,9 +86,9 @@ open class WrapJavaReferer(env: Environment, clazz: ClassEntity) : BaseObject(en
          * 创建 PReferer 实例
          */
         fun of(env: Environment, clazzName: String): WrapJavaReferer {
-            val javaObject = WrapJavaReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\JavaReferer"))
-            javaObject.referer = getRef(clazzName)
-            return javaObject
+            val wr = WrapJavaReferer(env, env.fetchClass(JksoaRpcExtension.NS + "\\JavaReferer"))
+            wr.referer = getRef(clazzName)
+            return wr
         }
 
         /**

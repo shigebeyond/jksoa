@@ -9,10 +9,10 @@ class PhpReferer
 {
     /**
      * constructor.
-     * @param string $obj
+     * @param string phpClassName
      * @throws IOException
      */
-    function __construct($obj) {}
+    function __construct($phpClassName) {}
 
     function __call($method, $args) {}
 

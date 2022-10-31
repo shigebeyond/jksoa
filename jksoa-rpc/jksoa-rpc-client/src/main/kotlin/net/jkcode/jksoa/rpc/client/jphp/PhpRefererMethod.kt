@@ -5,6 +5,7 @@ import net.jkcode.jkutil.common.getClassByName
 import net.jkcode.jkutil.common.substringBetween
 import net.jkcode.jkutil.fiber.AsyncCompletionStage
 import net.jkcode.jphp.ext.WrapCompletableFuture
+import net.jkcode.jphp.ext.toJavaObject
 import php.runtime.Memory
 import php.runtime.env.Environment
 import php.runtime.ext.java.JavaObject
@@ -18,14 +19,14 @@ import java.util.concurrent.Future
 
 /**
  * 包装远程方法
- *   1. 负责将 PhpReferer 的php方法调用转为发java rpc请求
+ *   1. 负责将 IPhpReferer 的php方法调用转为发java rpc请求
  *   2. php映射方法实现直接返回java方法签名，用作php与java之间的调用映射
  *   3. 调用时参数/返回值类型转换：负责根据java方法签名， 来转换参数/返回值类型(参考 JavaObject 实现)
  *   4. 不包含的降级的本地方法
- *   5. 被 PhpReferer 缓存+引用; 而 PhpReferer 实例要缓存到 ClassEntity 中, 1是提高性能 2 是应对php类卸载
+ *   5. 被 IPhpReferer 缓存+引用; 而 IPhpReferer 实例要缓存到 ClassEntity 中, 1是提高性能 2 是应对php类卸载
  */
 class PhpRefererMethod(
-        public val phpRef: PhpReferer,
+        public val phpRef: IPhpReferer,
         public val phpMethod: MethodEntity // 映射方法
 ) {
 
@@ -61,7 +62,7 @@ class PhpRefererMethod(
         val paramString = methodSignature.substringBetween('(', ')')
         if (paramString.isNotBlank()) {
             // 解析参数类型
-            paramTypes = paramString.split(",\\s*").map {
+            paramTypes = paramString.split(",\\s*".toRegex()).map {
                 val clazzName = it.trim()
                 getClassByName(clazzName) // 去掉泛型了
             }.toTypedArray()
@@ -112,9 +113,9 @@ class PhpRefererMethod(
                 passed[i] = (arg.toValue(ObjectMemory::class.java).value as JavaObject).getObject()
             } else {
                 if (converter != null) {
-                    passed[i] = converter.run(args[i]) // 转换实参
+                    passed[i] = converter.run(args[i]) // 指定类型转换
                 } else {
-                    passed[i] = null
+                    passed[i] = args[i].toJavaObject() // 默认转换
                 }
             }
             i++
@@ -129,9 +130,16 @@ class PhpRefererMethod(
         if(result == null)
             return Memory.NULL
 
+        // 1 P2pReferer 引用的是php服务, 虽然通过java rpc服务来代理调用, 但不能按java 方法的返回值类型Object来处理 (无转换器), 只能直接转
+        if(phpRef is P2pReferer)
+            return MemoryUtils.valueOf(result)
+
+        // 2 PhpReferer 引用是java服务
+        // 2.1 返回值类型有转换器: 直接转
         if (resultUnconverter != null)
             return MemoryUtils.valueOf(result)
 
+        // 2.2 返回值类型无转换器: 转为通用Memory
         return when (returnType) {
             Void.TYPE -> Memory.NULL
             else -> ObjectMemory(JavaObject.of(env, result))

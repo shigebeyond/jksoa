@@ -1,16 +1,10 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
-import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
-import net.jkcode.jksoa.rpc.client.IReferer
-import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
-import net.jkcode.jksoa.rpc.client.referer.RefererLoader
-import net.jkcode.jksoa.rpc.registry.IRegistry
 import net.jkcode.jphp.ext.isDegradeFallbackMethod
 import net.jkcode.jphp.ext.isUnregistered
 import php.runtime.env.Environment
 import php.runtime.reflection.ClassEntity
-import java.lang.reflect.Method
 
 /**
  * 服务的php引用（代理）
@@ -27,34 +21,7 @@ import java.lang.reflect.Method
  * @author shijianhang<772910474@qq.com>
  * @date 2022-2-14 9:52 AM
  */
-class PhpReferer protected constructor(public val env: Environment, public val phpClass: ClassEntity /* 接口类 */) : IReferer {
-
-    /**
-     * 服务标识
-     */
-    override val serviceId: String = phpClass.name.replace("\\", ".")
-
-    /**
-     * 服务代理
-     */
-    public override val service: Any
-        get() = throw UnsupportedOperationException("php引用不支持直接获得服务代理对象")
-
-    /**
-     * 根据方法签名来获得方法
-     *
-     * @param methodSignature
-     * @return
-     */
-    override fun getMethod(methodSignature: String): Method? {
-        throw UnsupportedOperationException("php引用不支持直接获得方法")
-    }
-
-    /**
-     * 引用的方法
-     *    key是方法名，value是方法
-     */
-    protected val refererMethods: Map<String, PhpRefererMethod>
+class PhpReferer protected constructor(env: Environment, public val phpClass: ClassEntity /* 接口类 */) : IPhpReferer(env, phpClass.name.replace("\\", ".")) {
 
     init {
         // 引用远程方法: 不包含的降级的本地方法
@@ -68,28 +35,7 @@ class PhpReferer protected constructor(public val env: Environment, public val p
         }
     }
 
-    /**
-     * 获得引用的方法
-     */
-    public fun getRefererMethod(methodName: String): PhpRefererMethod {
-        return refererMethods[methodName] ?: throw NoSuchMethodException("服务[$serviceId]无方法[${methodName}]")
-    }
-
     companion object {
-
-        /**
-         * 配置了注册中心
-         */
-        public val registryOrSwarm: Boolean = RefererLoader.config["registryOrSwarm"]!!
-
-        /**
-         * 注册中心
-         *   TODO: 支持多个配置中心, 可用组合模式
-         *   如果registryOrSwarm为false, 根本不需要注册中心, 因此延迟创建
-         */
-        public val registry: IRegistry by lazy {
-            IRegistry.instance("zk")
-        }
 
         /**
          * 根据服务接口，来获得服务引用
@@ -106,24 +52,6 @@ class PhpReferer protected constructor(public val env: Environment, public val p
             return phpClass.getAdditionalData("phpReferer", PhpReferer::class.java){
                 PhpReferer(env, phpClass)
             }
-        }
-    }
-
-    init {
-        if(registryOrSwarm) {
-            // 监听服务变化
-            clientLogger.debug("PhpReferer监听服务[{}]变化", serviceId)
-            registry.subscribe(serviceId, IConnectionHub.instance(serviceId))
-        }
-    }
-
-    /**
-     * 取消监听服务变化
-     */
-    public override fun close() {
-        if(registryOrSwarm) {
-            clientLogger.debug("Referer.close(): 取消监听服务变化")
-            registry.unsubscribe(serviceId, IConnectionHub.instance(serviceId))
         }
     }
 

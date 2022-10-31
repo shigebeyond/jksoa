@@ -109,7 +109,6 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
                 ex = RpcBusinessException(r)
         }
 
-        serverLogger.debug(" ------ send response ------ ")
         if(r == null)
             serverLogger.debug("Server处理请求成功：{}，结果: {}", req, result)
         else
