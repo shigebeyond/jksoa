@@ -52,10 +52,10 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @param req
      */
     public override fun handle(req: IRpcRequest, ctx: ChannelHandlerContext) {
-        // 1 包装请求作用域的处理
+        // 1 包装请求作用域的处理, 因为拦截器(如RpcServerTraceInterceptor)会用到sttl(有作用域的可传递的ThreadLocal), 因此需用作用域包装拦截器处理
         GlobalRpcRequestScope.sttlWrap {
             // 2 调用provider方法
-            val future = callProvider(req, ctx)
+            val future = interceptAndCallProvider(req, ctx)
 
             // 3 返回响应
             future.whenComplete{ r, ex ->
@@ -70,7 +70,7 @@ object RpcRequestHandler : IRpcRequestHandler, MethodGuardInvoker() {
      * @param ctx
      * @return
      */
-    private fun callProvider(req: IRpcRequest, ctx: ChannelHandlerContext): CompletableFuture<Any?> {
+    private fun interceptAndCallProvider(req: IRpcRequest, ctx: ChannelHandlerContext): CompletableFuture<Any?> {
         // 0 加拦截
         return interceptorChain.intercept(req) {
             // 1 获得provider
