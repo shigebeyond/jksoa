@@ -10,7 +10,7 @@ jksoa微服务框架中本项目中有多个组件, 如rpc/job/tracer/mq等, 组
 
 我在开发某个组件时, 只对该组件日志感兴趣, 对其他组件日志不感兴趣, 这就需要禁用这些组件日志.
 
-但一个组件会配置有多个logger(如rpc有register/client/server等几个logger), 禁用该组件日志, 要禁用这多个logger的 `log4j.properties` 配置, 很繁琐
+但一个组件会配置有多个logger(如rpc有register/client/server等几个logger), 禁用该组件日志, 要禁用这多个logger的 `logback.xml` 配置, 很繁琐
 
 因此, 我设计了`ModuleLogSwitcher`, 直接在组件级别来控制日志级别, 如同`开关`, 啪一下就开, 啪一下就关, 很方便, 但只用于jksoa相关组件的开发.
 

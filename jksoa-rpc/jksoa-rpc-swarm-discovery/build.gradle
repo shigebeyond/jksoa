@@ -27,7 +27,7 @@ task copyStartSh(type: Copy) {
 task copyConf(type: Copy) {
     into "${buildDir}/app/conf"
     // 需要的配置文件
-    def props = ["log4j.properties", "kafka-consumer.yaml", "kafka-producer.yaml"]
+    def props = ["logback.xml", "kafka-consumer.yaml", "kafka-producer.yaml"]
     // 项目 resources 目录, 来收集配置文件
     for(pro in [project(':jkutil'), project(':jkmq')]) {
         for (src in pro.sourceSets.main.resources) {
