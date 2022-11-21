@@ -136,7 +136,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
      * @param method
      * @return
      */
-    public override fun getCombineInovkeObject(method: IMethodMeta): Any{
+    public override fun getCombineInovkeObject(method: IMethodMeta<*>): Any{
         return Referer.getRefer(method.clazzName)
     }
 
@@ -150,7 +150,7 @@ object RpcInvocationHandler: MethodGuardInvoker(), InvocationHandler, IRpcReques
      * @param args 参数
      * @return
      */
-    public override fun invokeAfterGuard(method: IMethodMeta, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
+    public override fun invokeAfterGuard(method: IMethodMeta<*>, obj: Any, args: Array<Any?>): CompletableFuture<Any?> {
         // 1 封装请求
         val req = RpcRequest(method.clazzName, method.methodSignature, args)
 

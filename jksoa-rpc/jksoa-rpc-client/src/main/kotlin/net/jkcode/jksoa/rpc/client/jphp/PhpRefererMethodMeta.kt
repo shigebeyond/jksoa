@@ -6,6 +6,7 @@ import net.jkcode.jkguard.IMethodMeta
 import net.jkcode.jphp.ext.PhpMethodMeta
 import net.jkcode.jphp.ext.annotations
 import net.jkcode.jphp.ext.isDegradeFallbackMethod
+import php.runtime.Memory
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -18,7 +19,7 @@ import java.util.concurrent.CompletableFuture
 class PhpRefererMethodMeta(
         protected val method: PhpRefererMethod, // php方法
         handler: IMethodGuardInvoker // 带守护的方法调用者
-): IMethodMeta(handler) {
+): IMethodMeta<Memory>(handler) {
 
     /**
      * 类名
@@ -74,7 +75,7 @@ class PhpRefererMethodMeta(
      *   这里是不会被调用的
      */
     @Suspendable
-    override fun invoke(obj: Any, vararg args: Any?): Any? {
+    override fun invoke(obj: Any, vararg args: Any?): Memory {
         throw UnsupportedOperationException("php引用方法不支持直接调用")
     }
 
@@ -96,7 +97,7 @@ class PhpRefererMethodMeta(
      * @param name 兄弟方法名
      * @return
      */
-    override fun getBrotherMethod(name: String): IMethodMeta {
+    override fun getBrotherMethod(name: String): IMethodMeta<Memory> {
         // 1 降级的本地方法
         if(method.clazz.isDegradeFallbackMethod(name)) {
             val brotherMethod = method.clazz.findMethod(name.toLowerCase())
