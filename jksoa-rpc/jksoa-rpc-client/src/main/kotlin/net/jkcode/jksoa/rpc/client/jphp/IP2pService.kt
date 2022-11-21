@@ -1,5 +1,6 @@
 package net.jkcode.jksoa.rpc.client.jphp
 
+import java.util.concurrent.CompletableFuture
 import net.jkcode.jphp.ext.JphpLauncher
 
 /**
@@ -13,10 +14,14 @@ interface IP2pService {
      * @param data 参数
      * * @return
      */
-    fun callPhpFile(file: String, data: Map<String, Any?>): Any? {
+    fun callPhpFile(file: String, data: Map<String, Any?>): CompletableFuture<Any?> {
         val lan = JphpLauncher
         val phpFile = Thread.currentThread().contextClassLoader.getResource("jphp/$file").path
-        return lan.run(phpFile, data)
+        // JphpLauncher.run()中php执行结果有可能是WrapCompletableFuture, 他直接返回future, 以便调用端处理异步结果
+        val ret = lan.run(phpFile, data)
+        if(ret is CompletableFuture<*>)
+            return ret as CompletableFuture<Any?>
+        return CompletableFuture.completedFuture(ret)
     }
 
     /**
@@ -25,14 +30,12 @@ interface IP2pService {
      * @param params 方法参数
      * * @return
      */
-    fun callPhpFunc(func: String, params: List<Any?>): Any? {
-        val lan = JphpLauncher
-        val phpFile = Thread.currentThread().contextClassLoader.getResource("jphp/callFunc.php").path
+    fun callPhpFunc(func: String, params: List<Any?>): CompletableFuture<Any?> {
         val data = mapOf(
-                "func" to func,
-                "params" to params
+            "func" to func,
+            "params" to params
         )
-        return lan.run(phpFile, data)
+        return callPhpFile("jphp/callFunc.php", data)
     }
 
 }
