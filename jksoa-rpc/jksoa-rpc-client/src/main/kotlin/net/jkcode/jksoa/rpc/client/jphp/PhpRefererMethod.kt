@@ -4,7 +4,7 @@ import co.paralleluniverse.fibers.Suspendable
 import net.jkcode.jkutil.common.getClassByName
 import net.jkcode.jkutil.common.substringBetween
 import net.jkcode.jkutil.fiber.AsyncCompletionStage
-import net.jkcode.jphp.ext.WrapCompletableFuture
+import net.jkcode.jphp.ext.PCompletableFuture
 import net.jkcode.jphp.ext.toJavaObject
 import php.runtime.Memory
 import php.runtime.env.Environment

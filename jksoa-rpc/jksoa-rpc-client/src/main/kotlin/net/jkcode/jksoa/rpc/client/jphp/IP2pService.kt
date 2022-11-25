@@ -17,7 +17,7 @@ interface IP2pService {
     fun callPhpFile(file: String, data: Map<String, Any?>): CompletableFuture<Any?> {
         val lan = JphpLauncher
         val phpFile = Thread.currentThread().contextClassLoader.getResource("jphp/$file").path
-        // JphpLauncher.run()中php执行结果有可能是WrapCompletableFuture, 他直接返回future, 以便调用端处理异步结果
+        // JphpLauncher.run()中php执行结果有可能是PCompletableFuture, 他直接返回future, 以便调用端处理异步结果
         val ret = lan.run(phpFile, data)
         if(ret is CompletableFuture<*>)
             return ret as CompletableFuture<Any?>
