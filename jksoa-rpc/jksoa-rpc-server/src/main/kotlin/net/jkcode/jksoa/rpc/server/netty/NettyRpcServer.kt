@@ -14,7 +14,7 @@ import net.jkcode.jkutil.common.Config
 import net.jkcode.jksoa.common.serverLogger
 import net.jkcode.jksoa.rpc.client.netty.NettyResponseHandler
 import net.jkcode.jksoa.rpc.server.IRpcServer
-import net.jkcode.jkutil.common.errorAndPrint
+import net.jkcode.jkutil.common.errorColor
 
 /**
  * netty实现的rpc服务端
@@ -100,7 +100,7 @@ abstract class NettyRpcServer : IRpcServer() {
                                 pipeline.addLast(NettyResponseHandler())
                         }catch (e: Exception){
                             // 还是输出异常, 防止各种handler初始化失败, 导致channel断掉了, 而又没有报错
-                            serverLogger.errorAndPrint("NettyRpcServer初始化channel处理器错误", e)
+                            serverLogger.errorColor("NettyRpcServer初始化channel处理器错误", e)
                             throw e
                         }
                     }
@@ -129,7 +129,7 @@ abstract class NettyRpcServer : IRpcServer() {
            if(waitingClose)
                f.channel().closeFuture().sync()
        }catch(e: Exception) {
-           serverLogger.errorAndPrint("NettyRpcServer运行异常", e)
+           serverLogger.errorColor("NettyRpcServer运行异常", e)
        }
     }
 
