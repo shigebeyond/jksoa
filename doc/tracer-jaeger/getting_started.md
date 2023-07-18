@@ -6,6 +6,14 @@ jksoa-tracer-jaeger 是jksoa整合jaeger来做分布式跟踪，通过jaeger收�
 - 2、基于拦截器实现3端的跟踪, rpc client/rpc server/http server, 已做成插件, 开箱即用
 - 3、充分利用jaeger的特性：高扩展性、对OpenTracing原生支持、多种存储后端、现代化Web UI、云原生部署
 
+## 背景
+面对日趋复杂的分布式系统，如服务框架、消息中间件、缓存、数据层等，导致开发人员在业务性能瓶颈定位、故障排除等方面效率低下，没有成熟的Trace工具，需要引入分布式跟踪系统(即Trace系统)。
+
+Trace系统需要能够透明的传递调用上下文，理解系统行为，理清后端调用关系，实现调用链跟踪，调用路径分析，帮助业务人员定位性能瓶颈，排查故障原因等；同时，需要对用户尽量透明，减少对业务代码的侵入性。
+
+设计思想源于[Google Dapper论文](http://bigbully.github.io/Dapper-translation/)实现。
+
+
 ## 使用
 ### 添加依赖
 1. gradle

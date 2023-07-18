@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.tracer.common
+package net.jkcode.jksoa.tracer.jaeger
 
 import net.jkcode.jkutil.common.ModuleLogSwitcher
 import org.slf4j.LoggerFactory

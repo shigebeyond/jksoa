@@ -11,7 +11,6 @@ import io.opentracing.tag.Tags
 import io.opentracing.util.GlobalTracer
 import net.jkcode.jkmvc.orm.serialize.toJson
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.tracer.common.tracerLogger
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.JkApp
 import net.jkcode.jkutil.ttl.AllRequestScopedTransferableThreadLocal

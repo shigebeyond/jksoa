@@ -65,16 +65,6 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 
 1. [快速开始](doc/tracer-jaeger/getting_started.md)
 
-# jksoa-tracer-自实现
-
-分布式跟踪的组件
-
-## 入门
-1. [快速开始](doc/tracer/getting_started.md)
-2. [agent](doc/tracer/agent.md)
-3. [collector](doc/tracer/collector.md)
-4. [web](doc/tracer/web.md)
-
 ## 高级
 5. [架构](doc/tracer/architecture.md)
 

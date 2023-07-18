@@ -5,7 +5,7 @@ include 'jksoa-common'
 // rpc
 include 'jksoa-rpc:jksoa-rpc-registry', 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc:jksoa-rpc-server', 'jksoa-rpc:jksoa-rpc-swarm-discovery'
 // 跟踪链
-include 'jksoa-tracer:jksoa-tracer-common', 'jksoa-tracer:jksoa-tracer-agent', 'jksoa-tracer:jksoa-tracer-collector', 'jksoa-tracer:jksoa-tracer-web', 'jksoa-tracer:jksoa-tracer-jaeger'
+include 'jksoa-tracer:jksoa-tracer-jaeger'
 // 分布式事务
 include 'jksoa-dtx:jksoa-dtx-mq', 'jksoa-dtx:jksoa-dtx-tcc'
 // 分布式事务的案例

@@ -1,5 +1,0 @@
-# agent配置
-
-# 有@TraceableService注解的类所在的包路径
-traceableServicePackages: #
-  - net.jkcode.jksoa.tracer.agent

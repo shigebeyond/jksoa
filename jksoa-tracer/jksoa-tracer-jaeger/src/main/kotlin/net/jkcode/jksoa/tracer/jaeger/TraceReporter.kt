@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject
 import io.jaegertracing.internal.JaegerSpan
 import io.jaegertracing.spi.Reporter
 import lombok.extern.slf4j.Slf4j
-import net.jkcode.jksoa.tracer.common.tracerLogger
 
 @Slf4j
 class TraceReporter : Reporter {

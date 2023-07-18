@@ -3,7 +3,6 @@ dependencies{
 
     // other project
     compile project(':jksoa-rpc:jksoa-rpc-server')
-    compile project(':jksoa-tracer:jksoa-tracer-common')
     if(env == 'dev')
         compile project(':jkmvc-http')
     else
