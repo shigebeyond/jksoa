@@ -26,7 +26,7 @@ class JsonrConnection(url: Url): BaseConnection(url){
     /**
      * http client
      */
-    protected val httpClient: HttpClient = HttpClient(httpUrl)
+    protected val httpClient: HttpClient = HttpClient()
 
     /**
      * 客户端发送请求
@@ -39,7 +39,7 @@ class JsonrConnection(url: Url): BaseConnection(url){
         // 序列化请求
         val json = JSON.toJSONString(req)
         // 发送请求, 并返回异步响应
-        return httpClient.post("", json)
+        return httpClient.post(httpUrl, json)
                 .thenApply { resp ->
                     // 反序列化响应
                     val json = resp.responseBody

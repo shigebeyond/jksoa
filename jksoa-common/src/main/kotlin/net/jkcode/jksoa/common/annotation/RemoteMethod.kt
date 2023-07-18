@@ -20,15 +20,7 @@ annotation class RemoteMethod(
 /**
  * 获得服务方法的注解
  */
-public val Method.remoteMethod: RemoteMethod?
-    get(){
-        return getCachedAnnotation()
-    }
-
-/**
- * 获得服务方法的注解
- */
-public val IMethodMeta.remoteMethod: RemoteMethod?
+public val IMethodMeta<*>.remoteMethod: RemoteMethod?
     get(){
         return getAnnotation()
     }
