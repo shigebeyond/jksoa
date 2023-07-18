@@ -2,9 +2,7 @@ package net.jkcode.jksoa.rpc.client.jphp
 
 import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.rpc.client.IReferer
-import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jksoa.rpc.client.referer.RefererLoader
-import net.jkcode.jksoa.rpc.registry.IRegistry
 import php.runtime.env.Environment
 import java.lang.reflect.Method
 
@@ -50,45 +48,13 @@ open class IPhpReferer(public val env: Environment, override val serviceId: Stri
         throw UnsupportedOperationException("php引用不支持直接获得方法")
     }
 
+    override fun close() {
+    }
+
     /**
      * 获得引用的方法
      */
     public fun getRefererMethod(methodName: String): PhpRefererMethod {
         return refererMethods[methodName] ?: throw NoSuchMethodException("服务[$serviceId]无方法[${methodName}]")
-    }
-
-    /***************************** 监听服务 *******************************/
-    companion object {
-        /**
-         * 配置了注册中心
-         */
-        public val registryOrSwarm: Boolean = RefererLoader.config["registryOrSwarm"]!!
-
-        /**
-         * 注册中心
-         *   TODO: 支持多个配置中心, 可用组合模式
-         *   如果registryOrSwarm为false, 根本不需要注册中心, 因此延迟创建
-         */
-        public val registry: IRegistry by lazy {
-            IRegistry.instance("zk")
-        }
-    }
-
-    init {
-        if(registryOrSwarm) {
-            // 监听服务变化
-            clientLogger.debug("PhpReferer监听服务[{}]变化", serviceId)
-            registry.subscribe(serviceId, IConnectionHub.instance(serviceId))
-        }
-    }
-
-    /**
-     * 取消监听服务变化
-     */
-    public override fun close() {
-        if (registryOrSwarm) {
-            clientLogger.debug("Referer.close(): 取消监听服务变化")
-            registry.unsubscribe(serviceId, IConnectionHub.instance(serviceId))
-        }
     }
 }

@@ -10,7 +10,7 @@ import java.rmi.RemoteException
  * @author shijianhang
  * @create 2017-12-15 下午7:37
  **/
-@RemoteService(version = 1, onlyLeader = true)
+@RemoteService(version = 1)
 interface ISimpleService /*: Remote // rmi协议服务接口 */ {
 
     @Throws(RemoteException::class) // rmi异常

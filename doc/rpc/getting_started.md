@@ -72,7 +72,6 @@ parameters: # 参数
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
-registryOrSwarm: true # 是否使用注册中心, 否则使用docker swarm集群来做服务发现
 # netty启动参数
 netty:
     keepAlive: true # 保持心跳
@@ -113,7 +112,7 @@ import java.rmi.RemoteException
  * @author shijianhang
  * @create 2017-12-15 下午7:37
  **/
-@RemoteService(version = 1, onlyLeader = true)
+@RemoteService(version = 1)
 interface ISimpleService /*: Remote // rmi协议服务接口 */ {
 
     @Throws(RemoteException::class) // rmi异常
@@ -167,7 +166,6 @@ shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.common.service.remote # tracer组件的collector服务
-registryOrSwarm: true # 是否使用注册中心, 否则使用docker swarm集群来做服务发现
 swarmMqType: kafka # docker swarm模式下服务发现通知的消息队列类型: 暂时只支持 kafka
 swarmMqName: swarmDiscovery # 消息连接配置名, 对应如 kafka-consumer.yaml / kafka-producer.yaml 中的配置名
 package2swarmServer: # 包名转为swarm服务名(server)

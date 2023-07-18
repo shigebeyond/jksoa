@@ -4,10 +4,7 @@ import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.singleton.BeanSingletons
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.annotation.remoteService
-import net.jkcode.jksoa.common.serverLogger
-import net.jkcode.jkutil.leader.ZkLeaderElection
 import net.jkcode.jksoa.rpc.client.referer.RefererLoader
-import net.jkcode.jksoa.rpc.registry.IRegistry
 import net.jkcode.jksoa.rpc.server.IProvider
 import net.jkcode.jksoa.rpc.server.IRpcServer
 
@@ -28,23 +25,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
          * 服务端配置
          */
         public val config = Config.instance("rpc-server", "yaml")
-
-        /**
-         * 注册中心
-         *   TODO: 支持多个配置中心, 可用组合模式
-         *   如果registryOrSwarm为false, 根本不需要注册中心, 因此延迟创建
-         */
-        public val registry: IRegistry by lazy{
-            IRegistry.instance("zk")
-        }
     }
-
-    /**
-     * 是否注册: 配置注册中心 + 是否启动了server
-     *    只有启动了server, 暴露了server端口才能注册
-     *    如果是纯粹的client(如mq consumer提供IMqPushConsumerService服务), 但不能向注册中心注册, 也因为他没有暴露server端口, 无法让client来连接并调用
-     */
-    public val registryOrSwarm: Boolean = config["registryOrSwarm"]!! && IRpcServer.current() != null
 
     /**
      * 接口类
@@ -57,7 +38,7 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
     }
 
     /**
-     * 服务路径
+     * 服务路径： 无用
      */
     public override val serviceUrl:Url by lazy{
         // ip端口
@@ -66,48 +47,19 @@ class Provider(public override val clazz: Class<*> /* 实现类 */) : IProvider(
     }
 
     /**
-     * 服务实例
-     *   延迟实例化, 如果注解onlyLeader为true, 则必须当选leader才实例化
+     * 创建服务实例
      */
-    public override lateinit var service: Any
+    public override val service: Any = BeanSingletons.instance(clazz)
 
-    init{
-        // 创建+注册服务
-        if(registryOrSwarm && `interface`.remoteService?.onlyLeader ?: false){ // 要选举leader
-            // 先选举leader才创建+注册服务
-            val election = ZkLeaderElection("service/" + serviceId)
-            election.run(){
-                createAndRegisterService()
-            }
-        }else // 直接创建+注册服务
-            createAndRegisterService()
-    }
-
-    /**
-     * 创建+注册服务
-     */
-    protected fun createAndRegisterService() {
-        // 创建服务实例
-        service = BeanSingletons.instance(clazz)
-
-        if (registryOrSwarm) {
-            serverLogger.info("Provider注册服务: {}", serviceUrl)
-            // 1 注册注册中心的服务
-            registry.register(serviceUrl)
-
-            // 2 注册本地服务引用： 对要调用的服务，如果本地有提供，则直接调用本地的服务
-            RefererLoader.addLocal(`interface`, service)
-        }
+    init {
+        // 注册本地服务引用： 对要调用的服务，如果本地有提供，则直接调用本地的服务
+        RefererLoader.addLocal(`interface`, service)
     }
 
     /**
      * 注销服务
      */
     public override fun close() {
-        if(registryOrSwarm){
-            serverLogger.info("Provider.close(): 注销服务")
-            registry.unregister(serviceUrl)
-        }
     }
 
 }

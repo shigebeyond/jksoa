@@ -1,6 +1,6 @@
 dependencies{
     // other project
-    compile project(':jksoa-rpc:jksoa-rpc-registry')
+    compile project(':jksoa-common')
 
     if(env == 'dev') {
         compile project(':jkmq') // docker swarm模式下要发消息

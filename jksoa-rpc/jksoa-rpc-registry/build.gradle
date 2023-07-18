@@ -1,4 +1,0 @@
-dependencies{
-    // other project
-    compile project(':jksoa-common')
-}

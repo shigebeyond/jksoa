@@ -7,7 +7,6 @@ servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.dtx.demo # dtx组件的demo的服务
 interceptors: # 拦截器
     - net.jkcode.jksoa.dtx.tcc.interceptor.RpcClientTccInterceptor
-registryOrSwarm: true # 是否使用注册中心, 否则使用docker swarm集群来做服务发现
 swarmMqType: kafka # docker swarm模式下服务发现通知的消息队列类型: 暂时只支持 kafka
 swarmMqName: swarmDiscovery # 消息连接配置名, 对应如 kafka-consumer.yaml / kafka-producer.yaml 中的配置名
 package2swarmServer: # 包名转为swarm服务名(server)

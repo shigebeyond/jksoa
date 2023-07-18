@@ -1,2 +1,0 @@
-# 注册中心实现
-zk: net.jkcode.jksoa.rpc.registry.zk.ZkRegistry

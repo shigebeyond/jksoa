@@ -6,9 +6,7 @@
 
 属性:
 1. `version` 版本
-2. `onlyLeader` 是否选举leader, 控制是否只有唯一一个server来提供服务
-3. `loadBalancer` 均衡负载器类型, 参考 `load-balancer.yaml`中声明的负载器
-4. `connectionHubClass` 连接集中器的实现类, 默认是 `ConnectionHub`, 特殊场景下需要自定义, 如mq client自定义的连接集中器是 `BrokerConnectionHub`
+2. `loadBalancer` 均衡负载器类型, 参考 `load-balancer.yaml`中声明的负载器
 
 ```
 /**
@@ -19,9 +17,7 @@
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RemoteService(public val version: Int = 0, // 接口版本
-                               public val onlyLeader: Boolean = false, // 是否选举leader, 该服务接口只暴露唯一一个选为leader的server, 同时只有leader server才会创建服务实例, 其他server创建服务代理
-                               public val loadBalancer: String = "", // 均衡负载器类型, 默认是 rpc-client.yaml 中的配置项 loadbalancer,
-                               public val connectionHubClass: KClass<*> = Void::class // rpc连接集中器的实现类, 用于在服务发现时管理连接, 如果值为 Void::class, 则使用 ConnectionHub::class
+                               public val loadBalancer: String = "" // 均衡负载器类型, 默认是 rpc-client.yaml 中的配置项 loadbalancer,
 )
 ```
 

@@ -4,8 +4,6 @@ import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.loader.BaseServiceClass
 import net.jkcode.jksoa.rpc.client.IReferer
-import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
-import net.jkcode.jksoa.rpc.registry.IRegistry
 
 /**
  * 服务的引用（代理）
@@ -22,20 +20,6 @@ open class Referer(public override val `interface`:Class<*>, // 接口类
 ): BaseServiceClass(), IReferer {
 
     companion object{
-
-        /**
-         * 配置了注册中心
-         */
-        public val registryOrSwarm: Boolean = RefererLoader.config["registryOrSwarm"]!!
-
-        /**
-         * 注册中心
-         *   TODO: 支持多个配置中心, 可用组合模式
-         *   如果registryOrSwarm为false, 根本不需要注册中心, 因此延迟创建
-         */
-        public val registry: IRegistry by lazy {
-            IRegistry.instance("zk")
-        }
 
         /**
          * 根据服务接口，来获得服务引用
@@ -77,21 +61,6 @@ open class Referer(public override val `interface`:Class<*>, // 接口类
         }
     }
 
-    init {
-        if((!local) && registryOrSwarm) {
-            // 监听服务变化
-            clientLogger.debug("Referer监听服务[{}]变化", serviceId)
-            registry.subscribe(serviceId, IConnectionHub.instance(serviceId))
-        }
-    }
-
-    /**
-     * 取消监听服务变化
-     */
-    public override fun close() {
-        if((!local) && registryOrSwarm) {
-            clientLogger.debug("Referer.close(): 取消监听服务变化")
-            registry.unsubscribe(serviceId, IConnectionHub.instance(serviceId))
-        }
+    override fun close() {
     }
 }

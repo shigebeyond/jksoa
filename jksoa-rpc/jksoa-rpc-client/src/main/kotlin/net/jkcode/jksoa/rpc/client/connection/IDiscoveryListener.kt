@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.registry
+package net.jkcode.jksoa.rpc.client.connection
 
 import net.jkcode.jksoa.common.Url
 

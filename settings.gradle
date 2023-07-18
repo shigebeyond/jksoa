@@ -3,7 +3,7 @@ rootProject.name = 'jksoa'
 // 公共
 include 'jksoa-common'
 // rpc
-include 'jksoa-rpc:jksoa-rpc-registry', 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc:jksoa-rpc-server', 'jksoa-rpc:jksoa-rpc-swarm-discovery'
+include 'jksoa-rpc:jksoa-rpc-client', 'jksoa-rpc:jksoa-rpc-server', 'jksoa-rpc:jksoa-rpc-swarm-discovery'
 // 跟踪链
 include 'jksoa-tracer:jksoa-tracer-jaeger'
 // 分布式事务

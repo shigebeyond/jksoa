@@ -6,9 +6,9 @@
 # 架构
 
 ## 3模块
-1. `jksoa-rpc-registry` 注册中心, 包括注册服务、订阅服务、服务变更通知、服务心跳发送等功能；Server端会在系统初始化时通过register模块注册服务，Client端在系统初始化时会通过register模块订阅到具体提供服务的Server列表，当Server 列表发生变更时也由register模块通知Client。
-2. `jksoa-rpc-server` 服务端: 服务提供者的节点, 即`Provider`所在的节点, 管理`Provider`, 处理client的请求, 调用对应的`Provider`来处理请求
-3. `jksoa-rpc-client` 客户端: 管理`Referer`, 管理与server的连接, 向server发送请求
+1. `jksoa-rpc-server` 服务端: 服务提供者的节点, 即`Provider`所在的节点, 管理`Provider`, 处理client的请求, 调用对应的`Provider`来处理请求
+2. `jksoa-rpc-client` 客户端: 管理`Referer`, 管理与server的连接, 向server发送请求
+3. `jksoa-rpc-swarm-discovery` swarm集群的服务发现
 
 ![module](img/module.png)
 

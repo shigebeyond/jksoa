@@ -18,8 +18,6 @@
 
 同时为了更容易的理解与维护, `IConnectionHub`只管理单个服务的一组server的连接, 也就是说一个服务类都对应唯一的`IConnectionHub`实例. 这样的话在查询某个服务的连接时, 只需要调用该服务对应`IConnectionHub`实例就行了.
 
-服务类可以指定`IConnectionHub`的实现类, 参考注解 `@RemoteService` 的属性 `val connectionHubClass: KClass<*>`, 默认使用`ConnectionHub`类.
-
 2. 连接变化
 
 rpc client使用 `IConnectionHub` 来实现 `IDiscoveryListener`, 来监听服务节点变化, 从而实现连接的变化(增删)

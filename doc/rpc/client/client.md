@@ -42,9 +42,9 @@ shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
     - net.jkcode.jksoa.tracer.common.service.remote # tracer组件的collector服务
-registryOrSwarm: true # 是否使用注册中心, 否则使用docker swarm集群来做服务发现
 swarmMqType: kafka # docker swarm模式下服务发现通知的消息队列类型: 暂时只支持 kafka
-swarmMqName: swarmDiscovery # 消息连接配置名, 对应如 kafka-consumer.yaml / kafka-producer.yaml 中的配置名
+swarmMqName
+: swarmDiscovery # 消息连接配置名, 对应如 kafka-consumer.yaml / kafka-producer.yaml 中的配置名
 package2swarmServer: # 包名转为swarm服务名(server)
     # key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
     # value是server地址: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
