@@ -14,6 +14,13 @@ abstract class BaseConnection(public override val url: Url, // 服务端地址
 ) : IConnection {
 
     /**
+     * 获得服务器ip
+     *   netty实现直接返回channel的远程ip
+     */
+    public open val serverIp: String
+        get() = url.serverAddr
+
+    /**
      * 是否有效连接
      * @return
      */

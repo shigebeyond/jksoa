@@ -8,6 +8,7 @@ import net.jkcode.jksoa.common.connLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
+import java.net.InetSocketAddress
 
 /**
  * netty连接
@@ -22,6 +23,13 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
         // 将连接塞到channel的属性中, 以便相互引用
         channel.setConnection(this)
     }
+
+    /**
+     * 获得服务器ip
+     *   netty实现直接返回channel的远程ip
+     */
+    public override val serverIp: String
+        get() = (channel.remoteAddress() as InetSocketAddress).address.hostAddress
 
     /**
      * 客户端发送请求

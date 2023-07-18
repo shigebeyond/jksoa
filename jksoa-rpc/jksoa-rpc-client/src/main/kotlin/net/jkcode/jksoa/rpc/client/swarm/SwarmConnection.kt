@@ -29,13 +29,15 @@ class SwarmConnection(url: Url) : ReconnectableConnection(url) {
     protected var _serverId: String? = null
 
     /**
-     * 获得服务器id=容器id
+     * 获得服务器id=pod ip
      * @param force 是否强制查询(rpc)，仅在测试时才为true
      * @return
      */
     public fun getServerId(force: Boolean = false): String? {
+        return getOrReConnect().serverIp // pod ip
+
         // 若_serverId无效，则请求
-        if (_serverId == null || !isValid() /* 若连接无效，则_serverId也无效 */){
+        /*if (_serverId == null || !isValid() *//* 若连接无效，则_serverId也无效 *//*){
             // 强制或有效连接 才rpc请求, 否则不请求: 不会为了获得serverId而随意新建连接，本来serverId就是为了更有效的利用连接的
             if (force || isValid()) {
                 synchronized(this){
@@ -46,7 +48,7 @@ class SwarmConnection(url: Url) : ReconnectableConnection(url) {
                 _serverId = null
             }
         }
-        return _serverId
+        return _serverId*/
     }
 
     /**
@@ -68,7 +70,7 @@ class SwarmConnection(url: Url) : ReconnectableConnection(url) {
      * @param requestTimeoutMillis 请求超时
      * @return
      */
-    override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
+    /*override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
         val ret = super.send(req, requestTimeoutMillis)
         // 对 ISimpleService::hostname rpc请求，要记录 _serverId
         if (req.methodSignature == "hostname()" && req.clazz == ISimpleService::class.qualifiedName)
@@ -77,7 +79,7 @@ class SwarmConnection(url: Url) : ReconnectableConnection(url) {
                 _serverId = it.getOrThrow() as String
             }
         return ret
-    }
+    }*/
 
     /**
      * 处理重连事件： 触发刷新服务器id
