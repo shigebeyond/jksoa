@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.swarm.server
+package net.jkcode.jksoa.rpc.client.k8s.server
 
 import net.jkcode.jkutil.common.replaces
 
@@ -25,7 +25,7 @@ abstract class IPackage2ServerPattern(
     public abstract fun isMatch(pack: String): Boolean
 
     /**
-     * 尝试根据包名来解析swarm服务名(server)的映射
+     * 尝试根据包名来解析k8s服务名(server)的映射
      * @param pack 包名
      * @return
      */

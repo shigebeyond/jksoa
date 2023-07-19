@@ -84,7 +84,7 @@ open class ReconnectableConnection internal constructor(url: Url, weight: Int = 
     /**
      * 是否有效连接
      *   默认场景下自动重连，因此不用检查 isValid
-     *   但在docker swarm场景下，当某个server下线时， 固定连接数会减少， 此时会检查 isValid 并删掉对下线server的连接
+     *   但在k8s场景下，当某个server下线时， 固定连接数会减少， 此时会检查 isValid 并删掉对下线server的连接
      * @return
      */
     override fun isValid(): Boolean {

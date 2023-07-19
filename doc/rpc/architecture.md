@@ -8,7 +8,7 @@
 ## 3模块
 1. `jksoa-rpc-server` 服务端: 服务提供者的节点, 即`Provider`所在的节点, 管理`Provider`, 处理client的请求, 调用对应的`Provider`来处理请求
 2. `jksoa-rpc-client` 客户端: 管理`Referer`, 管理与server的连接, 向server发送请求
-3. `jksoa-rpc-swarm-discovery` swarm集群的服务发现
+3. `jksoa-rpc-k8s-discovery` k8s集群的服务发现
 
 ![module](img/module.png)
 

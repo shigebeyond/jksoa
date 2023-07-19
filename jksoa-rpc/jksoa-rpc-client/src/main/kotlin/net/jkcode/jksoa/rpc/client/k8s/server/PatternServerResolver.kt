@@ -1,12 +1,11 @@
-package net.jkcode.jksoa.rpc.client.swarm.server
+package net.jkcode.jksoa.rpc.client.k8s.server
 
-import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.exception.RpcClientException
-import net.jkcode.jksoa.rpc.client.swarm.SwarmUtil
+import net.jkcode.jksoa.rpc.client.k8s.K8sUtil
 
 /**
- * 根据模式来解析的swarm server解析器，有缓存
- *   从rpc请求(rpc服务类)中,解析出swarm服务名(server:协议ip端口)
+ * 根据模式来解析的k8s server解析器，有缓存
+ *   从rpc请求(rpc服务类)中,解析出k8s服务名(server:协议ip端口)
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
@@ -14,11 +13,11 @@ import net.jkcode.jksoa.rpc.client.swarm.SwarmUtil
 object PatternServerResolver : IServerResolver {
 
     /**
-     * 包名转为swarm服务名(server)的映射配置
+     * 包名转为k8s服务名(server)的映射配置
      * key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
      * value是server地址: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
      */
-    public val mappingConfig: Map<String, String> = SwarmUtil.config["package2swarmServer"]!!
+    public val mappingConfig: Map<String, String> = K8sUtil.config["package2k8sServer"]!!
 
     /**
      * 映射模式
@@ -36,7 +35,7 @@ object PatternServerResolver : IServerResolver {
     private val resolveCache: MutableMap<String, String> = HashMap()
 
     /**
-     * 解析swarm服务名(server)
+     * 解析k8s服务名(server)
      * @param serviceId
      * @return 协议ip端口(server)
      */
@@ -60,7 +59,7 @@ object PatternServerResolver : IServerResolver {
                 return server
         }
 
-        throw RpcClientException("无法根据服务类[$serviceClass]定位swarm server")
+        throw RpcClientException("无法根据服务类[$serviceClass]定位k8s server")
     }
 
 }

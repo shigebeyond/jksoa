@@ -2,14 +2,10 @@ package net.jkcode.jksoa.rpc.client.connection
 
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.common.IRpcRequest
-import net.jkcode.jksoa.common.annotation.RemoteService
-import net.jkcode.jksoa.common.annotation.remoteService
-import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.loadbalance.ILoadBalancer
-import net.jkcode.jksoa.rpc.client.swarm.SwarmConnectionHub
+import net.jkcode.jksoa.rpc.client.k8s.K8sConnectionHub
 import net.jkcode.jkutil.common.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.reflect.KClass
 
 /**
  * 某个service的rpc连接集中器
@@ -41,7 +37,7 @@ abstract class IConnectionHub: IDiscoveryListener {
          */
         public fun instance(serviceClassName: String): IConnectionHub{
             return instances.getOrPutOnce(serviceClassName) {
-                SwarmConnectionHub// docker swarm模式: 所有rpc服务共用一个实例
+                K8sConnectionHub// k8s模式: 所有rpc服务共用一个实例
             }
         }
 

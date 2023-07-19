@@ -47,7 +47,7 @@ gradle build -Pall
 ```
 
 ### 3. 持续部署
-部署到swarm集群中
+部署到k8s集群中
 ```
-./deploy.sh swarm 1.9.0 
+./deploy.sh k8s 1.9.0 
 ```

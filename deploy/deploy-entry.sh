@@ -6,7 +6,8 @@ usage () {
   image      build docker image, and push to remote resposity
   scp      build jar or war, and scp to remote server
   compose      use docker-compose to deploy container
-  swarm      use docker swarm to deploy service
+  swarm      use docker swarm to deploy application
+  k8s      use k8s to deploy application
 "
 }
 
@@ -41,6 +42,9 @@ while [ $# -gt 0 ]; do
       shift ;;
     swarm )
       cmd=deploy-swarm.sh
+      shift ;;
+    k8s )
+      cmd=deploy-k8s.sh
       shift ;;
     * )
       break ;;

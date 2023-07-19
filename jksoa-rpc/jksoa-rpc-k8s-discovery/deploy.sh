@@ -4,8 +4,8 @@
 cd `dirname $0`
 
 # 导出环境变量，以便在子脚本中引用: 项目名
-export pro=swarm-discovery # 服务名
-export stack=jksoa # stack名, 即swarm进群名, 包含多个互通的服务
+export pro=k8s-discovery # 服务名
+export ns=default # k8s命名空间
 
 # 调用部署入口脚本, 接收2个参数: 1 子命令 2 版本
 ../../deploy/deploy-entry.sh $*

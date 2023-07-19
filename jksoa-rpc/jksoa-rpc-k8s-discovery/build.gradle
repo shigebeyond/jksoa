@@ -1,15 +1,15 @@
 dependencies{
     // other project
-    compile project(':jksoa-rpc:jksoa-rpc-client') // 主要是依赖 SwarmUtil
+    compile project(':jksoa-rpc:jksoa-rpc-client') // 主要是依赖 K8sUtil
 
     if(env == 'dev') {
-        compile project(':jkmq') // docker swarm模式下要发消息
+        compile project(':jkmq') // k8s模式下要发消息
     }else {
-        compile "net.jkcode:jkmq:$jkmq_version"  // docker swarm模式下要发消息
+        compile "net.jkcode:jkmq:$jkmq_version"  // k8s模式下要发消息
     }
 }
 
-// -------------- swarm discovery构建 ---------------
+// -------------- k8s discovery构建 ---------------
 // 复制jar
 task copyLib(type: Copy) {
     into "${buildDir}/app/libs"
@@ -20,7 +20,7 @@ task copyLib(type: Copy) {
 // 复制start.sh
 task copyStartSh(type: Copy) {
     into "${buildDir}/app"
-    from "start-swarm-discovery.sh"
+    from "start-k8s-discovery.sh"
 }
 
 // 复制配置文件

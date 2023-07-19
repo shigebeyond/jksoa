@@ -3,10 +3,10 @@ dependencies{
     compile project(':jksoa-common')
 
     if(env == 'dev') {
-        compile project(':jkmq') // docker swarm模式下要发消息
+        compile project(':jkmq') // k8s模式下要发消息
         compile project(':jphp-java-ext')
     }else {
-        compile "net.jkcode:jkmq:$jkmq_version"  // docker swarm模式下要发消息
+        compile "net.jkcode:jkmq:$jkmq_version"  // k8s模式下要发消息
         compile "net.jkcode:jphp-java-ext:$jphp_java_ext_version"
     }
 }

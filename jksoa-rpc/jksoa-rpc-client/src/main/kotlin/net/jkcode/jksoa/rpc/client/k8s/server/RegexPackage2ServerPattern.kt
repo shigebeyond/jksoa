@@ -1,4 +1,4 @@
-package net.jkcode.jksoa.rpc.client.swarm.server
+package net.jkcode.jksoa.rpc.client.k8s.server
 
 /**
  * 包名映射server模式 - 正则

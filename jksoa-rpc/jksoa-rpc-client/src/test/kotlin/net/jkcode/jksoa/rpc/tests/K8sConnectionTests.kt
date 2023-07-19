@@ -1,12 +1,12 @@
 package net.jkcode.jksoa.rpc.tests
 
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.rpc.client.swarm.SwarmConnectionHub
+import net.jkcode.jksoa.rpc.client.k8s.K8sConnectionHub
 import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.execCommand
 import org.junit.Test
 
-class SwarmConnectionTests {
+class K8sConnectionTests {
 
     /**
      * 客户端配置
@@ -25,19 +25,19 @@ class SwarmConnectionTests {
         // 新增
         println("------------ add ------------")
         var url = serverAddr
-        SwarmConnectionHub.handleServiceUrlAdd(Url(url), emptyList())
+        K8sConnectionHub.handleServiceUrlAdd(Url(url), emptyList())
 
         // 修改
         println("------------ change1 ------------")
-        SwarmConnectionHub.handleParametersChange(Url(url + "?replicas=2"))
+        K8sConnectionHub.handleParametersChange(Url(url + "?replicas=2"))
 
         // 修改
         println("------------ change2 ------------")
-        SwarmConnectionHub.handleParametersChange(Url(url + "?replicas=1"))
+        K8sConnectionHub.handleParametersChange(Url(url + "?replicas=1"))
 
         // 删除
         println("------------ remove ------------")
-        SwarmConnectionHub.handleServiceUrlRemove(Url(url), emptyList())
+        K8sConnectionHub.handleServiceUrlRemove(Url(url), emptyList())
     }
 
     @Test
@@ -46,19 +46,19 @@ class SwarmConnectionTests {
 
         // 新增
         println("------------ add ------------")
-        SwarmConnectionHub.handleSwarmServiceReplicasChange(mutableMapOf(server to 1))
+        K8sConnectionHub.handleK8sServiceReplicasChange(mutableMapOf(server to 1))
 
         // 修改
         println("------------ change1 ------------")
-        SwarmConnectionHub.handleSwarmServiceReplicasChange(mutableMapOf(server to 2))
+        K8sConnectionHub.handleK8sServiceReplicasChange(mutableMapOf(server to 2))
 
         // 修改
         println("------------ change2 ------------")
-        SwarmConnectionHub.handleSwarmServiceReplicasChange(mutableMapOf(server to 1))
+        K8sConnectionHub.handleK8sServiceReplicasChange(mutableMapOf(server to 1))
 
         // 删除
         println("------------ remove ------------")
-        SwarmConnectionHub.handleSwarmServiceReplicasChange(mutableMapOf())
+        K8sConnectionHub.handleK8sServiceReplicasChange(mutableMapOf())
     }
 
     @Test
@@ -66,7 +66,7 @@ class SwarmConnectionTests {
         // 建立连接 -- client连到2台server
         println("---------- 建立2台server的连接 ---------")
         var url = "$serverAddr?replicas=2"
-        SwarmConnectionHub.handleServiceUrlAdd(Url(url), emptyList())
+        K8sConnectionHub.handleServiceUrlAdd(Url(url), emptyList())
         printConns("初始")
 
         println("---------- 操作下线1台server ---------")
@@ -86,7 +86,7 @@ class SwarmConnectionTests {
 
         println("---------- 下线后立即均衡连接: 全部连上剩下的一台server ---------")
         // 均衡连接: server1
-        SwarmConnectionHub.rebalanceConns()
+        K8sConnectionHub.rebalanceConns()
 
         printConns("均衡后")
 
@@ -96,7 +96,7 @@ class SwarmConnectionTests {
         containIds = execCommand("docker ps --format {{.ID}}").trim().split("\n")
         println("有容器id: " + containIds)
         // 均衡连接
-        SwarmConnectionHub.rebalanceConns()
+        K8sConnectionHub.rebalanceConns()
 
         println("---------- 均衡后发rpc ---------")
         printConns("均衡后")
@@ -107,7 +107,7 @@ class SwarmConnectionTests {
      */
     private fun printConns(tag: String, forceQueryServerId: Boolean = false) {
         println("---------- $tag-检查连接的serverId ---------")
-        val conns = SwarmConnectionHub.getOrCreateConn(serverAddr)!!
+        val conns = K8sConnectionHub.getOrCreateConn(serverAddr)!!
         var i = 0
         for (conn in conns) {
             println("第 $i 个连接, 有效=" + conn.isValid()  +", serverId=" + conn.getServerId(forceQueryServerId))

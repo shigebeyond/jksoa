@@ -1,35 +1,35 @@
-package net.jkcode.jksoa.rpc.client.swarm
+package net.jkcode.jksoa.rpc.client.k8s
 
 import net.jkcode.jkmq.mqmgr.kafka.KafkaMqManager
-import net.jkcode.jksoa.common.swarmLogger
+import net.jkcode.jksoa.common.k8sLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jkutil.common.Config
 
 /**
- * docker swarm模式下的服务节点信息的监听器
+ * k8s模式下的服务节点信息的监听器
  *   订阅服务节点信息的mq，从而触发 IDiscoveryListener 的事件处理
  *   要检查kafka随机分组，这样才能接收广播mq
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
  */
-abstract class SwarmDiscoveryListener: IConnectionHub() {
+abstract class K8sDiscoveryListener: IConnectionHub() {
 
     /**
-     * swarm服务节点数
+     * k8s服务节点数
      */
-    protected var swarmServiceReplicas: MutableMap<String, Int> = HashMap()
+    protected var k8sServiceReplicas: MutableMap<String, Int> = HashMap()
 
     init {
         // 检查kafka消费者配置
         checkMqConsumer()
 
         // 全局的订阅
-        swarmLogger.debug("SwarmDiscoveryListener订阅服务节点信息的mq")
-        SwarmUtil.mqMgr.subscribeMq(SwarmUtil.topic){
-            swarmLogger.debug("SwarmDiscoveryListener收到服务节点信息的mq")
-            handleSwarmServiceReplicasChange(it as MutableMap<String, Int>)
+        k8sLogger.debug("K8sDiscoveryListener订阅服务节点信息的mq")
+        K8sUtil.mqMgr.subscribeMq(K8sUtil.topic){
+            k8sLogger.debug("K8sDiscoveryListener收到服务节点信息的mq")
+            handleK8sServiceReplicasChange(it as MutableMap<String, Int>)
         }
     }
 
@@ -39,34 +39,34 @@ abstract class SwarmDiscoveryListener: IConnectionHub() {
      */
     private fun checkMqConsumer() {
         // 只检查kafka
-        if(SwarmUtil.mqMgr !is KafkaMqManager)
+        if(K8sUtil.mqMgr !is KafkaMqManager)
             return
 
-        val configName = SwarmUtil.mqMgr.name // mq配置名
+        val configName = K8sUtil.mqMgr.name // mq配置名
         val config = Config.instance("kafka-consumer.$configName", "yaml")
         // 1 检查消费者分组
         val group: String? = config["group.id"]
         if (!group.isNullOrEmpty())
-            throw RpcClientException("SwarmDiscoveryListener监听必须是随机分组，这样才能接收广播")
+            throw RpcClientException("K8sDiscoveryListener监听必须是随机分组，这样才能接收广播")
         // 2 检查并行的消费者数
         val concurrency: Int = config["concurrency"]!!
         if (concurrency > 1)
-            throw RpcClientException("SwarmDiscoveryListener并行的消费者数要为1")
+            throw RpcClientException("K8sDiscoveryListener并行的消费者数要为1")
     }
 
     /**
-     * 处理swarm服务节点数变化: 对比本地数据, 从而识别增删改, 从而触发 IDiscoveryListener 的增删改方法
+     * 处理k8s服务节点数变化: 对比本地数据, 从而识别增删改, 从而触发 IDiscoveryListener 的增删改方法
      *
      * @param serviceId 服务标识
      * @param newData 服务节点数
      */
-    public fun handleSwarmServiceReplicasChange(newData: MutableMap<String, Int>){
+    public fun handleK8sServiceReplicasChange(newData: MutableMap<String, Int>){
         var addServers:Set<String> = emptySet() // 新加的server
         var removeServers:Set<String> = emptySet() // 新加的server
         var updateServers:List<String> = emptyList() // 更新的server
 
         // 1 获得旧的服务节点数
-        var oldData = this.swarmServiceReplicas
+        var oldData = this.k8sServiceReplicas
 
         // 2 比较新旧服务节点数，分别获得增删改的数据
         if(oldData.isEmpty()) {
@@ -88,24 +88,24 @@ abstract class SwarmDiscoveryListener: IConnectionHub() {
         // 3 新加的地址
         for (server in addServers){
             val replica = newData[server]!!
-            val url = SwarmUtil.swarmServer2Url(server, replica)
+            val url = K8sUtil.k8sServer2Url(server, replica)
             handleServiceUrlAdd(url, emptyList())
         }
 
         // 4 删除的地址
         for(server in removeServers) {
             oldData.remove(server)
-            val url = SwarmUtil.swarmServer2Url(server, 0)
+            val url = K8sUtil.k8sServer2Url(server, 0)
             handleServiceUrlRemove(url, emptyList())
         }
 
         // 5 更新的地址
         for(server in updateServers) {
             val replica = newData[server]!!
-            val url = SwarmUtil.swarmServer2Url(server, replica)
+            val url = K8sUtil.k8sServer2Url(server, replica)
             handleParametersChange(url)
         }
 
-        swarmServiceReplicas = newData
+        k8sServiceReplicas = newData
     }
 }

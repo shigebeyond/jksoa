@@ -1,10 +1,9 @@
-package net.jkcode.jksoa.rpc.client.swarm.server
+package net.jkcode.jksoa.rpc.client.k8s.server
 
-import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- * swarm server解析器的集合
+ * k8s server解析器的集合
  *   优先调用自定义的解析器，最后调用 PatternServerResolver
  *
  * @author shijianhang<772910474@qq.com>
@@ -18,7 +17,7 @@ object ServerResolverContainer: IServerResolver{
     private val customResolvers: MutableList<IServerResolver> = CopyOnWriteArrayList()
 
     /**
-     * 解析swarm服务名(server)
+     * 解析k8s服务名(server)
      * @param serviceId
      * @return 协议ip端口(server)
      */
@@ -50,7 +49,7 @@ object ServerResolverContainer: IServerResolver{
     public fun addServerResolver(resolveFunc: (String)->String?): IServerResolver {
         val resolver = object :IServerResolver{
             /**
-             * 解析swarm服务名(server)
+             * 解析k8s服务名(server)
              * @param serviceId
              * @return 协议ip端口(server)
              */

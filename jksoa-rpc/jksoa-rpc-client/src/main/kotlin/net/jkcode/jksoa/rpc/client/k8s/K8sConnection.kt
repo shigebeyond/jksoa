@@ -1,26 +1,24 @@
-package net.jkcode.jksoa.rpc.client.swarm
+package net.jkcode.jksoa.rpc.client.k8s
 
-import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.future.IRpcResponseFuture
 import net.jkcode.jksoa.rpc.client.connection.BaseConnection
 import net.jkcode.jksoa.rpc.client.connection.single.ReconnectableConnection
 import net.jkcode.jksoa.rpc.example.ISimpleService
 
 /**
- * docker swarm模式下的连接
+ * k8s模式下的连接
  *   1 继承ReconnectableConnection，支持延迟连接 + 自动重连，见getOrReConnect()
  *   2 获得并记录server端的容器id
  *   2.1 通过rpc (ISimpleService::hostname) 来获得
  *   2.2 由于是延迟连接，因此不能在构造函数时就获得，只能在有真正连接(如发送请求)时才获得
  *   2.3 延迟获得的时机与调用栈
- *       SwarmConnectionHub.select() -> toDesc() -> lazy属性serverId读 -> rpc获得server端的容器id
+ *       K8sConnectionHub.select() -> toDesc() -> lazy属性serverId读 -> rpc获得server端的容器id
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
  */
-class SwarmConnection(url: Url) : ReconnectableConnection(url) {
+class K8sConnection(url: Url) : ReconnectableConnection(url) {
 
     /**
      * 服务器id=容器id
@@ -92,7 +90,7 @@ class SwarmConnection(url: Url) : ReconnectableConnection(url) {
      * 转描述
      */
     public fun toDesc(): String {
-        return "SwarmConnection(serverId=" + getServerId() + ", url=" + url + ')'
+        return "K8sConnection(serverId=" + getServerId() + ", url=" + url + ')'
     }
 
 }

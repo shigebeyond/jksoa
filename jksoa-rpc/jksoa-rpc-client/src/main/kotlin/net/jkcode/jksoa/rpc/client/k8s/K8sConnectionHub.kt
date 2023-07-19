@@ -1,37 +1,36 @@
-package net.jkcode.jksoa.rpc.client.swarm
+package net.jkcode.jksoa.rpc.client.k8s
 
 import net.jkcode.jksoa.rpc.client.IConnection
 import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.Url
-import net.jkcode.jksoa.common.swarmLogger
+import net.jkcode.jksoa.common.k8sLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
-import net.jkcode.jksoa.rpc.client.swarm.server.IServerResolver
-import net.jkcode.jksoa.rpc.client.swarm.server.ServerResolverContainer
+import net.jkcode.jksoa.rpc.client.k8s.server.ServerResolverContainer
 import net.jkcode.jkutil.common.CommonSecondTimer
 import net.jkcode.jkutil.common.newPeriodic
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
- * docker swarm模式下，所有swarm服务server的rpc连接集中器, 不再绑定单个rpc服务, 因为只能监听到swarm服务的节点数据，跟rpc服务没有关系了
- *    1 swarm服务 vs rpc服务 下的url
- *      url只有 protocol://host(即swarm服务名)，但没有path(rpc服务接口名)，因为docker swarm发布服务不是一个个类来发布，而是整个jvm进程(容器)集群来发布
+ * k8s模式下，所有k8s服务server的rpc连接集中器, 不再绑定单个rpc服务, 因为只能监听到k8s服务的节点数据，跟rpc服务没有关系了
+ *    1 k8s服务 vs rpc服务 下的url
+ *      url只有 protocol://host(即k8s服务名)，但没有path(rpc服务接口名)，因为k8s发布服务不是一个个类来发布，而是整个jvm进程(容器)集群来发布
  *    2 全局下(无关单个rpc服务)，维系client对所有server的所有连接
  *    3 全局下(无关单个rpc服务)，在client调用中对server集群进行均衡负载
- *    4 因为调用是单个rpc服务，因此需要将rpc服务名映射为swarm服务名(server)
+ *    4 因为调用是单个rpc服务，因此需要将rpc服务名映射为k8s服务名(server)
  *    5 一般而言， 先调用 handleServiceUrlAdd() 来初始化连接，然后再调用 getOrCreateConn() 来获得连接，但有时候rpc(getOrCreateConn)在前，监听服务发现(handleServiceUrlAdd)在后，那么在 getOrCreateConn() 中就需要创建一个默认的连接
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
  */
-object SwarmConnectionHub: SwarmDiscoveryListener() {
+object K8sConnectionHub: K8sDiscoveryListener() {
 
     /**
      * 全局的连接： <协议ip端口(server) to server的连接包装器>
-     *     server就是swarm服务名
+     *     server就是k8s服务名
      */
-    private val connections: ConcurrentHashMap<String, SwarmConnections> = ConcurrentHashMap()
+    private val connections: ConcurrentHashMap<String, K8sConnections> = ConcurrentHashMap()
 
     init {
         // 启动定时均衡连接
@@ -51,44 +50,44 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
     }
 
     /**
-     * 获得某swarm节点的连接，如果没有则尝试建立连接
+     * 获得某k8s节点的连接，如果没有则尝试建立连接
      * @param serverAddr 协议ip端口
      * @return
      */
-    internal fun getOrCreateConn(serverAddr: String): SwarmConnections? {
+    internal fun getOrCreateConn(serverAddr: String): K8sConnections? {
         return connections.getOrPut(serverAddr){
             // 一般而言， 先调用 handleServiceUrlAdd() 来初始化连接，然后再调用 getOrCreateConn() 来获得连接，但有时候rpc(getOrCreateConn)在前，监听服务发现(handleServiceUrlAdd)在后，那么就需要创建一个默认的连接
             val url = Url(serverAddr)
-            val conn = SwarmConnections(url)
+            val conn = K8sConnections(url)
             conn.replicas = 1 // 默认一副本
             conn
         }
     }
 
     /**
-     * 处理swarm服务节点数新增
+     * 处理k8s服务节点数新增
      * @param url
      * @param allUrls
      */
     public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
         val server = url.serverAddr
-        swarmLogger.debug("SwarmConnectionHub处理swarm服务[{}]新加地址: {}", server, url)
+        k8sLogger.debug("K8sConnectionHub处理k8s服务[{}]新加地址: {}", server, url)
         // 新建连接
         val conn = connections.getOrPut(server){
-            SwarmConnections(url.serverPart)
+            K8sConnections(url.serverPart)
         }
         conn.replicas = url.getParameter("replicas") ?: 1
     }
 
     /**
-     * 处理swarm服务节点数删除
+     * 处理k8s服务节点数删除
      * @param url
      * @param allUrls
      */
     public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
         val server = url.serverAddr
         val conn = connections.remove(server)!!
-        swarmLogger.debug("SwarmConnectionHub处理swarm服务[{}]删除地址: {}", server, url)
+        k8sLogger.debug("K8sConnectionHub处理k8s服务[{}]删除地址: {}", server, url)
 
         // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
         //conn.close() // 关闭连接
@@ -96,13 +95,13 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
     }
 
     /**
-     * 处理swarm服务配置参数（swarm服务节点数的参数）变化
+     * 处理k8s服务配置参数（k8s服务节点数的参数）变化
      *   主要是参数 replica 变化
      * @param url
      */
     public override fun handleParametersChange(url: Url){
         val server = url.serverAddr
-        swarmLogger.debug("SwarmConnectionHub处理server[{}]参数变化: {}", server, url.getQueryString())
+        k8sLogger.debug("K8sConnectionHub处理server[{}]参数变化: {}", server, url.getQueryString())
         // 重置连接数
         connections[server]!!.replicas = url.getParameter("replicas") ?: 1
     }
@@ -115,14 +114,14 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
      */
     public override fun select(req: IRpcRequest): IConnection {
         // 1 获得可用连接
-        val swarmServerAddr = ServerResolverContainer.resovleServer(req) // 解析server
-        val conns = getOrCreateConn(swarmServerAddr)
+        val k8sServerAddr = ServerResolverContainer.resovleServer(req) // 解析server
+        val conns = getOrCreateConn(k8sServerAddr)
         if(conns == null)
             throw RpcNoConnectionException("远程服务[${req.serviceId}]无提供者节点")
 
         // 2 按均衡负载策略，来选择连接
-        val conn = loadBalancer.select(conns, req)!! as SwarmConnection
-        swarmLogger.debug("SwarmConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn.toDesc())
+        val conn = loadBalancer.select(conns, req)!! as K8sConnection
+        k8sLogger.debug("K8sConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn.toDesc())
         return conn
     }
 
@@ -137,7 +136,7 @@ object SwarmConnectionHub: SwarmDiscoveryListener() {
                         null
                     else
                         ServerResolverContainer.resovleServer(req) // 解析server
-        throw RpcClientException("docker swarm模式下无法获得swarm服务[$server]的所有server的连接")
+        throw RpcClientException("k8s模式下无法获得k8s服务[$server]的所有server的连接")
     }
 
 }

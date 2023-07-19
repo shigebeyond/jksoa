@@ -1,0 +1,15 @@
+- app(rpcserver):
+    - containers:
+        rpcserver:
+          # 这是 deliver-image.sh 打包的镜像，并上传到私有仓库192.168.0.182
+          image: 192.168.0.182:5000/rpcserver:${tag}
+          env: # 以dict方式设置环境变量
+            TZ: Asia/Shanghai
+          ports: # 端口映射
+            - 9080:9080 # 服务端口:容器端口
+        visualizer:
+          image: dockersamples/visualizer
+          ports: # 端口映射
+            - 8081:8080 # 服务端口:容器端口
+    # 部署
+    - deploy: 2
