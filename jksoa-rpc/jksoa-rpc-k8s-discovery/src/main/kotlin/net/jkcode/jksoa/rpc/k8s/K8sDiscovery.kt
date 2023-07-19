@@ -29,23 +29,25 @@ object K8sDiscovery {
      * @return Map<k8s服务名, 节点数>
      */
     private fun queryK8sServiceReplicas(): HashMap<String, Int>? {
-        /* 1 exec command, output eg.
+        /* 1 执行命令，结果如下
         NAMESPACE       NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
         default         demo                       2/2     2            2           27h
          */
-        val text = execCommand(queryCmd)
-        if(text.isNullOrBlank())
+        val output = execCommand(queryCmd)
+        if(output.isNullOrBlank())
             return null
 
-        // 2 parse service and replicas
+        // 2 转df
+        val df = DataFrame.fromString(output)!!
+
+        // 3 解析副本数
         val services = HashMap<String, Int>()
-        for (line in text.split("\n")) {
-            if(line.isEmpty())
-                break
-            // tcp_tcpserver:1/2 = 服务名:实际副本数/需要副本数
-            val (service, actualReplicas, desiredReplicas) = line.split(':', '/')
-            services[service] = actualReplicas.toInt()
+        df.forEach { row ->
+            val name = row["NAME"]!!
+            val replicas = row["READY"]!!.split('/').first()
+            services[name] = replicas.toInt()
         }
+
         return services
     }
 

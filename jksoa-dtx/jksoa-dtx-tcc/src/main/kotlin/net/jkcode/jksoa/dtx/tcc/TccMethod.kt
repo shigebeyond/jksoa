@@ -28,11 +28,3 @@ public val Method.tccMethod: TccMethod?
     get(){
         return getCachedAnnotation()
     }
-
-/**
- * 获得tcc方法的注解
- */
-public val IMethodMeta.tccMethod: TccMethod?
-    get(){
-        return getAnnotation()
-    }
