@@ -2,6 +2,7 @@ package net.jkcode.jksoa.rpc.k8s
 
 import net.jkcode.jksoa.common.k8sLogger
 import net.jkcode.jksoa.rpc.client.k8s.K8sUtil
+import net.jkcode.jkutil.collection.DataFrame
 import net.jkcode.jkutil.common.*
 import java.util.concurrent.TimeUnit
 
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit
  *   负责在 docker manager node中定时运行 docker service ls 命令来查询k8s服务的节点数，并广播服务节点数消息
  *
  * @author shijianhang<772910474@qq.com>
- * @date 2017-12-12 11:22 AM
+ * @date 2023-7-12 11:22 AM
  */
 object K8sDiscovery {
 
@@ -44,8 +45,10 @@ object K8sDiscovery {
         val services = HashMap<String, Int>()
         df.forEach { row ->
             val name = row["NAME"]!!
-            val replicas = row["READY"]!!.split('/').first()
-            services[name] = replicas.toInt()
+            // 可用副本数/期望副本数，在滚动更新的过程中有可能：可用副本数 > 期望副本数，因此要取最小值
+            val (readyReplicas, desiredReplicas) = row["READY"]!!.split('/')
+            val replicas = minOf(readyReplicas.toInt(), desiredReplicas.toInt())
+            services[name] = replicas
         }
 
         return services
