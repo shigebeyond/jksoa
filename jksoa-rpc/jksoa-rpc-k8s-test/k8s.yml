@@ -1,0 +1,12 @@
+- app(rpcclient):
+    - containers:
+        rpcclient:
+          #image: java:8
+          image: hub.deri.org.cn/library/oracle_jdk_1.8_251:latest
+          env: # 以dict方式设置环境变量
+            TZ: Asia/Shanghai
+          ports: # 端口映射
+          volumes: # 卷映射
+            - /home/shi/code/java/jksoa/jksoa-rpc/jksoa-rpc-client/build/app:/opt/rpcclient
+          command: /opt/rpcclient/start-rpcclient.sh
+    - deploy: 1

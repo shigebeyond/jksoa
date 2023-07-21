@@ -171,8 +171,8 @@ k8sMqName: k8sDiscovery # 消息连接配置名, 对应如 kafka-consumer.yaml /
 package2k8sServer: # 包名转为k8s服务名(server)
     # key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
     # value是server地址: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
-    'net.jkcode.jksoa.rpc.example': 'jkr://jksoa_rpcserver:9080'
-    #'net.jkcode.jksoa.rpc.example': jksoa_rpcserver # 简写，省略协议jkrp跟端口9080
+    'net.jkcode.jksoa.rpc.example': 'jkr://rpcserver.default:9080'
+    #'net.jkcode.jksoa.rpc.example': rpcserver.default # 简写，省略协议jkrp跟端口9080
     '**': 'jkr://$2_$3:9080'
     #'**': $2_$3 # 简写，省略协议jkrp跟端口9080
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒

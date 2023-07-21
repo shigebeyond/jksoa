@@ -18,7 +18,7 @@ class K8sConnectionTests {
         config["lazyConnect"] = false
     }
 
-    val serverAddr = "jkr://jksoa_rpcserver:9080"
+    val serverAddr = "jkr://rpcserver.default:9080"
 
     @Test
     fun testDiscoveryListener(){
@@ -42,7 +42,7 @@ class K8sConnectionTests {
 
     @Test
     fun testDiscoveryListener2(){
-        val server = "jksoa_rpcserver"
+        val server = "rpcserver.default"
 
         // 新增
         println("------------ add ------------")

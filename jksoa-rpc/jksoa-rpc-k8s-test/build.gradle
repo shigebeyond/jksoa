@@ -1,0 +1,40 @@
+dependencies{
+    // other project
+    compile project(':jksoa-rpc:jksoa-rpc-client') // 主要是依赖 K8sUtil
+}
+
+// -------------- k8s discovery构建 ---------------
+// 复制jar
+task copyLib(type: Copy) {
+    into "${buildDir}/app/libs"
+    from configurations.runtime // 所有依赖的jar
+    from "${buildDir}/libs/${project.name}-${project.version}.jar"
+}
+
+// 复制start.sh
+task copyStartSh(type: Copy) {
+    into "${buildDir}/app"
+    from "start-k8s-discovery.sh"
+}
+
+// 复制配置文件
+task copyConf(type: Copy) {
+    into "${buildDir}/app/conf"
+    // 需要的配置文件
+    def props = ["logback.xml", "kafka-consumer.yaml", "kafka-producer.yaml"]
+    // 项目 resources 目录, 来收集配置文件
+    for(pro in [project(':jkutil')]) {
+        for (src in pro.sourceSets.main.resources) {
+            if(props.contains(src.name)){
+                //println(src)
+                from src
+            }
+        }
+    }
+}
+
+if (project.hasProperty("all")){
+    build.finalizedBy(copyLib)
+    build.dependsOn(copyStartSh)
+    build.dependsOn(copyConf)
+}
