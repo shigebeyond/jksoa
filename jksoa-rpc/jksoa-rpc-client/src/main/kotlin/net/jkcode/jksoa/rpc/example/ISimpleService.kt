@@ -17,6 +17,13 @@ interface ISimpleService /*: Remote // rmi协议服务接口 */ {
     @Suspendable
     fun hostname(): String
 
+    /**
+     * 获得pod信息
+     */
+    @Throws(RemoteException::class) // rmi异常
+    @Suspendable
+    fun podInfo():Map<String, String>
+
     @Throws(RemoteException::class) // rmi异常
     fun sayHi(name: String = "shi"): String
 

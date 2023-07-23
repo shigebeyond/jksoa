@@ -8,6 +8,10 @@
             image: 192.168.0.182:5000/rpcserver:${tag}
             env: # 以dict方式设置环境变量
               TZ: Asia/Shanghai
+              # 引用pod信息
+              POD_NAME: ${ref_pod_field(metadata.name)}
+              POD_NAMESPACE: ${ref_pod_field(metadata.namespace)}
+              POD_IP: ${ref_pod_field(status.podIP)}
             ports: # 端口映射
               - 9080:9080 # 服务端口:容器端口
           visualizer:
@@ -19,12 +23,17 @@
       - containers:
           rpcserver:
             #image: java:8
-            image: hub.deri.org.cn/library/oracle_jdk_1.8_251:latest
+            #image: hub.deri.org.cn/library/oracle_jdk_1.8_251:latest
+            image: openjdk:8-jre-alpine
             env: # 以dict方式设置环境变量
               TZ: Asia/Shanghai
+              # 引用pod信息
+              POD_NAME: ${ref_pod_field(metadata.name)}
+              POD_NAMESPACE: ${ref_pod_field(metadata.namespace)}
+              POD_IP: ${ref_pod_field(status.podIP)}
             ports: # 端口映射
               - 9080:9080 # 服务端口:容器端口
             volumes: # 卷映射
-              - /home/shi/code/java/jksoa/jksoa-rpc/jksoa-rpc-server/build/app:/opt/rpcserver
+              - /data/jksoa/rpc-server:/opt/rpcserver
             command: /opt/rpcserver/start-rpcserver.sh
       - deploy: 2

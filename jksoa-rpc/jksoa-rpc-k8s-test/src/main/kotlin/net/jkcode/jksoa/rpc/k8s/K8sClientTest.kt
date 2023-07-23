@@ -9,8 +9,8 @@ object K8sClientTest {
     fun main(args: Array<String>) {
         while(true) {
             val service = Referer.getRefer<ISimpleService>()
-            val ret = service.hostname()
-            println("调用服务[ISimpleService.hostname()]结果： $ret")
+            val ret = service.podInfo()
+            println("调用服务[ISimpleService.podInfo()]结果： $ret")
             Thread.sleep(5000)
         }
     }

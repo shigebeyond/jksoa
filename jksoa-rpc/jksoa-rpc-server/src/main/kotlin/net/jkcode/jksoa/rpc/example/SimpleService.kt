@@ -19,6 +19,19 @@ class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服�
         return SysInfo.hostname // 容器id
     }
 
+    /**
+     * 获得pod信息
+     */
+    @Throws(RemoteException::class) // rim异常
+    override fun podInfo(): Map<String, String> {
+        return mapOf(
+            "POD_NAME" to System.getenv("POD_NAME"),
+            "POD_NAMESPACE" to System.getenv("POD_NAMESPACE"),
+            "POD_IP" to System.getenv("POD_IP"),
+            "HOSTNAME" to SysInfo.hostname
+        )
+    }
+
     @Throws(RemoteException::class) // rim异常
     public override fun sayHi(name: String): String{
         return "Greeting, $name"
