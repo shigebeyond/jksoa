@@ -34,6 +34,6 @@
             ports: # 端口映射
               - 9080:9080 # 服务端口:容器端口
             volumes: # 卷映射
-              - /data/jksoa/rpc-server:/opt/rpcserver
+              - /home/shi/code/java/jksoa/jksoa-rpc/jksoa-rpc-server/build/app:/opt/rpcserver
             command: /opt/rpcserver/start-rpcserver.sh
       - deploy: 2

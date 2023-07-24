@@ -32,10 +32,10 @@ class K8sConnection(url: Url) : ReconnectableConnection(url) {
      * @return
      */
     public fun getServerId(force: Boolean = false): String? {
-        return getOrReConnect().serverIp // pod ip
+        return getOrReConnect().serverIp // service ip
 
-        // 若_serverId无效，则请求
-        /*if (_serverId == null || !isValid() *//* 若连接无效，则_serverId也无效 *//*){
+        /*// 若_serverId无效，则请求
+        if (_serverId == null || !isValid()){ // 若连接无效，则_serverId也无效
             // 强制或有效连接 才rpc请求, 否则不请求: 不会为了获得serverId而随意新建连接，本来serverId就是为了更有效的利用连接的
             if (force || isValid()) {
                 synchronized(this){

@@ -14,7 +14,7 @@ task copyLib(type: Copy) {
 // 复制start.sh
 task copyStartSh(type: Copy) {
     into "${buildDir}/app"
-    from "start-k8s-discovery.sh"
+    from "start-rpcclient.sh"
 }
 
 // 复制配置文件

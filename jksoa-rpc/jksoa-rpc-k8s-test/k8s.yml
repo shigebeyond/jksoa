@@ -8,6 +8,6 @@
             TZ: Asia/Shanghai
           ports: # 端口映射
           volumes: # 卷映射
-            - /home/shi/code/java/jksoa/jksoa-rpc/jksoa-rpc-client/build/app:/opt/rpcclient
+            - /home/shi/code/java/jksoa/jksoa-rpc/jksoa-rpc-k8s-test/build/app:/opt/rpcclient
           command: /opt/rpcclient/start-rpcclient.sh
     - deploy: 1
