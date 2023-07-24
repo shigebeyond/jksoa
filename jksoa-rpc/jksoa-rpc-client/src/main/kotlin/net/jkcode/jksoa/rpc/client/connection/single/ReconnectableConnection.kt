@@ -95,7 +95,7 @@ open class ReconnectableConnection internal constructor(url: Url, weight: Int = 
      * 获得连接或重新连接
      * @return
      */
-    protected fun getOrReConnect(): BaseConnection {
+    internal fun getOrReConnect(): BaseConnection {
         // 1 有连接: 检查是否有效
         var first = true
         if(conn != null){

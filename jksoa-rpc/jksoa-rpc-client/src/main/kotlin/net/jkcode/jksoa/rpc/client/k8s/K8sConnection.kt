@@ -34,12 +34,17 @@ class K8sConnection(url: Url) : ReconnectableConnection(url) {
      * @param force 是否强制查询(rpc)，仅在测试时才为true
      * @return
      */
-    public val serverId: String? by lazy{
-        //getOrReConnect().serverIp // service vip
-        if (isValid())
-            requestServiceId()
-        else
-            null
+    public val serverId: String?
+        get(){
+            //return getOrReConnect().serverIp // service vip
+            // 若_serverId无效，则请求
+            if (_serverId == null || !isValid()){ // 若连接无效，则_serverId也无效
+                synchronized(this){
+                    if(_serverId == null) // 双重检查
+                        _serverId = requestServiceId() // 请求后会记录 _serverId
+                }
+            }
+            return _serverId
     }
 
     /**

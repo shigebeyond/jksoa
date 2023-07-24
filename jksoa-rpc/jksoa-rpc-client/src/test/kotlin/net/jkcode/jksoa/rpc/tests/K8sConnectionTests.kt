@@ -62,7 +62,7 @@ class K8sConnectionTests {
     }
 
     @Test
-    fun testRebalanceConns(){
+    fun testSwarmRebalanceConns(){
         // 建立连接 -- client连到2台server
         println("---------- 建立2台server的连接 ---------")
         var url = "$serverAddr?replicas=2"
@@ -82,7 +82,7 @@ class K8sConnectionTests {
         println(ret)
 
         printConns("下线后")
-        printConns("下线后重连")
+        printConns("下线后重连", true)
 
         println("---------- 下线后立即均衡连接: 全部连上剩下的一台server ---------")
         // 均衡连接: server1
@@ -102,14 +102,57 @@ class K8sConnectionTests {
         printConns("均衡后")
     }
 
+    @Test
+    fun testK8sRebalanceConns(){
+        // 建立连接 -- client连到2台server
+        println("---------- 建立2台server的连接 ---------")
+        var url = "$serverAddr?replicas=2"
+        K8sConnectionHub.handleServiceUrlAdd(Url(url), emptyList())
+        printConns("初始")
+
+        println("---------- 操作下线1台server ---------")
+        // 要营造测试场景: 某台worker server下线 -- 1台server，副本数应该减少，但没有通知client
+        // 场景一：2台物理机：下线一台
+        //val ret = execCommand("kubectl cordon mac") // kubectl uncordon mac
+        // println(ret)
+
+        // 场景二：1台物理机，2个pod：停掉一个pod
+        var podNames = execCommand("kubectl get pod -o custom-columns=:.metadata.name").trim().split("\n")
+        println("有pod名: " + podNames + ", 关掉pod: " + podNames.first())
+        val ret = execCommand("kubectl delete pod " + podNames.first())
+        println(ret)
+
+        printConns("下线后")
+        printConns("下线后重连", true)
+
+        println("---------- 下线后立即均衡连接: 全部连上剩下的一台server ---------")
+        // 均衡连接: server1
+        K8sConnectionHub.rebalanceConns()
+
+        printConns("均衡后")
+
+        Thread.sleep(10000)
+
+        println("---------- 等新server起来后的均衡连接：连上2台server ---------")
+        podNames = execCommand("kubectl get pod -o custom-columns=:.metadata.name").trim().split("\n")
+        println("有pod名: " + podNames)
+        // 均衡连接
+        K8sConnectionHub.rebalanceConns()
+
+        println("---------- 均衡后发rpc ---------")
+        printConns("均衡后")
+    }
+
     /**
      * 检查连接
      */
-    private fun printConns(tag: String) {
+    private fun printConns(tag: String, reconnect: Boolean = false) {
         println("---------- $tag-检查连接的serverId ---------")
         val conns = K8sConnectionHub.getOrCreateConn(serverAddr)!!
         var i = 0
         for (conn in conns) {
+            if(reconnect)
+                conn.getOrReConnect()
             println("第 $i 个连接, 有效=" + conn.isValid()  +", serverId=" + conn.serverId)
             i++
         }
