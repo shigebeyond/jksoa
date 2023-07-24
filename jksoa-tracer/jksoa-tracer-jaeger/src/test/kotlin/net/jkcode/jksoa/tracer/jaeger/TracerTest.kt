@@ -18,8 +18,8 @@ class TracerTest {
         val span = Tracer.current().startInitiatorSpanner(::testTrace)
 
         val service = Referer.getRefer<ISimpleService>()
-        val ret = service.hostname()
-        println("调用服务[ISimpleService.hostname()]结果： $ret")
+        val ret = service.sayHi()
+        println("调用服务[ISimpleService.sayHi()]结果： $ret")
 
         span.end()
     }

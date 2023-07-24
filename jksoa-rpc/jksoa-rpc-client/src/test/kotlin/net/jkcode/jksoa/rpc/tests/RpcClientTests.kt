@@ -167,17 +167,17 @@ class RpcClientTests {
     @Test
     fun testRpc(){
         val service = Referer.getRefer<ISimpleService>()
-        val ret = service.hostname()
-        println("调用服务[ISimpleService.hostname()]结果： $ret")
+        val ret = service.sayHi()
+        println("调用服务[ISimpleService.sayHi()]结果： $ret")
     }
 
     @Test
     fun testFiber(){
         val ret = fiber  @Suspendable {
             val service = Referer.getRefer<ISimpleService>()
-            service.hostname()
+            service.sayHi()
         }.get()
-        println("调用服务[ISimpleService.hostname()]结果： $ret")
+        println("调用服务[ISimpleService.sayHi()]结果： $ret")
     }
 
     /**
@@ -192,7 +192,7 @@ class RpcClientTests {
         val f = fiber(true, scheduler = scheduler) @Suspendable {
             println("rpc之前")
             val service = Referer.getRefer<ISimpleService>()
-            val r = service.hostname()
+            val r = service.sayHi()
             println("rpc之后")
             r
         }
@@ -201,7 +201,7 @@ class RpcClientTests {
             println("另外的操作")
         }
 
-        println("调用服务[ISimpleService.hostname()]结果： " + f.get())
+        println("调用服务[ISimpleService.sayHi()]结果： " + f.get())
     }
 
     @Test

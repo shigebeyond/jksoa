@@ -16,7 +16,7 @@ class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服�
 
     @Throws(RemoteException::class) // rim异常
     public override fun hostname(): String {
-        return SysInfo.hostname // 容器id
+        return SysInfo.hostname // 在swarm为容器id，在k8s为pod名
     }
 
     /**
@@ -25,10 +25,9 @@ class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服�
     @Throws(RemoteException::class) // rim异常
     override fun podInfo(): Map<String, String> {
         return mapOf(
-            "POD_NAME" to System.getenv("POD_NAME"),
+            "POD_NAME" to System.getenv("POD_NAME"), // pod名=hostname
             "POD_NAMESPACE" to System.getenv("POD_NAMESPACE"),
-            "POD_IP" to System.getenv("POD_IP"),
-            "HOSTNAME" to SysInfo.hostname
+            "POD_IP" to System.getenv("POD_IP")
         )
     }
 
