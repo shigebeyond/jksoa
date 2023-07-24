@@ -82,7 +82,7 @@ class K8sConnectionTests {
         println(ret)
 
         printConns("下线后")
-        printConns("下线后重连", true)
+        printConns("下线后重连")
 
         println("---------- 下线后立即均衡连接: 全部连上剩下的一台server ---------")
         // 均衡连接: server1
@@ -105,12 +105,12 @@ class K8sConnectionTests {
     /**
      * 检查连接
      */
-    private fun printConns(tag: String, forceQueryServerId: Boolean = false) {
+    private fun printConns(tag: String) {
         println("---------- $tag-检查连接的serverId ---------")
         val conns = K8sConnectionHub.getOrCreateConn(serverAddr)!!
         var i = 0
         for (conn in conns) {
-            println("第 $i 个连接, 有效=" + conn.isValid()  +", serverId=" + conn.getServerId(forceQueryServerId))
+            println("第 $i 个连接, 有效=" + conn.isValid()  +", serverId=" + conn.serverId)
             i++
         }
     }

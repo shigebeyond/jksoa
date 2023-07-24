@@ -251,7 +251,7 @@ class K8sConnections(
         // 1 仅处理： server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
         // 1.1 serverNums 为现有每个server的连接数
         val serverNums = conns.groupCount(reuseMaps.get()) {
-            it.getServerId() ?: ""
+            it.serverId ?: ""
         } as MutableMap
         serverNums.remove("") // 无 serverId 不处理
         if(serverNums.isEmpty())
@@ -279,7 +279,7 @@ class K8sConnections(
         val cit = conns.iterator() // list迭代删除元素
         while (cit.hasNext()){
             val conn = cit.next()
-            val serverId = conn.getServerId() ?: ""
+            val serverId = conn.serverId ?: ""
             // 在删除的队伍中
             val del = serverId in serverNums && serverNums[serverId]!! > 0
             if(del) {
@@ -287,7 +287,7 @@ class K8sConnections(
                 // 2.1 先建(负载少的server)连接
                 val newConn = K8sConnection(url) // 根据 url=serverPart 来复用 K8sConnection 的实例
                 newConns.add(newConn)
-                val newServerId = newConn.getServerId(true)
+                val newServerId = newConn.serverId
                 // 如果依旧连上负载多的server, 则停止均衡
                 if(newServerId in serverNums) {
                     k8sLogger.debug("K8sConnections均衡连接stop, 新建连接时依旧连上负载多的server, serverUrl为{}, serverId为{}", url, newServerId)
