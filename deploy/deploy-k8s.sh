@@ -11,6 +11,6 @@ fi
 echo "部署k8s服务 $ns-$pro"
 echo "1 生成k8s资源文件"
 K8sBoot k8s.yml -o k8sboot -d ns=$ns&tag=$tag
-sleep 5
+sleep 3
 echo "2 应用k8s资源文件"
 kubectl apply --record=true -f k8sboot

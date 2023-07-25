@@ -2,9 +2,13 @@ package net.jkcode.jksoa.rpc.tests
 
 import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.rpc.client.k8s.K8sConnectionHub
+import net.jkcode.jksoa.rpc.client.k8s.K8sConnections
 import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.dateFormat
 import net.jkcode.jkutil.common.execCommand
+import net.jkcode.jkutil.common.groupCount
 import org.junit.Test
+import java.util.*
 
 class K8sConnectionTests {
 
@@ -38,6 +42,7 @@ class K8sConnectionTests {
         // 删除
         println("------------ remove ------------")
         K8sConnectionHub.handleServiceUrlRemove(Url(url), emptyList())
+        Thread.sleep(5000)
     }
 
     @Test
@@ -61,6 +66,20 @@ class K8sConnectionTests {
         K8sConnectionHub.handleK8sServiceReplicasChange(mutableMapOf())
     }
 
+    /**
+     * 一直启动 K8sConnectionHub 监听副本变化的mq，每隔5s打印下连接
+     */
+    @Test
+    fun testDiscoveryListenerAndWaitReplicaMq(){
+        while (true){
+            printConns(Date().toString())
+            Thread.sleep(10000)
+        }
+    }
+
+    /**
+     * 2个容器副本，kill掉一个，观察kill前后的连接，等10秒，因为kill后会重启容器，观察重启后的连接变化
+     */
     @Test
     fun testSwarmRebalanceConns(){
         // 建立连接 -- client连到2台server
@@ -98,10 +117,12 @@ class K8sConnectionTests {
         // 均衡连接
         K8sConnectionHub.rebalanceConns()
 
-        println("---------- 均衡后发rpc ---------")
         printConns("均衡后")
     }
 
+    /**
+     * 2个pod副本，kill掉一个，观察kill前后的连接，等10秒，因为kill后会重启pod，观察重启后的连接变化
+     */
     @Test
     fun testK8sRebalanceConns(){
         // 建立连接 -- client连到2台server
@@ -109,6 +130,12 @@ class K8sConnectionTests {
         var url = "$serverAddr?replicas=2"
         K8sConnectionHub.handleServiceUrlAdd(Url(url), emptyList())
         printConns("初始")
+
+        /*
+        // 延迟创建连接(未建立连接)时, 测试均衡
+        K8sConnectionHub.rebalanceConns()
+        printConns("均衡后")
+        */
 
         println("---------- 操作下线1台server ---------")
         // 要营造测试场景: 某台worker server下线 -- 1台server，副本数应该减少，但没有通知client
@@ -128,7 +155,6 @@ class K8sConnectionTests {
         println("---------- 下线后立即均衡连接: 全部连上剩下的一台server ---------")
         // 均衡连接: server1
         K8sConnectionHub.rebalanceConns()
-
         printConns("均衡后")
 
         Thread.sleep(10000)
@@ -138,8 +164,6 @@ class K8sConnectionTests {
         println("有pod名: " + podNames)
         // 均衡连接
         K8sConnectionHub.rebalanceConns()
-
-        println("---------- 均衡后发rpc ---------")
         printConns("均衡后")
     }
 
@@ -151,11 +175,13 @@ class K8sConnectionTests {
         val conns = K8sConnectionHub.getOrCreateConn(serverAddr)!!
         var i = 0
         for (conn in conns) {
-            if(reconnect)
-                conn.getOrReConnect()
-            println("第 $i 个连接, 有效=" + conn.isValid()  +", serverId=" + conn.serverId)
+            println("第 $i 个连接, 有效=" + conn.isValid()  +", serverId=" + conn.getServerId(reconnect /* 强制重连 */))
             i++
         }
+        val serverNums = conns.groupCount() {
+            it.getServerId() ?: ""
+        }
+        println("按server分组连接: " + serverNums)
     }
 
 

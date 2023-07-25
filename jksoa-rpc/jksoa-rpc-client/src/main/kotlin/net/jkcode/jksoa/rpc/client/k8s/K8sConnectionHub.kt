@@ -121,7 +121,7 @@ object K8sConnectionHub: K8sDiscoveryListener() {
 
         // 2 按均衡负载策略，来选择连接
         val conn = loadBalancer.select(conns, req)!! as K8sConnection
-        k8sLogger.debug("K8sConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn.toDesc())
+        k8sLogger.debug("K8sConnectionHub选择远程服务[{}]的一个连接{}来发送rpc请求", req.serviceId, conn)
         return conn
     }
 

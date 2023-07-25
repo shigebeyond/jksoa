@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 /**
  * k8s模式下的服务发现者
- *   负责在 docker manager node中定时运行 docker service ls 命令来查询k8s服务的节点数，并广播服务节点数消息
+ *   负责在 docker manager node中定时运行 kubectl get deploy -A 命令来查询k8s服务的节点数，并广播服务节点数消息
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2023-7-12 11:22 AM
@@ -26,7 +26,7 @@ object K8sDiscovery {
     private var lastQueryResult: Map<String, Int> = emptyMap()
 
     /**
-     * 通过 docker service ls 命令来查询k8s服务的节点数
+     * 通过 kubectl get deploy -A 命令来查询k8s服务的节点数
      * @return Map<k8s服务名, 节点数>
      */
     private fun queryK8sServiceReplicas(): HashMap<String, Int>? {
@@ -44,10 +44,17 @@ object K8sDiscovery {
         // 3 解析副本数
         val services = HashMap<String, Int>()
         df.forEach { row ->
-            val name = row["NAME"]!!
+            val name = row["NAME"]!! + '.' + row["NAMESPACE"]!! // k8s的服务域名 = 服务名.命名空间
             // 可用副本数/期望副本数，在滚动更新的过程中有可能：可用副本数 > 期望副本数，因此要取最小值
-            val (readyReplicas, desiredReplicas) = row["READY"]!!.split('/')
-            val replicas = minOf(readyReplicas.toInt(), desiredReplicas.toInt())
+            val parts = row["READY"]!!.split('/')
+            val readyReplicas = parts[0].toInt() // 可用副本数
+            val desiredReplicas = parts[1].toInt() // 期望副本数
+            // 扩容中或扩容结束: 取最小值
+            var replicas = minOf(readyReplicas, desiredReplicas)
+            // 缩容中: 还是返回旧的副本数, 等下次缩容结束后再返回新的副本数
+            if(readyReplicas > desiredReplicas){
+                replicas = lastQueryResult[name] ?: replicas
+            }
             services[name] = replicas
         }
 

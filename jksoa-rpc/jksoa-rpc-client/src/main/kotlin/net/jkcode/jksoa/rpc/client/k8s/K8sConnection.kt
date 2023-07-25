@@ -31,20 +31,28 @@ class K8sConnection(url: Url) : ReconnectableConnection(url) {
 
     /**
      * 获得服务器id=pod ip
-     * @param force 是否强制查询(rpc)，仅在测试时才为true
+     *    仅用于负载均衡，仅强制+有连接时才会rpc请求，否则不请求，因为一旦请求了没连接就会新建连接
+     * @param force 是否强制查询(rpc)
      * @return
      */
-    public val serverId: String?
-        get(){
-            //return getOrReConnect().serverIp // service vip
-            // 若_serverId无效，则请求
-            if (_serverId == null || !isValid()){ // 若连接无效，则_serverId也无效
+    public fun getServerId(force: Boolean = false): String? {
+        // 1 service vip
+        //return getOrReConnect().serverIp
+
+        // 2 pod ip
+        // 若连接无效，则_serverId也无效
+        if(!isValid())
+            _serverId == null
+        // 若_serverId无效，则请求
+        if (_serverId == null){
+            // 强制或有效连接才rpc请求，空连接就不请求了，因为一旦请求了没连接就会新建连接: 不会为了获得serverId而随意新建连接，本来serverId就是为了更有效的利用连接的
+            if (force || isValid())
                 synchronized(this){
                     if(_serverId == null) // 双重检查
                         _serverId = requestServiceId() // 请求后会记录 _serverId
                 }
-            }
-            return _serverId
+        }
+        return _serverId
     }
 
     /**
@@ -66,8 +74,8 @@ class K8sConnection(url: Url) : ReconnectableConnection(url) {
     /**
      * 转描述
      */
-    public fun toDesc(): String {
-        return "K8sConnection(serverId=" + serverId + ", url=" + url + ')'
+    public override fun toString(): String {
+        return "K8sConnection(serverId=" + getServerId() + ", url=" + url + ')'
     }
 
 }

@@ -251,11 +251,13 @@ class K8sConnections(
         // 1 仅处理： server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
         // 1.1 serverNums 为现有每个server的连接数
         val serverNums = conns.groupCount(reuseMaps.get()) {
-            it.serverId ?: ""
+            it.getServerId() ?: "" // 空连接
         } as MutableMap
-        serverNums.remove("") // 无 serverId 不处理
-        if(serverNums.isEmpty())
+        serverNums.remove("") // 无serverId的空连接不处理
+        if(serverNums.isEmpty()) {
+            k8sLogger.debug("K8sConnections尚未建立连接, 无需重新均衡, serverUrl为{}, 副本数为{}", url, replicas)
             return
+        }
 
         // 1.2 serverNums 变为要删除的每个server的连接数
         val delThreshold = (connPerReplica * 1.1).toInt() // 删除的阀值
@@ -268,18 +270,20 @@ class K8sConnections(
             }else // 未超过阀值: 不要了
                 nit.remove()
         }
-        if(serverNums.isEmpty())
+        if(serverNums.isEmpty()) {
+            k8sLogger.debug("K8sConnections连接已非常均衡, 无需重新均衡, serverUrl为{}, 副本数为{}", url, replicas)
             return
+        }
 
         // 2 删除(负载多的server)连接 + 新建(负载少的server)连接
         // 先建后删，先建是看看新连接是否还连上负载多的server，如果连上就停止均衡
-        k8sLogger.debug("K8sConnections均衡连接start, serverUrl为{}, 副本数为{}, 负载多的server应删掉超额的连接为{}, 应删除连接总数为{}", url, replicas, serverNums, serverNums.values.sum())
+        k8sLogger.debug("K8sConnections重新均衡连接start, serverUrl为{}, 副本数为{}, 负载多的server应删掉超额的连接为{}, 应删除连接总数为{}", url, replicas, serverNums, serverNums.values.sum())
         var delNum = 0
         val newConns = reuseLists.get() // 复用list用于接受新建连接, 可减少ArrayList创建
         val cit = conns.iterator() // list迭代删除元素
         while (cit.hasNext()){
             val conn = cit.next()
-            val serverId = conn.serverId ?: ""
+            val serverId = conn.getServerId() ?: ""
             // 在删除的队伍中
             val del = serverId in serverNums && serverNums[serverId]!! > 0
             if(del) {
@@ -287,10 +291,10 @@ class K8sConnections(
                 // 2.1 先建(负载少的server)连接
                 val newConn = K8sConnection(url) // 根据 url=serverPart 来复用 K8sConnection 的实例
                 newConns.add(newConn)
-                val newServerId = newConn.serverId
+                val newServerId = newConn.getServerId(true)
                 // 如果依旧连上负载多的server, 则停止均衡
                 if(newServerId in serverNums) {
-                    k8sLogger.debug("K8sConnections均衡连接stop, 新建连接时依旧连上负载多的server, serverUrl为{}, serverId为{}", url, newServerId)
+                    k8sLogger.debug("K8sConnections重新均衡连接stop, 新建连接时依旧连上负载多的server, serverUrl为{}, serverId为{}, 请修正k8s网络插件的均衡风负载调度算法为lc", url, newServerId)
                     break
                 }
 
@@ -300,7 +304,7 @@ class K8sConnections(
             }
         }
         conns.addAll(newConns)
-        k8sLogger.debug("K8sConnections均衡连接end, serverUrl为{}, 副本数为{}, 删除连接数为{}, 新建连接数为{}, 总连接数为{}", url, replicas, delNum, newConns.size, conns.size)
+        k8sLogger.debug("K8sConnections重新均衡连接end, serverUrl为{}, 副本数为{}, 删除连接数为{}, 新建连接数为{}, 总连接数为{}", url, replicas, delNum, newConns.size, conns.size)
 
         serverNums.clear() // 清理复用的map
         newConns.clear() // 清理复用的list
