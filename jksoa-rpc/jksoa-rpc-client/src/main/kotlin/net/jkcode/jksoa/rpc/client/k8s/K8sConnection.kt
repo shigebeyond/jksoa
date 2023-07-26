@@ -32,7 +32,7 @@ class K8sConnection(url: Url) : ReconnectableConnection(url) {
     /**
      * 获得服务器id=pod ip
      *    仅用于负载均衡，仅强制+有连接时才会rpc请求，否则不请求，因为一旦请求了没连接就会新建连接
-     * @param force 是否强制查询(rpc)
+     * @param force 是否强制查询(rpc), 仅测试用
      * @return
      */
     public fun getServerId(force: Boolean = false): String? {
@@ -42,7 +42,7 @@ class K8sConnection(url: Url) : ReconnectableConnection(url) {
         // 2 pod ip
         // 若连接无效，则_serverId也无效
         if(!isValid())
-            _serverId == null
+            _serverId = null
         // 若_serverId无效，则请求
         if (_serverId == null){
             // 强制或有效连接才rpc请求，空连接就不请求了，因为一旦请求了没连接就会新建连接: 不会为了获得serverId而随意新建连接，本来serverId就是为了更有效的利用连接的

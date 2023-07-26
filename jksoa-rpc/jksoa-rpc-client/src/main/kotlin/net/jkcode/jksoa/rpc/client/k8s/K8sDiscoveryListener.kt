@@ -5,6 +5,7 @@ import net.jkcode.jksoa.common.k8sLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.connection.IConnectionHub
 import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.removeBy
 
 /**
  * k8s模式下的服务节点信息的监听器
@@ -17,8 +18,14 @@ import net.jkcode.jkutil.common.Config
 abstract class K8sDiscoveryListener: IConnectionHub() {
 
     /**
+     * 关注的k8s命名空间
+     */
+    protected var k8sNs = config.get("k8sns", "default")!!.split(',').map { '.' + it }
+
+    /**
      * k8s服务节点数
      */
+    @Volatile
     protected var k8sServiceReplicas: MutableMap<String, Int> = HashMap()
 
     init {
@@ -27,10 +34,7 @@ abstract class K8sDiscoveryListener: IConnectionHub() {
 
         // 全局的订阅
         k8sLogger.debug("K8sDiscoveryListener订阅服务节点信息的mq")
-        K8sUtil.mqMgr.subscribeMq(K8sUtil.topic){
-            k8sLogger.debug("K8sDiscoveryListener收到服务节点信息的mq")
-            handleK8sServiceReplicasChange(it as MutableMap<String, Int>)
-        }
+        K8sUtil.mqMgr.subscribeMq(K8sUtil.topic, this::handleK8sServiceReplicasChange)
     }
 
     /**
@@ -55,12 +59,34 @@ abstract class K8sDiscoveryListener: IConnectionHub() {
     }
 
     /**
+     * 检查某个服务是否在我关注的命名空间中
+     */
+    protected fun checkInK8sNs(server: String): Boolean {
+        return k8sNs.any {
+            server.endsWith(it)
+        }
+    }
+
+    /**
      * 处理k8s服务节点数变化: 对比本地数据, 从而识别增删改, 从而触发 IDiscoveryListener 的增删改方法
      *
-     * @param serviceId 服务标识
-     * @param newData 服务节点数
+     * @param data 服务节点数
      */
-    public fun handleK8sServiceReplicasChange(newData: MutableMap<String, Int>){
+    public fun handleK8sServiceReplicasChange(data: Any){
+        val newData = data as MutableMap<String, Int>
+        // 删除无关命名空间的server
+        newData.removeBy {
+            !checkInK8sNs(it.key)
+        }
+
+        if(newData == this.k8sServiceReplicas){
+            k8sLogger.debug("K8sDiscoveryListener收到服务节点信息的mq, 未发现变化")
+            return
+        }
+
+        k8sLogger.debug("K8sDiscoveryListener收到服务节点信息的mq: {}", newData)
+
+        // 计算增删改的server
         var addServers:Set<String> = emptySet() // 新加的server
         var removeServers:Set<String> = emptySet() // 新加的server
         var updateServers:List<String> = emptyList() // 更新的server
@@ -108,4 +134,5 @@ abstract class K8sDiscoveryListener: IConnectionHub() {
 
         k8sServiceReplicas = newData
     }
+
 }

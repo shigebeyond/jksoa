@@ -197,6 +197,34 @@ class K8sConnections(
     }
 
     /**
+     * 要删除最新的连接, 原因：
+     *   1 考虑到连接要减少, 证明节点少了, 节点挂了之后对应的连接会重连(多余), 因此最新的连接是多余的
+     *   2 k8s缩容也是先kill掉最新的pod, 虽然最新的连接不一定连最新的pod
+     */
+    private fun destroyLastConns(n: Int) {
+        if (n == 0)
+            return
+        // 1 获得要删除的连接
+        val sortConns = reuseLists.get() // 复用list用于连接排序, 可减少ArrayList创建
+        sortConns.addAll(conns)
+        // 按连接时间降序
+        sortConns.sortByDescending {
+            it.lastConnectTime
+        }
+        // 要删除最新的连接
+        val rmConns = sortConns.subList(0, n)
+
+        // 2 删除连接
+        conns.removeAll(rmConns)
+
+        // 3 延迟30s中关闭连接
+        for (conn in rmConns)
+            conn.delayClose()
+
+        sortConns.clear() // 清理复用的list
+    }
+
+    /**
      * 销毁多余的连接
      * @param n 要删除的连接数
      * @return 实际删除的连接数(可能没那么多无效连接)
@@ -208,105 +236,94 @@ class K8sConnections(
         }
         k8sLogger.debug("K8sConnections销毁多余的连接, serverUrl为{}, 减少副本数为{}, 总副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size - n)
 
-        // 1 优先删除无效连接, delNum为剩余要删数
-        val delNum = n - destroyInvalidConns(n)
-        if(delNum <= 0)
+        // 1 先删除无效连接, delNum为剩余要删数
+        var destoryNum = n - destroyInvalidConns(n)
+        if(destoryNum <= 0)
             return n
 
-        // 2 删除其他连接
-        // 2.1 获得要删除的连接
-        val sortConns = reuseLists.get() // 复用list用于连接排序, 可减少ArrayList创建
-        sortConns.addAll(conns)
-        // 按连接时间降序
-        sortConns.sortByDescending {
-            it.lastConnectTime
-        }
-        // 要删除最新的连接, 因为连接要减少, 证明节点少了, 节点挂了之后对应的连接会重连(多余), 因此最新的连接是多余的
-        val rmConns = sortConns.subList(0, delNum)
+        // 2 再删除不均衡的连接
+        destoryNum -= rebalanceConns(destoryNum)
 
-        // 2.2 删除连接
-        conns.removeAll(rmConns)
-
-        // 2.3 延迟30s中关闭连接
-        for(conn in rmConns)
-            conn.delayClose()
-
-        sortConns.clear() // 清理复用的list
-        return delNum
+        // 3 删除其他连接
+        destroyLastConns(destoryNum)
+        return destoryNum
     }
 
     /**
      * 均衡连接： 每个server尽量是 connPerReplica 个连接，只能保证相对均衡
-     *   1 不均衡情况： 在连接数上，有的server可能多，有的server可能少，也有可能新的server直接没有连接
-     *   可能k8s集群挂了一台server，client又有请求重连到其他server，之后k8s集群又自动重启了一台server, 导致副本数没变化, 但server变化了，同时旧server负载多，新server无负载
-     *   2 server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
-     *   3 server连接少(负载少)： 不用处理， 后续调用 createConns() 会补上缺失的连接，会连上负载少的server(不一定是本client连接少的server)
-     *   4 server连接不多不少(负载均衡)： 不用处理
+     *   不均衡情况： 在连接数上，有的server可能多，有的server可能少，也有可能新的server直接没有连接
+     *              可能k8s集群挂了一台server，client又有请求重连到其他server，之后k8s集群又自动重启了一台server, 导致副本数没变化, 但server变化了，同时旧server负载多，新server无负载
+     *   分析：
+     *      1 server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
+     *      2 server连接少(负载少)： 不用处理， 后续调用 createConns() 会补上缺失的连接，会连上负载少的server
+     *      3 server连接不多不少(负载均衡)： 不用处理
+     * @param destoryNum 期望销毁连接数, 用在缩容时
      */
     @Synchronized
-    public fun rebalanceConns(){
+    public fun rebalanceConns(destoryNum: Int? = null):Int{
         if(conns.isEmpty()) // 没创建连接呢
-            return
+            return 0
 
-        // 1 仅处理： server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
-        // 1.1 serverNums 为现有每个server的连接数
-        val serverNums = conns.groupCount(reuseMaps.get()) {
-            it.getServerId() ?: "" // 空连接
-        } as MutableMap
-        serverNums.remove("") // 无serverId的空连接不处理
-        if(serverNums.isEmpty()) {
-            k8sLogger.debug("K8sConnections尚未建立连接, 无需重新均衡, serverUrl为{}, 副本数为{}", url, replicas)
-            return
-        }
-
-        // 1.2 serverNums 变为要删除的每个server的连接数
-        val delThreshold = (connPerReplica * 1.1).toInt() // 删除的阀值
-        val nit = serverNums.entries.iterator() // map迭代更新或删除元素
-        while (nit.hasNext()){
-            val entry = nit.next()
-            val num = entry.value
-            if(num > delThreshold) { // 超过阀值: 记录要裁掉的连接数
-                entry.setValue(num - delThreshold)
-            }else // 未超过阀值: 不要了
-                nit.remove()
-        }
-        if(serverNums.isEmpty()) {
+        // 1 计算不均衡的server连接数，代表每个server要删除的连接数 -- 仅考虑server连接多(负载多)的情况
+        val server2Num = calculateUnbalanceServerConnNum()
+        if (server2Num.isEmpty()) {
             k8sLogger.debug("K8sConnections连接已非常均衡, 无需重新均衡, serverUrl为{}, 副本数为{}", url, replicas)
-            return
+            return 0
         }
 
-        // 2 删除(负载多的server)连接 + 新建(负载少的server)连接
-        // 先建后删，先建是看看新连接是否还连上负载多的server，如果连上就停止均衡
-        k8sLogger.debug("K8sConnections重新均衡连接start, serverUrl为{}, 副本数为{}, 负载多的server应删掉超额的连接为{}, 应删除连接总数为{}", url, replicas, serverNums, serverNums.values.sum())
-        var delNum = 0
-        val newConns = reuseLists.get() // 复用list用于接受新建连接, 可减少ArrayList创建
+        // 2 删除连接
+        // 计算删除的连接数
+        var delNum = server2Num.values.sum()
+        if(destoryNum != null && delNum > destoryNum)
+            delNum = destoryNum
+        k8sLogger.debug("K8sConnections重新均衡连接, serverUrl为{}, 副本数为{}, 负载多的server应删掉的超额连接为{}, 应删除连接数为{}, 删除前总连接数为{}, 删除后总连接数为{}", url, replicas, server2Num, delNum, conns.size, conns.size-delNum)
         val cit = conns.iterator() // list迭代删除元素
+        var n = 0
         while (cit.hasNext()){
+            if(n >= delNum) // 删够
+                break
             val conn = cit.next()
             val serverId = conn.getServerId() ?: ""
             // 在删除的队伍中
-            val del = serverId in serverNums && serverNums[serverId]!! > 0
+            val del = serverId in server2Num && server2Num[serverId]!! > 0
             if(del) {
-                serverNums[serverId] = serverNums[serverId]!! - 1 // 删除数-1
-                // 2.1 先建(负载少的server)连接
-                val newConn = K8sConnection(url) // 根据 url=serverPart 来复用 K8sConnection 的实例
-                newConns.add(newConn)
-                val newServerId = newConn.getServerId(true)
-                // 如果依旧连上负载多的server, 则停止均衡
-                if(newServerId in serverNums) {
-                    k8sLogger.debug("K8sConnections重新均衡连接stop, 新建连接时依旧连上负载多的server, serverUrl为{}, serverId为{}, 请修正k8s网络插件的均衡风负载调度算法为lc", url, newServerId)
-                    break
-                }
+                // 删除数-1
+                server2Num[serverId] = server2Num[serverId]!! - 1
+                n++
 
-                // 2.2 后删(负载多的server)连接
+                // 删(负载多的server)连接
                 cit.remove()
-                delNum++
             }
         }
-        conns.addAll(newConns)
-        k8sLogger.debug("K8sConnections重新均衡连接end, serverUrl为{}, 副本数为{}, 删除连接数为{}, 新建连接数为{}, 总连接数为{}", url, replicas, delNum, newConns.size, conns.size)
 
-        serverNums.clear() // 清理复用的map
-        newConns.clear() // 清理复用的list
+        server2Num.clear() // 清理复用的map
+        return delNum
+    }
+
+    /**
+     * 计算不均衡的server连接数，代表每个server要干掉的连接数
+     *    仅考虑server连接多(负载多)的情况： 超过 connPerReplica*1.1 就裁掉
+     */
+    private fun calculateUnbalanceServerConnNum(): MutableMap<String, Int> {
+        // 1 server2Num 为现有每个server的连接数
+        val server2Num = conns.groupCount() {
+            it.getServerId() ?: "" // 空连接
+        } as MutableMap
+        server2Num.remove("") // 无serverId的空连接不处理
+        if (server2Num.isEmpty())
+            return server2Num
+
+        // 2 server2Num 变为要删除的每个server的连接数
+        val delThreshold = (connPerReplica * 1.1).toInt() // 删除的阀值
+        val nit = server2Num.entries.iterator() // map迭代更新或删除元素
+        while (nit.hasNext()) {
+            val entry = nit.next()
+            val num = entry.value
+            if (num > delThreshold) { // 超过阀值: 记录要裁掉的连接数
+                entry.setValue(num - delThreshold)
+            } else // 未超过阀值: 不要了
+                nit.remove()
+        }
+        return server2Num
     }
 }

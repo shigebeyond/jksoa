@@ -89,6 +89,9 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
         val channel = ctx.channel()
         connLogger.debug("NettyResponseHandler检测到channel关闭: {}", channel)
 
+        // 主动关闭NettyConnection
+        channel.getConnection()?.close()
+
         if(futures.isEmpty())
             return
 
@@ -104,7 +107,7 @@ class NettyResponseHandler : SimpleChannelInboundHandler<RpcResponse>() {
      * 处理channel发生异常事件
      */
     public override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        connLogger.error("NettyResponseHandlerr捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
+        connLogger.error("NettyResponseHandler捕获 channel[{}] 异常[{}]: {}", ctx.channel(), cause.javaClass.name, cause.message)
         // 当连接关闭时报错异常: io.netty.channel.unix.Errors$NativeIoException: epoll_ctl(..) failed: No such file or directory
         if(cause is Errors.NativeIoException && cause.message == "epoll_ctl(..) failed: No such file or directory")
             return

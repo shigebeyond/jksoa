@@ -88,6 +88,7 @@ class NettyConnection(public val channel: Channel, url: Url, weight: Int = 1) : 
      *   触发时机
      *   1. 在ConnectionHub.handleServiceUrlsChange()中server被摘掉时
      *   2. shutdown
+     *   3. 在NettyResponseHandler.channelInactive()检测到连接断开时触发，通过kill掉pod来模拟断开，但client感知不到，只有到请求时才知道
      */
     public override fun close() {
         // 1 在shutdown时, 需手动关闭channel

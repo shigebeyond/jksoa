@@ -1,12 +1,12 @@
 package net.jkcode.jksoa.rpc.tests
 
+import net.jkcode.jksoa.common.RpcRequest
 import net.jkcode.jksoa.common.Url
+import net.jkcode.jksoa.rpc.client.k8s.K8sConnection
 import net.jkcode.jksoa.rpc.client.k8s.K8sConnectionHub
 import net.jkcode.jksoa.rpc.client.k8s.K8sConnections
-import net.jkcode.jkutil.common.Config
-import net.jkcode.jkutil.common.dateFormat
-import net.jkcode.jkutil.common.execCommand
-import net.jkcode.jkutil.common.groupCount
+import net.jkcode.jksoa.rpc.example.ISimpleService
+import net.jkcode.jkutil.common.*
 import org.junit.Test
 import java.util.*
 
@@ -63,16 +63,19 @@ class K8sConnectionTests {
 
         // 删除
         println("------------ remove ------------")
-        K8sConnectionHub.handleK8sServiceReplicasChange(mutableMapOf())
+        K8sConnectionHub.handleK8sServiceReplicasChange(mutableMapOf<String, Int>())
     }
 
     /**
      * 一直启动 K8sConnectionHub 监听副本变化的mq，每隔5s打印下连接
+     *   要先启动 K8sDiscovery 进程，来发副本变化的mq
      */
     @Test
     fun testDiscoveryListenerAndWaitReplicaMq(){
         while (true){
             printConns(Date().toString())
+            // 随机挑一个连接发请求，及时发现kill掉的pod连接
+            pickConnRpc()
             Thread.sleep(10000)
         }
     }
@@ -173,15 +176,35 @@ class K8sConnectionTests {
     private fun printConns(tag: String, reconnect: Boolean = false) {
         println("---------- $tag-检查连接的serverId ---------")
         val conns = K8sConnectionHub.getOrCreateConn(serverAddr)!!
-        var i = 0
-        for (conn in conns) {
-            println("第 $i 个连接, 有效=" + conn.isValid()  +", serverId=" + conn.getServerId(reconnect /* 强制重连 */))
-            i++
+        for (i in 0 until conns.size) {
+            val conn = conns[i]
+            val serverId = conn.getServerId(reconnect) // reconnect控制重连
+            println("第 $i 个连接, 有效=" + conn.isValid()  +", serverId=" + serverId)
         }
         val serverNums = conns.groupCount() {
             it.getServerId() ?: ""
         }
         println("按server分组连接: " + serverNums)
+    }
+
+    /**
+     * 随机挑一个连接发请求，及时发现kill掉的pod连接
+     */
+    private fun pickConnRpc() {
+        val conns = K8sConnectionHub.getOrCreateConn(serverAddr)!!
+        val i = randomInt(conns.size)
+        println("---------- 测试第 $i 个连接的rpc ---------")
+        val conn = conns[i]
+        var hasException = false
+        try {
+            val req = RpcRequest(ISimpleService::hostname)
+            conn.send(req, 1000).get()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            hasException = true
+        }
+        val serverId = conn.getServerId(hasException) // 异常重连
+        println("第 $i 个连接, 有效=" + conn.isValid() + ", serverId=" + serverId)
     }
 
 
