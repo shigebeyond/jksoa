@@ -60,9 +60,15 @@ open class ReconnectableConnection internal constructor(url: Url, weight: Int = 
     protected val refs: AtomicInteger = AtomicInteger(0)
 
     /**
-     * 上一次连接时间
+     * 上一次连接时间，用于选出要销毁的连接
      */
     public var lastConnectTime: Long = 0
+        protected set
+
+    /**
+     * 当前连接的发送请求次数，用于选出要销毁的连接
+     */
+    public var sendCount: AtomicInteger = AtomicInteger(0)
         protected set
 
     init {
@@ -122,6 +128,7 @@ open class ReconnectableConnection internal constructor(url: Url, weight: Int = 
                 // 连接server
                 conn = client.connect(url) as BaseConnection
                 lastConnectTime = currMillis()
+                sendCount.set(0)
                 val act = if(first) "新建" else "重建"
                 connLogger.debug("{}连接: {}", act, conn)
 
@@ -145,6 +152,7 @@ open class ReconnectableConnection internal constructor(url: Url, weight: Int = 
      * @return
      */
     public override fun send(req: IRpcRequest, requestTimeoutMillis: Long): IRpcResponseFuture {
+        sendCount.incrementAndGet()
         // 发送请求
         return getOrReConnect().send(req, requestTimeoutMillis)
     }

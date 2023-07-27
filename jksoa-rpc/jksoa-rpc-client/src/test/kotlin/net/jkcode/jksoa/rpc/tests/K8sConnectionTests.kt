@@ -6,9 +6,11 @@ import net.jkcode.jksoa.rpc.client.k8s.K8sConnection
 import net.jkcode.jksoa.rpc.client.k8s.K8sConnectionHub
 import net.jkcode.jksoa.rpc.client.k8s.K8sConnections
 import net.jkcode.jksoa.rpc.example.ISimpleService
+import net.jkcode.jkutil.collection.DataFrame
 import net.jkcode.jkutil.common.*
 import org.junit.Test
 import java.util.*
+import kotlin.collections.ArrayList
 
 class K8sConnectionTests {
 
@@ -74,7 +76,7 @@ class K8sConnectionTests {
     fun testDiscoveryListenerAndWaitReplicaMq(){
         while (true){
             printConns(Date().toString())
-            // 随机挑一个连接发请求，及时发现kill掉的pod连接
+            // 挑一个连接发请求，及时发现kill掉的pod连接
             pickConnRpc()
             Thread.sleep(10000)
         }
@@ -94,14 +96,14 @@ class K8sConnectionTests {
         println("---------- 操作下线1台server ---------")
         // 要营造测试场景: 某台worker server下线 -- 1台server，副本数应该减少，但没有通知client
         // 场景一：2台物理机：下线一台
-        //val ret = execCommand("docker node update --availability drain shi-WK") // docker node update --availability active shi-WK
-        // println(ret)
+        //val output = execCommand("docker node update --availability drain shi-WK") // docker node update --availability active shi-WK
+        // println(output)
 
         // 场景二：1台物理机，2个容器：停掉一个容器
         var containIds = execCommand("docker ps --format {{.ID}}").trim().split("\n")
         println("有容器id: " + containIds + ", 关掉容器: " + containIds.first())
-        val ret = execCommand("docker stop " + containIds.first())
-        println(ret)
+        val output = execCommand("docker stop " + containIds.first())
+        println(output)
 
         printConns("下线后")
         printConns("下线后重连", true)
@@ -143,16 +145,17 @@ class K8sConnectionTests {
         println("---------- 操作下线1台server ---------")
         // 要营造测试场景: 某台worker server下线 -- 1台server，副本数应该减少，但没有通知client
         // 场景一：2台物理机：下线一台
-        //val ret = execCommand("kubectl cordon mac") // kubectl uncordon mac
-        // println(ret)
+        //val output = execCommand("kubectl cordon mac") // kubectl uncordon mac
+        // println(output)
 
         // 场景二：1台物理机，2个pod：停掉一个pod
         var podNames = execCommand("kubectl get pod -o custom-columns=:.metadata.name").trim().split("\n")
         println("有pod名: " + podNames + ", 关掉pod: " + podNames.first())
-        val ret = execCommand("kubectl delete pod " + podNames.first())
-        println(ret)
+        val output = execCommand("kubectl delete pod " + podNames.first())
+        println(output)
 
         printConns("下线后")
+        checkPodNotExistConns()
         printConns("下线后重连", true)
 
         println("---------- 下线后立即均衡连接: 全部连上剩下的一台server ---------")
@@ -176,23 +179,32 @@ class K8sConnectionTests {
     private fun printConns(tag: String, reconnect: Boolean = false) {
         println("---------- $tag-检查连接的serverId ---------")
         val conns = K8sConnectionHub.getOrCreateConn(serverAddr)!!
+        // 查看每个连接的serverid
         for (i in 0 until conns.size) {
             val conn = conns[i]
             val serverId = conn.getServerId(reconnect) // reconnect控制重连
             println("第 $i 个连接, 有效=" + conn.isValid()  +", serverId=" + serverId)
         }
+        // 统计每个server的连接数，看看server连接是否均衡
         val serverNums = conns.groupCount() {
             it.getServerId() ?: ""
         }
-        println("按server分组连接: " + serverNums)
+        println("按server统计连接数: " + serverNums)
     }
 
     /**
-     * 随机挑一个连接发请求，及时发现kill掉的pod连接
+     * 挑一个连接发请求，及时发现kill掉的pod连接
+     *   先挑pod不存在的连接，如果没有，再随机挑一个
      */
     private fun pickConnRpc() {
         val conns = K8sConnectionHub.getOrCreateConn(serverAddr)!!
-        val i = randomInt(conns.size)
+        // 先挑pod不存在的连接，如果没有，再随机挑一个
+        val invalidIdx = checkPodNotExistConns()
+        var i:Int
+        if (invalidIdx.isNotEmpty()) //pod不存在的连接
+            i = invalidIdx.first()
+        else // 随机的连接
+            i = randomInt(conns.size)
         println("---------- 测试第 $i 个连接的rpc ---------")
         val conn = conns[i]
         var hasException = false
@@ -207,5 +219,31 @@ class K8sConnectionTests {
         println("第 $i 个连接, 有效=" + conn.isValid() + ", serverId=" + serverId)
     }
 
+    /**
+     * 通过k8s命令检查pod不存在的连接
+     */
+    private fun checkPodNotExistConns(): ArrayList<Int> {
+        // 获得pod名
+        val output = execCommand("kubectl get pod")
+        val df = DataFrame.fromString(output)!!
+        val pods = ArrayList<String>()
+        df.forEach {
+            if(it["STATUS"] == "Running")
+                pods.add(it["NAME"]!!)
+        }
+        println("有效的pod: " + pods)
+        // 对比连接的serverid vs pod名
+        val inValidConns = ArrayList<Int>()
+        val conns = K8sConnectionHub.getOrCreateConn(serverAddr)!!
+        for (i in 0 until conns.size) {
+            val conn = conns[i]
+            val serverId = conn.getServerId()
+            if(serverId != null && serverId !in pods){
+                println("!!!! 第 $i 个连接 连到失效的pod: " + serverId)
+                inValidConns.add(i)
+            }
+        }
+        return inValidConns
+    }
 
 }
