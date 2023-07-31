@@ -14,9 +14,13 @@ import java.rmi.RemoteException
  **/
 class SimpleService : ISimpleService /*, UnicastRemoteObject() // rmi协议服务实现*/{
 
+    /**
+     * 主机名
+     */
     @Throws(RemoteException::class) // rim异常
     public override fun hostname(): String {
-        return SysInfo.hostname // 在swarm为容器id，在k8s为pod名
+        return System.getenv("POD_NAME") // 先取pod名, 可能在deployment的资源文件中自定义了hostname，这样不同pod副本返回的是同一个hostname
+            ?: SysInfo.hostname // 在swarm为容器id，在k8s为pod名
     }
 
     /**

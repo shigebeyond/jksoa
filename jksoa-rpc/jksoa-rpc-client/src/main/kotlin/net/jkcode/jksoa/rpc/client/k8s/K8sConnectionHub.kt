@@ -54,7 +54,7 @@ object K8sConnectionHub: K8sDiscoveryListener() {
      * @param serverAddr 协议ip端口
      * @return
      */
-    internal fun getOrCreateConn(serverAddr: String): K8sConnections? {
+    public fun getOrCreateConn(serverAddr: String): K8sConnections? {
         return connections.getOrPut(serverAddr){
             // 一般而言， 先调用 handleServiceUrlAdd() 来初始化连接，然后再调用 getOrCreateConn() 来获得连接，但有时候rpc(getOrCreateConn)在前，监听服务发现(handleServiceUrlAdd)在后，那么就需要创建一个默认的连接
             val url = Url(serverAddr)
