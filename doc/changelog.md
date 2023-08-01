@@ -144,7 +144,7 @@
 
 9. 封装消息库, 支持kafka/rabbitmq client, kafka client解决consumer线程不安全问题
 
-# 2.0
+# 2.0: 整合jphp+swarm
 1. 整合jphp, 支持同构异语言, 以便支持更多的动态性
 
 1.1 引入jphp-java-ext
@@ -162,3 +162,17 @@
 2.2 在docker swarm集群内使用swarm自身的服务发现机制, 而不用第三方注册中心实现服务发现
 
 3. tracer支持jaeger实现
+
+# 3.0: 整合k8s
+1. 废弃zk注册中心 + 自行实现的服务注册与服务发现
+
+2. 废弃对docker swarm的整合, 因为docker swarm负载调度算法是rr的, 对整合长连接的rpc框架不友好, 难以实现长连接的均衡负载, 直接换为k8s用lc算法
+
+3. 整合k8s
+
+3.1 完善部署脚本, 支持发布到k8s集群
+
+3.2 在k8s集群内使用k8s自身的服务发现机制
+
+3.3 完善client端对k8s server的连接机制, 支持: k8s扩容后调整连接数/断线重连/负载均衡
+ 

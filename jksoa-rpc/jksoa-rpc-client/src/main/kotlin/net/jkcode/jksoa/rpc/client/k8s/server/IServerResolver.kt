@@ -6,7 +6,7 @@ import net.jkcode.jksoa.rpc.client.k8s.K8sUtil
 
 /**
  * k8s server解析器
- *   从rpc请求(rpc服务类)中,解析出k8s服务名(server:协议ip端口)
+ *   从rpc请求(rpc服务类)中,解析出k8s应用域名(server:协议ip端口)
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
@@ -14,7 +14,7 @@ import net.jkcode.jksoa.rpc.client.k8s.K8sUtil
 interface IServerResolver {
 
     /**
-     * 解析k8s服务名(server)
+     * 解析k8s应用域名(server)
      * @param req
      * @return 协议ip端口(server)
      */
@@ -27,7 +27,7 @@ interface IServerResolver {
     }
 
     /**
-     * 解析k8s服务名(server)
+     * 解析k8s应用域名(server)
      * @param serviceId
      * @return 协议ip端口(server)
      */

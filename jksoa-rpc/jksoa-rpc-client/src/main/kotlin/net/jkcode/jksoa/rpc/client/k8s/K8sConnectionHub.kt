@@ -13,12 +13,12 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
- * k8s模式下，所有k8s服务server的rpc连接集中器, 不再绑定单个rpc服务, 因为只能监听到k8s服务的节点数据，跟rpc服务没有关系了
- *    1 k8s服务 vs rpc服务 下的url
- *      url只有 protocol://host(即k8s服务名)，但没有path(rpc服务接口名)，因为k8s发布服务不是一个个类来发布，而是整个jvm进程(容器)集群来发布
+ * k8s模式下，所有k8s应用的rpc连接集中器, 不再绑定单个rpc服务, 因为只能监听到k8s应用的节点数据，跟rpc服务没有关系了
+ *    1 k8s应用 vs rpc服务 下的url
+ *      url只有 protocol://host(即k8s应用域名)，但没有path(rpc服务接口名)，因为k8s发布服务不是一个个类来发布，而是整个jvm进程(容器)集群来发布
  *    2 全局下(无关单个rpc服务)，维系client对所有server的所有连接
  *    3 全局下(无关单个rpc服务)，在client调用中对server集群进行均衡负载
- *    4 因为调用是单个rpc服务，因此需要将rpc服务名映射为k8s服务名(server)
+ *    4 因为调用是单个rpc服务，因此需要将rpc服务名映射为k8s应用域名(server)
  *    5 一般而言， 先调用 handleServiceUrlAdd() 来初始化连接，然后再调用 getOrCreateConn() 来获得连接，但有时候rpc(getOrCreateConn)在前，监听服务发现(handleServiceUrlAdd)在后，那么在 getOrCreateConn() 中就需要创建一个默认的连接
  *
  * @author shijianhang<772910474@qq.com>
@@ -28,7 +28,7 @@ object K8sConnectionHub: K8sDiscoveryListener() {
 
     /**
      * 全局的连接： <协议ip端口(server) to server的连接包装器>
-     *     server就是k8s服务名
+     *     server就是k8s应用域名
      */
     private val connections: ConcurrentHashMap<String, K8sConnections> = ConcurrentHashMap()
 
@@ -65,13 +65,13 @@ object K8sConnectionHub: K8sDiscoveryListener() {
     }
 
     /**
-     * 处理k8s服务节点数新增
+     * 处理k8s应用节点数新增
      * @param url
      * @param allUrls
      */
     public override fun handleServiceUrlAdd(url: Url, allUrls: Collection<Url>) {
         val server = url.serverAddr
-        k8sLogger.debug("K8sConnectionHub处理k8s服务[{}]新加地址: {}", server, url)
+        k8sLogger.debug("K8sConnectionHub处理k8s应用[{}]新加地址: {}", server, url)
         // 新建连接
         val conn = connections.getOrPut(server){
             K8sConnections(url.serverPart)
@@ -80,14 +80,14 @@ object K8sConnectionHub: K8sDiscoveryListener() {
     }
 
     /**
-     * 处理k8s服务节点数删除
+     * 处理k8s应用节点数删除
      * @param url
      * @param allUrls
      */
     public override fun handleServiceUrlRemove(url: Url, allUrls: Collection<Url>) {
         val server = url.serverAddr
         val conn = connections.remove(server)!!
-        k8sLogger.debug("K8sConnectionHub处理k8s服务[{}]删除地址: {}", server, url)
+        k8sLogger.debug("K8sConnectionHub处理k8s应用[{}]删除地址: {}", server, url)
 
         // 延迟关闭连接, 因为可能还有处理中的请求, 要等待server的响应
         //conn.close() // 关闭连接
@@ -95,7 +95,7 @@ object K8sConnectionHub: K8sDiscoveryListener() {
     }
 
     /**
-     * 处理k8s服务配置参数（k8s服务节点数的参数）变化
+     * 处理k8s应用配置参数（k8s应用节点数的参数）变化
      *   主要是参数 replica 变化
      * @param url
      */
@@ -136,7 +136,7 @@ object K8sConnectionHub: K8sDiscoveryListener() {
                         null
                     else
                         ServerResolverContainer.resovleServer(req) // 解析server
-        throw RpcClientException("k8s模式下无法获得k8s服务[$server]的所有server的连接")
+        throw RpcClientException("k8s模式下无法获得k8s应用[$server]的所有server的连接")
     }
 
 }

@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 /**
  * php服务的php引用: php client调用php service，通过某个java rpc方法
- *   1 引用服务
- *   2 向注册中心订阅服务
  *
  *   实现注意:
  *   1. 因为没有java接口类，因此不支持 service/getMethod()

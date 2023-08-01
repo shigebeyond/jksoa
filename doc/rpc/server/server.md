@@ -35,13 +35,13 @@ IRpcServer
 1. protocol -- 协议, 据此来启动对应的 `IRpcServer` 的实现类
 2. host -- ip, 可以不指定, 默认取值 `getIntranetHost()`, 即`192.168`开头的局域网ip
 3. port -- 端口, 开放端口来接收rpc服务
-4. parameters -- 注册的url参数, 会生成query string, 并存到注册中心对应server节点中
+4. parameters -- 注册的url参数, 会生成query string
 5. servicePackages -- 要提供的服务类所在的包路径
 6. netty -- netty启动参数
 
 ```
 # 服务端配置
-duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
+duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client
 protocol: jkr # 协议
 #host: 192.168.0.17 # ip
 port: 9080 # 端口
@@ -49,7 +49,6 @@ parameters: # 参数
   weight: 1
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
-    - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
 # netty启动参数
 netty:
     keepAlive: true # 保持心跳

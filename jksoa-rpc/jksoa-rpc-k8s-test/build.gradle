@@ -23,7 +23,7 @@ task copyConf(type: Copy) {
     // 需要的配置文件
     def props = ["logback.xml", "kafka-consumer.yaml", "rpc-client.yaml"]
     // 项目 resources 目录, 来收集配置文件
-    for(pro in [project(':jkutil'), project(':jksoa-rpc:jksoa-rpc-client')]) {
+    for(pro in [project(':jkutil'), project(':jkmq'), project(':jksoa-rpc:jksoa-rpc-client')]) {
         for (src in pro.sourceSets.main.resources) {
             if(props.contains(src.name)){
                 //println(src)

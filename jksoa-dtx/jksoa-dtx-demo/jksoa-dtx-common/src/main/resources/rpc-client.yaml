@@ -1,5 +1,5 @@
 # 客户端配置
-duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
+duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client
 serializer: fst # 序列器类型
 loadbalancer: random # 均衡负载类型
 shardingStrategy: average # 批量请求的分片策略
@@ -9,7 +9,8 @@ interceptors: # 拦截器
     - net.jkcode.jksoa.dtx.tcc.interceptor.RpcClientTccInterceptor
 k8sMqType: kafka # k8s模式下服务发现通知的消息队列类型: 暂时只支持 kafka
 k8sMqName: k8sDiscovery # 消息连接配置名, 对应如 kafka-consumer.yaml / kafka-producer.yaml 中的配置名
-package2k8sServer: # 包名转为k8s服务名(server)
+k8sNs: default # client关注哪些k8s命名空间, 用逗号分割
+package2k8sServer: # 包名转为k8s应用域名(server)
     # key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
     # value是server地址: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
     'net.jkcode.jksoa.rpc.example': 'jkr://rpcserver.default:9080'
@@ -19,8 +20,6 @@ package2k8sServer: # 包名转为k8s服务名(server)
 connectTimeoutMillis: 500000 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
-connectType: fixed # 连接类型: 1 single 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
 lazyConnect: false # 是否延迟创建连接
-minConnections: 2 # 最小连接数, 用在 PooledConnections/FixedConnections
-maxConnections: 10 # 最大连接数, 用在 PooledConnections
+connectionsPerPod: 2 # 每个pod的固定连接数
 ioThreads: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数

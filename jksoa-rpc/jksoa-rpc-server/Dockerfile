@@ -1,7 +1,7 @@
 # 先执行 gradle build -x test -Pall, 后执行: sudo docker build -t rpcserver .; sudo docker run -d --network host --name rpcserver rpcserver
 
 # 基础镜像
-FROM java
+FROM openjdk:8-jre-alpine
 
 # 描述
 MAINTAINER rpcserver

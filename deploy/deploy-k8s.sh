@@ -8,7 +8,7 @@ if [ ! -f "k8s.yml" ]; then
   exit 1;
 fi
 
-echo "部署k8s服务 $ns-$pro"
+echo "部署k8s应用 $ns-$pro"
 echo "1 生成k8s资源文件"
 K8sBoot k8s.yml -o k8sboot -d ns=$ns&tag=$tag
 sleep 3

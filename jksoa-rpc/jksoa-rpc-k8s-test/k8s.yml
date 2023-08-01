@@ -10,4 +10,7 @@
           volumes: # 卷映射
             - /home/shi/code/java/jksoa/jksoa-rpc/jksoa-rpc-k8s-test/build/app:/opt/rpcclient
           command: /opt/rpcclient/start-rpcclient.sh
-    - deploy: 1
+    - deploy:
+        replicas: 1 # 副本数
+        nodeSelector: # 节点选择: dict形式
+          kubernetes.io/hostname: shi-pc

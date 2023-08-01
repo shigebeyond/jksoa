@@ -9,7 +9,7 @@ import net.jkcode.jkutil.common.replaces
  */
 abstract class IPackage2ServerPattern(
         public val pattern: String, // 包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
-        public val server: String // server名: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
+        public val server: String // 应用域名(server名): 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
 ){
 
     /**
@@ -25,7 +25,7 @@ abstract class IPackage2ServerPattern(
     public abstract fun isMatch(pack: String): Boolean
 
     /**
-     * 尝试根据包名来解析k8s服务名(server)的映射
+     * 尝试根据包名来解析k8s应用域名(server)的映射
      * @param pack 包名
      * @return
      */

@@ -5,7 +5,6 @@ import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.rpc.loadbalance.ILoadBalancer
 import net.jkcode.jksoa.rpc.client.k8s.K8sConnectionHub
 import net.jkcode.jkutil.common.*
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 某个service的rpc连接集中器
@@ -25,20 +24,13 @@ abstract class IConnectionHub: IDiscoveryListener {
         public val config = Config.instance("rpc-client", "yaml")
 
         /**
-         * rpc连接集中器实例池: <服务类 to 实例>
-         */
-        protected val instances: ConcurrentHashMap<String, IConnectionHub> = ConcurrentHashMap();
-
-        /**
          * 根据服务类来获得单例
          *
          * @param serviceClassName 服务类，兼容php引用的情况，注意不支持自定义ConnectionHub类
          * @return
          */
         public fun instance(serviceClassName: String): IConnectionHub{
-            return instances.getOrPutOnce(serviceClassName) {
-                K8sConnectionHub// k8s模式: 所有rpc服务共用一个实例
-            }
+            return K8sConnectionHub// k8s模式: 所有rpc服务共用一个实例
         }
 
     }

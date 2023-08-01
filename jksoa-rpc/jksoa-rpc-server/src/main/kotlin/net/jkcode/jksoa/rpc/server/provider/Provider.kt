@@ -11,8 +11,7 @@ import net.jkcode.jksoa.rpc.server.IRpcServer
 /**
  * 服务提供者
  *   1 提供服务
- *   2 向注册中心注册服务
- *   3 在启动server时调用
+ *   2 在启动server时调用
  *
  * @Description:
  * @author shijianhang<772910474@qq.com>

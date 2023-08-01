@@ -8,8 +8,6 @@ import java.lang.reflect.Method
 
 /**
  * 服务的php引用（代理）
- *   1 引用服务
- *   2 向注册中心订阅服务
  *
  *   有2个实现类
  *   1 PhpReferer -- php client调用java服务

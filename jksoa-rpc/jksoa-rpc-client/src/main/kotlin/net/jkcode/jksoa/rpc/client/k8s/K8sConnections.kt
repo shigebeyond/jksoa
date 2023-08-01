@@ -12,11 +12,11 @@ import net.jkcode.jkutil.common.groupCount
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * k8s模式下单个server的连接的包装器，自身就是单个server的连接池，不用再搞getPool(url.serverPart)之类的实现
- *    1 根据 url=serverPart 来引用连接池， 但注意 k8s服务 vs rpc服务 下的url
- *      url只有 protocol://host(即k8s服务名)，但没有path(rpc服务接口名)，因为k8s发布服务不是一个个类来发布，而是整个jvm进程(容器)集群来发布
+ * k8s模式下单个应用(多副本)的连接的包装器，自身就是单个应用的连接池，不用再搞getPool(url.serverPart)之类的实现
+ *    1 根据 url=serverPart 来引用连接池， 但注意 k8s应用 vs rpc服务 下的url
+ *      url只有 protocol://host(即k8s应用域名)，但没有path(rpc服务接口名)，因为k8s发布服务不是一个个类来发布，而是整个jvm进程(容器)集群来发布
  *      因此 url == url.serverPart，不用根据 serverPart 来单独弄个连接池，用来在多个rpc服务中复用连接
- *    2 浮动n个连接, n = 服务副本数 * minConnections
+ *    2 固定n个连接, n = 应用副本数 * connsPerPod
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
@@ -34,9 +34,9 @@ class K8sConnections(
         public val config: IConfig = Config.instance("rpc-client", "yaml")
 
         /**
-         * 每个副本(server)的连接数
+         * 每个副本(pod)的连接数
          */
-        public val connPerReplica: Int = config["minConnections"]!!
+        public val connsPerPod: Int = config["connectionsPerPod"]!!
 
         /**
          * list池
@@ -45,17 +45,10 @@ class K8sConnections(
             ArrayList<K8sConnection>()
         }
 
-        /**
-         * map池
-         */
-        private val reuseMaps:ThreadLocal<HashMap<String, Int>> = ThreadLocal.withInitial {
-            HashMap<String, Int>()
-        }
-
     }
 
     /**
-     * 服务副本数, 即server数
+     * 应用副本数, 即pod(server)数
      */
     public var replicas: Int = 0
         @Synchronized
@@ -77,7 +70,7 @@ class K8sConnections(
      * 期望连接数
      */
     protected val expectSize: Int
-        get() = replicas * connPerReplica
+        get() = replicas * connsPerPod
 
     /**
      * 计数器
@@ -161,7 +154,7 @@ class K8sConnections(
         if(n == 0)
             return
 
-        val msg = if(fromRebalance) "均衡后新建连接" else "增加副本数为" + n / connPerReplica
+        val msg = if(fromRebalance) "均衡后新建连接" else "增加副本数为" + n / connsPerPod
         k8sLogger.debug("K8sConnections创建缺失的连接, serverUrl为{}, {}, 总副本数为{}, 新建连接数为{}, 总连接数为{}", url, msg, replicas, n, size + n)
         for (i in 0 until n) {
             val conn = K8sConnection(url) // 根据 url=serverPart 来复用 K8sConnection 的实例
@@ -234,7 +227,7 @@ class K8sConnections(
             val msg = if(n < 0) "为负数" else "超过连接总数"
             throw IllegalArgumentException("K8sConnections.destoryConns(n)错误：参数n$msg")
         }
-        k8sLogger.debug("K8sConnections销毁多余的连接, serverUrl为{}, 减少副本数为{}, 总副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connPerReplica, replicas, n, size - n)
+        k8sLogger.debug("K8sConnections销毁多余的连接, serverUrl为{}, 减少副本数为{}, 总副本数为{}, 销毁连接数为{}, 总连接数为{}", url, n / connsPerPod, replicas, n, size - n)
 
         // 1 先删除无效连接, delNum为剩余要删数
         var destoryNum = n - destroyInvalidConns(n)
@@ -250,11 +243,11 @@ class K8sConnections(
     }
 
     /**
-     * 均衡连接： 每个server尽量是 connPerReplica 个连接，只能保证相对均衡
+     * 均衡连接： 每个pod(server)尽量是 connsPerPod 个连接，只能保证相对均衡
      *   不均衡情况： 在连接数上，有的server可能多，有的server可能少，也有可能新的server直接没有连接
      *              可能k8s集群挂了一台server，client又有请求重连到其他server，之后k8s集群又自动重启了一台server, 导致副本数没变化, 但server变化了，同时旧server负载多，新server无负载
      *   分析：
-     *      1 server连接多(负载多)： 超过 connPerReplica*1.1 就裁掉
+     *      1 server连接多(负载多)： 超过 connsPerPod*1.1 就裁掉
      *      2 server连接少(负载少)： 不用处理， 后续调用 createConns() 会补上缺失的连接，会连上负载少的server
      *      3 server连接不多不少(负载均衡)： 不用处理
      * @param destoryNum 期望销毁连接数, 用在缩容时
@@ -301,8 +294,8 @@ class K8sConnections(
     }
 
     /**
-     * 计算不均衡的server连接数，代表每个server要干掉的连接数
-     *    仅考虑server连接多(负载多)的情况： 超过 connPerReplica*1.1 就裁掉
+     * 计算不均衡的server(pod)连接数，代表每个server要干掉的连接数
+     *    仅考虑server连接多(负载多)的情况： 超过 connsPerPod*1.1 就裁掉
      */
     private fun calculateUnbalanceServerConnNum(): MutableMap<String, Int> {
         // 1 server2Num 为现有每个server的连接数
@@ -314,7 +307,7 @@ class K8sConnections(
             return server2Num
 
         // 2 server2Num 变为要删除的每个server的连接数
-        val delThreshold = (connPerReplica * 1.1).toInt() // 删除的阀值
+        val delThreshold = (connsPerPod * 1.1).toInt() // 删除的阀值
         val nit = server2Num.entries.iterator() // map迭代更新或删除元素
         while (nit.hasNext()) {
             val entry = nit.next()

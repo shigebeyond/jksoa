@@ -8,8 +8,8 @@ import net.jkcode.jkutil.common.Config
 import net.jkcode.jkutil.common.removeBy
 
 /**
- * k8s模式下的服务节点信息的监听器
- *   订阅服务节点信息的mq，从而触发 IDiscoveryListener 的事件处理
+ * k8s模式下的k8s应用节点数的监听器
+ *   订阅k8s应用节点数的mq，从而触发 IDiscoveryListener 的事件处理
  *   要检查kafka随机分组，这样才能接收广播mq
  *
  * @author shijianhang<772910474@qq.com>
@@ -18,12 +18,12 @@ import net.jkcode.jkutil.common.removeBy
 abstract class K8sDiscoveryListener: IConnectionHub() {
 
     /**
-     * 关注的k8s命名空间
+     * client关注哪些k8s命名空间
      */
     protected var k8sNs = config.get("k8sns", "default")!!.split(',').map { '.' + it }
 
     /**
-     * k8s服务节点数
+     * k8s应用节点数
      */
     @Volatile
     protected var k8sServiceReplicas: MutableMap<String, Int> = HashMap()
@@ -33,7 +33,7 @@ abstract class K8sDiscoveryListener: IConnectionHub() {
         checkMqConsumer()
 
         // 全局的订阅
-        k8sLogger.debug("K8sDiscoveryListener订阅服务节点信息的mq")
+        k8sLogger.debug("K8sDiscoveryListener订阅k8s应用节点数的mq")
         K8sUtil.mqMgr.subscribeMq(K8sUtil.topic, this::handleK8sServiceReplicasChange)
     }
 
@@ -68,9 +68,8 @@ abstract class K8sDiscoveryListener: IConnectionHub() {
     }
 
     /**
-     * 处理k8s服务节点数变化: 对比本地数据, 从而识别增删改, 从而触发 IDiscoveryListener 的增删改方法
-     *
-     * @param data 服务节点数
+     * 处理k8s应用节点数变化: 对比本地数据, 从而识别增删改, 从而触发 IDiscoveryListener 的增删改方法
+     * @param data Map<k8s应用域名, 节点数>
      */
     public fun handleK8sServiceReplicasChange(data: Any){
         val newData = data as MutableMap<String, Int>
@@ -80,21 +79,21 @@ abstract class K8sDiscoveryListener: IConnectionHub() {
         }
 
         if(newData == this.k8sServiceReplicas){
-            k8sLogger.debug("K8sDiscoveryListener收到服务节点信息的mq, 未发现变化")
+            k8sLogger.debug("K8sDiscoveryListener收到k8s应用节点数的mq, 未发现变化: {}", newData)
             return
         }
 
-        k8sLogger.debug("K8sDiscoveryListener收到服务节点信息的mq: {}", newData)
+        k8sLogger.debug("K8sDiscoveryListener收到k8s应用节点数的mq: {}", newData)
 
         // 计算增删改的server
         var addServers:Set<String> = emptySet() // 新加的server
         var removeServers:Set<String> = emptySet() // 新加的server
         var updateServers:List<String> = emptyList() // 更新的server
 
-        // 1 获得旧的服务节点数
+        // 1 获得旧的应用节点数
         var oldData = this.k8sServiceReplicas
 
-        // 2 比较新旧服务节点数，分别获得增删改的数据
+        // 2 比较新旧应用节点数，分别获得增删改的数据
         if(oldData.isEmpty()) {
             // 全是新加地址
             addServers = newData.keys

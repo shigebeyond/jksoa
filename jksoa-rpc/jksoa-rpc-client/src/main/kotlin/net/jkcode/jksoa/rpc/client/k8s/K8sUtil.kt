@@ -28,10 +28,10 @@ object K8sUtil {
     public val topic = "K8sServiceReplicas"
 
     /**
-     * k8s服务名(server)转url
+     * k8s应用域名(server)转url
      *    默认协议jkrp跟端口9080
      * @param server
-     * @param replicas 服务副本数, 即server数
+     * @param replicas 应用副本数, 即server数
      * @return
      */
     fun k8sServer2Url(server: String, replicas: Int? = null): Url {

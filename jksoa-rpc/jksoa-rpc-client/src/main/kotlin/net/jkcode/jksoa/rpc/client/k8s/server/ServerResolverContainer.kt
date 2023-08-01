@@ -17,7 +17,7 @@ object ServerResolverContainer: IServerResolver{
     private val customResolvers: MutableList<IServerResolver> = CopyOnWriteArrayList()
 
     /**
-     * 解析k8s服务名(server)
+     * 解析k8s应用域名(server)
      * @param serviceId
      * @return 协议ip端口(server)
      */
@@ -49,7 +49,7 @@ object ServerResolverContainer: IServerResolver{
     public fun addServerResolver(resolveFunc: (String)->String?): IServerResolver {
         val resolver = object :IServerResolver{
             /**
-             * 解析k8s服务名(server)
+             * 解析k8s应用域名(server)
              * @param serviceId
              * @return 协议ip端口(server)
              */

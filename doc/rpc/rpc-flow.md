@@ -6,39 +6,37 @@
 
 0. 启动server
 
-1. 加载并创建服务提供者`Provider`, 创建服务实现的实例, 并向注册中心注册. 详见 `Provider.createAndRegisterService()`, 即服务注册
+1. 加载并创建服务提供者`Provider`, 创建服务实现的实例。
 
-2. client端的`ConnectionHub`订阅了注册中心, 即服务发现
+2. k8s模式下的服务发现者`K8sDiscovery`定时查询k8s应用的节点数，并广播应用节点数mq
 
-3. 注册中心向`ConnectionHub`推送最新的服务提供者节点地址
-
-4. `ConnectionHub`收到新的服务提供者节点(即server), 则向节点建立连接, 可能立即连接或延迟连接.
+3. `K8sConnectionHub`收到新的服务提供者节点(即server), 则向节点建立连接, 可能立即连接或延迟连接.
 
 ## rpc调用流程
 
-5. client端通过`Referer`来rpc
+4. client端通过`Referer`来rpc
 
-6. `Referer.getRefer<XxxService>` 获得服务代理, 调用代理方法即为rpc.
+5. `Referer.getRefer<XxxService>` 获得服务代理, 调用代理方法即为rpc.
 
-7. 服务代理是通过`RpcInvocationHandler`来实现的, 负责处理代理对象的方法调用.
+6. 服务代理是通过`RpcInvocationHandler`来实现的, 负责处理代理对象的方法调用.
 
-8. `RpcInvocationHandler` 将方法调用封装为请求, 并通过 `RpcRequestDispatcher` 来分发请求
+7. `RpcInvocationHandler` 将方法调用封装为请求, 并通过 `RpcRequestDispatcher` 来分发请求
 
-9. `RpcRequestDispatcher` 通过 `ConnectionHub` 来选择与server的连接, 并通过连接来发送请求
+8. `RpcRequestDispatcher` 通过 `K8sConnectionHub` 来选择与server的连接, 并通过连接来发送请求
 
-10. `ConnectionHub` 使用均衡负载器来选择与server的连接
+9. `K8sConnectionHub` 使用均衡负载器来选择与server的连接
 
-11. 调用连接来向server发送请求
+10. 调用连接来向server发送请求
 
-12. client/server端的编码解码都是通过序列化器来做
+11. client/server端的编码解码都是通过序列化器来做
 
-13. 经过网络传输后, server收到请求, 并调用`RpcRequestHandler`来处理请求
+12. 经过网络传输后, server收到请求, 并调用`RpcRequestHandler`来处理请求
 
-14. `RpcRequestHandler`根据请求指定的服务, 调用对应服务提供者`Provider`
+13. `RpcRequestHandler`根据请求指定的服务, 调用对应服务提供者`Provider`
 
-15. 服务提供者`Provider`调用服务实现.
+14. 服务提供者`Provider`调用服务实现.
 
-16. 最后将调用结果封装为响应发送给client, 作为rpc的结果.
+15. 最后将调用结果封装为响应发送给client, 作为rpc的结果.
 
 当然流程上还有编码解析与网络传输等环节, 图上略过了.
 
@@ -73,7 +71,6 @@
 当服务引用方的IO线程在收到 `RpcResponse` 对象后，会根据 `RpcResponse` 对象中的请求id, 从响应映射表中取出相应的`RpcResponseFuture`对象，然后再将 `RpcResponse` 对象设置到`RpcResponseFuture`对象中。
 
 最后再唤醒用户线程，这样用户线程即可从`RpcResponseFuture`对象中获取调用结果了。
-
 
 详细实现参考 `NettyRpcResponseFuture`
 

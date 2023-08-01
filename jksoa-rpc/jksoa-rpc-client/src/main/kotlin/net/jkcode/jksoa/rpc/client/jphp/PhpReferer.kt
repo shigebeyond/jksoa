@@ -8,8 +8,6 @@ import php.runtime.reflection.ClassEntity
 
 /**
  * 服务的php引用（代理）
- *   1 引用服务
- *   2 向注册中心订阅服务
  *
  *   注意：
  *   1. 因为没有java接口类，因此不支持 service/getMethod()

@@ -31,7 +31,7 @@ abstract class NettyRpcServer : IRpcServer() {
     public val nettyConfig = Config.instance("rpc-server.netty", "yaml")
 
     /**
-     * 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
+     * 是否双工, 就是双向rpc, 就是server也可以调用client
      */
     protected open val duplex: Boolean = config["duplex"]!!
 

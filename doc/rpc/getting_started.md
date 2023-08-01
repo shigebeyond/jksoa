@@ -1,45 +1,47 @@
 # 概述
-jksoa-rpc 是一个分布式服务框架，提供高性能的RPC远程服务调用功能, 包含服务注册、服务发现、负载均衡等子组件
+jksoa-rpc 是一个分布式服务框架，提供高性能的RPC远程服务调用功能
 
 ## 特性
-- 1、简单, 易用, 轻量, 易扩展: 通过注解来声明服务, 自动扫描服务来注册或发现, 调用跟本地方法一样;
+- 1、简单, 易用, 轻量, 易扩展: 通过注解来声明服务, 调用远程服务的方法跟本地方法一样;
 
-- 2、异步高性能: 支持同步调用与异步调用(CompletableFuture)；
+- 2、全面拥抱k8s, 整合其超强的容器编排能力: 支持自动装箱、自我修复、水平扩容、服务发现、滚动更新、版本回退、密钥和配置管理、存储编排、批处理;
 
-- 3、多通讯协议：支持rmi/jkr/jsonr协议；
+- 3、异步高性能: 支持同步调用与异步调用(CompletableFuture)；
 
-- 4、多序列化方案：支持 fst/kryo/hessian/protostuff  等方案；
+- 4、多通讯协议：支持rmi/jkr/jsonr协议；
 
-- 5、多负载均衡方法：提供丰富的负载均衡策略，包括：随机、轮询、一致性HASH等；
+- 5、多序列化方案：支持 fst/kryo/hessian/protostuff  等方案；
 
-- 6、注册中心：基于 ZooKeeper 实现服务注册并动态发现；
+- 6、多负载均衡方法：提供丰富的负载均衡策略，包括：随机、轮询、一致性HASH等；
 
-- 7、快速扩容: 通过注册中心能够快速识别新加入的机器, 从而达到集群的线性扩展;
+- 7、快速扩容: 通过调整k8s的副本数来实现;
 
-- 8、服务治理：基于 ZooKeeper 实现管理注册的服务信息，如服务禁用/权重配置等；
+- 8、服务治理：整合[jkguard](https://github.com/shigebeyond/jkguard)提供熔断降级限流等治理手段；
 
 - 9、服务跟踪：可在线跟踪服务调用的情况；
 
-- 10、服务高可用：服务提供方集群注册时，某个服务节点不可用时将会自动摘除，同时服务引用方将会移除失效节点将流量分发到其余节点，提高系可用性, 通过注册中心来实现。
+- 10、失败转移: 调用服务失败后会重试, 重试次数可指定
 
-- 11、失败转移: 调用服务失败后会重试, 重试次数可指定
-
-- 12、强扩展性: 主要模块都提供了多种不同的实现，例如支持多种rpc协议/多均衡负载策略等
+- 11、强扩展性: 主要模块都提供了多种不同的实现，例如支持多种rpc协议/多均衡负载策略等
 
 ## 背景
 RPC（Remote Procedure Call Protocol，远程过程调用），调用远程服务就像调用本地服务，保证调用的简单性；
 
 一般公司，尤其是大型互联网公司内部系统由上千上万个服务组成，不同的服务部署在不同机器，跑在不同的JVM上，此时需要解决两个问题：
-
 - 1、如何调用别人的服务? 尤其是别人的服务在远程机器上？
-
 - 2、如何发布我方的服务, 以供别人调用？
 
-“jksoa-rpc”的解决：
+传统的rpc框架`dubbo`/`spring cloud`的解决： 实现注册中心
+- 1、如何调用：通过注册中心，知晓远程服务的地址，即可方便的调用远程服务，即服务发现；
+- 2、如何发布：通过注册中心，来暴露我方服务的地址，别人即可调用我方服务，即服务注册。
 
-- 1、如何调用：只需要知晓远程服务的stub和地址，即可方便的调用远程服务；
+“jksoa-rpc”的解决：整合k8s+做减法(干掉注册中心)
+- 1、服务注册与服务发现交给k8s来实现，并充分利用其
+- 2、jksoa-rpc只要负责将包名映射k8s应用域名(server)，就可以实现远程调用。
 
-- 2、如何发布：通过通过注册中心, 来暴露我方服务的stub和地址，别人即可调用我方服务；
+## 名词辨析
+1. jksoa-rpc的服务是接口级别，后续文档说的服务就是这个含义
+2. k8s的服务是应用级别，我用`k8s应用`的概念来囊括同一个应用中的k8s资源(包含Deployment/Service等)
 
 # 快速入门
 
@@ -63,7 +65,7 @@ compile "net.jkcode.jksoa:jksoa-rpc-server:1.9.0"
 注:　配置项`servicePackages`声明了服务类所在的包，server启动时会扫描这些包中的服务类来向zk注册服务提供者
 ```
 # 服务端配置
-duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
+duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client
 protocol: jkr # 协议
 #host: 192.168.0.17 # ip
 port: 9080 # 端口
@@ -71,7 +73,6 @@ parameters: # 参数
   weight: 1
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
-    - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
 # netty启动参数
 netty:
     keepAlive: true # 保持心跳
@@ -159,16 +160,16 @@ compile "net.jkcode.jksoa:jksoa-rpc-client:1.9.0"
 注:　配置项`servicePackages`声明了服务类所在的包，client初始化时会扫描这些包中的服务类来向zk订阅服务提供者
 ```
 # 客户端配置
-duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client, 但是client不在注册中心注册
+duplex: true # 是否双工, 就是双向rpc, 就是server也可以调用client
 serializer: fst # 序列器类型
 loadbalancer: random # 均衡负载类型
 shardingStrategy: average # 批量请求的分片策略
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
-    - net.jkcode.jksoa.tracer.common.service.remote # tracer组件的collector服务
 k8sMqType: kafka # k8s模式下服务发现通知的消息队列类型: 暂时只支持 kafka
 k8sMqName: k8sDiscovery # 消息连接配置名, 对应如 kafka-consumer.yaml / kafka-producer.yaml 中的配置名
-package2k8sServer: # 包名转为k8s服务名(server)
+k8sNs: default # client关注哪些k8s命名空间, 用逗号分割
+package2k8sServer: # 包名转为k8s应用域名(server)
     # key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
     # value是server地址: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
     'net.jkcode.jksoa.rpc.example': 'jkr://rpcserver.default:9080'
@@ -178,10 +179,8 @@ package2k8sServer: # 包名转为k8s服务名(server)
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
-connectType: fixed # 连接类型: 1 single 复用单一连接 2 pooled 连接池 3 fixed 固定几个连接
 lazyConnect: false # 是否延迟创建连接
-minConnections: 2 # 最小连接数, 用在 PooledConnections/FixedConnections
-maxConnections: 10 # 最大连接数, 用在 PooledConnections
+connectionsPerPod: 2 # 每个pod的固定连接数
 ioThreads: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数
 ```
 

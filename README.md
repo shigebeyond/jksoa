@@ -3,7 +3,7 @@
 # 概述
 jksoa一个针对微服务的一系列分布式组件的集合:
 
-1. jksoa-rpc: 远程方法调用的组件, 包含 registry / rpc-client / rpc-server 的3个子组件
+1. jksoa-rpc: 远程方法调用的组件, 包含 rpc-k8s-discovery / rpc-client / rpc-server 的3个子组件
 2. jksoa-tracer: 分布式跟踪的组件, 包含 agent / collector / web 的3个子组件
 3. jksoa-dtx: 分布式事务的组件, 包含 dtx-mq / dtx-tcc(真正的异步非阻塞) 的2个子组件
 
@@ -21,52 +21,46 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 ## 入门
 1. [快速开始](doc/rpc/getting_started.md)
 
-### 注册中心
-2. [注册中心](doc/rpc/registry/registry.md)
-3. [url](doc/rpc/registry/url.md)
-
 ### rpc-server 服务端
-4. [服务端](doc/rpc/server/server.md)
-5. [多协议支持](doc/rpc/server/protocol.md)
-6. [服务提供者](doc/rpc/server/provider.md)
-7. [server端的请求上下文](doc/rpc/server/context.md)
-8. [异步执行](doc/rpc/server/async-execute.md)
-9. [服务端启动流程](doc/rpc/server/start-flow.md)
+2. [服务端](doc/rpc/server/server.md)
+3. [多协议支持](doc/rpc/server/protocol.md)
+4. [服务提供者](doc/rpc/server/provider.md)
+5. [server端的请求上下文](doc/rpc/server/context.md)
+6. [异步执行](doc/rpc/server/async-execute.md)
+7. [服务端启动流程](doc/rpc/server/start-flow.md)
 
 ### 服务实体
-10. [服务注解](doc/rpc/service/annotation.md)
-11. [服务实例](doc/rpc/service/instance.md)
+8. [服务注解](doc/rpc/service/annotation.md)
+9. [服务实例](doc/rpc/service/instance.md)
 
 ### rpc-client 客户端
 
-12. [客户端](doc/rpc/client/client.md)
-13. [多协议支持](doc/rpc/client/protocol.md)
-14. [服务引用者](doc/rpc/client/referer.md)
-15. [异步调用](doc/rpc/client/async-call.md)
-16. [客户端均衡负载](doc/rpc/client/load_balancer.md)
-17. [故障转移(失败重试)](doc/rpc/client/failover.md)
-18. [连接管理](doc/rpc/client/connnection_manage.md)
-19. [连接](doc/rpc/client/connection.md)
-20. [复用单一连接](doc/rpc/client/reuse-connection.md)
-21. [池化的连接的包装器](doc/rpc/client/pooled-connection.md)
-22. [客户端初始化流程](doc/rpc/client/init-flow.md)
-23. [请求超时](doc/rpc/client/request_timeout.md)
-24. [整合jphp-支持php来调用rpc](doc/rpc/client/jphp.md)
+10. [客户端](doc/rpc/client/client.md)
+11. [多协议支持](doc/rpc/client/protocol.md)
+12. [服务引用者](doc/rpc/client/referer.md)
+13. [异步调用](doc/rpc/client/async-call.md)
+14. [客户端均衡负载](doc/rpc/client/load_balancer.md)
+15. [故障转移(失败重试)](doc/rpc/client/failover.md)
+16. [连接管理](doc/rpc/client/connnection_manage.md)
+17. [连接](doc/rpc/client/connection.md)
+18. [复用单一连接](doc/rpc/client/reuse-connection.md)
+19. [k8s模式的连接包装器](doc/rpc/client/k8s-connection.md)
+20. [客户端初始化流程](doc/rpc/client/init-flow.md)
+21. [请求超时](doc/rpc/client/request_timeout.md)
+22. [整合jphp-支持php来调用rpc](doc/rpc/client/jphp.md)
 
 ## 高级
-25. [架构](doc/rpc/architecture.md)
-26. [rpc流程](doc/rpc/rpc-flow.md)
-27. [附加参数](doc/rpc/common/attachment.md)
-28. [优雅的关机](doc/rpc/common/graceful-shutdown.md)
+23. [架构](doc/rpc/architecture.md)
+24. [rpc流程](doc/rpc/rpc-flow.md)
+25. [附加参数](doc/rpc/common/attachment.md)
+26. [优雅的关机](doc/rpc/common/graceful-shutdown.md)
 
 # jksoa-tracer-jaeger实现
 
 使用jaeger来做分布式跟踪
 
 1. [快速开始](doc/tracer-jaeger/getting_started.md)
-
-## 高级
-5. [架构](doc/tracer/architecture.md)
+2. [架构](doc/tracer/architecture.md)
 
 # jksoa-dtx
 

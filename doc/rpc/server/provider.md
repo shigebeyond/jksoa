@@ -3,9 +3,7 @@
 
 `Provider`主要是对外暴露服务, 以供别人调用.
 
-暴露服务主要分2个步骤
-1. 扫描加载Provider的服务
-2. 向注册中心注册Provider的服务
+暴露服务主要工作是： 扫描加载Provider的服务
 
 # 扫描加载Provider的服务
 
@@ -23,29 +21,4 @@
 ```
 servicePackages: # service类所在的包路径
     - net.jkcode.jksoa.rpc.example # 示例服务
-    - net.jkcode.jksoa.tracer.collector.service # tracer组件的collector服务
-```
-
-# 向注册中心注册Provider的服务
-
-## 注册服务节点信息
-Provider需要向注册中心注册其提供的服务节点信息, 包含:
-1. 服务的接口名
-2. 节点信息: 协议 + ip + 端口
-3. 其他配置: 如权重
-
-## 注册中心的存储
-
-系统默认使用zookeeper实现的注册中心
-
-服务存储在zk中的目录结构如下:
-
- ```
-jksoa
-    net.jkcode.jksoa.rpc.example.ISimpleService # 服务标识 = 接口类名
-        jkr:192.168.0.1:8080 # 协议:ip:端口, 节点数据是参数, 如weight=1
-        jkr:192.168.0.1:8080
-    net.jkcode.jksoa.rpc.example.ISimpleService
-        jkr:192.168.0.1:8080
-        jkr:192.168.0.1:8080
 ```
