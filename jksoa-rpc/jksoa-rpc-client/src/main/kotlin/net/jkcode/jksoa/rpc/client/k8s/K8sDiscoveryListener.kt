@@ -18,6 +18,12 @@ import net.jkcode.jkutil.common.removeBy
 abstract class K8sDiscoveryListener: IConnectionHub() {
 
     /**
+     * 服务标识，即接口类全名
+     */
+    public override val serviceId: String
+        get() = throw RpcClientException("k8s发现的是应用, 而不是单个服务接口")
+
+    /**
      * client关注哪些k8s命名空间
      */
     protected var k8sNs = config.get("k8sns", "default")!!.split(',').map { '.' + it }

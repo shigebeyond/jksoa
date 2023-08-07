@@ -25,6 +25,12 @@ import java.util.concurrent.ConcurrentHashMap
 open class ConnectionHub: IConnectionHub() {
 
     /**
+     * 服务标识，即接口类全名
+     */
+    public override var serviceId: String = ""
+        protected set
+
+    /**
      * 客户端配置
      */
     public val config: IConfig = Config.instance("rpc-client", "yaml")
