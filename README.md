@@ -1,7 +1,7 @@
 [GitHub](https://github.com/shigebeyond/jksoa) | [Gitee](https://gitee.com/shigebeyond/jksoa) 
 
 # 概述
-jksoa一个针对微服务的一系列分布式组件的集合:
+jksoa是一个微服务组件集合，并适配了k8s集群架构:
 
 1. jksoa-rpc: 远程方法调用的组件, 包含 rpc-k8s-discovery / rpc-client / rpc-server 的3个子组件
 2. jksoa-tracer: 分布式跟踪的组件, 包含 agent / collector / web 的3个子组件
@@ -14,6 +14,7 @@ jksoa一个针对微服务的一系列分布式组件的集合:
 2. [拦截器机制](doc/common/interceptor.md)
 3. [序列器](doc/common/serializer.md)
 4. [模块日志](doc/common/log.md)
+5. [应用与环境等配置](doc/common/jkapp.md)
 
 # jksoa-rpc
 远程方法调用的组件
