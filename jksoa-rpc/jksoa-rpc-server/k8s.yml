@@ -1,6 +1,7 @@
 - set_vars:
     env: test
-- app(rpcserver):
+- ns: $ns # 命名空间
+- app(rpcserver): # 应用
     - if(env=='prod'): # 生产环境
       - containers:
           rpcserver:
@@ -19,7 +20,7 @@
             ports: # 端口映射
               - 8081:8080 # 服务端口:容器端口
       - deploy: 20
-    - else: # 测试环境
+    - else: # 测试环境，预先在每台机器上做好编译 gradle build -x test -Pall
       - containers:
           rpcserver:
             #image: java:8

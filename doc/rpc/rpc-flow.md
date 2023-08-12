@@ -4,9 +4,7 @@
 
 ## server启动流程
 
-0. 启动server
-
-1. 加载并创建服务提供者`Provider`, 创建服务实现的实例。
+1. 启动server，一般是通过k8s`Deployment`与`Service`资源来部署与启动应用server
 
 2. k8s模式下的服务发现者`K8sDiscovery`定时查询k8s应用的节点数，并广播应用节点数mq
 

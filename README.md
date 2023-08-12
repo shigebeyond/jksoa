@@ -3,18 +3,25 @@
 # 概述
 jksoa是一个微服务组件集合，并适配了k8s集群架构:
 
-1. jksoa-rpc: 远程方法调用的组件, 包含 rpc-k8s-discovery / rpc-client / rpc-server 的3个子组件
+1. jksoa-rpc: 远程方法调用的组件, 包含 rpc-k8s-discovery / rpc-client / rpc-server 的3个子组件，依靠k8s自身的服务发现，并不需要注册中心
 2. jksoa-tracer: 分布式跟踪的组件, 包含 agent / collector / web 的3个子组件
 3. jksoa-dtx: 分布式事务的组件, 包含 dtx-mq / dtx-tcc(真正的异步非阻塞) 的2个子组件
 
-[性能对比](https://github.com/shigebeyond/jksoa-benchmark)
+# 整合k8s
+1. [k8s命名空间与应用名](https://github.com/shigebeyond/jkutil/blob/master/doc/ns_app.cn.md)
+2. [本地部署](doc/deploy-local.md)
+3. [k8s部署(CI/CD)](doc/deploy-k8s.md)
+4. [k8s部署解析](doc/deploy-k8s-detail.md)
+5. [K8sBoot: 简化k8s资源定义文件](https://github.com/shigebeyond/K8sBoot)
+6. [k8scmd: 简化k8s命令](https://github.com/shigebeyond/k8scmd)
 
 # 公共组件
-1. [插件机制](doc/common/plugin.md)
-2. [拦截器机制](doc/common/interceptor.md)
-3. [序列器](doc/common/serializer.md)
-4. [模块日志](doc/common/log.md)
-5. [应用与环境等配置](doc/common/jkapp.md)
+1. [配置](https://github.com/shigebeyond/jkutil/blob/master/doc/config.cn.md)
+2. [基于zookeeper实现的远程配置](https://github.com/shigebeyond/jkutil/blob/master/doc/zkconfig.cn.md)
+3. [插件机制](doc/common/plugin.md)
+4. [拦截器机制](doc/common/interceptor.md)
+5. [序列器](doc/common/serializer.md)
+6. [模块日志](doc/common/log.md)
 
 # jksoa-rpc
 远程方法调用的组件
@@ -77,9 +84,6 @@ jksoa是一个微服务组件集合，并适配了k8s集群架构:
 2. [示例](doc/dtx/tcc/demo.md)
 3. [架构](doc/dtx/tcc/architecture.md)
 
-# 部署
-1. [部署](doc/deploy.md)
-
 # 其他
-[部署(CI/CD)](doc/deploy.md)
 [变更历史](doc/changelog.md)
+[性能对比](https://github.com/shigebeyond/jksoa-benchmark)
