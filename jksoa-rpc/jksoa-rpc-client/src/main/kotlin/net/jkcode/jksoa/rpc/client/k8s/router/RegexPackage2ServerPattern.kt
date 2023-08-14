@@ -1,7 +1,7 @@
-package net.jkcode.jksoa.rpc.client.k8s.server
+package net.jkcode.jksoa.rpc.client.k8s.router
 
 /**
- * 包名映射server模式 - 正则
+ * 正则的包名映射server模式
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
  */
@@ -24,7 +24,7 @@ class RegexPackage2ServerPattern(pattern: String, server: String): IPackage2Serv
     /**
      * 检查是否匹配包名
      */
-    override fun isMatch(pack: String): Boolean {
+    override fun matchPakcage(pack: String): Boolean {
         return regex.matches(pack)
     }
 

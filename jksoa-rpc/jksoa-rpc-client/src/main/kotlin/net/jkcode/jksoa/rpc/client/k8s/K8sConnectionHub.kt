@@ -6,7 +6,7 @@ import net.jkcode.jksoa.common.Url
 import net.jkcode.jksoa.common.k8sLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.common.exception.RpcNoConnectionException
-import net.jkcode.jksoa.rpc.client.k8s.server.ServerResolverContainer
+import net.jkcode.jksoa.rpc.client.k8s.router.RpcRouterContainer
 import net.jkcode.jkutil.common.CommonSecondTimer
 import net.jkcode.jkutil.common.newPeriodic
 import java.util.concurrent.ConcurrentHashMap
@@ -114,7 +114,7 @@ object K8sConnectionHub: K8sDiscoveryListener() {
      */
     public override fun select(req: IRpcRequest): IConnection {
         // 1 获得可用连接
-        val k8sServerAddr = ServerResolverContainer.resovleServer(req) // 解析server
+        val k8sServerAddr = RpcRouterContainer.resovleServer(req) ?: throw RpcClientException("无法根据请求[$req]定位k8s server") // 解析server
         val conns = getOrCreateConn(k8sServerAddr)
         if(conns == null)
             throw RpcNoConnectionException("远程服务[${req.serviceId}]无提供者节点")
@@ -135,7 +135,7 @@ object K8sConnectionHub: K8sDiscoveryListener() {
         val server = if(req == null)
                         null
                     else
-                        ServerResolverContainer.resovleServer(req) // 解析server
+                        RpcRouterContainer.resovleServer(req) ?: throw RpcClientException("无法根据请求[$req]定位k8s server") // 解析server
         throw RpcClientException("k8s模式下无法获得k8s应用[$server]的所有server的连接")
     }
 

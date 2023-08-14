@@ -1,16 +1,17 @@
-package net.jkcode.jksoa.rpc.client.k8s.server
+package net.jkcode.jksoa.rpc.client.k8s.router
 
+import net.jkcode.jksoa.common.IRpcRequest
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.k8s.K8sUtil
 
 /**
- * 根据模式来解析的k8s server解析器，有缓存
+ * 根据模式来解析的rpc路由器(解析k8s server)，有缓存
  *   从rpc请求(rpc服务类)中,解析出k8s应用域名(server:协议ip端口)
  *
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
  */
-object PatternServerResolver : IServerResolver {
+object PatternRpcRouter : IRpcRouter {
 
     /**
      * 包名转为k8s应用域名(server)的映射配置
@@ -30,36 +31,50 @@ object PatternServerResolver : IServerResolver {
                                         }.sortedByDescending { it.accuracy } // 按精准度排序
 
     /**
-     * 缓存解析结果: <rpc服务名, 协议ip端口(server)>
-     */
-    private val resolveCache: MutableMap<String, String> = HashMap()
-
-    /**
      * 解析k8s应用域名(server)
-     * @param serviceId
+     * @param req
      * @return 协议ip端口(server)
      */
-    override fun resovleServer(serviceId: String): String? {
-        // 加缓存, 提高性能
-        return resolveCache.getOrPut(serviceId){
-            doResovleServer(serviceId)
-        }
+    override fun resovleServer(req: IRpcRequest): String?{
+        // 获得请求的路由标记
+        val reqRouteTag = System.getenv(IRpcRouter.ROUTE_TAG_NAME) ?: req.getAttachment<String>(IRpcRouter.ROUTE_TAG_NAME)
+        // 根据包名+路由标记来解析k8s server
+        val server = resovleServer(req.serviceId, reqRouteTag)
+        if(server == null)
+            throw RpcClientException("无法根据服务类[${req.serviceId}]定位k8s server")
+        // 像下一个服务传递路由标记
+        if(reqRouteTag != null)
+            req.putAttachment(IRpcRouter.ROUTE_TAG_NAME, reqRouteTag)
+        return fixServer(server)
     }
 
     /**
-     * 真正的解析
-     * @param serviceClass
+     * 解析k8s应用域名(server)
+     * @param serviceId 服务接口
+     * @param reqRouteTag 请求的路由标记
      * @return 协议ip端口(server)
      */
-    private fun doResovleServer(serviceClass: String): String {
+    fun resovleServer(serviceId: String, reqRouteTag: String?): String? {
         // 逐个模式解析
         for (pattern in mappingPatterns) {
-            val server = pattern.resolveServer(serviceClass)
+            val server = pattern.resolveServer(serviceId, reqRouteTag)
             if (server != null)
                 return server
         }
 
-        throw RpcClientException("无法根据服务类[$serviceClass]定位k8s server")
+        throw RpcClientException("无法根据服务类[$serviceId]定位k8s server")
+    }
+
+    /**
+     * 修正server路径
+     */
+    fun fixServer(server: String): String {
+        // 1 自身是`协议://ip:端口`
+        if (server.contains("://"))
+            return server
+
+        // 2 只有ip，转为`协议://ip:端口`
+        return K8sUtil.k8sServer2Url(server).serverAddr
     }
 
 }

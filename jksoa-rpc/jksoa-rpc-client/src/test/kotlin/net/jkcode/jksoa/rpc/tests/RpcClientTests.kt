@@ -16,7 +16,7 @@ import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jksoa.rpc.client.dispatcher.IRpcRequestDispatcher
 import net.jkcode.jksoa.rpc.client.protocol.jkr.JkrRpcClient
 import net.jkcode.jksoa.rpc.client.referer.Referer
-import net.jkcode.jksoa.rpc.client.k8s.server.PatternServerResolver
+import net.jkcode.jksoa.rpc.client.k8s.router.PatternRpcRouter
 import net.jkcode.jksoa.rpc.example.IGuardService
 import net.jkcode.jksoa.rpc.example.ISimpleService
 import net.jkcode.jkutil.common.getRootResource
@@ -36,7 +36,7 @@ class RpcClientTests {
     @Test
     fun testServer() {
         var req = RpcRequest(ISimpleService::sayHi, arrayOf<Any?>("shi"))
-        val server = PatternServerResolver.resovleServer(req)
+        val server = PatternRpcRouter.resovleServer(req)
         println("server = " + server)
     }
 
