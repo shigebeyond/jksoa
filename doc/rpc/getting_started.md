@@ -141,7 +141,7 @@ interface ISimpleService /*: Remote // rmi协议服务接口 */ {
 使用 `net.jkcode.jksoa.rpc.server.RpcServerLauncher` 作为主类, 其`main()`方法会启动server
 
 ## client端
-## 添加依赖
+### 添加依赖
 1. gradle
 ```
 compile "net.jkcode.jksoa:jksoa-rpc-client:1.9.0"
@@ -169,19 +169,24 @@ servicePackages: # service类所在的包路径
 k8sMqType: kafka # k8s模式下服务发现通知的消息队列类型: 暂时只支持 kafka
 k8sMqName: k8sDiscovery # 消息连接配置名, 对应如 kafka-consumer.yaml / kafka-producer.yaml 中的配置名
 k8sNs: default # client关注哪些k8s命名空间, 用逗号分割
-package2k8sServer: # 包名转为k8s应用域名(server)
-    # key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
-    # value是server地址: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
-    'net.jkcode.jksoa.rpc.example': 'jkr://rpcserver.default:9080'
-    #'net.jkcode.jksoa.rpc.example': rpcserver.default # 简写，省略协议jkrp跟端口9080
-    '**': 'jkr://$2_$3:9080'
-    #'**': $2_$3 # 简写，省略协议jkrp跟端口9080
 connectTimeoutMillis: 500 # 连接超时，int类型，单位：毫秒
 requestTimeoutMillis: !!java.lang.Long 5000 # 请求超时，Long类型，单位：毫秒
 maxTryCount: 2 # 最大尝试次数, 用于支持失败重试, 用在 RetryRpcResponseFuture
 lazyConnect: false # 是否延迟创建连接
 connectionsPerPod: 2 # 每个pod的固定连接数
 ioThreads: 0 # IO线程数, 用于执行非阻塞的io事件, 如为0 则为核数
+```
+
+### client路由配置 rpc-router.yaml
+```yaml
+# 包名转为k8s应用域名(server)
+# key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
+# value是server地址: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
+'net.jkcode.jksoa.rpc.example@test': 'jkr://rpcserver.test:9080' # 带路由标记test
+'net.jkcode.jksoa.rpc.example': 'jkr://rpcserver.default:9080'
+#'net.jkcode.jksoa.rpc.example': rpcserver.default # 简写，省略协议jkrp跟端口9080
+'**': 'jkr://$2_$3:9080'
+#'**': $2_$3 # 简写，省略协议jkrp跟端口9080
 ```
 
 ### 获得服务引用者(stub)

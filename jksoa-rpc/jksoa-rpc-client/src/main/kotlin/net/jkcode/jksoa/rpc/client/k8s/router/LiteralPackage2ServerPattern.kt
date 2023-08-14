@@ -11,7 +11,12 @@ class LiteralPackage2ServerPattern(pattern: String, server: String): IPackage2Se
      * 精确度, 字符串越精确度数越高, 用于排序
      */
     override val accuracy: Int
-        get() = pattern.length
+        get() {
+            var r =  pattern.length
+            if(routeTag != null)
+                r += 1000
+            return r
+        }
 
     /**
      * 检查是否匹配包名

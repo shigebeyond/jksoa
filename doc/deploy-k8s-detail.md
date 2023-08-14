@@ -36,7 +36,7 @@ metadata:
   name: rpcserver
   namespace: default
 spec:
-  replicas: 2
+  replicas: 20
   selector:
     matchLabels: *id001
   template:
@@ -44,38 +44,33 @@ spec:
       labels: *id001
     spec:
       containers:
-        - command:
-            - /bin/sh
-            - -c
-            - /opt/rpcserver/start-rpcserver.sh
-          env:
-            - name: TZ
-              value: Asia/Shanghai
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-          image: openjdk:8-jre-alpine
-          imagePullPolicy: IfNotPresent
-          name: rpcserver
-          ports:
-            - containerPort: 9080
-          volumeMounts:
-            - mountPath: /opt/rpcserver
-              name: vol-af624fcbb88ce2e790552303ba898b85
+      - env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        image: 192.168.0.182:5000/rpcserver:3.0.0
+        imagePullPolicy: IfNotPresent
+        name: rpcserver
+        ports:
+        - containerPort: 9080
+      - image: dockersamples/visualizer
+        imagePullPolicy: IfNotPresent
+        name: visualizer
+        ports:
+        - containerPort: 8080
       restartPolicy: Always
-      volumes:
-        - hostPath:
-            path: /home/shi/code/java/jksoa/jksoa-rpc/jksoa-rpc-server/build/app
-          name: vol-af624fcbb88ce2e790552303ba898b85
+      volumes: []
 ```
 
 2. rpcserver-svc.yml
@@ -91,10 +86,14 @@ metadata:
   namespace: default
 spec:
   ports:
-    - name: p9080
-      port: 9080
-      protocol: TCP
-      targetPort: 9080
+  - name: p9080
+    port: 9080
+    protocol: TCP
+    targetPort: 9080
+  - name: p8080
+    port: 8081
+    protocol: TCP
+    targetPort: 8080
   selector: *id001
   type: ClusterIP
 status:

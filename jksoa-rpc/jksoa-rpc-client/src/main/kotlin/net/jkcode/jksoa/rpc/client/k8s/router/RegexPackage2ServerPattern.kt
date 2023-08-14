@@ -19,7 +19,12 @@ class RegexPackage2ServerPattern(pattern: String, server: String): IPackage2Serv
     /**
      * 精确度, 字符串越精确度数越高, 用于排序
      */
-    override val accuracy: Int = - pattern.count { it == '*' } // - 正则次数
+    override val accuracy: Int by lazy {
+        var r = - pattern.count { it == '*' } // - 正则次数
+        if(routeTag != null)
+            r += 1000
+        r
+    }
 
     /**
      * 检查是否匹配包名

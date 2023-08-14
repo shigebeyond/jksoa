@@ -34,14 +34,6 @@ import kotlin.reflect.jvm.javaMethod
 class RpcClientTests {
 
     @Test
-    fun testServer() {
-        var req = RpcRequest(ISimpleService::sayHi, arrayOf<Any?>("shi"))
-        val server = PatternRpcRouter.resovleServer(req)
-        println("server = " + server)
-    }
-
-
-    @Test
     fun testAnnotation() {
         val clazz = ISimpleService::class.java
         println(clazz.name)

@@ -1,8 +1,14 @@
 package net.jkcode.jksoa.rpc.client.k8s.router
 
 import net.jkcode.jksoa.common.IRpcRequest
+import net.jkcode.jksoa.common.RpcRequest
+import net.jkcode.jksoa.common.clientLogger
 import net.jkcode.jksoa.common.exception.RpcClientException
 import net.jkcode.jksoa.rpc.client.k8s.K8sUtil
+import net.jkcode.jksoa.rpc.example.ISimpleService
+import net.jkcode.jkutil.common.Config
+import net.jkcode.jkutil.common.IConfig
+import net.jkcode.jkutil.zkfile.ZkConfig
 
 /**
  * 根据模式来解析的rpc路由器(解析k8s server)，有缓存
@@ -14,21 +20,44 @@ import net.jkcode.jksoa.rpc.client.k8s.K8sUtil
 object PatternRpcRouter : IRpcRouter {
 
     /**
-     * 包名转为k8s应用域名(server)的映射配置
-     * key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
-     * value是server地址: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
+     * 映射模式
      */
-    public val mappingConfig: Map<String, String> = K8sUtil.config["package2k8sServer"]!!
+    public lateinit var patterns: List<IPackage2ServerPattern>
+
+    init {
+        /**
+         * 包名转为k8s应用域名(server)的映射配置
+         * key是包名的模式: 用.分割多层包名, *代表一层任意包名, **代表多层任意包名
+         * value是server地址: 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
+         */
+        var config: IConfig
+        try {
+            config = object : ZkConfig("rpc-router.yaml") {
+                override fun handleConfigChange(data: Map<String, Any?>?) {
+                    buildPatterns(this)
+                }
+            }
+        }catch (e: Throwable) {
+            clientLogger.error("读远程配置异常({}), 自动切换为读本地配置文件", e.message)
+            config = Config.instance("rpc-router", "yaml")
+        }
+
+        // 映射模式
+        buildPatterns(config) // 按精准度排序
+    }
 
     /**
      * 映射模式
      */
-    public val mappingPatterns = mappingConfig.map { (pattern, server) ->
-                                            if (pattern.contains("*")) // 正则
-                                                RegexPackage2ServerPattern(pattern, server)
-                                            else // 常量字符串
-                                                LiteralPackage2ServerPattern(pattern, server)
-                                        }.sortedByDescending { it.accuracy } // 按精准度排序
+    private fun buildPatterns(config: IConfig) {
+        patterns = (config.props as Map<String, String>).map { (pattern, server) ->
+            if (pattern.contains("*")) // 正则
+                RegexPackage2ServerPattern(pattern, server)
+            else // 常量字符串
+                LiteralPackage2ServerPattern(pattern, server)
+        }.sortedByDescending { it.accuracy }
+    }
+
 
     /**
      * 解析k8s应用域名(server)
@@ -56,7 +85,7 @@ object PatternRpcRouter : IRpcRouter {
      */
     fun resovleServer(serviceId: String, reqRouteTag: String?): String? {
         // 逐个模式解析
-        for (pattern in mappingPatterns) {
+        for (pattern in patterns) {
             val server = pattern.resolveServer(serviceId, reqRouteTag)
             if (server != null)
                 return server

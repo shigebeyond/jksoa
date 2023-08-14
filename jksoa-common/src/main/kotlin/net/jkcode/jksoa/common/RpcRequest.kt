@@ -5,6 +5,7 @@ import net.jkcode.jkutil.common.getSignature
 import net.jkcode.jksoa.common.annotation.getServiceClass
 import net.jkcode.jksoa.common.annotation.remoteService
 import net.jkcode.jkutil.common.getClassByName
+import net.jkcode.jkutil.common.toExpr
 import java.lang.reflect.Method
 import java.util.HashMap
 import java.util.concurrent.atomic.AtomicLong
@@ -101,7 +102,7 @@ open class RpcRequest(public override val clazz: String, //服务接口类全名
      * @return
      */
     public override fun toString(): String {
-        return "RpcRequest: id=$id, " + toDesc()
+        return "RpcRequest: id=$id, " + toDesc() + ", attachments=" + (attachments ?: "{}")
     }
 
     /**
