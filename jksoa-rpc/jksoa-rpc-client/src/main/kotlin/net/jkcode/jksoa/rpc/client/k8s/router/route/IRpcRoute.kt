@@ -3,11 +3,11 @@ package net.jkcode.jksoa.rpc.client.k8s.router
 import net.jkcode.jkutil.common.replaces
 
 /**
- * 包名映射server模式
+ * 包名映射server的路由
  * @author shijianhang<772910474@qq.com>
  * @date 2022-5-9 3:18 PM
  */
-abstract class IPackage2ServerPattern(
+abstract class IRpcRoute(
         patternAndTag: String, // 包名模式(用.分割多层包名, *代表一层任意包名, **代表多层任意包名) + 路由标签
         public val server: String // 应用域名(server名): 可以带变量, 变量格式为`$层序号`, 如$0代表第1层包名, $1代表第2层包名, 以此类推
 ){

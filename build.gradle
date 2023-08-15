@@ -3,10 +3,11 @@ buildscript {
     repositories {
         mavenLocal()
         maven {
-            url 'https://maven.aliyun.com/repository/public/'
+            url 'https://maven.aliyun.com/repository/gradle-plugin/'
         }
-        jcenter()
-        mavenCentral()
+        maven {
+            url 'https://maven.aliyun.com/repository/public/' // 等价central+jcenter
+        }
         maven {
             url "http://dl.bintray.com/kotlin/kotlin"
         }
@@ -64,12 +65,11 @@ subprojects{
         mavenLocal()
         // china area
         maven {
-            url 'https://maven.aliyun.com/repository/public/'
+            url 'https://maven.aliyun.com/repository/public/' // 等价central+jcenter
         }
         maven { // jphp
             url "https://jitpack.io"
         }
-        mavenCentral()
         maven {
             url "http://dl.bintray.com/kotlin/kotlin"
         }
